@@ -1,0 +1,5 @@
+TODO:
+Check SHA for downloads
+Pin Java version ?
+Pin Confluent minor version ?
+Setup local image registry for testing

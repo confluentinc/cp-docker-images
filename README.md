@@ -13,6 +13,9 @@ Confluent Platform : 3.0.0
 Java : Oracle JRE 
 
 
+Overview
+==
+
 The bootup process
 --
 
@@ -70,3 +73,26 @@ How to :
 4. How to add my own preflight checks ?
 5. How to log to files instead of stdout ?
 
+
+Development
+==
+
+Setup
+---
+1. Install docker 
+
+		brew install docker docker-machine
+		
+2. Create a docker machine.
+
+		docker-machine create --driver virtualbox confluent
+		
+3. Setup env
+
+		eval $(docker-machine env confluent)
+		
+
+Building the images
+---
+
+`make build-debian`
