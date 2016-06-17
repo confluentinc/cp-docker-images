@@ -103,3 +103,5 @@ RUN echo "===> update debian ....." \
     && echo "===> clean up ..."  \
     && rm -rf /var/cache/oracle-jdk8-installer \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+
+COPY include/dub /usr/local/bin/dub

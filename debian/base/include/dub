@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from jinja2 import Environment, FileSystemLoader
+
+
+def exit_if_absent(env_var):
+    if not os.environ.get(env_var):
+        print "%s is required." % (env_var,)
+        sys.exit(1)
+
+
+def fill_and_write_template(template_file, output_file, context=os.environ):
+    j2_env = Environment(
+        loader=FileSystemLoader(searchpath="/"),
+        trim_blocks=True)
+    with open(output_file, 'w') as f:
+        f.write(j2_env.get_template(template_file).render(env=context))
+
+
+if __name__ == '__main__':
+
+    import argparse
+    root = argparse.ArgumentParser(description='Docker Utility Belt.')
+
+    actions = root.add_subparsers(help='Actions', dest='action')
+
+    template = actions.add_parser('template', description='Generate template from env vars.')
+    template.add_argument('input', help='Path to template file.')
+    template.add_argument('output', help='Path of output file.')
+
+    check_env = actions.add_parser('ensure', description='Check if env var exists.')
+    check_env.add_argument('name', help='Name of env var.')
+
+    if len(sys.argv) < 2:
+        root.print_help()
+        sys.exit(1)
+
+    args = root.parse_args()
+
+    if args.action == "template":
+        fill_and_write_template(args.input, args.output)
+    elif args.action == "ensure":
+        exit_if_absent(args.name)
