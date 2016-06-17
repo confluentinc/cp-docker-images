@@ -5,4 +5,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-echo "configure"
+dub ensure SERVER_ID
+
+dub template "/etc/confluent/docker/myid.template" "/opt/zookeeper/data/myid"
+dub template "/etc/confluent/docker/zookeeper.properties.template" "/etc/kafka/zookeeper.properties"

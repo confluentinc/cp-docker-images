@@ -1,7 +1,11 @@
 #!/bin/bash
 
+echo "===> Printing /etc/kafka/zookeeper.properties "
+cat /etc/kafka/zookeeper.properties
 
-echo "Configuring"
+echo "===> Printing /opt/zookeeper/data/myid "
+cat /opt/zookeeper/data/myid
 
+echo "===> Launching zookeeper ... "
 # Don't need exec as the command has it.
 zookeeper-server-start /etc/kafka/zookeeper.properties

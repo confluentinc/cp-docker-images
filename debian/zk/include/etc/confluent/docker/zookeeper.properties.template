@@ -1,0 +1,19 @@
+tickTime={{ env['TICK_TIME'] | default('3000') }}
+initLimit={{ env['INIT_LIMIT'] | default('10') }}
+syncLimit={{ env['SYNC_LIMIT'] | default('5') }}
+
+dataDir=/opt/zookeeper/data
+dataLogDir=/opt/zookeeper/log
+
+clientPort={{ env['CLIENT_PORT'] | default('2181') }}
+quorumListenOnAllIPs={{ env['QUORUM_LISTEN_ON_ALL_IPS'] | default('true') }}
+
+autopurge.purgeInterval={{ env['AUTO_PURGE_INTERVAL'] | default('1') }}
+autopurge.snapRetainCount={{ env['SNAP_RETAIN_COUNT'] | default('3') }}
+
+{% if env['ZK_SERVERS'] %}
+{% set servers = env['ZK_SERVERS'].split(';') %}
+{% for server in servers %}
+server.{{ loop.index }}={{server}}
+{% endfor %}
+{% endif %}

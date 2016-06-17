@@ -5,6 +5,11 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
+echo "===> Configuring ..."
 /etc/confluent/docker/configure
+
+echo "===> Running preflight checks ... "
 /etc/confluent/docker/ensure
+
+echo "===> Launching ... "
 /etc/confluent/docker/launch
