@@ -1,21 +1,18 @@
-FROM debian:jessie
+FROM python:2.7-slim
 
 ENV DOCKERIZE_VERSION="0.2.0"
 ENV SCALA_VERSION="2.11"
 ENV CONFLUENT_MAJOR_VERSION="3.0"
 
-RUN echo "===> update ubuntu 15.10 ....." \
+RUN echo "===> update debian ....." \
     && apt-get update \
     \
     && echo "===> install curl wget ...." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 curl \
                 wget \
-    \
-    && echo "===> install dockerize ..." \
-    && cd /tmp \
-    && curl -L "https://github.com/jwilder/dockerize/releases/download/v$DOCKERIZE_VERSION/dockerize-linux-amd64-v$DOCKERIZE_VERSION.tar.gz" -o dockerize-linux-amd64-v$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v$DOCKERIZE_VERSION.tar.gz \
+    && echo "===> install python packages ..."  \
+    && pip install --no-cache-dir jinja2 \
     \
     && echo "===> add webupd8 repository ..."  \
     && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
@@ -30,11 +27,79 @@ RUN echo "===> update ubuntu 15.10 ....." \
                     oracle-java8-installer \
                     oracle-java8-set-default  \
                     ca-certificates \
-    && echo "===> add confluent repository..." \
-    && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-    && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list \
-    && apt-get update && apt-get install -y confluent-platform-${SCALA_VERSION} \
-    \
+    && export JAVA_HOME=/usr/lib/jvm/java-8-oracle \
+    && rm -rf $JAVA_HOME/*src.zip  \
+    && rm -rf \
+            ${JAVA_HOME}/*/javaws \
+            ${JAVA_HOME}/*/jjs \
+            ${JAVA_HOME}/*/keytool \
+            ${JAVA_HOME}/*/orbd \
+            ${JAVA_HOME}/*/pack200 \
+            ${JAVA_HOME}/*/policytool \
+            ${JAVA_HOME}/*/rmid \
+            ${JAVA_HOME}/*/rmiregistry \
+            ${JAVA_HOME}/*/servertool \
+            ${JAVA_HOME}/*/tnameserv \
+            ${JAVA_HOME}/*/unpack200 \
+            ${JAVA_HOME}/*/*javafx* \
+            ${JAVA_HOME}/*/*jfx* \
+            ${JAVA_HOME}/*/amd64/libdecora_sse.so \
+            ${JAVA_HOME}/*/amd64/libfxplugins.so \
+            ${JAVA_HOME}/*/amd64/libglass.so \
+            ${JAVA_HOME}/*/amd64/libgstreamer-lite.so \
+            ${JAVA_HOME}/*/amd64/libjavafx*.so \
+            ${JAVA_HOME}/*/amd64/libjfx*.so \
+            ${JAVA_HOME}/*/amd64/libprism_*.so \
+            ${JAVA_HOME}/*/deploy* \
+            ${JAVA_HOME}/*/desktop \
+            ${JAVA_HOME}/*/ext/jfxrt.jar \
+            ${JAVA_HOME}/*/ext/nashorn.jar \
+            ${JAVA_HOME}/*/javaws.jar \
+            ${JAVA_HOME}/*/jfr \
+            ${JAVA_HOME}/*/jfr \
+            ${JAVA_HOME}/*/jfr.jar \
+            ${JAVA_HOME}/*/missioncontrol \
+            ${JAVA_HOME}/*/oblique-fonts \
+            ${JAVA_HOME}/*/plugin.jar \
+            ${JAVA_HOME}/*/visualvm \
+            ${JAVA_HOME}/man \
+            ${JAVA_HOME}/plugin \
+            ${JAVA_HOME}/*.txt \
+            ${JAVA_HOME}/*/*/javaws \
+            ${JAVA_HOME}/*/*/jjs \
+            ${JAVA_HOME}/*/*/keytool \
+            ${JAVA_HOME}/*/*/orbd \
+            ${JAVA_HOME}/*/*/pack200 \
+            ${JAVA_HOME}/*/*/policytool \
+            ${JAVA_HOME}/*/*/rmid \
+            ${JAVA_HOME}/*/*/rmiregistry \
+            ${JAVA_HOME}/*/*/servertool \
+            ${JAVA_HOME}/*/*/tnameserv \
+            ${JAVA_HOME}/*/*/unpack200 \
+            ${JAVA_HOME}/*/*/*javafx* \
+            ${JAVA_HOME}/*/*/*jfx* \
+            ${JAVA_HOME}/*/*/amd64/libdecora_sse.so \
+            ${JAVA_HOME}/*/*/amd64/libfxplugins.so \
+            ${JAVA_HOME}/*/*/amd64/libglass.so \
+            ${JAVA_HOME}/*/*/amd64/libgstreamer-lite.so \
+            ${JAVA_HOME}/*/*/amd64/libjavafx*.so \
+            ${JAVA_HOME}/*/*/amd64/libjfx*.so \
+            ${JAVA_HOME}/*/*/amd64/libprism_*.so \
+            ${JAVA_HOME}/*/*/deploy* \
+            ${JAVA_HOME}/*/*/desktop \
+            ${JAVA_HOME}/*/*/ext/jfxrt.jar \
+            ${JAVA_HOME}/*/*/ext/nashorn.jar \
+            ${JAVA_HOME}/*/*/javaws.jar \
+            ${JAVA_HOME}/*/*/jfr \
+            ${JAVA_HOME}/*/*/jfr \
+            ${JAVA_HOME}/*/*/jfr.jar \
+            ${JAVA_HOME}/*/*/missioncontrol \
+            ${JAVA_HOME}/*/*/oblique-fonts \
+            ${JAVA_HOME}/*/*/plugin.jar \
+            ${JAVA_HOME}/*/*/visualvm \
+            ${JAVA_HOME}/*/man \
+            ${JAVA_HOME}/*/plugin \
+            ${JAVA_HOME}/*.txt \
     && echo "===> clean up ..."  \
     && rm -rf /var/cache/oracle-jdk8-installer \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*

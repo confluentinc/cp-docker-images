@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+/etc/confluent/docker/configure
+/etc/confluent/docker/ensure
+/etc/confluent/docker/launch

@@ -96,3 +96,11 @@ Building the images
 ---
 
 `make build-debian`
+
+
+Docker best practices
+---
+
+https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
+https://github.com/lwieske/dockerfiles-java-8/blob/master/Dockerfile.slim
+https://docs.openshift.com/enterprise/3.0/creating_images/guidelines.html#general-docker-guidelines

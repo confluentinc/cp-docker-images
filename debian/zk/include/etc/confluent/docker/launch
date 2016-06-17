@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+echo "Configuring"
+
+# Don't need exec as the command has it.
+zookeeper-server-start /etc/kafka/zookeeper.properties
