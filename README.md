@@ -97,6 +97,11 @@ Building the images
 
 `make build-debian`
 
+Running tests
+---
+
+`make test`
+
 
 Docker best practices
 ---

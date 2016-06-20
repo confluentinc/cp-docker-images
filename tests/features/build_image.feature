@@ -24,8 +24,18 @@ Feature: build CP base docker containers
     Then path /etc/kafka should exist in image confluentinc/zookeeper
     Then path /etc/confluent should exist in image confluentinc/zookeeper
 
+  Scenario Outline: Verify confluent/zookeeper has bootup scripts
+    Given image confluentinc/zookeeper exists
+    Then executable <path> should exist in image confluentinc/zookeeper 
 
-  Scenario Outline: Verify base image can execute zookeeper commands successfully
+    Examples: Bootup scripts
+     | path         |
+     | /etc/confluent/docker/configure    |
+     | /etc/confluent/docker/ensure    |
+     | /etc/confluent/docker/launch    |
+
+
+  Scenario Outline: Verify confluent/zookeeper image can execute zookeeper commands successfully
     Given image confluentinc/zookeeper exists
     When I run <command> on confluentinc/zookeeper
     Then output should have <snippet>

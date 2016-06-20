@@ -2,7 +2,7 @@ from behave import *
 import docker
 import os
 
-IMAGE_DIR = os.path.join(os.getcwd(), "..")
+IMAGE_DIR = os.environ["IMAGE_DIR"]
 
 
 def run_docker_command(image, cmd):
@@ -20,8 +20,10 @@ def run_docker_command(image, cmd):
 @when(u'I build image {image_name} from {basedir}')
 def step_impl(context, image_name, basedir):
     client = docker.from_env(assert_hostname=False)
-    output = client.build(os.path.join(IMAGE_DIR, basedir), rm=True, tag=image_name)
+    full_image_path = os.path.join(IMAGE_DIR, basedir)
+    output = client.build(full_image_path, rm=True, tag=image_name)
     response = ["     %s" % (line,) for line in output]
+    print("Building image %s from %s" % (full_image_path, basedir))
     print(response)
     return True
 
@@ -52,4 +54,10 @@ def step_impl(context, output):
 @then(u'path {path} should exist in image {image}')
 def step_impl(context, path, image):
     cmd = "bash -c '[ -e %s ] || echo fail' " % (path,)
+    assert("fail" not in run_docker_command(image, cmd))
+
+
+@then(u'executable {path} should exist in image {image}')
+def step_impl(context, path, image):
+    cmd = "bash -c '[ -x %s ] || echo fail' " % (path,)
     assert("fail" not in run_docker_command(image, cmd))
