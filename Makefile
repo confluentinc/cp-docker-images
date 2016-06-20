@@ -1,6 +1,6 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zk
+COMPONENTS := base zookeeper
 
 build-debian:
 	for component in ${COMPONENTS} ; do \

@@ -17,7 +17,7 @@ def run_docker_command(image, cmd):
     return logs
 
 
-@when(u'I build {image_name} from {basedir}')
+@when(u'I build image {image_name} from {basedir}')
 def step_impl(context, image_name, basedir):
     client = docker.from_env(assert_hostname=False)
     output = client.build(os.path.join(IMAGE_DIR, basedir), rm=True, tag=image_name)
