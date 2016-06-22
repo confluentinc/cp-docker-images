@@ -2,12 +2,15 @@ import os
 import unittest
 import utils
 import docker
+import time
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "zookeeper")
-MODE_COMMAND = "bash -c 'dub wait localhost {port} 20 && echo stat | nc localhost {port} | grep Mode'"
+QUORUM_CHECK = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep not && echo notready'"
+MODE_COMMAND = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep Mode'"
 
-class ZookeeperFailingConfigTest(unittest.TestCase):
+
+class FailingConfigTest(unittest.TestCase):
 
     def setUp(self):
         self.image = "confluentinc/zookeeper"
@@ -26,7 +29,7 @@ class ZookeeperFailingConfigTest(unittest.TestCase):
         self.assertTrue(expected in output)
 
 
-class ZookeeperClusterTest(unittest.TestCase):
+class StandaloneTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cluster = utils.TestCluster("standalonetest", FIXTURES_DIR, "zookeeper-standalone-bridged.yml")
@@ -37,8 +40,6 @@ class ZookeeperClusterTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     def test_cluster_running(self):
-        self.assertTrue(self.cluster.is_running())
-
         self.assertTrue(self.cluster.is_running())
 
     def test_zk_healthy(self):
@@ -71,7 +72,7 @@ class ZookeeperClusterTest(unittest.TestCase):
         self.assertEquals("Mode: standalone\n", logs)
 
 
-class StandaloneZookeeperTestHostNetworking(unittest.TestCase):
+class StandaloneWithHostNetworkingTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -87,3 +88,55 @@ class StandaloneZookeeperTestHostNetworking(unittest.TestCase):
             "zookeeper",
             MODE_COMMAND.format(port=22181))
         self.assertEquals("Mode: standalone\n", output)
+
+    def test_zk_serving_requests(self):
+        logs = utils.run_docker_command(
+            image="confluentinc/zookeeper",
+            command=MODE_COMMAND.format(port=22181),
+            host_config={'NetworkMode': 'host'})
+        self.assertEquals("Mode: standalone\n", logs)
+
+
+class ClusterWithBridgeNetwork(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.cluster = utils.TestCluster("cluster-bridge-test", FIXTURES_DIR, "zookeeper-cluster-bridged.yml")
+        cls.cluster.start()
+
+        # Wait for docker containers to bootup and zookeeper to finish leader election
+        for _ in xrange(5):
+            if cls.cluster.is_running():
+                quorum_response = cls.cluster.run_command_on_all(QUORUM_CHECK.format(port=2181))
+                print quorum_response
+                if "notready" not in quorum_response:
+                    break
+            else:
+                time.sleep(1)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+
+    def test_cluster_running(self):
+        self.assertTrue(self.cluster.is_running())
+
+    def test_zk_healthy(self):
+
+        output = self.cluster.run_command_on_all(MODE_COMMAND.format(port=2181))
+        print output
+        expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
+
+        self.assertEquals(sorted(output.values()), expected)
+
+    def test_zk_serving_requests(self):
+        client_ports = [22181, 32181, 42181]
+        expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
+        outputs = []
+
+        for port in client_ports:
+            output = utils.run_docker_command(
+                image="confluentinc/zookeeper",
+                command=MODE_COMMAND.format(port=port),
+                host_config={'NetworkMode': 'host'})
+            outputs.append(output)
+        self.assertEquals(outputs, expected)
