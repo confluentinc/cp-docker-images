@@ -11,6 +11,7 @@ RUN echo "===> update debian ....." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 curl \
                 wget \
+                netcat \
     && echo "===> install python packages ..."  \
     && pip install --no-cache-dir jinja2 \
     \
