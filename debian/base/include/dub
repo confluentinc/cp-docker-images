@@ -3,6 +3,25 @@
 import os
 import sys
 from jinja2 import Environment, FileSystemLoader
+import socket
+import time
+
+
+def wait_for_service(host, port, timeout):
+    start = time.time()
+
+    while True:
+        try:
+            s = socket.create_connection((host, port), timeout)
+            s.close()
+            sys.exit(0)
+        except socket.error:
+            pass
+
+        time.sleep(1)
+
+        if time.time() - start > timeout:
+            sys.exit(1)
 
 
 def exit_if_absent(env_var):
@@ -33,6 +52,11 @@ if __name__ == '__main__':
     check_env = actions.add_parser('ensure', description='Check if env var exists.')
     check_env.add_argument('name', help='Name of env var.')
 
+    check_env = actions.add_parser('wait', description='wait for network service to appear.')
+    check_env.add_argument('host', help='Host.')
+    check_env.add_argument('port', help='Host.')
+    check_env.add_argument('timeout', help='timeout in secs.')
+
     if len(sys.argv) < 2:
         root.print_help()
         sys.exit(1)
@@ -43,3 +67,5 @@ if __name__ == '__main__':
         fill_and_write_template(args.input, args.output)
     elif args.action == "ensure":
         exit_if_absent(args.name)
+    elif args.action == "wait":
+        wait_for_service(args.host, int(args.port), float(args.timeout))
