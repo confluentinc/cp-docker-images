@@ -1,0 +1,47 @@
+version: "2"
+
+networks:
+  zk:
+    # Use a custom driver
+    driver: bridge
+
+services:
+  zookeeper-1:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "22181:2181"
+      - "22888:2888"
+      - "23888:3888"
+
+  zookeeper-2:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 2
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "32181:2181"
+      - "32888:2888"
+      - "33888:3888"
+
+  zookeeper-3:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 3
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "42181:2181"
+      - "42888:2888"
+      - "43888:3888"
+    

@@ -102,10 +102,20 @@ Running tests
 
 `make test`
 
+Delete all docker containers
+---
+`docker rm -f $(docker ps -a -q)`
+
 
 Docker best practices
 ---
 
 https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
+
 https://github.com/lwieske/dockerfiles-java-8/blob/master/Dockerfile.slim
+
 https://docs.openshift.com/enterprise/3.0/creating_images/guidelines.html#general-docker-guidelines
+
+Bridged vs host-only
+---
+https://github.com/docker/docker/issues/7857
