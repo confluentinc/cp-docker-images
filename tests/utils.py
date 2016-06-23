@@ -45,6 +45,15 @@ def path_exists_in_image(image, path):
     return "success" in output
 
 
+def run_command_on_host(command):
+    logs = run_docker_command(
+            image="busybox",
+            command=command,
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp:/tmp']})
+    print "Running command %s: %s" % (command, logs)
+    return logs
+
+
 class TestContainer(Container):
 
     def state(self):
@@ -68,36 +77,54 @@ class TestCluster():
         config_file_path = os.path.join(working_dir, config_file)
         cfg_file = ConfigFile.from_filename(config_file_path)
         c = ConfigDetails(working_dir, [cfg_file],)
-        cd = load(c)
-        self.client = docker_client(Environment())
-        self.project = Project.from_config(name, cd, self.client)
+        self.cd = load(c)
+        self.name = name
+
+    def get_project(self):
+        # Dont reuse the client to fix this bug : https://github.com/docker/compose/issues/1275
+        client = docker_client(Environment())
+        project = Project.from_config(self.name, self.cd, client)
+        return project
 
     def start(self):
-        self.project.up()
+        self.get_project().up()
 
     def is_running(self):
-        state = [container.is_running for container in self.project.containers()]
+        state = [container.is_running for container in self.get_project().containers()]
         return all(state) and len(state) > 0
 
+    def is_service_running(self, service_name):
+        return self.get_container(service_name).is_running
+
     def shutdown(self):
-        self.project.stop()
-        self.project.remove_stopped()
+        project = self.get_project()
+        project.stop()
+        project.remove_stopped()
 
     def get_container(self, service_name):
-        print self.project.get_services()
-        return self.project.get_service(service_name).get_container()
+        print self.get_project().get_services()
+        return self.get_project().get_service(service_name).get_container()
 
     def run_command_on_service(self, service_name, command):
         return self.run_command(command, self.get_container(service_name))
 
+    def service_logs(self, service_name, stopped=False):
+        if stopped:
+            containers = self.get_project().containers([service_name], stopped=True)
+            return containers[0].logs()
+        else:
+            return self.get_container(service_name).logs()
+
     def run_command(self, command, container):
         print command
         eid = container.create_exec(command)
-        return container.start_exec(eid)
+        output = container.start_exec(eid)
+        return output
 
     def run_command_on_all(self, command):
         results = {}
-        for container in self.project.containers():
+        for container in self.get_project().containers():
             results[container.name_without_project] = self.run_command(command, container)
 
         return results
+

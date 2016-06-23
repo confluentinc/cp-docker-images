@@ -1,9 +1,0 @@
-version: "2"
-
-services:
-  zookeeper:
-    image: confluentinc/zookeeper:latest
-    network_mode: host
-    environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 22181

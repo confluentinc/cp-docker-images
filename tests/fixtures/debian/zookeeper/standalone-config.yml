@@ -1,0 +1,53 @@
+version: "2"
+
+services:
+  failing-config:
+    image: confluentinc/zookeeper:latest
+
+  default-config:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+      CLIENT_PORT: 2181
+
+  full-config:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+      CLIENT_PORT: 22181
+      TICK_TIME: 5555
+      INIT_LIMIT: 25
+      SYNC_LIMIT: 20
+      QUORUM_LISTEN_ON_ALL_IPS: "false"
+      AUTO_PURGE_INTERVAL: 2
+      SNAP_RETAIN_COUNT: 4
+
+  external-volumes:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+    volumes:
+      - /tmp/zk-config-test/data:/opt/zookeeper/data
+      - /tmp/zk-config-test/log:/opt/zookeeper/log
+
+  random-user:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+    user: "12345"
+
+  kitchen-sink:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+      CLIENT_PORT: 2181
+      TICK_TIME: 5555
+      INIT_LIMIT: 25
+      SYNC_LIMIT: 20
+      QUORUM_LISTEN_ON_ALL_IPS: "false"
+      AUTO_PURGE_INTERVAL: 2
+      SNAP_RETAIN_COUNT: 4
+    volumes:
+      - /tmp/zk-config-kitchen-sink-test/data:/opt/zookeeper/data
+      - /tmp/zk-config-kitchen-sink-test/log:/opt/zookeeper/log
+    user: "12345"
