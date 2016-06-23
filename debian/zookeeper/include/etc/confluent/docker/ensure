@@ -1,4 +1,13 @@
 #!/bin/bash
 
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
 
-echo "Configuring"
+
+echo "===> Check if /opt/zookeeper/data is writable ..."
+dub path /opt/zookeeper/data writable
+
+echo "===> Check if /opt/zookeeper/log is writable ..."
+dub path /opt/zookeeper/log writable

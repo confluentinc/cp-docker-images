@@ -5,6 +5,12 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
+echo "===> ENV Variables ..."
+env
+
+echo "===> User"
+id
+
 echo "===> Configuring ..."
 /etc/confluent/docker/configure
 

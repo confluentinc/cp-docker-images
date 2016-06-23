@@ -12,7 +12,7 @@ RUN echo "===> add confluent repository..." \
     \
     && echo "===> Setting up ZK dirs" \
     && mkdir -p /opt/zookeeper/data /opt/zookeeper/log \
-    && chmod -R a+rwx /etc/kafka /opt/zookeeper/data /opt/zookeeper/log
+    && chmod -R ag+w /etc/kafka /opt/zookeeper/data /opt/zookeeper/log
 
 VOLUME ["/opt/zookeeper/data", "/opt/zookeeper/log"]
 
