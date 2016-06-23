@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import os
 import sys
 from jinja2 import Environment, FileSystemLoader
@@ -14,28 +16,40 @@ def wait_for_service(host, port, timeout):
         try:
             s = socket.create_connection((host, port), timeout)
             s.close()
-            sys.exit(0)
+            return True
         except socket.error:
             pass
 
         time.sleep(1)
 
         if time.time() - start > timeout:
-            sys.exit(1)
+            return False
+
+
+def check_path_for_permissions(path, mode):
+    string_to_mode_map = {"writable": os.W_OK, "readable": os.R_OK, "executable": os.X_OK, "exists": os.F_OK}
+    return os.access(path, string_to_mode_map[mode])
 
 
 def exit_if_absent(env_var):
     if not os.environ.get(env_var):
-        print "%s is required." % (env_var,)
-        sys.exit(1)
+        print("%s is required." % (env_var,))
+        return False
+    return True
 
 
 def fill_and_write_template(template_file, output_file, context=os.environ):
-    j2_env = Environment(
-        loader=FileSystemLoader(searchpath="/"),
-        trim_blocks=True)
-    with open(output_file, 'w') as f:
-        f.write(j2_env.get_template(template_file).render(env=context))
+    try:
+        j2_env = Environment(
+            loader=FileSystemLoader(searchpath="/"),
+            trim_blocks=True)
+        with open(output_file, 'w') as f:
+            f.write(j2_env.get_template(template_file).render(env=context))
+
+        return True
+    except Exception, e:
+        print(e, file=sys.stderr)
+        return False
 
 
 if __name__ == '__main__':
@@ -54,8 +68,12 @@ if __name__ == '__main__':
 
     check_env = actions.add_parser('wait', description='wait for network service to appear.')
     check_env.add_argument('host', help='Host.')
-    check_env.add_argument('port', help='Host.')
-    check_env.add_argument('timeout', help='timeout in secs.')
+    check_env.add_argument('port', help='Host.', type=int)
+    check_env.add_argument('timeout', help='timeout in secs.', type=float)
+
+    check_env = actions.add_parser('path', description='Check for path permissions and existence.')
+    check_env.add_argument('path', help='Full path.')
+    check_env.add_argument('mode', help='One of [writable, readable, executable, exists].', choices=['writable', 'readable', 'executable', 'exists'])
 
     if len(sys.argv) < 2:
         root.print_help()
@@ -63,9 +81,18 @@ if __name__ == '__main__':
 
     args = root.parse_args()
 
+    success = False
+
     if args.action == "template":
-        fill_and_write_template(args.input, args.output)
+        success = fill_and_write_template(args.input, args.output)
     elif args.action == "ensure":
-        exit_if_absent(args.name)
+        success = exit_if_absent(args.name)
     elif args.action == "wait":
-        wait_for_service(args.host, int(args.port), float(args.timeout))
+        success = wait_for_service(args.host, int(args.port), float(args.timeout))
+    elif args.action == "path":
+        success = check_path_for_permissions(args.path, args.mode)
+
+    if success:
+        sys.exit(0)
+    else:
+        sys.exit(1)
