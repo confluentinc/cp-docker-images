@@ -40,7 +40,7 @@ services:
     image: confluentinc/zookeeper:latest
     environment:
       SERVER_ID: 1
-      CLIENT_PORT: 2181
+      CLIENT_PORT: 22181
       TICK_TIME: 5555
       INIT_LIMIT: 25
       SYNC_LIMIT: 20

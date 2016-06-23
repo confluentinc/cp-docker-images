@@ -86,7 +86,7 @@ class ConfigTest(unittest.TestCase):
         self.is_zk_healthy_for_service("random-user", 2181)
 
     def test_kitchen_sink(self):
-        self.is_zk_healthy_for_service("kitchen-sink", 2181)
+        self.is_zk_healthy_for_service("kitchen-sink", 22181)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/zookeeper.properties")
         expected = """tickTime=5555
                     initLimit=25

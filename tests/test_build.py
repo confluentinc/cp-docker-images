@@ -14,9 +14,9 @@ class BaseImageTest(unittest.TestCase):
 
     def setUp(self):
         self.image = "confluentinc/base"
+        utils.build_image(self.image, get_dockerfile_path("debian/base"))
 
     def test_image_build(self):
-        utils.build_image(self.image, get_dockerfile_path("debian/base"))
         self.assertTrue(utils.image_exists(self.image))
 
     def test_java_install(self):
@@ -33,10 +33,10 @@ class ZookeeperImageTest(unittest.TestCase):
 
     def setUp(self):
         self.image = "confluentinc/zookeeper"
-
-    def test_image_build(self):
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/zookeeper"))
+
+    def test_image_build(self):
         self.assertTrue(utils.image_exists(self.image))
 
     def test_zk_install(self):

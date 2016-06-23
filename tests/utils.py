@@ -9,6 +9,7 @@ from compose.project import Project
 from compose.cli.docker_client import docker_client
 from compose.config.environment import Environment
 from compose.container import Container
+import json
 
 
 def build_image(image_name, dockerfile_dir):
@@ -25,7 +26,13 @@ def image_exists(image_name):
     return "%s:%s" % (image_name, "latest") in tags
 
 
+def pull_image(image_name):
+    client = docker.from_env(assert_hostname=False)
+    client.pull(image_name)
+
+
 def run_docker_command(**kwargs):
+    pull_image(kwargs["image"])
     client = docker.from_env(assert_hostname=False)
     container = TestContainer.create(client, **kwargs)
     container.start()
@@ -36,12 +43,9 @@ def run_docker_command(**kwargs):
 
 
 def path_exists_in_image(image, path):
-    print image
-    print path
+    print "Checking for %s in %s" % (path, image)
     cmd = "bash -c '[ ! -e %s ] || echo success' " % (path,)
-    print cmd
     output = run_docker_command(image=image, command=cmd)
-    print(output)
     return "success" in output
 
 
@@ -102,7 +106,6 @@ class TestCluster():
         project.remove_stopped()
 
     def get_container(self, service_name):
-        print self.get_project().get_services()
         return self.get_project().get_service(service_name).get_container()
 
     def run_command_on_service(self, service_name, command):
@@ -116,9 +119,9 @@ class TestCluster():
             return self.get_container(service_name).logs()
 
     def run_command(self, command, container):
-        print command
         eid = container.create_exec(command)
         output = container.start_exec(eid)
+        print "Running %s on %s : %s " % (command, container, output)
         return output
 
     def run_command_on_all(self, command):
@@ -127,4 +130,3 @@ class TestCluster():
             results[container.name_without_project] = self.run_command(command, container)
 
         return results
-

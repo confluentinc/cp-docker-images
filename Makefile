@@ -16,5 +16,14 @@ venv/bin/activate: tests/requirements.txt
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
-test: venv
-	IMAGE_DIR=$(pwd) venv/bin/behave tests
+docker-env:
+	$(shell docker-machine env gce)
+
+test-build: venv
+	docker images -q | xargs  docker rmi -f
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
+	docker images -q | xargs  docker rmi -f
+
+test-zookeeper: venv build-debian
+	docker ps -a -q | xargs  docker rm -f
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
