@@ -1,10 +1,39 @@
 Feature: Verify CP Zookeeper docker container
 
-  Scenario: build a base image
-    When I build image confluentinc/base from debian/base
-    Then a confluentinc/base image should exist
+  Scenario: Verify error when required properties are missing
+    Given an image confluentinc/zookeeper exists
+    When I start confluentinc/zookeeper
+    Then I should see SERVER_ID is required
+    And shutdown cleanly
 
-  Scenario: Verify base image has java 8 installed
-    Given image confluentinc/base exists
-    When I run java -version on confluentinc/base
-    Then output should have java version "1.8.0_91"
+  Scenario: Verify configuration is generated with defaults
+    Given image confluentinc/zookeeper exists
+    And the environment variables are
+       | name          | value  |
+       | SERVER_ID     | 1   |
+
+    When I start confluentinc/zookeeper
+    Then it should have /etc/kafka/zookeeper.properties with default properties
+    And shutdown cleanly
+
+  Scenario: Verify configuration is generated with env
+    Given image confluentinc/zookeeper exists
+    And the environment variables are
+       | name          | value  |
+       | SERVER_ID     | 1   |
+
+    When I start confluentinc/zookeeper
+    Then it should have /etc/kafka/zookeeper.properties with env properties
+    And shutdown cleanly
+
+
+  Scenario: Verify configuration is generated with defaults
+    Given the environment variables are
+       | name          | value  |
+       | SERVER_ID     | 1   |
+
+    And volumes mapping
+
+    When I start a zookeeper cluster with 1 node
+    Then it should have /etc/kafka/zookeeper.properties with default properties
+    And shutdown cleanly
