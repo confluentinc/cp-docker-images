@@ -1,0 +1,201 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import os
+import sys
+import socket
+import time
+from contextlib import closing
+import collections
+import time
+from kazoo.client import KazooClient
+import json
+
+ZookeeperServer = collections.namedtuple('ZookeeperServer', 'host port')
+KafkaServer = collections.namedtuple('KafkaServer', 'id host port endpoints')
+
+
+def wait_for_service(host, port, timeout):
+    start = time.time()
+    while True:
+        try:
+            s = socket.create_connection((host, port), timeout)
+            s.close()
+            return True
+        except socket.error:
+            pass
+
+        time.sleep(1)
+        if time.time() - start > timeout:
+            return False
+
+
+def get_zk_mode(server):
+    MODE_PREFIX = 'Mode: '
+    try:
+        lines = get_zk_stat(server).split("\n")
+        for line in lines:
+            if line.startswith(MODE_PREFIX):
+                return line[len(MODE_PREFIX):]
+    except socket.error:
+        return 'down'
+    return 'not serving'
+
+
+def get_zk_stat(server):
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.connect(server)
+        s.send('stat')
+        data = s.recv(1048)
+    return data
+
+
+def check_zk_ensemble_ready(modes):
+    if "not serving" in modes or "down" in modes:
+        return False
+
+    if len(modes) == 1:
+        return modes[0] == "standalone"
+    else:
+        # There should be only one leader and rest should be followers
+        return modes.count("leader") == 1 and modes.count("follower") == len(modes) - 1
+
+
+def parse_zk_connect_string(zk_connect_str):
+    server_list = zk_connect_str.split("/")[0]
+    servers = []
+    for server in server_list.split(","):
+        tokens = server.split(":")
+        servers.append(ZookeeperServer(host=tokens[0], port=int(tokens[1])))
+    return servers
+
+
+def check_zookeeper_ready(zk_connect_str, service_timeout, ensemble_retries, ensemble_wait):
+    servers = parse_zk_connect_string(zk_connect_str)
+
+    # Wait for server to be up
+    status = [wait_for_service(server.host, server.port, service_timeout) for server in servers]
+
+    if all(status):
+        for _ in xrange(ensemble_retries):
+            modes = [get_zk_mode(server) for server in servers]
+            if check_zk_ensemble_ready(modes):
+                return True
+            else:
+                time.sleep(ensemble_wait)
+
+        print("Ensemble in invalid state for [%s]" % zk_connect_str, file=sys.stderr)
+        for i in xrange(len(servers)):
+                print("%s = %s" % (str(servers[i]), modes[i]), file=sys.stderr)
+
+        return False
+    else:
+        for i in xrange(len(servers)):
+            if not status[i]:
+                print("%s cannot be reached." % str(servers[i]), file=sys.stderr)
+        return False
+
+
+def get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wait):
+    brokers = []
+
+    # This is required because chroot might not be created when we initiate the check.
+    if "/" in zk_connect:
+        tokens = zk_connect.split("/")
+        chroot = "/".join([""] + tokens[1:])
+        server = tokens[0]
+    else:
+        server = zk_connect
+        chroot = "/"
+
+    for _ in xrange(cluster_retries):
+        try:
+            zk = KazooClient(hosts=server, read_only=True)
+            zk.start()
+
+            # Check for chroot
+            if zk.exists(chroot):
+                zk.chroot = chroot
+            else:
+                time.sleep(cluster_wait)
+                continue
+
+            # Check for brokers
+            if zk.exists("/brokers/ids"):
+                broker_ids = zk.get_children("/brokers/ids")
+                brokers = []
+                for i in broker_ids:
+                    znode = zk.get("/brokers/ids/" + i)
+                    broker = json.loads(znode[0])
+                    brokers.append(KafkaServer(id=i,
+                                               host=broker["host"],
+                                               port=broker["port"],
+                                               endpoints=broker["endpoints"]))
+                if len(broker_ids) >= min_broker_count:
+                    print("Brokers in ZK: %s" % brokers, file=sys.stderr)
+                    return (len(broker_ids) >= min_broker_count, brokers)
+            else:
+                time.sleep(cluster_wait)
+        except Exception, e:
+            print(e, file=sys.stderr)
+        finally:
+            zk.stop()
+
+    return (False, brokers)
+
+
+def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_retries, cluster_wait):
+    min_brokers_found, brokers = get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wait)
+    if not min_brokers_found:
+        print("Expected %s brokers but found %s. [%s] " % (min_broker_count, len(brokers), str(brokers)), file=sys.stderr)
+        return False
+
+    status = [wait_for_service(server.host, server.port, service_timeout) for server in brokers]
+
+    if all(status):
+        return True
+    else:
+        for i in xrange(len(servers)):
+            if not status[i]:
+                print("%s cannot be reached." % str(servers[i]), file=sys.stderr)
+        return False
+
+
+if __name__ == '__main__':
+
+    import argparse
+    root = argparse.ArgumentParser(description='Confluent Platform Utility Belt.')
+
+    actions = root.add_subparsers(help='Actions', dest='action')
+
+    zk = actions.add_parser('zk-ready', description='Check if ZK is ready.')
+    zk.add_argument('connect_string', help='Zookeeper connect string.')
+    zk.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+    zk.add_argument('retries', help='No of retries to check if leader election is complete.', type=int)
+    zk.add_argument('wait', help='Time in secs between retries', type=int)
+
+    kafka = actions.add_parser('kafka-ready', description='Check if Kafka is ready.')
+    kafka.add_argument('connect_string', help='Zookeeper connect string.')
+    kafka.add_argument('min_brokers', help='Minimum number of brokers to wait for', type=int)
+    kafka.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+    kafka.add_argument('retries', help='No of retries to check if leader election is complete.', type=int)
+    kafka.add_argument('wait', help='Time in secs between retries', type=int)
+
+    if len(sys.argv) < 2:
+        root.print_help()
+        sys.exit(1)
+
+    args = root.parse_args()
+
+    success = False
+
+    if args.action == "zk-ready":
+        success = check_zookeeper_ready(args.connect_string, args.timeout, args.retries, args.wait)
+    elif args.action == "kafka-ready":
+        success = check_kafka_ready(args.connect_string, args.min_brokers, args.timeout, args.retries, args.wait)
+
+    if success:
+        sys.exit(0)
+    else:
+        sys.exit(1)

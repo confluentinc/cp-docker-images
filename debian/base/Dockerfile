@@ -14,6 +14,7 @@ RUN echo "===> update debian ....." \
                 netcat \
     && echo "===> install python packages ..."  \
     && pip install --no-cache-dir jinja2 \
+                                  kazoo \
     \
     && echo "===> add webupd8 repository ..."  \
     && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
@@ -106,3 +107,4 @@ RUN echo "===> update debian ....." \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
 COPY include/dub /usr/local/bin/dub
+COPY include/cub /usr/local/bin/cub
