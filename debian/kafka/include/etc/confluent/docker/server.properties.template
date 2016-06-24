@@ -1,0 +1,6 @@
+broker.id={{env['BROKER_ID']}}
+advertised.host.name={{env['ADVERTISED_HOST_NAME']}}
+port=9092
+advertised.port={{env['ADVERTISED_PORT']}}
+log.dirs=/opt/kafka/data
+zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}

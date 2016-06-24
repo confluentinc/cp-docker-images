@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure BROKER_ID
+dub ensure ZOOKEEPER_CONNECT
+dub ensure ADVERTISED_HOST_NAME
+dub ensure ADVERTISED_PORT
+
+dub template "/etc/confluent/docker/server.properties.template" "/etc/kafka/server.properties"

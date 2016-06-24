@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+echo "===> ENV Variables ..."
+env
+
+echo "===> User"
+id
+
+echo "===> Configuring ..."
+/etc/confluent/docker/configure
+
+echo "===> Running preflight checks ... "
+/etc/confluent/docker/ensure
+
+echo "===> Launching ... "
+/etc/confluent/docker/launch

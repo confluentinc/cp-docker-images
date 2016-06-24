@@ -48,6 +48,12 @@ def path_exists_in_image(image, path):
     output = run_docker_command(image=image, command=cmd)
     return "success" in output
 
+def executable_exists_in_image(image, path):
+    print "Checking for %s in %s" % (path, image)
+    cmd = "bash -c '[ ! -x %s ] || echo success' " % (path,)
+    output = run_docker_command(image=image, command=cmd)
+    return "success" in output
+
 
 def run_command_on_host(command):
     logs = run_docker_command(
@@ -114,6 +120,7 @@ class TestCluster():
     def service_logs(self, service_name, stopped=False):
         if stopped:
             containers = self.get_project().containers([service_name], stopped=True)
+            print(containers[0].logs())
             return containers[0].logs()
         else:
             return self.get_container(service_name).logs()

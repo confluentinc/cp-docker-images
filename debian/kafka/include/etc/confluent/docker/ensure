@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+
+echo "===> Check if /opt/kafka/data is writable ..."
+dub path /opt/kafka/data writable
+
+echo "===> Check if Zookeeper is healthy ..."
+cub zk-ready $ZOOKEEPER_CONNECT 20 10 2

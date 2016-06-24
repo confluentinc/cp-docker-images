@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "===> Printing /etc/kafka/server.properties "
+cat /etc/kafka/server.properties
+
+echo "===> Launching kafka ... "
+# Don't need exec as the command has it.
+kafka-server-start /etc/kafka/server.properties

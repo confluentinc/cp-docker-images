@@ -1,0 +1,74 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 2
+
+  failing-config:
+    image: confluentinc/kafka:latest
+
+  failing-config-zk-connect:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+
+  failing-config-adv-hostname:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "something"
+
+  failing-config-adv-port:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_HOST_NAME: "kafka"
+
+  default-config:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      ADVERTISED_HOST_NAME: "default-config"
+      ADVERTISED_PORT: 9092
+
+  full-config:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/fullconfig"
+      ADVERTISED_HOST_NAME: "full-config"
+      ADVERTISED_PORT: 9092
+
+  external-volumes:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/externalvolumes"
+      ADVERTISED_HOST_NAME: "external-volumes"
+      ADVERTISED_PORT: 9092
+    volumes:
+      - /tmp/kafka-config-test/data:/opt/kafka/data
+
+  random-user:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/randomuser"
+      ADVERTISED_HOST_NAME: "random-user"
+      ADVERTISED_PORT: 9092
+    user: "12345"
+
+  kitchen-sink:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/kitchensink"
+      ADVERTISED_HOST_NAME: "kitchen-sink"
+      ADVERTISED_PORT: 9092
+    volumes:
+      - /tmp/kafka-config-kitchen-sink-test/data:/opt/kafka/data
+    user: "12345"

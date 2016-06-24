@@ -1,6 +1,6 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zookeeper
+COMPONENTS := base zookeeper kafka
 
 build-debian:
 	for component in ${COMPONENTS} ; do \
@@ -27,3 +27,7 @@ test-build: venv
 test-zookeeper: venv build-debian
 	docker ps -a -q | xargs  docker rm -f
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
+
+test-kafka: venv build-debian
+	docker ps -a -q | xargs  docker rm -f
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v

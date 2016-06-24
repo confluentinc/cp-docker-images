@@ -27,6 +27,7 @@ class BaseImageTest(unittest.TestCase):
 
     def test_dub_exists(self):
         self.assertTrue(utils.path_exists_in_image(self.image, "/usr/local/bin/dub"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/usr/local/bin/cub"))
 
 
 class ZookeeperImageTest(unittest.TestCase):
@@ -47,7 +48,42 @@ class ZookeeperImageTest(unittest.TestCase):
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/configure"))
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/run"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/configure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
     def test_zk_commands(self):
         expected = "USAGE: /usr/bin/zookeeper-server-start [-daemon] zookeeper.properties"
         self.assertTrue(expected in utils.run_docker_command(image=self.image, command="zookeeper-server-start"))
+
+
+class KafkaImageTest(unittest.TestCase):
+
+    def setUp(self):
+        self.image = "confluentinc/kafka"
+        utils.build_image(self.image, get_dockerfile_path("debian/base"))
+        utils.build_image(self.image, get_dockerfile_path("debian/kafka"))
+
+    def test_image_build(self):
+        self.assertTrue(utils.image_exists(self.image))
+
+    def test_zk_install(self):
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent"))
+
+    def test_boot_scripts_present(self):
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/configure"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/run"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/configure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
+
+
+    def test_kafka_commands(self):
+        expected = "USAGE: /usr/bin/kafka-server-start [-daemon] server.properties [--override property=value]*"
+        self.assertTrue(expected in utils.run_docker_command(image=self.image, command="kafka-server-start"))
