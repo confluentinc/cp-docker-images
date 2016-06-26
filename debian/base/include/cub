@@ -156,9 +156,9 @@ def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_ret
     if all(status):
         return True
     else:
-        for i in xrange(len(servers)):
+        for i in xrange(len(brokers)):
             if not status[i]:
-                print("%s cannot be reached." % str(servers[i]), file=sys.stderr)
+                print("%s cannot be reached." % str(brokers[i]), file=sys.stderr)
         return False
 
 
