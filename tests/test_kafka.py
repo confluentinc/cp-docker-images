@@ -3,11 +3,14 @@ import unittest
 import utils
 import time
 import string
+import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
 HEALTH_CHECK = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 10 10 10 && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready localhost:2181 10 10 2 && echo PASS || echo FAIL'"
+KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
+
 
 class ConfigTest(unittest.TestCase):
     @classmethod
@@ -21,7 +24,7 @@ class ConfigTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # cls.cluster.shutdown()
+        cls.cluster.shutdown()
         utils.run_command_on_host("rm -rf /tmp/kafka-config-kitchen-sink-test")
 
     @classmethod
@@ -35,9 +38,8 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue("ADVERTISED_HOST_NAME is required." in self.cluster.service_logs("failing-config-adv-hostname", stopped=True))
         self.assertTrue("ADVERTISED_PORT is required." in self.cluster.service_logs("failing-config-adv-port", stopped=True))
 
-    def test_rdefault_config(self):
+    def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
-        import string
         props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/server.properties")
         expected = """broker.id=1
             advertised.host.name=default-config
@@ -79,43 +81,52 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
 
 
-# class StandaloneNetworkingTest(unittest.TestCase):
-#
-#     @classmethod
-#     def setUpClass(cls):
-#         cls.cluster = utils.TestCluster("standalone-network-test", FIXTURES_DIR, "standalone-network.yml")
-#         cls.cluster.start()
-#
-#     @classmethod
-#     def tearDownClass(cls):
-#         cls.cluster.shutdown()
-#
-#     @classmethod
-#     def is_zk_healthy_for_service(cls, service, client_port):
-#         output = cls.cluster.run_command_on_service(service, MODE_COMMAND.format(port=client_port))
-#         assert "Mode: standalone\n" == output
-#
-#     def test_bridge_network(self):
-#         # Test from within the container
-#         self.is_zk_healthy_for_service("bridge-network", 2181)
-#         # Test from outside the container
-#         logs = utils.run_docker_command(
-#             image="confluentinc/zookeeper",
-#             command=MODE_COMMAND.format(port=22181),
-#             host_config={'NetworkMode': 'host'})
-#         self.assertEquals("Mode: standalone\n", logs)
-#
-#     def test_host_network(self):
-#         # Test from within the container
-#         self.is_zk_healthy_for_service("host-network", 32181)
-#         # Test from outside the container
-#         logs = utils.run_docker_command(
-#             image="confluentinc/zookeeper",
-#             command=MODE_COMMAND.format(port=32181),
-#             host_config={'NetworkMode': 'host'})
-#         self.assertEquals("Mode: standalone\n", logs)
-#
-#
+class StandaloneNetworkingTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cluster = utils.TestCluster("standalone-network-test", FIXTURES_DIR, "standalone-network.yml")
+        cls.cluster.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        pass
+
+    @classmethod
+    def is_kafka_healthy_for_service(cls, service, num_brokers):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+        assert "PASS" in output
+
+    def test_bridge_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-bridge", 1)
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/kafkacat",
+            command=KAFKA_CHECK.format(host="localhost", port=19092),
+            host_config={'NetworkMode': 'host'})
+
+        parsed_logs = json.loads(logs)
+        self.assertEquals(1, len(parsed_logs["brokers"]))
+        self.assertEquals(1, parsed_logs["brokers"][0]["id"])
+        self.assertEquals("localhost:19092", parsed_logs["brokers"][0]["name"])
+
+    def test_host_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-bridge", 1)
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/kafkacat",
+            command=KAFKA_CHECK.format(host="localhost", port=29092),
+            host_config={'NetworkMode': 'host'})
+
+        parsed_logs = json.loads(logs)
+        self.assertEquals(1, len(parsed_logs["brokers"]))
+        self.assertEquals(1, parsed_logs["brokers"][0]["id"])
+        self.assertEquals("localhost:29092", parsed_logs["brokers"][0]["name"])
+
+
 # class ClusterBridgeNetworkTest(unittest.TestCase):
 #     @classmethod
 #     def setUpClass(cls):
@@ -159,8 +170,8 @@ class ConfigTest(unittest.TestCase):
 #                 host_config={'NetworkMode': 'host'})
 #             outputs.append(output)
 #         self.assertEquals(sorted(outputs), expected)
-#
-#
+
+
 # class ClusterHostNetworkTest(unittest.TestCase):
 #     @classmethod
 #     def setUpClass(cls):
