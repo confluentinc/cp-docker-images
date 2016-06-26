@@ -38,6 +38,7 @@ def run_docker_command(**kwargs):
     container.start()
     container.wait()
     logs = container.logs()
+    print "Running command %s: %s" % (kwargs["command"], logs)
     container.shutdown()
     return logs
 

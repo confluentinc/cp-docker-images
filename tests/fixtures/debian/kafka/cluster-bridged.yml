@@ -1,0 +1,79 @@
+version: "2"
+
+networks:
+  zk:
+    # Use a custom driver
+    driver: bridge
+
+services:
+  zookeeper-1:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 1
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "22181:2181"
+      - "22888:2888"
+      - "23888:3888"
+
+  zookeeper-2:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 2
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "32181:2181"
+      - "32888:2888"
+      - "33888:3888"
+
+  zookeeper-3:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 3
+      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+    networks:
+      - default
+      - zk
+    ports:
+      - "42181:2181"
+      - "42888:2888"
+      - "43888:3888"
+
+  kafka-1:
+    image: confluentinc/kafka:latest
+    networks:
+      - default
+      - zk
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      ADVERTISED_HOST_NAME: "kafka-1"
+      ADVERTISED_PORT: 9092
+
+  kafka-2:
+    image: confluentinc/kafka:latest
+    networks:
+      - default
+      - zk
+    environment:
+      BROKER_ID: 2
+      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      ADVERTISED_HOST_NAME: "kafka-2"
+      ADVERTISED_PORT: 9092
+
+  kafka-3:
+    image: confluentinc/kafka:latest
+    networks:
+      - default
+      - zk
+    environment:
+      BROKER_ID: 3
+      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      ADVERTISED_HOST_NAME: "kafka-3"
+      ADVERTISED_PORT: 9092
