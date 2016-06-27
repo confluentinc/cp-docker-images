@@ -137,7 +137,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # cls.cluster.shutdown()
+        cls.cluster.shutdown()
         pass
 
     def test_cluster_running(self):
@@ -164,38 +164,36 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
 
 
-# class ClusterHostNetworkTest(unittest.TestCase):
-#     @classmethod
-#     def setUpClass(cls):
-#         cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged.yml")
-#         cls.cluster.start()
-#
-#         # Wait for docker containers to bootup and zookeeper to finish leader election
-#         for _ in xrange(5):
-#             if cls.cluster.is_running():
-#                 quorum_response = cls.cluster.run_command_on_all(QUORUM_CHECK.format(port=2181))
-#                 print quorum_response
-#                 if "notready" not in quorum_response:
-#                     break
-#             else:
-#                 time.sleep(1)
-#
-#     @classmethod
-#     def tearDownClass(cls):
-#         cls.cluster.shutdown()
-#
-#     def test_cluster_running(self):
-#         self.assertTrue(self.cluster.is_running())
-#
-#     def test_zk_serving_requests(self):
-#         client_ports = [22181, 32181, 42181]
-#         expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
-#         outputs = []
-#
-#         for port in client_ports:
-#             output = utils.run_docker_command(
-#                 image="confluentinc/zookeeper",
-#                 command=MODE_COMMAND.format(port=port),
-#                 host_config={'NetworkMode': 'host'})
-#             outputs.append(output)
-#         self.assertEquals(sorted(outputs), expected)
+class ClusterHostNetworkTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host.yml")
+        cls.cluster.start()
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        pass
+
+    def test_cluster_running(self):
+        self.assertTrue(self.cluster.is_running())
+
+    @classmethod
+    def is_kafka_healthy_for_service(cls, service, num_brokers):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+        assert "PASS" in output
+
+    def test_bridge_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-1", 3)
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/kafkacat",
+            command=KAFKA_CHECK.format(host="localhost", port=19092),
+            host_config={'NetworkMode': 'host'})
+
+        parsed_logs = json.loads(logs)
+        self.assertEquals(3, len(parsed_logs["brokers"]))
+        expected_brokers = [{"id":1,"name":"localhost:19092"}, {"id":2,"name":"localhost:29092"}, {"id":3,"name":"localhost:39092"}]
+        self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
