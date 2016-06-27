@@ -53,10 +53,32 @@ class ConfigTest(unittest.TestCase):
             autopurge.purgeInterval=1
             autopurge.snapRetainCount=3
             """
-        self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
+        self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
         zk_id = self.cluster.run_command_on_service("default-config", "cat /opt/zookeeper/data/myid")
-        self.assertTrue(zk_id == "1")
+        self.assertEquals(zk_id, "1")
+
+    def test_default_logging_config(self):
+        self.is_zk_healthy_for_service("default-config", 2181)
+
+        log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/log4j.properties")
+        expected_log4j_props = """log4j.rootLogger=INFO, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+            """
+        self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
+
+        tools_log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/tools-log4j.properties")
+        expected_tools_log4j_props = """log4j.rootLogger=WARN, stderr
+
+            log4j.appender.stderr=org.apache.log4j.ConsoleAppender
+            log4j.appender.stderr.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stderr.layout.ConversionPattern=[%d] %p %m (%c)%n
+            log4j.appender.stderr.Target=System.err
+            """
+        self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_full_config(self):
         self.is_zk_healthy_for_service("full-config", 22181)
@@ -74,10 +96,34 @@ class ConfigTest(unittest.TestCase):
                 autopurge.purgeInterval=2
                 autopurge.snapRetainCount=4
                 """
-        self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
+        self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
         zk_id = self.cluster.run_command_on_service("full-config", "cat /opt/zookeeper/data/myid")
-        self.assertTrue(zk_id == "1")
+        self.assertEquals(zk_id, "1")
+
+    def test_full_logging_config(self):
+        self.is_zk_healthy_for_service("full-config", 22181)
+
+        log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/log4j.properties")
+        expected_log4j_props = """log4j.rootLogger=WARN, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+
+            log4j.logger.zookeeper.foo.bar=DEBUG, stdout
+            """
+        self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
+
+        tools_log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/tools-log4j.properties")
+        expected_tools_log4j_props = """log4j.rootLogger=ERROR, stderr
+
+            log4j.appender.stderr=org.apache.log4j.ConsoleAppender
+            log4j.appender.stderr.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stderr.layout.ConversionPattern=[%d] %p %m (%c)%n
+            log4j.appender.stderr.Target=System.err
+            """
+        self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_volumes(self):
         self.is_zk_healthy_for_service("external-volumes", 2181)

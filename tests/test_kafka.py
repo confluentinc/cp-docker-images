@@ -50,6 +50,38 @@ class ConfigTest(unittest.TestCase):
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
+    def test_default_logging_config(self):
+        self.is_kafka_healthy_for_service("default-config", 1)
+
+        log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/log4j.properties")
+        expected_log4j_props = """log4j.rootLogger=INFO, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+
+
+            log4j.logger.kafka.authorizer.logger=WARN, stdout
+            log4j.logger.kafka.log.LogCleaner=INFO, stdout
+            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG, stdout
+            log4j.logger.kafka.controller=TRACE, stdout
+            log4j.logger.kafka.network.RequestChannel$=WARN, stdout
+            log4j.logger.kafka.request.logger=WARN, stdout
+            log4j.logger.state.change.logger=TRACE, stdout
+            log4j.logger.kafka=INFO, stdout
+            """
+        self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
+
+        tools_log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/tools-log4j.properties")
+        expected_tools_log4j_props = """log4j.rootLogger=WARN, stderr
+
+            log4j.appender.stderr=org.apache.log4j.ConsoleAppender
+            log4j.appender.stderr.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stderr.layout.ConversionPattern=[%d] %p %m (%c)%n
+            log4j.appender.stderr.Target=System.err
+            """
+        self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
+
     def test_full_config(self):
         self.is_kafka_healthy_for_service("full-config", 1)
         props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/server.properties")
@@ -61,6 +93,39 @@ class ConfigTest(unittest.TestCase):
                 zookeeper.connect=zookeeper:2181/fullconfig
                 """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+    def test_full_logging_config(self):
+        self.is_kafka_healthy_for_service("full-config", 1)
+
+        log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/log4j.properties")
+        expected_log4j_props = """log4j.rootLogger=WARN, stdout
+
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+
+
+            log4j.logger.kafka.authorizer.logger=WARN, stdout
+            log4j.logger.kafka.log.LogCleaner=INFO, stdout
+            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG, stdout
+            log4j.logger.kafka.controller=WARN, stdout
+            log4j.logger.kafka.network.RequestChannel$=WARN, stdout
+            log4j.logger.kafka.request.logger=WARN, stdout
+            log4j.logger.state.change.logger=TRACE, stdout
+            log4j.logger.kafka.foo.bar=DEBUG, stdout
+            log4j.logger.kafka=INFO, stdout
+            """
+        self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
+
+        tools_log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/tools-log4j.properties")
+        expected_tools_log4j_props = """log4j.rootLogger=ERROR, stderr
+
+            log4j.appender.stderr=org.apache.log4j.ConsoleAppender
+            log4j.appender.stderr.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stderr.layout.ConversionPattern=[%d] %p %m (%c)%n
+            log4j.appender.stderr.Target=System.err
+            """
+        self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_volumes(self):
         self.is_kafka_healthy_for_service("external-volumes", 1)
@@ -92,7 +157,6 @@ class StandaloneNetworkingTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        pass
 
     @classmethod
     def is_kafka_healthy_for_service(cls, service, num_brokers):
@@ -138,7 +202,6 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        pass
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -161,7 +224,6 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         self.assertEquals(3, len(parsed_logs["brokers"]))
         expected_brokers = [{"id":1,"name":"kafka-1:9092"}, {"id":2,"name":"kafka-2:9092"}, {"id":3,"name":"kafka-3:9092"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
-
 
 
 class ClusterHostNetworkTest(unittest.TestCase):

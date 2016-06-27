@@ -42,6 +42,9 @@ services:
       ZOOKEEPER_CONNECT: "zookeeper:2181/fullconfig"
       ADVERTISED_HOST_NAME: "full-config"
       ADVERTISED_PORT: 9092
+      LOG4J_LOGGERS: "kafka.controller=WARN,kafka.foo.bar=DEBUG"
+      LOG4J_ROOT_LOGLEVEL: WARN
+      TOOLS_LOG4J_LOGLEVEL: ERROR
 
   external-volumes:
     image: confluentinc/kafka:latest
