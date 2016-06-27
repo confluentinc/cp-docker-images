@@ -192,7 +192,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged.yml")
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host.yml")
         cls.cluster.start()
 
         # Wait for docker containers to bootup and zookeeper to finish leader election
