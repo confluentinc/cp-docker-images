@@ -21,6 +21,9 @@ services:
       QUORUM_LISTEN_ON_ALL_IPS: "false"
       AUTO_PURGE_INTERVAL: 2
       SNAP_RETAIN_COUNT: 4
+      LOG4J_LOGGERS: "zookeeper.foo.bar=DEBUG"
+      LOG4J_ROOT_LOGLEVEL: WARN
+      TOOLS_LOG4J_LOGLEVEL: ERROR
 
   external-volumes:
     image: confluentinc/zookeeper:latest
