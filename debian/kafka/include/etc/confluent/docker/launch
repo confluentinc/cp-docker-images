@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "===> Printing /etc/kafka/server.properties "
-cat /etc/kafka/server.properties
+echo "===> Printing /etc/${COMPONENT}/${COMPONENT}.properties "
+cat /etc/${COMPONENT}/${COMPONENT}.properties
 
-echo "===> Launching kafka ... "
+echo "===> Launching ${COMPONENT} ... "
 # Don't need exec as the command has it.
-kafka-server-start /etc/kafka/server.properties
+${COMPONENT}-server-start /etc/${COMPONENT}/${COMPONENT}.properties
