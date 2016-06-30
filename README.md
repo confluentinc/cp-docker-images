@@ -169,6 +169,8 @@ You can run build tests by running `make test-build`. Use this when you want to 
 
 ###Running tests
 
+You'll need to first install virtualenv: `pip install virtualenv`
+
 	cd cp-docker-images
 	make test-zookeeper
 	make test-kafka
