@@ -155,7 +155,8 @@ Development
 
 		docker-machine create --driver virtualbox confluent
 	This command local env but it is recommended that you create one on AWS. The builds are much faster and is more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).
-
+	
+	[Docker Machine AWS Example](https://docs.docker.com/machine/examples/aws/)
 3. Setup env
 
 		eval $(docker-machine env confluent)
