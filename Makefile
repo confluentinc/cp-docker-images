@@ -1,6 +1,6 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zookeeper kafka kafkacat
+COMPONENTS := base zookeeper kafka kafkacat kafka-rest
 
 build-debian:
 	for component in ${COMPONENTS} ; do \

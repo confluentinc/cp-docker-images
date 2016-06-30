@@ -1,0 +1,26 @@
+
+{# required properties #}
+zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}	
+schema.registry.url={{env['SCHEMA_REGISTRY_URL']}}
+
+{# optional properties #}
+{% set other_props = {
+	'LISTENERS': 'listeners'
+	'ID_CONFIG': 'id',
+	'HOST_NAME': 'host.name',
+	'PRODUCER_THREADS': 'producer.threads',
+	'CONSUMER_ITERATOR_TIMEOUT_MS': 'consumer.iterator.timeout.ms',
+	'CONSUMER_ITERATOR_BACKOFF_MS': 'consumer.iterator.backoff.ms',
+	'CONSUMER_REQUEST_TIMEOUT_MS': 'consumer.request.timeout.ms',
+	'CONSUMER_REQUEST_MAX_BYTES': 'consumer.request.max.bytes',
+	'CONSUMER_THREADS': 'consumer.threads',
+	'CONSUMER_INSTANCE_TIMEOUT_MS': 'consumer.instance.timeout.ms',
+	'SIMPLE_CONSUMER_MAX_POOL_SIZE': 'simpleconsumer.pool.size.max',
+	'SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms'
+ } -%}
+
+{% for k, property in other_props.iteritems() %}
+	{% if env.get(k) != None %}
+		{{property}}={{env[k]}}
+	{% endif %}
+{% endfor %}
