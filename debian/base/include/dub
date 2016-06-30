@@ -9,6 +9,16 @@ import socket
 import time
 
 
+def parse_log4j_loggers(overrides_str, defaults={}):
+    overrides = overrides_str.split(",")
+    if len(overrides) > 0:
+        for override in overrides:
+            tokens = override.split("=")
+            if len(tokens) == 2:
+                defaults[tokens[0]] = tokens[1]
+    return defaults
+
+
 def wait_for_service(host, port, timeout):
     start = time.time()
 
@@ -43,8 +53,10 @@ def fill_and_write_template(template_file, output_file, context=os.environ):
         j2_env = Environment(
             loader=FileSystemLoader(searchpath="/"),
             trim_blocks=True)
+        j2_env.globals['parse_log4j_loggers'] = parse_log4j_loggers
         with open(output_file, 'w') as f:
-            f.write(j2_env.get_template(template_file).render(env=context))
+            template = j2_env.get_template(template_file)
+            f.write(template.render(env=context))
 
         return True
     except Exception, e:

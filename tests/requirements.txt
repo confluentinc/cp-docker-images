@@ -1,3 +1,5 @@
 pytest==2.9.2
+pytest-sugar==0.7.1
 docker-py==1.8.1
 docker-compose==1.7.1
+kazoo==2.2.1
