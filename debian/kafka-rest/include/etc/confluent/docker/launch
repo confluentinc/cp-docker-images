@@ -3,6 +3,6 @@
 echo "===> Printing /etc/${COMPONENT}/${COMPONENT}.properties "
 cat /etc/${COMPONENT}/${COMPONENT}.properties
 
-echo "===> Launching kafka ... "
+echo "===> Launching ${COMPONENT} ... "
 # Don't need exec as the command has it.
 ${COMPONENT}-start /etc/${COMPONENT}/${COMPONENT}.properties
