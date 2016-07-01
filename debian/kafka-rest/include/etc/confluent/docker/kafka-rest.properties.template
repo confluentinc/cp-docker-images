@@ -5,7 +5,7 @@ schema.registry.url={{env['SCHEMA_REGISTRY_URL']}}
 
 {# optional properties #}
 {% set other_props = {
-	'LISTENERS': 'listeners'
+	'LISTENERS': 'listeners',
 	'ID_CONFIG': 'id',
 	'HOST_NAME': 'host.name',
 	'PRODUCER_THREADS': 'producer.threads',
