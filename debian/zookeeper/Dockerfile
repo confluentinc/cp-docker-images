@@ -2,19 +2,19 @@ FROM confluentinc/base
 
 EXPOSE 2181 2888 3888
 
-RUN echo "===> add confluent repository..." \
-    && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-    && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list \
+ENV COMPONENT=zookeeper
+
+RUN echo "===> installing ${COMPONENT}..." \
     && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     \
-    && echo "===> Setting up ZK dirs" \
-    && mkdir -p /opt/zookeeper/data /opt/zookeeper/log \
-    && chmod -R ag+w /etc/kafka /opt/zookeeper/data /opt/zookeeper/log
+    && echo "===> Setting up ${COMPONENT} dirs" \
+    && mkdir -p /opt/${COMPONENT}/data /opt/${COMPONENT}/log \
+    && chmod -R ag+w /etc/kafka /opt/${COMPONENT}/data /opt/${COMPONENT}/log
 
-VOLUME ["/opt/zookeeper/data", "/opt/zookeeper/log"]
+VOLUME ["/opt/${COMPONENT}/data", "/opt/${COMPONENT}/log"]
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 

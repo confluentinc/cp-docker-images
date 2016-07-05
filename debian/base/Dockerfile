@@ -104,7 +104,11 @@ RUN echo "===> update debian ....." \
             ${JAVA_HOME}/*.txt \
     && echo "===> clean up ..."  \
     && rm -rf /var/cache/oracle-jdk8-installer \
-    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    \
+    && echo "===> add confluent repository..." \
+    && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
+    && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list 
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
