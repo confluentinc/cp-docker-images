@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "===> Printing /etc/kafka/zookeeper.properties "
-cat /etc/kafka/zookeeper.properties
+echo "===> Printing /etc/kafka/${COMPONENT}.properties "
+cat /etc/kafka/${COMPONENT}.properties
 
-echo "===> Printing /opt/zookeeper/data/myid "
-cat /opt/zookeeper/data/myid
+echo "===> Printing /opt/${COMPONENT}/data/myid "
+cat /opt/${COMPONENT}/data/myid
 
-echo "===> Launching zookeeper ... "
+echo "===> Launching ${COMPONENT} ... "
 # Don't need exec as the command has it.
-zookeeper-server-start /etc/kafka/zookeeper.properties
+${COMPONENT}-server-start /etc/kafka/${COMPONENT}.properties

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -o nounset \
     -o errexit \
@@ -6,7 +6,10 @@ set -o nounset \
     -o xtrace
 
 dub ensure SERVER_ID
+dub path /etc/kafka/ writable
 
-dub template "/etc/confluent/docker/zookeeper.properties.template" "/etc/kafka/zookeeper.properties"
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/kafka/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/kafka/log4j.properties"
+dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties"
 
-dub template "/etc/confluent/docker/myid.template" "/opt/zookeeper/data/myid"
+dub template "/etc/confluent/docker/myid.template" "/opt/${COMPONENT}/data/myid"
