@@ -43,7 +43,7 @@ def check_path_for_permissions(path, mode):
 
 def exit_if_absent(env_var):
     if not os.environ.get(env_var):
-        print("%s is required." % (env_var,))
+        print("%s is required." % (env_var,), file=sys.stderr)
         return False
     return True
 
@@ -107,4 +107,6 @@ if __name__ == '__main__':
     if success:
         sys.exit(0)
     else:
+        command = " ".join(sys.argv)
+        print("Command [%s] FAILED !" % command, file=sys.stderr)
         sys.exit(1)
