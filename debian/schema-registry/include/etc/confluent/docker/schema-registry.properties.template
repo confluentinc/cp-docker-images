@@ -1,0 +1,62 @@
+{# required properties #}
+kafkastore.connection.url={{env['KAFKASTORE_CONNECTION_URL']}}
+host.name={{env['HOST_NAME']}}
+
+{# optional properties #}
+{% set other_props = {
+	'LISTENERS': 'listeners',
+	'AVRO_COMPATIBILITY_LEVEL': 'avro.compatibility.level',
+	'KAFKASTORE_SSL_KEY_PASSWORD': 'kafkastore.ssl.key.password',
+	'KAFKASTORE_SSL_KEYSTORE_LOCATION': 'kafkastore.ssl.keystore.location',
+	'KAFKASTORE_SSL_KEYSTORE_PASSWORD': 'kafkastore.ssl.keystore.password',
+	'KAFKASTORE_SSL_TRUSTSTORE_LOCATION': 'kafkastore.ssl.truststore.location',
+	'KAFKASTORE_SSL_TRUSTSTORE_PASSWORD': 'kafkastore.ssl.truststore.password',
+	'KAFKASTORE_TOPIC_REPLICATION_FACTOR': 'kafkastore.topic.replication.factor',
+	'RESPONSE_MEDIATYPE_DEFAULT': 'response.mediatype.default',
+	'SSL_KEYSTORE_LOCATION': 'ssl.keystore.location',
+	'SSL_KEYSTORE_PASSWORD': 'ssl.keystore.password',
+	'SSL_KEY_PASSWORD': 'ssl.key.password',
+	'SSL_TRUSTSTORE_LOCATION': 'ssl.truststore.location',
+	'SSL_TRUSTSTORE_PASSWORD': 'ssl.truststore.password',
+	'RESPONSE_MEDIATYPE_PREFERRED': 'response.mediatype.preferred',
+	'KAFKASTORE_INIT_TIMEOUT_MS': 'kafkastore.init.timeout.ms',
+	'KAFKASTORE_SECURITY_PROTOCOL': 'kafkastore.security.protocol',
+	'KAFKASTORE_SSL_ENABLED_PROTOCOLS': 'kafkastore.ssl.enabled.protocols',
+	'KAFKASTORE_SSL_KEYSTORE_TYPE': 'kafkastore.ssl.keystore.type',
+	'KAFKASTORE_SSL_PROTOCOL': 'kafkastore.ssl.protocol',
+	'KAFKASTORE_SSL_PROVIDER': 'kafkastore.ssl.provider',
+	'KAFKASTORE_SSL_TRUSTSTORE_TYPE': 'kafkastore.ssl.truststore.type',
+	'KAFKASTORE_TIMEOUT_MS': 'kafkastore.timeout.ms',
+	'MASTER_ELIGIBILITY': 'master.eligibility',
+	'ACCESS_CONTROL_ALLOW_METHODS': 'access.control.allow.methods',
+	'SSL_KEYSTORE_TYPE': 'ssl.keystore.type',
+	'SSL_TRUSTSTORE_TYPE': 'ssl.truststore.type',
+	'SSL_PROTOCOL': 'ssl.protocol',
+	'SSL_PROVIDER': 'ssl.provider',
+	'SSL_CLIENT_AUTH': 'ssl.client.auth',
+	'SSL_ENABLED_PROTOCOLS': 'ssl.enabled.protocols',
+	'ACCESS_CONTROL_ALLOW_ORIGIN': 'access.control.allow.origin',
+	'DEBUG': 'debug',
+	'KAFKASTORE_SSL_CIPHER_SUITES': 'kafkastore.ssl.cipher.suites',
+	'KAFKASTORE_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM': 'kafkastore.ssl.endpoint.identification.algorithm',
+	'KAFKASTORE_SSL_KEYMANAGER_ALGORITHM': 'kafkastore.ssl.keymanager.algorithm',
+	'KAFKASTORE_SSL_TRUSTMANAGER_ALGORITHM': 'kafkastore.ssl.trustmanager.algorithm',
+	'KAFKASTORE_ZK_SESSION_TIMEOUT_MS': 'kafkastore.zk.session.timeout.ms',
+	'METRIC_REPORTERS': 'metric.reporters',
+	'METRICS_JMX_PREFIX': 'metrics.jmx.prefix',
+	'METRICS_NUM_SAMPLES': 'metrics.num.samples',
+	'METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms',
+	'REQUEST_LOGGER_NAME': 'request.logger.name',
+	'SCHEMA_REGISTRY_ZK_NAMESPACE': 'schema.registry.zk.namespace',
+	'SHUTDOWN_GRACEFUL_MS': 'shutdown.graceful.ms',
+	'SSL_KEYMANAGER_ALGORITHM': 'ssl.keymanager.algorithm',
+	'SSL_TRUSTMANAGER_ALGORITHM': 'ssl.trustmanager.algorithm',
+	'SSL_CIPHER_SUITES': 'ssl.cipher.suites',
+	'SSL_ENDPOINT_IDENTIFICATION_ALGORITHM': 'ssl.endpoint.identification.algorithm'
+ } -%}
+
+{% for k, property in other_props.iteritems() %}
+	{% if env.get(k) != None %}
+		{{property}}={{env[k]}}
+	{% endif %}
+{% endfor %}
