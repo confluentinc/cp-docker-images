@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-echo "===> Printing /etc/kafka/${COMPONENT}.properties "
-cat /etc/kafka/${COMPONENT}.properties
-
 echo "===> Printing /opt/${COMPONENT}/data/myid "
 cat /opt/${COMPONENT}/data/myid
 
 echo "===> Launching ${COMPONENT} ... "
-# Don't need exec as the command has it.
-${COMPONENT}-server-start /etc/kafka/${COMPONENT}.properties
+exec ${COMPONENT}-server-start /etc/kafka/${COMPONENT}.properties

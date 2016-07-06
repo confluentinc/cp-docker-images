@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure KAFKASTORE_CONNECTION_URL
+dub ensure HOST_NAME
+dub path /etc/${COMPONENT}/ writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"

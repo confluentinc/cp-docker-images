@@ -6,7 +6,7 @@ set -o nounset \
     -o xtrace
 
 dub ensure ZOOKEEPER_CONNECT
-dub ensure SCHEMA_REGISTERY_URL
+dub ensure SCHEMA_REGISTRY_URL
 
 dub path /etc/${COMPONENT}/ writable
 
