@@ -31,8 +31,7 @@ services:
     environment:
       BROKER_ID: 1
       ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181"
-      ADVERTISED_HOST_NAME: "localhost"
-      ADVERTISED_PORT: 19092
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:19092"
 
   kafka-2:
     image: confluentinc/kafka:latest
@@ -40,8 +39,7 @@ services:
     environment:
       BROKER_ID: 2
       ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181"
-      ADVERTISED_HOST_NAME: "localhost"
-      ADVERTISED_PORT: 29092
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
 
   kafka-3:
     image: confluentinc/kafka:latest
@@ -49,5 +47,4 @@ services:
     environment:
       BROKER_ID: 3
       ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181"
-      ADVERTISED_HOST_NAME: "localhost"
-      ADVERTISED_PORT: 39092
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:39092"

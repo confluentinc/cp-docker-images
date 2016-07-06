@@ -27,8 +27,7 @@ services:
     environment:
       BROKER_ID: 1
       ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
-      ADVERTISED_HOST_NAME: "localhost"
-      ADVERTISED_PORT: 19092
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:19092"
     ports:
       - "19092:19092"
 
@@ -45,5 +44,4 @@ services:
     environment:
       BROKER_ID: 1
       ZOOKEEPER_CONNECT: "localhost:32181"
-      ADVERTISED_HOST_NAME: "localhost"
-      PORT: 29092
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"

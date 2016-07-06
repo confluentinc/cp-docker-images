@@ -35,16 +35,18 @@ class ConfigTest(unittest.TestCase):
     def test_required_config_failure(self):
         self.assertTrue("BROKER_ID is required." in self.cluster.service_logs("failing-config", stopped=True))
         self.assertTrue("ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-zk-connect", stopped=True))
-        self.assertTrue("ADVERTISED_HOST_NAME is required." in self.cluster.service_logs("failing-config-adv-hostname", stopped=True))
-        self.assertTrue("ADVERTISED_PORT is required." in self.cluster.service_logs("failing-config-adv-port", stopped=True))
+        self.assertTrue("ADVERTISED_LISTENERS is required." in self.cluster.service_logs("failing-config-adv-listeners", stopped=True))
+        self.assertTrue("ADVERTISED_HOST is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-adv-hostname", stopped=True))
+        self.assertTrue("ADVERTISED_PORT is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-adv-port", stopped=True))
+        self.assertTrue("PORT is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-port", stopped=True))
+        self.assertTrue("HOST is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-host", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
         props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/server.properties")
         expected = """broker.id=1
-            advertised.host.name=default-config
-            port=9092
-            advertised.port=9092
+            advertised.listeners=PLAINTEXT://default-config:9092
+            listeners=PLAINTEXT://0.0.0.0:9092
             log.dirs=/opt/kafka/data
             zookeeper.connect=zookeeper:2181/defaultconfig
             """
@@ -86,9 +88,8 @@ class ConfigTest(unittest.TestCase):
         self.is_kafka_healthy_for_service("full-config", 1)
         props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/server.properties")
         expected = """broker.id=1
-                advertised.host.name=full-config
-                port=9092
-                advertised.port=9092
+                advertised.listeners=PLAINTEXT://full-config:9092
+                listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/fullconfig
                 """
@@ -137,9 +138,8 @@ class ConfigTest(unittest.TestCase):
         self.is_kafka_healthy_for_service("kitchen-sink", 1)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/server.properties")
         expected = """broker.id=1
-                advertised.host.name=kitchen-sink
-                port=9092
-                advertised.port=9092
+                advertised.listeners=PLAINTEXT://kitchen-sink:9092
+                listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
                 """
@@ -152,7 +152,8 @@ class StandaloneNetworkingTest(unittest.TestCase):
     def setUpClass(cls):
         cls.cluster = utils.TestCluster("standalone-network-test", FIXTURES_DIR, "standalone-network.yml")
         cls.cluster.start()
-        assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-bridge", ZK_READY.format(servers="localhost:2181"))
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-host", ZK_READY.format(servers="localhost:32181"))
 
     @classmethod
     def tearDownClass(cls):
@@ -179,7 +180,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-bridge", 1)
+        self.is_kafka_healthy_for_service("kafka-host", 1)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/kafkacat",
@@ -236,7 +237,6 @@ class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        pass
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())

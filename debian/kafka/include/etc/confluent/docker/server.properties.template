@@ -1,12 +1,10 @@
 broker.id={{env['BROKER_ID']}}
-advertised.host.name={{env['ADVERTISED_HOST_NAME']}}
-port={{env['ADVERTISED_PORT']}}
-advertised.port={{env['ADVERTISED_PORT']}}
+advertised.listeners={{env['ADVERTISED_LISTENERS']}}
+listeners={{ env['LISTENERS'] | default(env['ADVERTISED_LISTENERS']) }}
 log.dirs={{ env['LOG_DIRS'] | default('/opt/kafka/data') }}
 zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}
 
 {% set other_props = {
- 'ADVERTISED_LISTENERS': 'advertised.listeners',
  'AUTHORIZER_CLASS_NAME': 'authorizer.class.name',
  'AUTO_CREATE_TOPICS_ENABLE': 'auto.create.topics.enable',
  'AUTO_LEADER_REBALANCE_ENABLE': 'auto.leader.rebalance.enable',
@@ -24,11 +22,9 @@ zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}
  'FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS': 'fetch.purgatory.purge.interval.requests',
  'GROUP_MAX_SESSION_TIMEOUT_MS': 'group.max.session.timeout.ms',
  'GROUP_MIN_SESSION_TIMEOUT_MS': 'group.min.session.timeout.ms',
- 'HOST_NAME': 'host.name',
  'INTER_BROKER_PROTOCOL_VERSION': 'inter.broker.protocol.version',
  'LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS': 'leader.imbalance.check.interval.seconds',
  'LEADER_IMBALANCE_PER_BROKER_PERCENTAGE': 'leader.imbalance.per.broker.percentage',
- 'LISTENERS': 'listeners',
  'LOG_CLEANER_BACKOFF_MS': 'log.cleaner.backoff.ms',
  'LOG_CLEANER_DEDUPE_BUFFER_SIZE': 'log.cleaner.dedupe.buffer.size',
  'LOG_CLEANER_DELETE_RETENTION_MS': 'log.cleaner.delete.retention.ms',
@@ -133,8 +129,8 @@ zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}
  'ZOOKEEPER_SYNC_TIME_MS': 'zookeeper.sync.time.ms'
  } -%}
 
-{% for k, property in other_props.iteritems() %}
-{% if env.get(k) != None %}
+{% for k, property in other_props.iteritems() -%}
+{% if env.get(k) != None -%}
 {{property}}={{env[k]}}
-{% endif %}
-{% endfor %}
+{% endif -%}
+{% endfor -%}

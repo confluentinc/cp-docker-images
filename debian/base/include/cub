@@ -162,6 +162,12 @@ def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_ret
         return False
 
 
+def get_kafka_listeners(advertised_listeners):
+    import re
+    host = re.compile(r'://(.*?):', re.UNICODE)
+    return host.sub(r'://0.0.0.0:', advertised_listeners)
+
+
 if __name__ == '__main__':
 
     import argparse
@@ -182,6 +188,9 @@ if __name__ == '__main__':
     kafka.add_argument('retries', help='No of retries to check if leader election is complete.', type=int)
     kafka.add_argument('wait', help='Time in secs between retries', type=int)
 
+    config = actions.add_parser('listeners', description='Get listeners value from advertised.listeners. Replaces host to 0.0.0.0')
+    config.add_argument('advertised_listeners', help='advertised.listeners string.')
+
     if len(sys.argv) < 2:
         root.print_help()
         sys.exit(1)
@@ -194,6 +203,11 @@ if __name__ == '__main__':
         success = check_zookeeper_ready(args.connect_string, args.timeout, args.retries, args.wait)
     elif args.action == "kafka-ready":
         success = check_kafka_ready(args.connect_string, args.min_brokers, args.timeout, args.retries, args.wait)
+    elif args.action == "listeners":
+        listeners = get_kafka_listeners(args.advertised_listeners)
+        if listeners:
+            print(listeners)
+            success = True
 
     if success:
         sys.exit(0)
