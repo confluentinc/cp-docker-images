@@ -155,7 +155,8 @@ Development
 
 		docker-machine create --driver virtualbox confluent
 	This command local env but it is recommended that you create one on AWS. The builds are much faster and is more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).
-
+	
+	[Docker Machine AWS Example](https://docs.docker.com/machine/examples/aws/)
 3. Setup env
 
 		eval $(docker-machine env confluent)
@@ -169,11 +170,13 @@ You can run build tests by running `make test-build`. Use this when you want to 
 
 ###Running tests
 
+You'll need to first install virtualenv: `pip install virtualenv`
+
 	cd cp-docker-images
 	make test-zookeeper
 	make test-kafka
 	
-Running a single test: `py.test test_zookeeper::ConfigTest -v`
+Running a single test: `py.test test_zookeeper.py::ConfigTest -v`
 
 ###Delete all docker containers
 
