@@ -7,9 +7,41 @@ set -o nounset \
 
 dub ensure BROKER_ID
 dub ensure ZOOKEEPER_CONNECT
-dub ensure ADVERTISED_HOST_NAME
-dub ensure ADVERTISED_PORT
-dub path /etc/${COMPONENT}/ writable
+dub ensure ADVERTISED_LISTENERS
+
+# By default, LISTENERS is derived from ADVERTISED_LISTENERS by replacing
+# hosts with 0.0.0.0. This is good default as it ensures that the broker
+# process listens on all ports.
+if [[ -z "${LISTENERS-}" ]]
+then
+  export LISTENERS=$(cub listeners $ADVERTISED_LISTENERS)
+fi
+dub path /etc/kafka/ writable
+
+# advertised.host, advertised.port, host and port are deprecated. Exit if these properties are set.
+if [[ -n "${ADVERTISED_PORT-}" ]]
+then
+  echo "ADVERTISED_PORT is deprecated. Please use ADVERTISED_LISTENERS instead."
+  exit 1
+fi
+
+if [[ -n "${ADVERTISED_HOST-}" ]]
+then
+  echo "ADVERTISED_HOST is deprecated. Please use ADVERTISED_LISTENERS instead."
+  exit 1
+fi
+
+if [[ -n "${HOST-}" ]]
+then
+  echo "HOST is deprecated. Please use ADVERTISED_LISTENERS instead."
+  exit 1
+fi
+
+if [[ -n "${PORT-}" ]]
+then
+  echo "PORT is deprecated. Please use ADVERTISED_LISTENERS instead."
+  exit 1
+fi
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"
