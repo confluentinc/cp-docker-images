@@ -11,6 +11,7 @@ import collections
 import time
 from kazoo.client import KazooClient
 import json
+import re
 
 ZookeeperServer = collections.namedtuple('ZookeeperServer', 'host port')
 KafkaServer = collections.namedtuple('KafkaServer', 'id host port endpoints')
@@ -163,7 +164,6 @@ def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_ret
 
 
 def get_kafka_listeners(advertised_listeners):
-    import re
     host = re.compile(r'://(.*?):', re.UNICODE)
     return host.sub(r'://0.0.0.0:', advertised_listeners)
 
