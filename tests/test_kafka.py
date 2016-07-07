@@ -43,7 +43,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
-        props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/server.properties")
+        props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/kafka.properties")
         expected = """broker.id=1
             advertised.listeners=PLAINTEXT://default-config:9092
             listeners=PLAINTEXT://0.0.0.0:9092
@@ -86,7 +86,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_full_config(self):
         self.is_kafka_healthy_for_service("full-config", 1)
-        props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/server.properties")
+        props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/kafka.properties")
         expected = """broker.id=1
                 advertised.listeners=PLAINTEXT://full-config:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
@@ -136,7 +136,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_kitchen_sink(self):
         self.is_kafka_healthy_for_service("kitchen-sink", 1)
-        zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/server.properties")
+        zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/kafka.properties")
         expected = """broker.id=1
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
