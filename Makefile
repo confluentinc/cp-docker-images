@@ -1,6 +1,6 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zookeeper kafka kafkacat kafka-rest schema-registry
+COMPONENTS := base zookeeper kafka kafkacat kafka-rest schema-registry kafka-connect
 
 build-debian:
 	for component in ${COMPONENTS} ; do \
