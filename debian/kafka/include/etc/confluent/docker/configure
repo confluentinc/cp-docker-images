@@ -43,6 +43,37 @@ then
   exit 1
 fi
 
+# Set if ADVERTISED_LISTENERS has SSL:// or SASL_SSL:// endpoints.
+if [[ $ADVERTISED_LISTENERS == *"SSL://"* ]]
+then
+  echo "SSL is enabled."
+
+  dub ensure SSL_KEYSTORE_FILENAME
+  export SSL_KEYSTORE_LOCATION="/etc/kafka/secrets/$SSL_KEYSTORE_FILENAME"
+  dub path $SSL_KEYSTORE_LOCATION exists
+
+  dub ensure SSL_KEY_CREDENTIALS
+  SSL_KEY_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_KEY_CREDENTIALS"
+  dub path $SSL_KEY_CREDENTIALS_LOCATION exists
+  export SSL_KEY_PASSWORD=$(cat $SSL_KEY_CREDENTIALS_LOCATION)
+
+  dub ensure SSL_KEYSTORE_CREDENTIALS
+  SSL_KEYSTORE_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_KEYSTORE_CREDENTIALS"
+  dub path $SSL_KEYSTORE_CREDENTIALS_LOCATION exists
+  export SSL_KEYSTORE_PASSWORD=$(cat $SSL_KEYSTORE_CREDENTIALS_LOCATION)
+
+  dub ensure SSL_TRUSTSTORE_FILENAME
+  export SSL_TRUSTSTORE_LOCATION="/etc/kafka/secrets/$SSL_TRUSTSTORE_FILENAME"
+  dub path $SSL_TRUSTSTORE_LOCATION exists
+
+  dub ensure SSL_TRUSTSTORE_CREDENTIALS
+  SSL_TRUSTSTORE_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_TRUSTSTORE_CREDENTIALS"
+  dub path $SSL_TRUSTSTORE_CREDENTIALS_LOCATION exists
+  export SSL_TRUSTSTORE_PASSWORD=$(cat $SSL_TRUSTSTORE_CREDENTIALS_LOCATION)
+
+fi
+
+
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"
 dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/${COMPONENT}/tools-log4j.properties"

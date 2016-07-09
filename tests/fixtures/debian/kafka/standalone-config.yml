@@ -44,6 +44,59 @@ services:
       ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
       PORT: "kafka"
 
+  failing-config-ssl-keystore:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+
+  failing-config-ssl-key-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-ssl-keystore-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-ssl-truststore:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-ssl-truststore-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
   failing-config-host:
     image: confluentinc/kafka:latest
     environment:
@@ -95,3 +148,18 @@ services:
     volumes:
       - /tmp/kafka-config-kitchen-sink-test/data:/opt/kafka/data
     user: "12345"
+
+  ssl-config:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/sslconfig"
+      ADVERTISED_LISTENERS: "SSL://ssl-config:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets

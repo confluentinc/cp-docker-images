@@ -7,17 +7,32 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
-HEALTH_CHECK = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 10 20 10 && echo PASS || echo FAIL'"
+HEALTH_CHECK = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
+KAFKA_SSL_CHECK = """kafkacat -X security.protocol=ssl \
+      -X ssl.ca.location=/etc/kafka/secrets/snakeoil-ca-1.crt \
+      -X ssl.certificate.location=/etc/kafka/secrets/kafkacat-ca1-signed.pem \
+      -X ssl.key.location=/etc/kafka/secrets/kafkacat.client.key \
+      -X ssl.key.password=confluent \
+      -L -b {host}:{port} -J"""
 
 
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
         # Create directories with the correct permissions for test with userid and external volumes.
-        utils.run_command_on_host("mkdir -p /tmp/kafka-config-kitchen-sink-test/data")
-        utils.run_command_on_host("chown -R 12345 /tmp/kafka-config-kitchen-sink-test/data")
+        cls.machine.ssh("mkdir -p /tmp/kafka-config-kitchen-sink-test/data")
+        cls.machine.ssh("sudo chown -R 12345 /tmp/kafka-config-kitchen-sink-test/data")
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-config-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-config-test")
+
         cls.cluster = utils.TestCluster("config-test", FIXTURES_DIR, "standalone-config.yml")
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
@@ -25,7 +40,8 @@ class ConfigTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        utils.run_command_on_host("rm -rf /tmp/kafka-config-kitchen-sink-test")
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-config-kitchen-sink-test")
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-config-test/secrets")
 
     @classmethod
     def is_kafka_healthy_for_service(cls, service, num_brokers):
@@ -36,10 +52,17 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue("BROKER_ID is required." in self.cluster.service_logs("failing-config", stopped=True))
         self.assertTrue("ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-zk-connect", stopped=True))
         self.assertTrue("ADVERTISED_LISTENERS is required." in self.cluster.service_logs("failing-config-adv-listeners", stopped=True))
+        # Deprecated props.
         self.assertTrue("ADVERTISED_HOST is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-adv-hostname", stopped=True))
         self.assertTrue("ADVERTISED_PORT is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-adv-port", stopped=True))
         self.assertTrue("PORT is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-port", stopped=True))
         self.assertTrue("HOST is deprecated. Please use ADVERTISED_LISTENERS instead." in self.cluster.service_logs("failing-config-host", stopped=True))
+        # SSL
+        self.assertTrue("SSL_KEYSTORE_FILENAME is required." in self.cluster.service_logs("failing-config-ssl-keystore", stopped=True))
+        self.assertTrue("SSL_KEYSTORE_CREDENTIALS is required." in self.cluster.service_logs("failing-config-ssl-keystore-password", stopped=True))
+        self.assertTrue("SSL_KEY_CREDENTIALS is required." in self.cluster.service_logs("failing-config-ssl-key-password", stopped=True))
+        self.assertTrue("SSL_TRUSTSTORE_FILENAME is required." in self.cluster.service_logs("failing-config-ssl-truststore", stopped=True))
+        self.assertTrue("SSL_TRUSTSTORE_CREDENTIALS is required." in self.cluster.service_logs("failing-config-ssl-truststore-password", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
@@ -143,7 +166,25 @@ class ConfigTest(unittest.TestCase):
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
                 """
-        self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
+        self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+    def test_ssl_config(self):
+        self.is_kafka_healthy_for_service("ssl-config", 1)
+        zk_props = self.cluster.run_command_on_service("ssl-config", "cat /etc/kafka/kafka.properties")
+        expected = """broker.id=1
+                advertised.listeners=SSL://ssl-config:9092
+                listeners=SSL://0.0.0.0:9092
+                log.dirs=/opt/kafka/data
+                zookeeper.connect=zookeeper:2181/sslconfig
+
+                ssl.keystore.password=confluent
+                ssl.truststore.password=confluent
+                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                ssl.key.password=confluent
+                security.inter.broker.protocol=SSL
+                ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
+                """
+        self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
 
 class StandaloneNetworkingTest(unittest.TestCase):
@@ -196,6 +237,14 @@ class StandaloneNetworkingTest(unittest.TestCase):
 class ClusterBridgeNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
+
         cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged.yml")
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"))
@@ -203,6 +252,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -223,13 +273,35 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         parsed_logs = json.loads(logs)
         self.assertEquals(3, len(parsed_logs["brokers"]))
-        expected_brokers = [{"id":1,"name":"kafka-1:9092"}, {"id":2,"name":"kafka-2:9092"}, {"id":3,"name":"kafka-3:9092"}]
+        expected_brokers = [{"id": 1, "name": "kafka-1:9092"}, {"id": 2, "name": "kafka-2:9092"}, {"id": 3, "name": "kafka-3:9092"}]
+        self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
+
+    def test_ssl_bridge_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/kafkacat",
+            command=KAFKA_SSL_CHECK.format(host="kafka-ssl-1", port=9093),
+            host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        parsed_logs = json.loads(logs)
+        self.assertEquals(3, len(parsed_logs["brokers"]))
+        expected_brokers = [{"id": 1, "name": "kafka-ssl-1:9093"}, {"id": 2, "name": "kafka-ssl-2:9093"}, {"id": 3, "name": "kafka-ssl-3:9093"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
 
 class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
+
         cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host.yml")
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
@@ -237,6 +309,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -246,7 +319,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
         assert "PASS" in output
 
-    def test_bridge_network(self):
+    def test_host_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-1", 3)
         # Test from outside the container
@@ -257,5 +330,19 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         parsed_logs = json.loads(logs)
         self.assertEquals(3, len(parsed_logs["brokers"]))
-        expected_brokers = [{"id":1,"name":"localhost:19092"}, {"id":2,"name":"localhost:29092"}, {"id":3,"name":"localhost:39092"}]
+        expected_brokers = [{"id": 1, "name": "localhost:19092"}, {"id": 2, "name": "localhost:29092"}, {"id": 3, "name": "localhost:39092"}]
+        self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
+
+    def test_ssl_host_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/kafkacat",
+            command=KAFKA_SSL_CHECK.format(host="localhost", port=19093),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        parsed_logs = json.loads(logs)
+        self.assertEquals(3, len(parsed_logs["brokers"]))
+        expected_brokers = [{"id": 1, "name": "localhost:19093"}, {"id": 2, "name": "localhost:29093"}, {"id": 3, "name": "localhost:39093"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))

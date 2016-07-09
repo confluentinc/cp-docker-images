@@ -10,6 +10,7 @@ from compose.cli.docker_client import docker_client
 from compose.config.environment import Environment
 from compose.container import Container
 import json
+import subprocess
 
 
 def build_image(image_name, dockerfile_dir):
@@ -49,6 +50,7 @@ def path_exists_in_image(image, path):
     output = run_docker_command(image=image, command=cmd)
     return "success" in output
 
+
 def executable_exists_in_image(image, path):
     print "Checking for %s in %s" % (path, image)
     cmd = "bash -c '[ ! -x %s ] || echo success' " % (path,)
@@ -58,9 +60,9 @@ def executable_exists_in_image(image, path):
 
 def run_command_on_host(command):
     logs = run_docker_command(
-            image="busybox",
-            command=command,
-            host_config={'NetworkMode': 'host', 'Binds': ['/tmp:/tmp']})
+        image="busybox",
+        command=command,
+        host_config={'NetworkMode': 'host', 'Binds': ['/tmp:/tmp']})
     print "Running command %s: %s" % (command, logs)
     return logs
 
@@ -138,3 +140,35 @@ class TestCluster():
             results[container.name_without_project] = self.run_command(command, container)
 
         return results
+
+
+class TestMachine():
+
+    def __init__(self, machine_name):
+        self.machine_name = machine_name
+        # Ensure docker-machine is installed
+        subprocess.check_call("type docker-machine", shell=True)
+        # Ensure the machine is ready.
+        assert self.status() == "Running"
+
+    def run_cmd(self, cmd):
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+        return output
+
+    def status(self):
+        cmd = "docker-machine status %s " % self.machine_name
+        return self.run_cmd(cmd).strip()
+
+    def get_internal_ip(self, nw_interface="eth0"):
+        cmd = "docker-machine ssh %s /sbin/ifconfig %s | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'" % (self.machine_name, nw_interface)
+        return self.run_cmd(cmd)
+
+    def scp_to_machine(self, local_path, machine_path, recursive=True):
+        if recursive:
+            recursive_flag = "-r"
+        cmd = "docker-machine scp %s %s %s:%s" % (recursive_flag, local_path, self.machine_name, machine_path)
+        return self.run_cmd(cmd)
+
+    def ssh(self, command):
+        cmd = "docker-machine ssh %s %s" % (self.machine_name, command)
+        return self.run_cmd(cmd)

@@ -48,3 +48,51 @@ services:
       BROKER_ID: 3
       ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181"
       ADVERTISED_LISTENERS: "PLAINTEXT://localhost:39092"
+
+  kafka-ssl-1:
+    image: confluentinc/kafka:latest
+    network_mode: host
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/ssl"
+      ADVERTISED_LISTENERS: "SSL://localhost:19093"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets
+
+  kafka-ssl-2:
+    image: confluentinc/kafka:latest
+    network_mode: host
+    environment:
+      BROKER_ID: 2
+      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/ssl"
+      ADVERTISED_LISTENERS: "SSL://localhost:29093"
+      SSL_KEYSTORE_FILENAME: "kafka.broker2.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker2_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker2_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker2.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker2_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets
+
+  kafka-ssl-3:
+    image: confluentinc/kafka:latest
+    network_mode: host
+    environment:
+      BROKER_ID: 3
+      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/ssl"
+      ADVERTISED_LISTENERS: "SSL://localhost:39093"
+      SSL_KEYSTORE_FILENAME: "kafka.broker3.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker3_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker3_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker3.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker3_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets
