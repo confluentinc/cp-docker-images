@@ -73,6 +73,19 @@ then
 
 fi
 
+# Set if ADVERTISED_LISTENERS has SSL:// or SASL_SSL:// endpoints.
+if [[ $ADVERTISED_LISTENERS =~ .*SASL_.*://.* ]]
+then
+  echo "SASL" is enabled.
+
+  dub ensure KAFKA_OPTS
+
+  if [[ ! $KAFKA_OPTS == *"java.security.auth.login.config"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'java.security.auth.login.config' property."
+  fi
+fi
+
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"

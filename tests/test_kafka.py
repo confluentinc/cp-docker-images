@@ -17,8 +17,14 @@ KAFKA_SSL_CHECK = """kafkacat -X security.protocol=ssl \
       -X ssl.key.password=confluent \
       -L -b {host}:{port} -J"""
 
+KADMIN_KEYTAB_CREATE = """bash -c \
+        'kadmin.local -q "addprinc -randkey {principal}/{hostname}@NODE.DC1.CONSUL" && \
+        kadmin.local -q "ktadd -norandkey -k /tmp/keytab/{principal}.keytab {principal}/{hostname}@NODE.DC1.CONSUL"'
+        """
+
 
 class ConfigTest(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         machine_name = os.environ["DOCKER_MACHINE_NAME"]
@@ -35,6 +41,10 @@ class ConfigTest(unittest.TestCase):
 
         cls.cluster = utils.TestCluster("config-test", FIXTURES_DIR, "standalone-config.yml")
         cls.cluster.start()
+
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(principal="broker1", hostname="sasl-ssl-config"))
+
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
 
     @classmethod
@@ -63,6 +73,9 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue("SSL_KEY_CREDENTIALS is required." in self.cluster.service_logs("failing-config-ssl-key-password", stopped=True))
         self.assertTrue("SSL_TRUSTSTORE_FILENAME is required." in self.cluster.service_logs("failing-config-ssl-truststore", stopped=True))
         self.assertTrue("SSL_TRUSTSTORE_CREDENTIALS is required." in self.cluster.service_logs("failing-config-ssl-truststore-password", stopped=True))
+
+        self.assertTrue("KAFKA_OPTS is required." in self.cluster.service_logs("failing-config-sasl-jaas", stopped=True))
+        self.assertTrue("KAFKA_OPTS should contain 'java.security.auth.login.config' property." in self.cluster.service_logs("failing-config-sasl-missing-prop", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
@@ -186,6 +199,25 @@ class ConfigTest(unittest.TestCase):
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
+    def test_sasl_config(self):
+        self.is_kafka_healthy_for_service("sasl-ssl-config", 1)
+        zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "cat /etc/kafka/kafka.properties")
+        expected = """broker.id=1
+                    advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
+                    listeners=SSL://0.0.0.0:9092,SASL_SSL://0.0.0.0:9094
+                    log.dirs=/opt/kafka/data
+                    zookeeper.connect=zookeeper:2181/sslsaslconfig
+
+                    ssl.keystore.password=confluent
+                    ssl.truststore.password=confluent
+                    ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                    ssl.key.password=confluent
+                    security.inter.broker.protocol=SASL_SSL
+                    sasl.kerberos.service.name=broker1
+                    ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
+                """
+        self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
 
 class StandaloneNetworkingTest(unittest.TestCase):
 
@@ -283,7 +315,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         logs = utils.run_docker_command(
             image="confluentinc/kafkacat",
             command=KAFKA_SSL_CHECK.format(host="kafka-ssl-1", port=9093),
-            host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+            host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
 
         parsed_logs = json.loads(logs)
         self.assertEquals(3, len(parsed_logs["brokers"]))
