@@ -2,11 +2,14 @@ VERSION := 3.0.0
 
 COMPONENTS := base zookeeper kafka kafkacat kafka-rest schema-registry
 
+REPOSITORY := confluentinc
+#	REPOSITORY := <your_personal_repo>
+
 build-debian:
 	for component in ${COMPONENTS} ; do \
         echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build -t confluentinc/$${component}:${VERSION} debian/$${component} || exit 1 ; \
-				docker tag confluentinc/$${component}:${VERSION} confluentinc/$${component}:latest || exit 1 ; \
+				docker build -t ${REPOSITORY}/$${component}:${VERSION} debian/$${component} || exit 1 ; \
+				docker tag ${REPOSITORY}/$${component}:${VERSION} ${REPOSITORY}/$${component}:latest || exit 1 ; \
   done
 
 
