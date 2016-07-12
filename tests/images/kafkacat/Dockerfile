@@ -5,7 +5,14 @@ ENV VERSION=1.3.0-1
 
 ENV BUILD_PACKAGES="build-essential cmake python git curl zlib1g-dev"
 RUN apt-get update -y \
-    && apt-get install $BUILD_PACKAGES libsasl2-dev libssl-dev openssl -y \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            $BUILD_PACKAGES \
+            libsasl2-dev \
+            libssl-dev \
+            openssl \
+            libsasl2-modules-gssapi-mit \
+            krb5-user \
+            krb5-config \
     && git clone https://github.com/edenhill/kafkacat \
     && cd kafkacat \
     && git checkout tags/debian/$VERSION \
