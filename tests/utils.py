@@ -32,12 +32,12 @@ def pull_image(image_name):
     client.pull(image_name)
 
 
-def run_docker_command(**kwargs):
+def run_docker_command(timeout=None, **kwargs):
     pull_image(kwargs["image"])
     client = docker.from_env(assert_hostname=False)
     container = TestContainer.create(client, **kwargs)
     container.start()
-    container.wait()
+    container.wait(timeout)
     logs = container.logs()
     print "Running command %s: %s" % (kwargs["command"], logs)
     container.shutdown()
@@ -83,6 +83,9 @@ class TestContainer(Container):
         eid = self.create_exec(command)
         return self.start_exec(eid)
 
+    def wait(self, timeout):
+        return self.client.wait(self.id, timeout)
+
 
 class TestCluster():
 
@@ -114,8 +117,17 @@ class TestCluster():
         project.stop()
         project.remove_stopped()
 
-    def get_container(self, service_name):
+    def get_container(self, service_name, stopped=False):
         return self.get_project().get_service(service_name).get_container()
+
+    def exit_code(self, service_name):
+        containers = self.get_project().containers([service_name], stopped=True)
+        return containers[0].exit_code
+
+    def wait(self, service_name, timeout):
+        container = self.get_project().containers([service_name], stopped=True)
+        if container[0].is_running:
+            return self.get_project().client.wait(container[0].id, timeout)
 
     def run_command_on_service(self, service_name, command):
         return self.run_command(command, self.get_container(service_name))
