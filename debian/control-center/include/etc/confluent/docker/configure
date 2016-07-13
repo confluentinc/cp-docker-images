@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure BOOTSTRAP_SERVERS
+dub ensure ZOOKEEPER_CONNECT
+dub path "/etc/confluent-${COMPONENT}/" writable
+
+: ${CONTROL_CENTER_DATA_DIR:="/var/lib/${COMPONENT}"}
+export CONTROL_CENTER_DATA_DIR
+
+echo "===> Check if ${CONTROL_CENTER_DATA_DIR} is writable ..."
+dub path "${CONTROL_CENTER_DATA_DIR}" writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/confluent-${COMPONENT}/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/confluent-${COMPONENT}/log4j.properties"

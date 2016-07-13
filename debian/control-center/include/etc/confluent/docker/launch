@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "===> Launching ${COMPONENT} ... "
+exec ${COMPONENT}-start /etc/confluent-${COMPONENT}/${COMPONENT}.properties
