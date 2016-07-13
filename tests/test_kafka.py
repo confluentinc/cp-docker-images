@@ -38,12 +38,15 @@ PRODUCER = """bash -c "\
     cub kafka-ready $ZOOKEEPER_CONNECT 3 20 20 10 \
     && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
+    && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && echo PRODUCED {messages} messages."
 
     """
 
 CONSUMER = """bash -c "\
-        cub kafka-ready $ZOOKEEPER_CONNECT 3 20 20 10 \
+        export TOOLS_LOG4J_LOGLEVEL=DEBUG \
+        && dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties" \
+        && cub kafka-ready $ZOOKEEPER_CONNECT 3 20 20 10 \
         && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
         """
 
@@ -317,10 +320,10 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"))
 
-        @classmethod
-        def tearDownClass(cls):
-            cls.cluster.shutdown()
-            cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -359,7 +362,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
         producer_logs = utils.run_docker_command(
-            60,
+            300,
             image="confluentinc/kafka",
             name="kafka-ssl-producer",
             environment={'ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/ssl"},
@@ -375,7 +378,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         # self.assertEquals(self.cluster.exit_code("kafka-ssl-consumer"), 0)
 
         consumer_logs = utils.run_docker_command(
-            60,
+            300,
             image="confluentinc/kafka",
             name="kafka-ssl-consumer",
             environment={'ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/ssl"},
@@ -411,7 +414,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         producer_env = {'ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/saslssl",
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/bridged_producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/bridged_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
         producer_logs = utils.run_docker_command(
-            60,
+            300,
             image="confluentinc/kafka",
             name="kafka-sasl-ssl-producer",
             environment=producer_env,
@@ -424,7 +427,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/bridged_consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/bridged_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
 
         consumer_logs = utils.run_docker_command(
-            60,
+            300,
             image="confluentinc/kafka",
             name="kafka-sasl-ssl-consumer",
             environment=consumer_env,
@@ -432,7 +435,6 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
 
         self.assertTrue("Processed a total of 10 messages" in consumer_logs)
-
 
 
 class ClusterHostNetworkTest(unittest.TestCase):
@@ -499,6 +501,49 @@ class ClusterHostNetworkTest(unittest.TestCase):
         expected_brokers = [{"id": 1, "name": "localhost:19093"}, {"id": 2, "name": "localhost:29093"}, {"id": 3, "name": "localhost:39093"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
-    # def test_sasl_ssl_host_network(self):
-    #     # Test from within the container
-    #     self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+        producer_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            name="kafka-ssl-producer",
+            environment={'ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/ssl"},
+            command=PRODUCER.format(brokers="localhost:29093", topic="foo", config="host.producer.ssl.config", messages=100),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        self.assertTrue("PRODUCED 100 messages" in producer_logs)
+
+        consumer_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            name="kafka-ssl-consumer",
+            environment={'ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/ssl"},
+            command=CONSUMER.format(brokers="localhost:29093", topic="foo", config="host.consumer.ssl.config", messages=10),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        self.assertTrue("Processed a total of 10 messages" in consumer_logs)
+
+    def test_sasl_ssl_host_network(self):
+        # Test from within the container
+        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+
+        producer_env = {'ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/saslssl",
+                        'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/host_producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
+        producer_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            environment=producer_env,
+            command=PRODUCER.format(brokers="localhost:29094", topic="foo", config="host.producer.ssl.sasl.config", messages=100),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        self.assertTrue("PRODUCED 100 messages" in producer_logs)
+
+        consumer_env = {'ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/saslssl",
+                        'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/host_consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
+
+        consumer_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            environment=consumer_env,
+            command=CONSUMER.format(brokers="localhost:29094", topic="foo", config="host.consumer.ssl.sasl.config", messages=10),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
+
+        self.assertTrue("Processed a total of 10 messages" in consumer_logs)
