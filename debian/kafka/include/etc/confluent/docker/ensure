@@ -5,7 +5,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-DATA_DIRS=${DATA_DIRS:-"/opt/kafka/data"}
+export DATA_DIRS=${DATA_DIRS:-"/opt/kafka/data"}
 echo "===> Check if $DATA_DIRS is writable ..."
 dub path $DATA_DIRS writable
 
