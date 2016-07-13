@@ -40,7 +40,6 @@ PRODUCER = """bash -c "\
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && echo PRODUCED {messages} messages."
-
     """
 
 CONSUMER = """bash -c "\
@@ -49,6 +48,16 @@ CONSUMER = """bash -c "\
         && cub kafka-ready $ZOOKEEPER_CONNECT 3 20 20 10 \
         && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
         """
+
+PLAIN_CLIENTS = """bash -c "\
+    cub kafka-ready $ZOOKEEPER_CONNECT 3 20 20 10 \
+    && export TOOLS_LOG4J_LOGLEVEL=DEBUG \
+    && dub template /etc/confluent/docker/tools-log4j.properties.template /etc/kafka/tools-log4j.properties \
+    && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $ZOOKEEPER_CONNECT \
+    && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} \
+    && echo PRODUCED {messages} messages. \
+    && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --max-messages {messages}"
+    """
 
 
 class ConfigTest(unittest.TestCase):
@@ -296,34 +305,16 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.assertEquals("localhost:29092", parsed_logs["brokers"][0]["name"])
 
 
-class ClusterBridgeNetworkTest(unittest.TestCase):
+class ClusterBridgedNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        machine_name = os.environ["DOCKER_MACHINE_NAME"]
-        cls.machine = utils.TestMachine(machine_name)
-
-        # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
-        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
-        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
-
-        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged.yml")
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged-plain.yml")
         cls.cluster.start()
-
-        # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker1", principal="kafka", hostname="kafka-sasl-ssl-1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker2", principal="kafka", hostname="kafka-sasl-ssl-2"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker3", principal="kafka", hostname="kafka-sasl-ssl-3"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_kafkacat", principal="bridged_kafkacat", hostname="bridged-kafkacat"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_producer", principal="bridged_producer", hostname="kafka-sasl-ssl-producer"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_consumer", principal="bridged_consumer", hostname="kafka-sasl-ssl-consumer"))
-
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"))
 
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -347,7 +338,38 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         expected_brokers = [{"id": 1, "name": "kafka-1:9092"}, {"id": 2, "name": "kafka-2:9092"}, {"id": 3, "name": "kafka-3:9092"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
-    def test_ssl_bridge_network(self):
+        client_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            name="kafka-producer",
+            environment={'ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"},
+            command=PLAIN_CLIENTS.format(brokers="kafka-1:9092", topic="foo", messages=100),
+            host_config={'NetworkMode': 'cluster-test_zk'})
+
+        self.assertTrue("Processed a total of 100 messages" in client_logs)
+
+
+class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
+    @classmethod
+    def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
+
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged-ssl.yml")
+        cls.cluster.start()
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
+
+    def test_bridge_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
         # Test from outside the container
@@ -371,12 +393,6 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         self.assertTrue("PRODUCED 100 messages" in producer_logs)
 
-        # self.cluster.wait("kafka-ssl-producer", 60)
-        # self.assertEquals(self.cluster.exit_code("kafka-ssl-producer"), 0)
-        #
-        # self.cluster.wait("kafka-ssl-consumer", 60)
-        # self.assertEquals(self.cluster.exit_code("kafka-ssl-consumer"), 0)
-
         consumer_logs = utils.run_docker_command(
             300,
             image="confluentinc/kafka",
@@ -387,7 +403,37 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         self.assertTrue("Processed a total of 10 messages" in consumer_logs)
 
-    def test_sasl_ssl_bridge_network(self):
+
+class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
+    @classmethod
+    def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
+
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged-sasl.yml")
+        cls.cluster.start()
+
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker1", principal="kafka", hostname="kafka-sasl-ssl-1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker2", principal="kafka", hostname="kafka-sasl-ssl-2"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_broker3", principal="kafka", hostname="kafka-sasl-ssl-3"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_kafkacat", principal="bridged_kafkacat", hostname="bridged-kafkacat"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_producer", principal="bridged_producer", hostname="kafka-sasl-ssl-producer"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="bridged_consumer", principal="bridged_consumer", hostname="kafka-sasl-ssl-consumer"))
+
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-bridge-test/secrets")
+
+    def test_bridge_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
 
@@ -403,13 +449,6 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         # self.assertEquals(3, len(parsed_logs["brokers"]))
         # expected_brokers = [{"id": 1, "name": "kafka-sasl-ssl-1:9094"}, {"id": 2, "name": "kafka-sasl-ssl-2:9094"}, {"id": 3, "name": "kafka-sasl-ssl-3:9094"}]
         # self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
-
-        # Wait for producer or consumer to exit successfully
-        # self.cluster.wait("kafka-sasl-ssl-producer", 60)
-        # self.assertEquals(self.cluster.exit_code("kafka-sasl-ssl-producer"), 0)
-        #
-        # self.cluster.wait("kafka-sasl-ssl-consumer", 60)
-        # self.assertEquals(self.cluster.exit_code("kafka-sasl-ssl-consumer"), 0)
 
         producer_env = {'ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/saslssl",
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/bridged_producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/bridged_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
@@ -440,30 +479,13 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        machine_name = os.environ["DOCKER_MACHINE_NAME"]
-        cls.machine = utils.TestMachine(machine_name)
-
-        # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
-        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
-        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
-
-        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host.yml")
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host-plain.yml")
         cls.cluster.start()
-
-        # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker1", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker2", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker3", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_producer", principal="host_producer", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_consumer", principal="host_consumer", hostname="localhost"))
-
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
 
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
-        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
@@ -487,7 +509,39 @@ class ClusterHostNetworkTest(unittest.TestCase):
         expected_brokers = [{"id": 1, "name": "localhost:19092"}, {"id": 2, "name": "localhost:29092"}, {"id": 3, "name": "localhost:39092"}]
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
-    def test_ssl_host_network(self):
+        client_logs = utils.run_docker_command(
+            300,
+            image="confluentinc/kafka",
+            name="kafka-producer",
+            environment={'ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181"},
+            command=PLAIN_CLIENTS.format(brokers="localhost:19092", topic="foo", messages=100),
+            host_config={'NetworkMode': 'host'})
+
+        self.assertTrue("Processed a total of 100 messages" in client_logs)
+
+
+class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
+    @classmethod
+    def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
+
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host-ssl.yml")
+        cls.cluster.start()
+
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
+
+    def test_host_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
         # Test from outside the container
@@ -521,7 +575,36 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         self.assertTrue("Processed a total of 10 messages" in consumer_logs)
 
-    def test_sasl_ssl_host_network(self):
+
+class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
+    @classmethod
+    def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
+
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host-sasl.yml")
+        cls.cluster.start()
+
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker1", principal="kafka", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker2", principal="kafka", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker3", principal="kafka", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_producer", principal="host_producer", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_consumer", principal="host_consumer", hostname="localhost"))
+
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
+
+    def test_host_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
 
