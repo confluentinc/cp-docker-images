@@ -18,4 +18,4 @@ echo "===> Running preflight checks ... "
 /etc/confluent/docker/ensure
 
 echo "===> Launching ... "
-/etc/confluent/docker/launch
+exec /etc/confluent/docker/launch
