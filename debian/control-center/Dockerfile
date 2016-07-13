@@ -16,7 +16,7 @@ RUN echo "===> installing ${COMPONENT}..." \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
-    && chmod -R ag+w /etc/${COMPONENT}
+    && chmod -R ag+w /etc/confluent-${COMPONENT}
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
