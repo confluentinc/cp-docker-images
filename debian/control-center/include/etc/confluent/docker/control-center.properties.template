@@ -39,7 +39,7 @@ confluent.controlcenter.internal.topics.replication={{env['CONTROL_CENTER_REPLIC
     'SSL_PROVIDER': 'ssl.provider',
     'SSL_ENABLED_PROTOCOLS': 'ssl.enabled.protocols',
     'SSL_CLIENT_AUTH': 'ssl.client.auth',
-	'SHUTDOWN_GRACEFUL_MS': 'shutdown.graceful.ms',
+    'SHUTDOWN_GRACEFUL_MS': 'shutdown.graceful.ms',
     'SSL_KEYMANAGER_ALGORITHM': 'ssl.keymanager.algorithm',
     'SSL_CIPHER_SUITES': 'ssl.cipher.suites',
     'SSL_ENDPOINT_IDENTIFICATION_ALGORITHM': 'ssl.endpoint.identification.algorithm',
