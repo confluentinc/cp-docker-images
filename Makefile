@@ -1,6 +1,8 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry
+
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry control-center
+
 
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
