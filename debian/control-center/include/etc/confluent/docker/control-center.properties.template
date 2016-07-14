@@ -1,0 +1,52 @@
+{# required properties #}
+bootstrap.servers={{env['BOOTSTRAP_SERVERS']}}
+zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}
+confluent.controlcenter.data.dir={{env['CONTROL_CENTER_DATA_DIR']}}
+confluent.monitoring.interceptor.topic.replication={{env['CONTROL_CENTER_REPLICATION_FACTOR']}}
+confluent.controlcenter.internal.topics.replication={{env['CONTROL_CENTER_REPLICATION_FACTOR']}}
+
+{# optional properties #}
+{% set other_props = {
+    'CONTROL_CENTER_CONNECT_CLUSTER': 'confluent.controlcenter.connect.cluster',
+    'CONTROL_CENTER_LICENSE': 'confluent.controlcenter.license',
+    'CONTROL_CENTER_NAME': 'confluent.controlcenter.name',
+    'CONTROL_CENTER_ID': 'confluent.controlcenter.id',
+    'CONTROL_CENTER_STREAM_THREADS': 'confluent.controlcenter.streams.threads',
+    'CONTROL_CENTER_MONITORING_TOPIC': 'confluent.controlcenter.monitoring.topic',
+    'MONITORING_INTERCEPTOR_TOPIC_PARTITIONS': 'confluent.monitoring.interceptor.topic.partitions',
+    'MONITORING_INTERCEPTOR_TOPIC_RETENTION_MS': 'confluent.monitoring.interceptor.topic.retention.ms',
+    'CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS': 'confluent.controlcenter.internal.topics.partitions',
+    'CONTROL_CENTER_INTERNAL_TOPICS_RETENTION_MS': 'confluent.controlcenter.internal.topics.retention.ms',
+    'MAX_POLL_RECORDS': 'max.poll.records',
+    'SESSION_TIMEOUT_MS': 'session.timeout.ms',
+    'REQUEST_TIMEOUT_MS': 'request.timeout.ms',
+    'RETRIES': 'retries',
+    'RETRY_BACKOFF_MS': 'retry.backoff.ms',
+    'COMPRESSION_TYPE': 'compression.type',
+    'PORT': 'port',
+    'LISTENERS': 'listeners',
+    'RESPONSE_MEDIATYPE_DEFAULT': 'response.mediatype.default',
+    'ACCESS_CONTROL_ALLOW_ORIGIN': 'access.control.allow.origin',
+    'ACCESS_CONTROL_ALLOW_METHODS': 'access.control.allow.methods',
+    'SSL_KEYSTORE_LOCATION': 'ssl.keystore.location',
+    'SSL_KEYSTORE_PASSWORD': 'ssl.keystore.password',
+    'SSL_KEY_PASSWORD': 'ssl.key.password',
+    'SSL_TRUSTSTORE_LOCATION': 'ssl.truststore.location',
+    'SSL_TRUSTSTORE_PASSWORD': 'ssl.truststore.password',
+    'SSL_KEYSTORE_TYPE': 'ssl.keystore.type',
+    'SSL_TRUSTSTORE_TYPE': 'ssl.truststore.type',
+    'SSL_PROTOCOL': 'ssl.protocol',
+    'SSL_PROVIDER': 'ssl.provider',
+    'SSL_ENABLED_PROTOCOLS': 'ssl.enabled.protocols',
+    'SSL_CLIENT_AUTH': 'ssl.client.auth',
+    'SHUTDOWN_GRACEFUL_MS': 'shutdown.graceful.ms',
+    'SSL_KEYMANAGER_ALGORITHM': 'ssl.keymanager.algorithm',
+    'SSL_CIPHER_SUITES': 'ssl.cipher.suites',
+    'SSL_ENDPOINT_IDENTIFICATION_ALGORITHM': 'ssl.endpoint.identification.algorithm',
+ } -%}
+
+{% for k, property in other_props.iteritems() %}
+	{% if env.get(k) != None %}
+		{{property}}={{env[k]}}
+	{% endif %}
+{% endfor %}
