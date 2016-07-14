@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
+
 echo "===> Launching ${COMPONENT} ... "
 exec ${COMPONENT}-server-start /etc/${COMPONENT}/${COMPONENT}.properties
