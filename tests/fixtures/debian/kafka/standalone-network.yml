@@ -9,7 +9,6 @@ services:
   zookeeper-bridge:
     image: confluentinc/zookeeper:latest
     networks:
-      - default
       - zk
     environment:
       SERVER_ID: 1
@@ -22,7 +21,6 @@ services:
   kafka-bridge:
     image: confluentinc/kafka:latest
     networks:
-      - default
       - zk
     environment:
       BROKER_ID: 1
@@ -45,3 +43,24 @@ services:
       BROKER_ID: 1
       ZOOKEEPER_CONNECT: "localhost:32181"
       ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
+
+  kafka-bridged-jmx:
+    image: confluentinc/kafka:latest
+    networks:
+      - zk
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181/jmx"
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:19092"
+      JMX_PORT: 9999
+    ports:
+      - "9999:9999"
+
+  kafka-host-jmx:
+    image: confluentinc/kafka:latest
+    network_mode: host
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "localhost:32181/jmx"
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:39092"
+      JMX_PORT: 39999
