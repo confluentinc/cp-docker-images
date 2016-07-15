@@ -8,7 +8,7 @@ set -o nounset \
 dub ensure ZOOKEEPER_CONNECT
 dub ensure SCHEMA_REGISTRY_URL
 
-dub path /etc/${COMPONENT}/ writable
+dub path /etc/"${COMPONENT}"/ writable
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"

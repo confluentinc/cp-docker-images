@@ -1,8 +1,6 @@
 VERSION := 3.0.0
 
-
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry control-center
-
 
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
@@ -27,10 +25,8 @@ venv/bin/activate: tests/requirements.txt
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
-docker-env:
-	$(shell docker-machine env gce)
-
 test-build: venv
+	docker ps -a -q | xargs  docker rm -f
 	docker images -q | xargs  docker rmi -f
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
 	docker images -q | xargs  docker rmi -f

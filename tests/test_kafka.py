@@ -58,6 +58,10 @@ PLAIN_CLIENTS = """bash -c "\
     && echo PRODUCED {messages} messages. \
     && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --max-messages {messages}"
     """
+JMX_CHECK = """bash -c "\
+    echo 'get -b kafka.server:id=1,type=app-info Version' |
+        java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
+"""
 
 
 class ConfigTest(unittest.TestCase):
@@ -276,7 +280,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
         assert "PASS" in output
 
-    def test_bridge_network(self):
+    def test_bridged_network(self):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-bridge", 1)
         # Test from outside the container
@@ -303,6 +307,24 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.assertEquals(1, len(parsed_logs["brokers"]))
         self.assertEquals(1, parsed_logs["brokers"][0]["id"])
         self.assertEquals("localhost:29092", parsed_logs["brokers"][0]["name"])
+
+    def test_jmx_host_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port="39999"),
+            host_config={'NetworkMode': 'host'})
+        self.assertTrue("Version = 0.10.0.0-cp1;" in logs)
+
+    def test_jmx_bridged_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="kafka-bridged-jmx", jmx_port="9999"),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+        self.assertTrue("Version = 0.10.0.0-cp1;" in logs)
 
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
