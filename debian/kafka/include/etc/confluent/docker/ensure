@@ -7,7 +7,7 @@ set -o nounset \
 
 export DATA_DIRS=${DATA_DIRS:-"/opt/kafka/data"}
 echo "===> Check if $DATA_DIRS is writable ..."
-dub path $DATA_DIRS writable
+dub path "$DATA_DIRS" writable
 
 echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready $ZOOKEEPER_CONNECT 20 10 2
+cub zk-ready "$ZOOKEEPER_CONNECT" 20 10 2

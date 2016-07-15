@@ -63,6 +63,7 @@ JMX_CHECK = """bash -c "\
         java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
 """
 
+
 class ConfigTest(unittest.TestCase):
 
     @classmethod
@@ -270,9 +271,9 @@ class StandaloneNetworkingTest(unittest.TestCase):
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-bridge", ZK_READY.format(servers="localhost:2181"))
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-host", ZK_READY.format(servers="localhost:32181"))
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.cluster.shutdown()
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
 
     @classmethod
     def is_kafka_healthy_for_service(cls, service, num_brokers):
@@ -324,6 +325,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             command=JMX_CHECK.format(jmx_hostname="kafka-bridged-jmx", jmx_port="9999"),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
         self.assertTrue("Version = 0.10.0.0-cp1;" in logs)
+
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
     @classmethod
