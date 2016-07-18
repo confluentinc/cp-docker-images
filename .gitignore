@@ -4,3 +4,6 @@ __pycache__
 *ipynb*
 *cache*
 .idea
+*.csr
+*.srl
+*.req

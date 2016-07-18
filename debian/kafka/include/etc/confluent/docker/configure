@@ -14,7 +14,8 @@ dub ensure ADVERTISED_LISTENERS
 # process listens on all ports.
 if [[ -z "${LISTENERS-}" ]]
 then
-  export LISTENERS=$(cub listeners $ADVERTISED_LISTENERS)
+  export LISTENERS
+  LISTENERS=$(cub listeners "$ADVERTISED_LISTENERS")
 fi
 dub path /etc/kafka/ writable
 
@@ -41,6 +42,60 @@ if [[ -n "${PORT-}" ]]
 then
   echo "PORT is deprecated. Please use ADVERTISED_LISTENERS instead."
   exit 1
+fi
+
+# Set if ADVERTISED_LISTENERS has SSL:// or SASL_SSL:// endpoints.
+if [[ $ADVERTISED_LISTENERS == *"SSL://"* ]]
+then
+  echo "SSL is enabled."
+
+  dub ensure SSL_KEYSTORE_FILENAME
+  export SSL_KEYSTORE_LOCATION="/etc/kafka/secrets/$SSL_KEYSTORE_FILENAME"
+  dub path "$SSL_KEYSTORE_LOCATION" exists
+
+  dub ensure SSL_KEY_CREDENTIALS
+  SSL_KEY_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_KEY_CREDENTIALS"
+  dub path "$SSL_KEY_CREDENTIALS_LOCATION" exists
+  export SSL_KEY_PASSWORD
+  SSL_KEY_PASSWORD=$(cat "$SSL_KEY_CREDENTIALS_LOCATION")
+
+  dub ensure SSL_KEYSTORE_CREDENTIALS
+  SSL_KEYSTORE_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_KEYSTORE_CREDENTIALS"
+  dub path "$SSL_KEYSTORE_CREDENTIALS_LOCATION" exists
+  export SSL_KEYSTORE_PASSWORD
+  SSL_KEYSTORE_PASSWORD=$(cat "$SSL_KEYSTORE_CREDENTIALS_LOCATION")
+
+  dub ensure SSL_TRUSTSTORE_FILENAME
+  export SSL_TRUSTSTORE_LOCATION="/etc/kafka/secrets/$SSL_TRUSTSTORE_FILENAME"
+  dub path "$SSL_TRUSTSTORE_LOCATION" exists
+
+  dub ensure SSL_TRUSTSTORE_CREDENTIALS
+  SSL_TRUSTSTORE_CREDENTIALS_LOCATION="/etc/kafka/secrets/$SSL_TRUSTSTORE_CREDENTIALS"
+  dub path "$SSL_TRUSTSTORE_CREDENTIALS_LOCATION" exists
+  export SSL_TRUSTSTORE_PASSWORD
+  SSL_TRUSTSTORE_PASSWORD=$(cat "$SSL_TRUSTSTORE_CREDENTIALS_LOCATION")
+
+fi
+
+# Set if ADVERTISED_LISTENERS has SSL:// or SASL_SSL:// endpoints.
+if [[ $ADVERTISED_LISTENERS =~ .*SASL_.*://.* ]]
+then
+  echo "SASL" is enabled.
+
+  dub ensure KAFKA_OPTS
+
+  if [[ ! $KAFKA_OPTS == *"java.security.auth.login.config"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'java.security.auth.login.config' property."
+  fi
+fi
+
+if [[ -n "${KAFKA_JMX_OPTS-}" ]]
+then
+  if [[ ! $KAFKA_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
 fi
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
