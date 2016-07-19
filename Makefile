@@ -20,9 +20,9 @@ docker-env:
 	$(shell docker-machine env gce)
 
 test-build: venv
-	docker images -q | grep ^confluentinc | xargs  docker rmi -f
+	docker images | grep ^confluentinc | xargs  docker rmi -f
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
-	docker images -q | grep ^confluentinc | xargs  docker rmi -f
+	docker images | grep ^confluentinc | xargs  docker rmi -f
 
 test-zookeeper: venv build-debian
 	docker ps -a -q | xargs  docker rm -f
