@@ -12,6 +12,7 @@ import time
 from kazoo.client import KazooClient
 import json
 import re
+import requests
 
 ZookeeperServer = collections.namedtuple('ZookeeperServer', 'host port')
 KafkaServer = collections.namedtuple('KafkaServer', 'id host port endpoints')
@@ -185,6 +186,25 @@ def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_ret
         return False
 
 
+def check_schema_registry_ready(host, port, service_timeout):
+
+    # Check if you can connect to the endpoint
+    status = wait_for_service(host, port, service_timeout)
+
+    if status:
+        # Check if service is responding as expected to basic request
+        url = "http://%s:%s/config" % (host, port)
+        r = requests.get(url)
+        if r.status_code // 100 == 2 and 'compatibilityLevel' in str(r.text):
+            return True
+        else:
+            print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)))
+            return False
+    else:
+        print("%s cannot be reached on port %s." % (str(host), str(port)), file=sys.stderr)
+        return False 
+
+
 def get_kafka_listeners(advertised_listeners):
     host = re.compile(r'://(.*?):', re.UNICODE)
     return host.sub(r'://0.0.0.0:', advertised_listeners)
@@ -210,6 +230,11 @@ if __name__ == '__main__':
     kafka.add_argument('retries', help='No of retries to check if leader election is complete.', type=int)
     kafka.add_argument('wait', help='Time in secs between retries', type=int)
 
+    sr = actions.add_parser('sr-ready', description='Check if Schema Registry is ready.')
+    sr.add_argument('host', help='Hostname for Schema Registry.')
+    sr.add_argument('port', help='Port for Schema Registry.')
+    sr.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+
     config = actions.add_parser('listeners', description='Get listeners value from advertised.listeners. Replaces host to 0.0.0.0')
     config.add_argument('advertised_listeners', help='advertised.listeners string.')
 
@@ -225,6 +250,8 @@ if __name__ == '__main__':
         success = check_zookeeper_ready(args.connect_string, int(args.timeout), int(args.retries), int(args.wait))
     elif args.action == "kafka-ready":
         success = check_kafka_ready(args.connect_string, int(args.min_brokers), int(args.timeout), int(args.retries), int(args.wait))
+    elif args.action == "sr-ready":
+        success = check_schema_registry_ready(args.host, args.port, int(args.timeout))
     elif args.action == "listeners":
         listeners = get_kafka_listeners(args.advertised_listeners)
         if listeners:
