@@ -11,7 +11,7 @@ MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
 ENV COMPONENT=control-center
-ENV CONTROL_CENTER_DATA_DIR=/var/lib/${COMPONENT}
+ENV CONTROL_CENTER_DATA_DIR=/var/lib/confluent-${COMPONENT}
 ENV CONTROL_CENTER_CONFIG_DIR=/etc/confluent-${COMPONENT}
 
 # Default listener
