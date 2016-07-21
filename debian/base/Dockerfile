@@ -15,6 +15,7 @@ RUN echo "===> update debian ....." \
     && echo "===> install python packages ..."  \
     && pip install --no-cache-dir jinja2 \
                                   kazoo \
+                                  requests \
     \
     && echo "===> add webupd8 repository ..."  \
     && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
