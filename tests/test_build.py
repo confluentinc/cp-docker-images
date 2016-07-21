@@ -21,7 +21,7 @@ class BaseImageTest(unittest.TestCase):
 
     def test_java_install(self):
         cmd = "java -version"
-        expected = 'java version "1.8.0_91"'
+        expected = 'OpenJDK Runtime Environment (Zulu 8.15.0.1-linux64) (build 1.8.0_92-b15)'
         output = utils.run_docker_command(image=self.image, command=cmd)
         self.assertTrue(expected in output)
 
@@ -83,7 +83,6 @@ class KafkaImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
-
     def test_kafka_commands(self):
         expected = "USAGE: /usr/bin/kafka-server-start [-daemon] server.properties [--override property=value]*"
         self.assertTrue(expected in utils.run_docker_command(image=self.image, command="kafka-server-start"))
@@ -95,7 +94,7 @@ class ConnectImageTest(unittest.TestCase):
         self.image = "confluentinc/kafka-connect"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/kafka"))
-	utils.build_image(self.image, get_dockerfile_path("debian/kafka-connect"))
+        utils.build_image(self.image, get_dockerfile_path("debian/kafka-connect"))
 
     def test_image_build(self):
         self.assertTrue(utils.image_exists(self.image))
@@ -103,7 +102,7 @@ class ConnectImageTest(unittest.TestCase):
     def test_zk_install(self):
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka"))
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent"))
-	self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka-connect"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka-connect"))
 
     def test_boot_scripts_present(self):
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/configure"))
@@ -114,4 +113,3 @@ class ConnectImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
-
