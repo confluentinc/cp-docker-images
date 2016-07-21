@@ -1,10 +1,6 @@
 VERSION := 3.0.0
 
-<<<<<<< HEAD
-COMPONENTS := base zookeeper kafka kafkacat kafka-rest schema-registry kafka-connect
-=======
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry control-center
->>>>>>> upstream/master
+COMPONENTS := base zookeeper kafka kafkacat kafka-rest schema-registry kafka-connect control-center
 
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
