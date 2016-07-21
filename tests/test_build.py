@@ -172,6 +172,7 @@ class ConnectImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
+
 class ControlCenterImageTest(unittest.TestCase):
 
     def setUp(self):
