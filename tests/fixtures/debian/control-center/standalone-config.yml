@@ -26,3 +26,10 @@ services:
       BOOTSTRAP_SERVERS: fakeKafka
       ZOOKEEPER_CONNECT: fakeZk
     image: confluentinc/control-center:latest
+
+  default-config:
+    image: confluentinc/control-center:latest
+    environment:
+      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
