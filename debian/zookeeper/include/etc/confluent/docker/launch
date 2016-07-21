@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "===> Printing /opt/${COMPONENT}/data/myid "
-cat /opt/${COMPONENT}/data/myid
+cat /opt/"${COMPONENT}"/data/myid
 
 echo "===> Launching ${COMPONENT} ... "
-exec ${COMPONENT}-server-start /etc/kafka/${COMPONENT}.properties
+exec "${COMPONENT}"-server-start /etc/kafka/"${COMPONENT}".properties

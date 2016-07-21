@@ -44,6 +44,74 @@ services:
       ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
       PORT: "kafka"
 
+  failing-config-ssl-keystore:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+
+  failing-config-ssl-key-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-ssl-keystore-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-ssl-truststore:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  failing-config-sasl-jaas:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SASL_PLAINTEXT://foo:9092"
+
+  failing-config-sasl-missing-prop:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SASL_PLAINTEXT://foo:9092"
+      KAFKA_OPTS: "blah"
+
+  failing-config-ssl-truststore-password:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ADVERTISED_LISTENERS: "SSL://foo:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
   failing-config-host:
     image: confluentinc/kafka:latest
     environment:
@@ -95,3 +163,45 @@ services:
     volumes:
       - /tmp/kafka-config-kitchen-sink-test/data:/opt/kafka/data
     user: "12345"
+
+  ssl-config:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/sslconfig"
+      ADVERTISED_LISTENERS: "SSL://ssl-config:9092"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+
+  kerberos:
+    image: confluentinc/kerberos
+    environment:
+      BOOTSTRAP: 0
+    volumes:
+      - /tmp/kafka-config-test/secrets:/tmp/keytab
+      - /dev/urandom:/dev/random
+
+  sasl-ssl-config:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/sslsaslconfig"
+      ADVERTISED_LISTENERS: "SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094"
+      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
+      SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
+      SASL_ENABLED_MECHANISMS: GSSAPI
+      SASL_KERBEROS_SERVICE_NAME: broker1
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/config_server1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/config_krb.conf"
+    volumes:
+      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets

@@ -7,7 +7,7 @@ set -o nounset \
 
 dub ensure KAFKASTORE_CONNECTION_URL
 dub ensure HOST_NAME
-dub path /etc/${COMPONENT}/ writable
+dub path /etc/"${COMPONENT}"/ writable
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"

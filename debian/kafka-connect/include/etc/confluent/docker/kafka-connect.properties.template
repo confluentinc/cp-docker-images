@@ -1,0 +1,43 @@
+{# TODO: Worker configs can override any consumer/producer configs, we should create a base consumer/producer template to extend  #}
+
+{# Required  properties #}
+bootstrap.servers={{env['BOOTSTRAP_SERVERS']}}
+rest.port={{env['REST_PORT']}}
+group.id={{env['GROUP_ID']}}
+config.storage.topic={{env['CONFIG_STORAGE_TOPIC']}}
+offset.storage.topic={{env['OFFSET_STORAGE_TOPIC']}}
+status.storage.topic={{env['STATUS_STORAGE_TOPIC']}}
+
+{# optional properties #}
+{% set other_props = {
+	'KEY_CONVERTER': 'key.converter',
+	'VALUE_CONVERTER': 'value.converter',
+	'INTERNAL_KEY_CONVERTER': 'internal.key.converter',
+	'OFFSET_FLUSH_INTERVAL_MS': 'offset.flush.interval.ms',
+	'OFFSET_FLUSH_TIMEOUT_MS': 'offset.flush.timeout.ms',
+	'REST_ADVERTISED_HOST_NAME': 'rest.advertised.host.name',
+	'REST_ADVERTISED_PORT': 'rest.advertised.port',
+	'REST_HOME_NAME': 'rest.host.name',
+	'TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS': 'task.shutdown.graceful.timeout.ms',
+	'HEARTBEAT_INTERVAL_MS': 'heartbeat.interval.ms',
+	'SESSION_TIMEOUT_MS': 'session.timeout.ms',
+	'CONNECTIONS_MAX_IDLE_MS': 'connections.max.idle.ms',
+	'RECEIVE_BUFFER_BYTES': 'receive.buffer.bytes',
+	'REQUEST_TIMEOUT_MS': 'request.timeout.ms', 
+	'SECURITY_PROTOCOL': 'security.protocol', 
+	'SEND_BUFFER_BYTES': 'send.buffer.bytes',
+	'WORKER_SYNC_TIMEOUT_MS': 'worker.sync.timeout.ms', 
+	'WORKER_UNSYNC_BACKOFF_MS': 'worker.unsync.backoff.ms', 
+	'CLIENT_ID': 'client.id', 
+	'METADATA_MAX_AGE_MS': 'metadata.max.age.ms',
+	'METRIC_REPORTERS': 'metric.reporters', 
+	'METRICS_NUM_SAMPLES': 'metrics.num.samples', 
+	'METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms', 
+	'RECONNECT_BACKOFF_MS': 'retry.backoff.ms'	
+ } -%}
+
+{% for k, property in other_props.iteritems() %}
+	{% if env.get(k) != None %}
+		{{property}}={{env[k]}}
+	{% endif %}
+{% endfor %}
