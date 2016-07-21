@@ -87,6 +87,7 @@ class KafkaImageTest(unittest.TestCase):
         self.assertTrue(expected in utils.run_docker_command(image=self.image, command="kafka-server-start"))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 class SchemaRegistryImageTest(unittest.TestCase):
 
     def setUp(self):
@@ -94,6 +95,8 @@ class SchemaRegistryImageTest(unittest.TestCase):
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/schema-registry"))
 =======
+=======
+>>>>>>> confluentinc/master
 
 class ConnectImageTest(unittest.TestCase):
 
@@ -102,6 +105,9 @@ class ConnectImageTest(unittest.TestCase):
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/kafka"))
 	utils.build_image(self.image, get_dockerfile_path("debian/kafka-connect"))
+<<<<<<< HEAD
+>>>>>>> confluentinc/master
+=======
 >>>>>>> confluentinc/master
 
     def test_image_build(self):
@@ -111,7 +117,11 @@ class ConnectImageTest(unittest.TestCase):
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka"))
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent"))
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.assertTrue(utils.path_exists_in_image(self.image, "/etc/schema-registry"))
+=======
+	self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka-connect"))
+>>>>>>> confluentinc/master
 =======
 	self.assertTrue(utils.path_exists_in_image(self.image, "/etc/kafka-connect"))
 >>>>>>> confluentinc/master
@@ -127,8 +137,11 @@ class ConnectImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def test_schema_registry_commands(self):
         expected = "ERROR Properties file is required to start the schema registry REST instance (io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain:38)"
         self.assertTrue(expected in utils.run_docker_command(image=self.image, command="schema-registry-start"))
+=======
+>>>>>>> confluentinc/master
 =======
 >>>>>>> confluentinc/master
