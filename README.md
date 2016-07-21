@@ -153,7 +153,7 @@ Development
 		
 2. Create a docker machine. 
 
-		docker-machine create --driver virtualbox confluent
+		docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 	This command local env but it is recommended that you create one on AWS. The builds are much faster and is more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).
 	
 	[Docker Machine AWS Example](https://docs.docker.com/machine/examples/aws/)

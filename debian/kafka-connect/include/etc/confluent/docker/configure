@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure BOOTSTRAP_SERVERS
+dub ensure REST_PORT
+dub ensure GROUP_ID
+dub ensure CONFIG_STORAGE_TOPIC
+dub ensure OFFSET_STORAGE_TOPIC
+dub ensure STATUS_STORAGE_TOPIC 
+
+dub path /etc/${COMPONENT}/ writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"
