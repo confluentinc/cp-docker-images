@@ -17,7 +17,7 @@ RUN echo "===> installing ${COMPONENT}..." \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && mkdir -p /etc/${COMPONENT}/secrets\
-    && chmod -R ag+w /etc/${COMPONENT}
+    && chmod -R ag+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets
 
 VOLUME ["/etc/${COMPONENT}/secrets"]
 

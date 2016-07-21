@@ -153,10 +153,22 @@ Development
 		
 2. Create a docker machine. 
 
-		docker-machine create --driver virtualbox confluent
+		docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 	This command local env but it is recommended that you create one on AWS. The builds are much faster and is more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).
 	
 	[Docker Machine AWS Example](https://docs.docker.com/machine/examples/aws/)
+	
+	`m4.large` is good choice : It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
+		
+		export INSTANCE_NAME=$USER-docker-machine
+		docker-machine create \
+			--driver amazonec2 \
+			--amazonec2-region us-west-2 \
+			--amazonec2-instance-type m4.large \
+			--amazonec2-root-size 100 \
+			--amazonec2-ami ami-16b1a077 \
+			--amazonec2-tags Name,$INSTANCE_NAME \
+			aws-confluent
 3. Setup env
 
 		eval $(docker-machine env confluent)

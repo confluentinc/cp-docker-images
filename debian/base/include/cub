@@ -198,7 +198,7 @@ def check_schema_registry_ready(host, port, service_timeout):
         if r.status_code // 100 == 2 and 'compatibilityLevel' in str(r.text):
             return True
         else:
-            print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)))
+            print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)), file=sys.stderr)
             return False
     else:
         print("%s cannot be reached on port %s." % (str(host), str(port)), file=sys.stderr)
