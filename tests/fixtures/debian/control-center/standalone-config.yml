@@ -1,0 +1,28 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 2
+
+  kafka:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+
+  failing-config:
+    image: confluentinc/control-center:latest
+
+  failing-config-missing-zk-connect:
+    environment:
+      BOOTSTRAP_SERVERS: fake
+    image: confluentinc/control-center:latest
+
+  failing-config-missing-rep-factor:
+    environment:
+      BOOTSTRAP_SERVERS: fakeKafka
+      ZOOKEEPER_CONNECT: fakeZk
+    image: confluentinc/control-center:latest
