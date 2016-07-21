@@ -5,11 +5,12 @@ ENV COMPONENT=kafka
 # primary, jmx
 EXPOSE 9092 7203
 
-RUN echo "===> Installing ${COMPONENT}..." \
-   && mkdir -p /opt/${COMPONENT}/data \
+RUN echo "===> Setting up ${COMPONENT} dirs..." \
+   && mkdir -p /opt/${COMPONENT}/data /etc/${COMPONENT}/secrets\
    && chmod -R ag+w /etc/${COMPONENT} /opt/${COMPONENT}/data
 
-VOLUME ["/opt/${COMPONENT}/data"]
+
+VOLUME ["/opt/${COMPONENT}/data", "/etc/${COMPONENT}/secrets"]
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
