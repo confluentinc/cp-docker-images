@@ -35,8 +35,8 @@ class ConfigTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port="8081"))
-        assert "compatibilityLevel" in output
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        assert "PASS" in output
 
     def test_required_config_failure(self):
         self.assertTrue("KAFKASTORE_CONNECTION_URL is required." in self.cluster.service_logs("failing-config", stopped=True))
@@ -80,8 +80,8 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port="8081"))
-        assert "compatibilityLevel" in output
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        assert "PASS" in output
 
     def test_bridged_network(self):
         # Test from within the container
@@ -92,7 +92,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             command=HEALTH_CHECK.format(host="localhost", port=18081),
             host_config={'NetworkMode': 'host'})
 
-        self.assertTrue("compatibilityLevel" in logs)
+        self.assertTrue("PASS" in logs)
 
         # Test from outside the container on bridge network
         logs_2 = utils.run_docker_command(
@@ -100,7 +100,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             command=HEALTH_CHECK.format(host="schema-registry-bridge", port=8081),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
 
-        self.assertTrue("compatibilityLevel" in logs_2)
+        self.assertTrue("PASS" in logs_2)
 
     def test_host_network(self):
         # Test from within the container
@@ -111,7 +111,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             command=HEALTH_CHECK.format(host="localhost", port=8081),
             host_config={'NetworkMode': 'host'})
 
-        self.assertTrue("compatibilityLevel" in logs)
+        self.assertTrue("PASS" in logs)
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
 
@@ -313,6 +313,3 @@ class ClusterHostNetworkTest(unittest.TestCase):
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue(schema_name_3 in logs_9)
-
-
-
