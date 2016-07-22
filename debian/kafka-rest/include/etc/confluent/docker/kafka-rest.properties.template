@@ -1,13 +1,13 @@
 
 {# required properties #}
-zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}	
-schema.registry.url={{env['SCHEMA_REGISTRY_URL']}}
+zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}
 
 {# optional properties #}
 {% set other_props = {
 	'LISTENERS': 'listeners',
 	'ID_CONFIG': 'id',
 	'HOST_NAME': 'host.name',
+	'SCHEMA_REGISTRY_URL': 'schema.registry.url',
 	'PRODUCER_THREADS': 'producer.threads',
 	'CONSUMER_ITERATOR_TIMEOUT_MS': 'consumer.iterator.timeout.ms',
 	'CONSUMER_ITERATOR_BACKOFF_MS': 'consumer.iterator.backoff.ms',
