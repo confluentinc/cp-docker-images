@@ -1,4 +1,4 @@
-FROM confluentinc/zookeeper
+FROM confluentinc/cp-zookeeper
 
 ENV COMPONENT=kafka
 

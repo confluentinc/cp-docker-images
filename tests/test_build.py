@@ -13,7 +13,7 @@ def get_dockerfile_path(image_dir):
 class BaseImageTest(unittest.TestCase):
 
     def setUp(self):
-        self.image = "confluentinc/base"
+        self.image = "confluentinc/cp-base"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
 
     def test_image_build(self):
@@ -33,7 +33,7 @@ class BaseImageTest(unittest.TestCase):
 class ZookeeperImageTest(unittest.TestCase):
 
     def setUp(self):
-        self.image = "confluentinc/zookeeper"
+        self.image = "confluentinc/cp-zookeeper"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/zookeeper"))
 
@@ -62,7 +62,7 @@ class ZookeeperImageTest(unittest.TestCase):
 class KafkaImageTest(unittest.TestCase):
 
     def setUp(self):
-        self.image = "confluentinc/kafka"
+        self.image = "confluentinc/cp-kafka"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/kafka"))
 
@@ -91,7 +91,7 @@ class KafkaImageTest(unittest.TestCase):
 class ConnectImageTest(unittest.TestCase):
 
     def setUp(self):
-        self.image = "confluentinc/kafka-connect"
+        self.image = "confluentinc/cp-kafka-connect"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/kafka"))
         utils.build_image(self.image, get_dockerfile_path("debian/kafka-connect"))

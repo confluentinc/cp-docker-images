@@ -2,7 +2,7 @@ version: "2"
 
 services:
   bridge-network:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     network_mode: "bridge"
     environment:
       SERVER_ID: 1
@@ -13,7 +13,7 @@ services:
       - "33888:3888"
 
   host-network:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
       SERVER_ID: 1

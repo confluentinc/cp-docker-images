@@ -1,6 +1,6 @@
 # Builds a docker image for Kafka Connect 
 
-FROM confluentinc/kafka
+FROM confluentinc/cp-kafka
 
 MAINTAINER contact@confluent.io
 

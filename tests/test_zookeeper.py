@@ -174,7 +174,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_zk_healthy_for_service("bridge-network", 2181)
         # Test from outside the container
         logs = utils.run_docker_command(
-            image="confluentinc/zookeeper",
+            image="confluentinc/cp-zookeeper",
             command=MODE_COMMAND.format(port=22181),
             host_config={'NetworkMode': 'host'})
         self.assertEquals("Mode: standalone\n", logs)
@@ -184,7 +184,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_zk_healthy_for_service("host-network", 32181)
         # Test from outside the container
         logs = utils.run_docker_command(
-            image="confluentinc/zookeeper",
+            image="confluentinc/cp-zookeeper",
             command=MODE_COMMAND.format(port=32181),
             host_config={'NetworkMode': 'host'})
         self.assertEquals("Mode: standalone\n", logs)
@@ -228,7 +228,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         for port in client_ports:
             output = utils.run_docker_command(
-                image="confluentinc/zookeeper",
+                image="confluentinc/cp-zookeeper",
                 command=MODE_COMMAND.format(port=port),
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)
@@ -265,7 +265,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         for port in client_ports:
             output = utils.run_docker_command(
-                image="confluentinc/zookeeper",
+                image="confluentinc/cp-zookeeper",
                 command=MODE_COMMAND.format(port=port),
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)
