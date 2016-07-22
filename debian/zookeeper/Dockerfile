@@ -5,9 +5,10 @@ EXPOSE 2181 2888 3888
 MAINTAINER partner-support@confluent.io
 
 ENV COMPONENT=zookeeper
+ENV KAFKA_VERSION="0.10.0.0"
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION} \
+    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \

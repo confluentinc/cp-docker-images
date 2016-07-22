@@ -4,23 +4,32 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 22181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 2
-      CLIENT_PORT: 32181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 3
-      CLIENT_PORT: 42181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 42181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host

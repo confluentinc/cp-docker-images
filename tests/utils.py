@@ -29,7 +29,8 @@ def image_exists(image_name):
 
 def pull_image(image_name):
     client = docker.from_env(assert_hostname=False)
-    client.pull(image_name)
+    if not image_exists(image_name):
+        client.pull(image_name)
 
 
 def run_docker_command(timeout=None, **kwargs):
