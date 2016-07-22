@@ -188,7 +188,7 @@ You'll need to first install virtualenv: `pip install virtualenv`
 	make test-zookeeper
 	make test-kafka
 	
-Running a single test: `py.test test_zookeeper.py::ConfigTest -v`
+Running a single test: `venv/bin/py.test tests/test_zookeeper.py::ConfigTest -v`
 
 ###Delete all docker containers
 

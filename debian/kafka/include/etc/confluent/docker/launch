@@ -11,10 +11,12 @@ fi
 
 # If you have more that one n/w configured, hostname -i gives you all the IPs,
 # the default is to pick the first IP (or network).
-export JMX_HOSTNAME=${JMX_HOSTNAME:-$(hostname -i | cut -d" " -f1)}
+export KAFKA_JMX_HOSTNAME=${KAFKA_JMX_HOSTNAME:-$(hostname -i | cut -d" " -f1)}
 
-if [ "$JMX_PORT" ]; then
-  export KAFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Djava.rmi.server.hostname=$JMX_HOSTNAME -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Dcom.sun.management.jmxremote.port=$JMX_PORT"
+if [ "$KAFKA_JMX_PORT" ]; then
+  # This ensures that the "if" section for JMX_PORT in kafka launch script does not trigger.
+  export JMX_PORT=$KAFKA_JMX_PORT
+  export KAFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Djava.rmi.server.hostname=$KAFKA_JMX_HOSTNAME -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Dcom.sun.management.jmxremote.port=$JMX_PORT"
 fi
 
 echo "===> Launching ${COMPONENT} ... "

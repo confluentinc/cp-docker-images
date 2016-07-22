@@ -1,39 +1,39 @@
 {# TODO: Worker configs can override any consumer/producer configs, we should create a base consumer/producer template to extend  #}
 
 {# Required  properties #}
-bootstrap.servers={{env['BOOTSTRAP_SERVERS']}}
-rest.port={{env['REST_PORT']}}
-group.id={{env['GROUP_ID']}}
-config.storage.topic={{env['CONFIG_STORAGE_TOPIC']}}
-offset.storage.topic={{env['OFFSET_STORAGE_TOPIC']}}
-status.storage.topic={{env['STATUS_STORAGE_TOPIC']}}
+bootstrap.servers={{env['CONNECT_BOOTSTRAP_SERVERS']}}
+rest.port={{env['CONNECT_REST_PORT']}}
+group.id={{env['CONNECT_GROUP_ID']}}
+config.storage.topic={{env['CONNECT_CONFIG_STORAGE_TOPIC']}}
+offset.storage.topic={{env['CONNECT_OFFSET_STORAGE_TOPIC']}}
+status.storage.topic={{env['CONNECT_STATUS_STORAGE_TOPIC']}}
 
 {# optional properties #}
 {% set other_props = {
-	'KEY_CONVERTER': 'key.converter',
-	'VALUE_CONVERTER': 'value.converter',
-	'INTERNAL_KEY_CONVERTER': 'internal.key.converter',
-	'OFFSET_FLUSH_INTERVAL_MS': 'offset.flush.interval.ms',
-	'OFFSET_FLUSH_TIMEOUT_MS': 'offset.flush.timeout.ms',
-	'REST_ADVERTISED_HOST_NAME': 'rest.advertised.host.name',
-	'REST_ADVERTISED_PORT': 'rest.advertised.port',
-	'REST_HOME_NAME': 'rest.host.name',
-	'TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS': 'task.shutdown.graceful.timeout.ms',
-	'HEARTBEAT_INTERVAL_MS': 'heartbeat.interval.ms',
-	'SESSION_TIMEOUT_MS': 'session.timeout.ms',
-	'CONNECTIONS_MAX_IDLE_MS': 'connections.max.idle.ms',
-	'RECEIVE_BUFFER_BYTES': 'receive.buffer.bytes',
-	'REQUEST_TIMEOUT_MS': 'request.timeout.ms', 
-	'SECURITY_PROTOCOL': 'security.protocol', 
-	'SEND_BUFFER_BYTES': 'send.buffer.bytes',
-	'WORKER_SYNC_TIMEOUT_MS': 'worker.sync.timeout.ms', 
-	'WORKER_UNSYNC_BACKOFF_MS': 'worker.unsync.backoff.ms', 
-	'CLIENT_ID': 'client.id', 
-	'METADATA_MAX_AGE_MS': 'metadata.max.age.ms',
-	'METRIC_REPORTERS': 'metric.reporters', 
-	'METRICS_NUM_SAMPLES': 'metrics.num.samples', 
-	'METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms', 
-	'RECONNECT_BACKOFF_MS': 'retry.backoff.ms'	
+	'CONNECT_KEY_CONVERTER': 'key.converter',
+	'CONNECT_VALUE_CONVERTER': 'value.converter',
+	'CONNECT_INTERNAL_KEY_CONVERTER': 'internal.key.converter',
+	'CONNECT_OFFSET_FLUSH_INTERVAL_MS': 'offset.flush.interval.ms',
+	'CONNECT_OFFSET_FLUSH_TIMEOUT_MS': 'offset.flush.timeout.ms',
+	'CONNECT_REST_ADVERTISED_HOST_NAME': 'rest.advertised.host.name',
+	'CONNECT_REST_ADVERTISED_PORT': 'rest.advertised.port',
+	'CONNECT_REST_HOME_NAME': 'rest.host.name',
+	'CONNECT_TASK_SHUTDOWN_GRACEFUL_TIMEOUT_MS': 'task.shutdown.graceful.timeout.ms',
+	'CONNECT_HEARTBEAT_INTERVAL_MS': 'heartbeat.interval.ms',
+	'CONNECT_SESSION_TIMEOUT_MS': 'session.timeout.ms',
+	'CONNECT_CONNECTIONS_MAX_IDLE_MS': 'connections.max.idle.ms',
+	'CONNECT_RECEIVE_BUFFER_BYTES': 'receive.buffer.bytes',
+	'CONNECT_REQUEST_TIMEOUT_MS': 'request.timeout.ms', 
+	'CONNECT_SECURITY_PROTOCOL': 'security.protocol', 
+	'CONNECT_SEND_BUFFER_BYTES': 'send.buffer.bytes',
+	'CONNECT_WORKER_SYNC_TIMEOUT_MS': 'worker.sync.timeout.ms', 
+	'CONNECT_WORKER_UNSYNC_BACKOFF_MS': 'worker.unsync.backoff.ms', 
+	'CONNECT_CLIENT_ID': 'client.id', 
+	'CONNECT_METADATA_MAX_AGE_MS': 'metadata.max.age.ms',
+	'CONNECT_METRIC_REPORTERS': 'metric.reporters', 
+	'CONNECT_METRICS_NUM_SAMPLES': 'metrics.num.samples', 
+	'CONNECT_METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms', 
+	'CONNECT_RECONNECT_BACKOFF_MS': 'retry.backoff.ms'	
  } -%}
 
 {% for k, property in other_props.iteritems() %}

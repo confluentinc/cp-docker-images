@@ -7,11 +7,12 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka-rest")
-KAFKA_READY = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
+KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
 HEALTH_CHECK = "bash -c 'cub kr-ready {host} {port} 20 && echo PASS || echo FAIL'"
 GET_TOPICS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/topics'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
+
 
 class ConfigTest(unittest.TestCase):
 
@@ -32,7 +33,7 @@ class ConfigTest(unittest.TestCase):
 
     @classmethod
     def is_kafka_rest_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8082))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8082))
         assert "PASS" in output
 
     def test_required_config_failure(self):
@@ -58,10 +59,11 @@ class ConfigTest(unittest.TestCase):
             """
         self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
 
+
 class StandaloneNetworkingTest(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls): 
+    def setUpClass(cls):
         cls.cluster = utils.TestCluster("standalone-network-test", FIXTURES_DIR, "standalone-network.yml")
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-bridge", ZK_READY.format(servers="localhost:2181"))
@@ -75,7 +77,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     @classmethod
     def is_kafka_rest_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8082))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8082))
         assert "PASS" in output
 
     def test_bridged_network(self):
@@ -107,4 +109,3 @@ class StandaloneNetworkingTest(unittest.TestCase):
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs)
-

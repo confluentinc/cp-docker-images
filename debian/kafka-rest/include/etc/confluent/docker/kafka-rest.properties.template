@@ -19,8 +19,8 @@ zookeeper.connect={{env['KAFKA_REST_ZOOKEEPER_CONNECT']}}
 	'KAFKA_REST_SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms'
  } -%}
 
-{% for k, property in other_props.iteritems() %}
-	{% if env.get(k) != None %}
-		{{property}}={{env[k]}}
-	{% endif %}
-{% endfor %}
+ {% for k, property in other_props.iteritems() -%}
+ {% if env.get(k) != None -%}
+ {{property}}={{env[k]}}
+ {% endif -%}
+ {% endfor -%}
