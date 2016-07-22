@@ -5,8 +5,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure ZOOKEEPER_CONNECT
-dub ensure SCHEMA_REGISTRY_URL
+dub ensure KAFKA_REST_ZOOKEEPER_CONNECT
 
 dub path /etc/"${COMPONENT}"/ writable
 
