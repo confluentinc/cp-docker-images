@@ -1,60 +1,65 @@
-version: "2"
-
+---
+version: '2'
 networks:
   zk:
-    # Use a custom driver
     driver: bridge
-
 services:
   zookeeper-bridge:
     image: confluentinc/cp-zookeeper:latest
     networks:
-      - zk
+    - zk
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "22181:2181"
-      - "32888:2888"
-      - "33888:3888"
-
+    - 22181:2181
+    - 32888:2888
+    - 33888:3888
+    labels:
+    - io.confluent.docker.testing=true
   kafka-bridge:
     image: confluentinc/cp-kafka:latest
     networks:
-      - zk
+    - zk
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-bridge:19092
     ports:
-      - "19092:19092"
-
+    - 19092:19092
+    labels:
+    - io.confluent.docker.testing=true
   zookeeper-host:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
-
+    labels:
+    - io.confluent.docker.testing=true
   kafka-host:
     image: confluentinc/cp-kafka:latest
     network_mode: host
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "localhost:32181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
-
+      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+    labels:
+    - io.confluent.docker.testing=true
   kafka-rest-host:
     image: confluentinc/cp-kafka-rest:latest
     network_mode: host
     environment:
-      KAFKA_REST_ZOOKEEPER_CONNECT: "localhost:32181"
-
+      KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181
+    labels:
+    - io.confluent.docker.testing=true
   kafka-rest-bridge:
     image: confluentinc/cp-kafka-rest:latest
     networks:
-      - zk
+    - zk
     environment:
-      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
     ports:
-      - "18082:8082"
+    - 18082:8082
+    labels:
+    - io.confluent.docker.testing=true

@@ -1,6 +1,7 @@
 FROM confluentinc/cp-base
 
 MAINTAINER partner-support@confluent.io
+LABEL io.confluent.docker=true
 
 ENV COMPONENT=kafka-rest
 

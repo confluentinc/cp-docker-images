@@ -1,5 +1,5 @@
-version: "2"
-
+---
+version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -7,18 +7,23 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
-
+    labels:
+    - io.confluent.docker.testing=true
   kafka:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    labels:
+    - io.confluent.docker.testing=true
   failing-config:
     image: confluentinc/cp-kafka-rest:latest
-    
+    labels:
+    - io.confluent.docker.testing=true
   default-config:
     image: confluentinc/cp-kafka-rest:latest
     environment:
-      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+    labels:
+    - io.confluent.docker.testing=true

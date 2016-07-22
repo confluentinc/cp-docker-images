@@ -1,6 +1,7 @@
 FROM debian:jessie
 
 MAINTAINER partner-support@confluent.io
+LABEL io.confluent.docker=true
 
 # Python
 ENV PYTHON_VERSION="2.7.9-1"

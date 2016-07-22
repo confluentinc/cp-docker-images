@@ -1,21 +1,24 @@
-version: "2"
-
+---
+version: '2'
 services:
   failing-config:
     image: confluentinc/cp-zookeeper:latest
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ticktime:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-server-id:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SERVERS: abc:111:111
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-init-limit:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -23,7 +26,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SERVERS: abc:111:111
       ZOOKEEPER_SERVER_ID: 1
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-sync-limit:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -32,13 +36,15 @@ services:
       ZOOKEEPER_SERVERS: abc:111:111
       ZOOKEEPER_INIT_LIMIT: 20
       ZOOKEEPER_SERVER_ID: 1
-
+    labels:
+    - io.confluent.docker.testing=true
   default-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
-
+    labels:
+    - io.confluent.docker.testing=true
   full-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -47,13 +53,14 @@ services:
       ZOOKEEPER_TICK_TIME: 5555
       ZOOKEEPER_INIT_LIMIT: 25
       ZOOKEEPER_SYNC_LIMIT: 20
-      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: "false"
+      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: 'false'
       ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: 2
       ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT: 4
-      ZOOKEEPER_LOG4J_LOGGERS: "zookeeper.foo.bar=DEBUG"
+      ZOOKEEPER_LOG4J_LOGGERS: zookeeper.foo.bar=DEBUG
       ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: WARN
       ZOOKEEPER_TOOLS_LOG4J_LOGLEVEL: ERROR
-
+    labels:
+    - io.confluent.docker.testing=true
   external-volumes:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -61,16 +68,18 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     volumes:
-      - /tmp/zk-config-test/data:/opt/zookeeper/data
-      - /tmp/zk-config-test/log:/opt/zookeeper/log
-
+    - /tmp/zk-config-test/data:/opt/zookeeper/data
+    - /tmp/zk-config-test/log:/opt/zookeeper/log
+    labels:
+    - io.confluent.docker.testing=true
   random-user:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
-    user: "12345"
-
+    user: '12345'
+    labels:
+    - io.confluent.docker.testing=true
   kitchen-sink:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -79,10 +88,12 @@ services:
       ZOOKEEPER_TICK_TIME: 5555
       ZOOKEEPER_INIT_LIMIT: 25
       ZOOKEEPER_SYNC_LIMIT: 20
-      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: "false"
+      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: 'false'
       ZOOKEEPER_AUTO_PURGE_INTERVAL: 2
       ZOOKEEPER_SNAP_RETAIN_COUNT: 4
     volumes:
-      - /tmp/zk-config-kitchen-sink-test/data:/opt/zookeeper/data
-      - /tmp/zk-config-kitchen-sink-test/log:/opt/zookeeper/log
-    user: "12345"
+    - /tmp/zk-config-kitchen-sink-test/data:/opt/zookeeper/data
+    - /tmp/zk-config-kitchen-sink-test/log:/opt/zookeeper/log
+    user: '12345'
+    labels:
+    - io.confluent.docker.testing=true

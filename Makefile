@@ -5,6 +5,18 @@ COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect cont
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
+clean-container:
+	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
+        echo "Removing container $${container} \n==========================================\n " ; \
+				docker rm -f $${container} || exit 1 ; \
+  done
+
+clean-image:
+	for image in `docker image -q -f label=io.confluent.docker` ; do \
+        echo "Removing container $${container} \n==========================================\n " ; \
+				docker rm -f $${container} || exit 1 ; \
+  done
+
 build-debian:
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
@@ -31,28 +43,26 @@ push:
 				docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
   done
 
+
+
+clean: clean-container clean-image
+
 venv: venv/bin/activate
 venv/bin/activate: tests/requirements.txt
 	test -d venv || virtualenv venv
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
-test-build: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f | exit 0
-	docker images -q | xargs  docker rmi -f | exit 0
+test-build: venv clean build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
-	docker images -q | xargs  docker rmi -f | exit 0
 
-test-zookeeper: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
+test-zookeeper: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
 
-test-kafka: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
+test-kafka: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v
 
-test-schema-registry: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
+test-schema-registry: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
 
 test-kafka-rest: venv build-debian build-test-images
