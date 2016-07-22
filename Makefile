@@ -23,6 +23,14 @@ build-test-images:
 				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
   done
 
+push:
+	for component in ${COMPONENTS}; do \
+        echo "\n\nPushing ${REPOSITORY}/cp-$${component}:latest to ${REPOSITORY}\n==========================================\n " ; \
+				docker push ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
+				echo "\n\nPushing ${REPOSITORY}/cp-$${component}:${VERSION} to ${REPOSITORY}\n==========================================\n " ; \
+				docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+  done
+
 venv: venv/bin/activate
 venv/bin/activate: tests/requirements.txt
 	test -d venv || virtualenv venv
