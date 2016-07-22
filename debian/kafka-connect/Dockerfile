@@ -2,7 +2,7 @@
 
 FROM confluentinc/cp-kafka
 
-MAINTAINER contact@confluent.io
+MAINTAINER partner-support@confluent.io
 
 ENV COMPONENT=kafka-connect
 
