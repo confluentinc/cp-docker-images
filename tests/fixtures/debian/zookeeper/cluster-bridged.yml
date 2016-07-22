@@ -1,10 +1,8 @@
-version: "2"
-
+---
+version: '2'
 networks:
   zk:
-    # Use a custom driver
     driver: bridge
-
 services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
@@ -14,14 +12,15 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
-      - zk
+    - zk
     ports:
-      - "22181:2181"
-      - "22888:2888"
-      - "23888:3888"
-
+    - 22181:2181
+    - 22888:2888
+    - 23888:3888
+    labels:
+    - io.confluent.docker.testing=true
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -30,14 +29,15 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
-      - zk
+    - zk
     ports:
-      - "32181:2181"
-      - "32888:2888"
-      - "33888:3888"
-
+    - 32181:2181
+    - 32888:2888
+    - 33888:3888
+    labels:
+    - io.confluent.docker.testing=true
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -46,10 +46,12 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
+      ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
-      - zk
+    - zk
     ports:
-      - "42181:2181"
-      - "42888:2888"
-      - "43888:3888"
+    - 42181:2181
+    - 42888:2888
+    - 43888:3888
+    labels:
+    - io.confluent.docker.testing=true

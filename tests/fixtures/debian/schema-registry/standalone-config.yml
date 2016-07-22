@@ -1,29 +1,35 @@
-version: "2"
-
+---
+version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config:
     image: confluentinc/cp-schema-registry:latest
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-host-name:
     image: confluentinc/cp-schema-registry:latest
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
-
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181/defaultconfig
+    labels:
+    - io.confluent.docker.testing=true
   kafka:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    labels:
+    - io.confluent.docker.testing=true
   default-config:
     image: confluentinc/cp-schema-registry:latest
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181/defaultconfig
       SCHEMA_REGISTRY_HOST_NAME: default-config
+    labels:
+    - io.confluent.docker.testing=true
