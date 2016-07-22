@@ -38,10 +38,10 @@ venv/bin/activate: tests/requirements.txt
 	touch venv/bin/activate
 
 test-build: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
-	docker images -q | xargs  docker rmi -f
+	docker ps -a -q | xargs  docker rm -f | exit 0
+	docker images -q | xargs  docker rmi -f | exit 0
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
-	docker images -q | xargs  docker rmi -f
+	docker images -q | xargs  docker rmi -f | exit 0
 
 test-zookeeper: venv build-debian build-test-images
 	docker ps -a -q | xargs  docker rm -f
