@@ -7,7 +7,7 @@ EXPOSE 9092 7203
 
 RUN echo "===> Setting up ${COMPONENT} dirs..." \
    && mkdir -p /opt/${COMPONENT}/data /etc/${COMPONENT}/secrets\
-   && chmod -R ag+w /etc/${COMPONENT} /opt/${COMPONENT}/data
+   && chmod -R ag+w /etc/${COMPONENT} /opt/${COMPONENT}/data /etc/${COMPONENT}/secrets
 
 
 VOLUME ["/opt/${COMPONENT}/data", "/etc/${COMPONENT}/secrets"]
