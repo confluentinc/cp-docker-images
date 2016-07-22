@@ -10,7 +10,7 @@ ENV COMPONENT=schema-registry
 EXPOSE 8081
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-${COMPONENT} \
+    && apt-get update && apt-get install -y confluent-${COMPONENT}=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
