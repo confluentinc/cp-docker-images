@@ -1,0 +1,22 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: confluentinc/zookeeper:latest
+    environment:
+      SERVER_ID: 2
+
+  failing-config:
+    image: confluentinc/kafka-rest:latest
+
+  kafka:
+    image: confluentinc/kafka:latest
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+
+  default-config:
+    image: confluentinc/kafka-rest:latest
+    environment:
+      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
