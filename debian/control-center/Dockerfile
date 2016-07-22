@@ -1,6 +1,6 @@
 # Builds a docker image for the Confluent Control Center.
 
-FROM confluentinc/base
+FROM confluentinc/cp-base
 
 MAINTAINER contact@confluent.io
 

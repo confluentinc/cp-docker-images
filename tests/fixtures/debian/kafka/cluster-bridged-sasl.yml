@@ -7,7 +7,7 @@ networks:
 
 services:
   zookeeper-1:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
       ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
@@ -20,7 +20,7 @@ services:
       - "23888:3888"
 
   zookeeper-2:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 2
       ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
@@ -33,7 +33,7 @@ services:
       - "33888:3888"
 
   zookeeper-3:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 3
       ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
@@ -46,7 +46,7 @@ services:
       - "43888:3888"
 
   kerberos:
-    image: confluentinc/kerberos
+    image: confluentinc/cp-kerberos
     networks:
       - default
       - zk
@@ -57,7 +57,7 @@ services:
       - /dev/urandom:/dev/random
 
   kafka-sasl-ssl-1:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     hostname: kafka-sasl-ssl-1
     networks:
       - default
@@ -81,7 +81,7 @@ services:
       - /tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets
 
   kafka-sasl-ssl-2:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     hostname: kafka-sasl-ssl-2
     networks:
       - default
@@ -106,7 +106,7 @@ services:
 
 
   kafka-sasl-ssl-3:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     hostname: kafka-sasl-ssl-3
     networks:
       - default

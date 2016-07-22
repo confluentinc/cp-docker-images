@@ -2,16 +2,16 @@ version: "2"
 
 services:
   failing-config:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
 
   default-config:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
       CLIENT_PORT: 2181
 
   full-config:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
       CLIENT_PORT: 22181
@@ -26,7 +26,7 @@ services:
       TOOLS_LOG4J_LOGLEVEL: ERROR
 
   external-volumes:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
     volumes:
@@ -34,13 +34,13 @@ services:
       - /tmp/zk-config-test/log:/opt/zookeeper/log
 
   random-user:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
     user: "12345"
 
   kitchen-sink:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
       CLIENT_PORT: 22181

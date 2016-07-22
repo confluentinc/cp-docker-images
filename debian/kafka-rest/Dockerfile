@@ -1,4 +1,4 @@
-FROM confluentinc/base
+FROM confluentinc/cp-base
 
 ENV COMPONENT=kafka-rest
 
