@@ -91,7 +91,7 @@ class KafkaImageTest(unittest.TestCase):
 class SchemaRegistryImageTest(unittest.TestCase):
 
     def setUp(self):
-        self.image = "confluentinc/schema-registry"
+        self.image = "confluentinc/cp-schema-registry"
         utils.build_image(self.image, get_dockerfile_path("debian/base"))
         utils.build_image(self.image, get_dockerfile_path("debian/schema-registry"))
 
