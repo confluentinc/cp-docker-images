@@ -4,7 +4,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
 
   failing-config:
     image: confluentinc/cp-schema-registry:latest
@@ -12,7 +13,7 @@ services:
   failing-config-host-name:
     image: confluentinc/cp-schema-registry:latest
     environment:
-      KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -24,5 +25,5 @@ services:
   default-config:
     image: confluentinc/cp-schema-registry:latest
     environment:
-      KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
-      HOST_NAME: default-config
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181/defaultconfig"
+      SCHEMA_REGISTRY_HOST_NAME: default-config

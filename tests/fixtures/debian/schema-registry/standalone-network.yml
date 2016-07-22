@@ -11,8 +11,8 @@ services:
     networks:
       - zk
     environment:
-      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
       - "32888:2888"
@@ -33,8 +33,8 @@ services:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
-      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka-host:
     image: confluentinc/cp-kafka:latest
@@ -48,15 +48,15 @@ services:
     image: confluentinc/cp-schema-registry:latest
     network_mode: host
     environment:
-      KAFKASTORE_CONNECTION_URL: "localhost:32181"
-      HOST_NAME: "localhost"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "localhost:32181"
+      SCHEMA_REGISTRY_HOST_NAME: "localhost"
 
   schema-registry-bridge:
     image: confluentinc/cp-schema-registry:latest
     networks:
       - zk
     environment:
-      KAFKASTORE_CONNECTION_URL: "zookeeper-bridge:2181"
-      HOST_NAME: "schema-registry-bridge"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-bridge:2181"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry-bridge"
     ports:
       - "18081:8081"

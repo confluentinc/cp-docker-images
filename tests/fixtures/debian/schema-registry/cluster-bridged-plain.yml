@@ -6,12 +6,16 @@ networks:
     driver: bridge
 
 services:
+
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 1
-      # ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888"
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
     networks:
       - zk
     ports:
@@ -23,7 +27,11 @@ services:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 2
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
     networks:
       - zk
     ports:
@@ -35,7 +43,11 @@ services:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888"
     networks:
       - zk
     ports:
@@ -76,9 +88,9 @@ services:
     networks:
       - zk
     environment:
-      # KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
-      KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      HOST_NAME: "schema-registry-1"
+      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry-1"
     ports:
       - "18081:8081"
 
@@ -87,9 +99,9 @@ services:
     networks:
       - zk
     environment:
-      # KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
-      KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      HOST_NAME: "schema-registry-2"
+      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry-2"
     ports:
       - "28081:8081"
 
@@ -98,8 +110,8 @@ services:
     networks:
       - zk
     environment:
-      # KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
-      KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      HOST_NAME: "schema-registry-3"
+      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry-3"
     ports:
       - "38081:8081"
