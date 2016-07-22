@@ -58,3 +58,16 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
     ports:
       - "18082:8082"
+
+  kafka-rest-bridged-jmx:
+    image: confluentinc/cp-kafka-rest:latest
+    networks:
+      - zk
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181/jmx"
+
+  kafka-rest-host-jmx:
+    image: confluentinc/cp-kafka-rest:latest
+    network_mode: host
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: "localhost:2181/jmx"

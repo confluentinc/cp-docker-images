@@ -61,7 +61,6 @@ services:
       - zk
     environment:
       KAFKA_BROKER_ID: 1
-      # KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181"
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-1:9092"
 
@@ -88,7 +87,6 @@ services:
     networks:
       - zk
     environment:
-      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
       SCHEMA_REGISTRY_HOST_NAME: "schema-registry-1"
     ports:
@@ -99,7 +97,6 @@ services:
     networks:
       - zk
     environment:
-      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
       SCHEMA_REGISTRY_HOST_NAME: "schema-registry-2"
     ports:
@@ -110,7 +107,6 @@ services:
     networks:
       - zk
     environment:
-      # SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181"
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
       SCHEMA_REGISTRY_HOST_NAME: "schema-registry-3"
     ports:
