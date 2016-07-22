@@ -1,5 +1,7 @@
 FROM confluentinc/cp-base
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=kafka-rest
 
 # default listener

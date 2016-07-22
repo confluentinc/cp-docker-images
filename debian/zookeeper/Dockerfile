@@ -2,6 +2,8 @@ FROM confluentinc/cp-base
 
 EXPOSE 2181 2888 3888
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=zookeeper
 ENV KAFKA_VERSION="0.10.0.0"
 

@@ -1,5 +1,7 @@
 FROM confluentinc/cp-zookeeper
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=kafka
 
 # primary

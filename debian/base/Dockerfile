@@ -1,5 +1,7 @@
 FROM debian:jessie
 
+MAINTAINER partner-support@confluent.io
+
 # Python
 ENV PYTHON_VERSION="2.7.9-1"
 ENV PYTHON_PIP_VERSION="8.1.2"
