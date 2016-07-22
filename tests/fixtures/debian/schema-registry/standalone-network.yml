@@ -11,8 +11,8 @@ services:
     networks:
       - zk
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "22181:2181"
       - "32888:2888"
@@ -23,9 +23,9 @@ services:
     networks:
       - zk
     environment:
-      BROKER_ID: 1
-      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
     ports:
       - "19092:19092"
 
@@ -33,16 +33,16 @@ services:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 32181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 32181
 
   kafka-host:
     image: confluentinc/cp-kafka:latest
     network_mode: host
     environment:
-      BROKER_ID: 1
-      ZOOKEEPER_CONNECT: "localhost:32181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "localhost:32181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
 
   schema-registry-host:
     image: confluentinc/cp-schema-registry:latest
@@ -60,4 +60,3 @@ services:
       HOST_NAME: "schema-registry-bridge"
     ports:
       - "18081:8081"
-

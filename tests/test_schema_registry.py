@@ -7,7 +7,7 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "schema-registry")
-KAFKA_READY = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
+KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
 HEALTH_CHECK = "bash -c 'cub sr-ready {host} {port} 20 && echo PASS || echo FAIL'"
 POST_SCHEMA_CHECK = """curl -X POST -i -H "Content-Type: application/vnd.schemaregistry.v1+json" \
     --data '{"schema": "{\\"type\\": \\"string\\"}"}' \

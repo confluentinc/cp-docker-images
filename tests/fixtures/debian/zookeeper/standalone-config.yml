@@ -7,28 +7,28 @@ services:
   default-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
 
   full-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 22181
-      TICK_TIME: 5555
-      INIT_LIMIT: 25
-      SYNC_LIMIT: 20
-      QUORUM_LISTEN_ON_ALL_IPS: "false"
-      AUTO_PURGE_INTERVAL: 2
-      SNAP_RETAIN_COUNT: 4
-      LOG4J_LOGGERS: "zookeeper.foo.bar=DEBUG"
-      LOG4J_ROOT_LOGLEVEL: WARN
-      TOOLS_LOG4J_LOGLEVEL: ERROR
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 5555
+      ZOOKEEPER_INIT_LIMIT: 25
+      ZOOKEEPER_SYNC_LIMIT: 20
+      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: "false"
+      ZOOKEEPER_AUTO_PURGE_INTERVAL: 2
+      ZOOKEEPER_SNAP_RETAIN_COUNT: 4
+      ZOOKEEPER_LOG4J_LOGGERS: "zookeeper.foo.bar=DEBUG"
+      ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: WARN
+      ZOOKEEPER_TOOLS_LOG4J_LOGLEVEL: ERROR
 
   external-volumes:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
+      ZOOKEEPER_SERVER_ID: 1
     volumes:
       - /tmp/zk-config-test/data:/opt/zookeeper/data
       - /tmp/zk-config-test/log:/opt/zookeeper/log
@@ -36,20 +36,20 @@ services:
   random-user:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
+      ZOOKEEPER_SERVER_ID: 1
     user: "12345"
 
   kitchen-sink:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 22181
-      TICK_TIME: 5555
-      INIT_LIMIT: 25
-      SYNC_LIMIT: 20
-      QUORUM_LISTEN_ON_ALL_IPS: "false"
-      AUTO_PURGE_INTERVAL: 2
-      SNAP_RETAIN_COUNT: 4
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 5555
+      ZOOKEEPER_INIT_LIMIT: 25
+      ZOOKEEPER_SYNC_LIMIT: 20
+      ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: "false"
+      ZOOKEEPER_AUTO_PURGE_INTERVAL: 2
+      ZOOKEEPER_SNAP_RETAIN_COUNT: 4
     volumes:
       - /tmp/zk-config-kitchen-sink-test/data:/opt/zookeeper/data
       - /tmp/zk-config-kitchen-sink-test/log:/opt/zookeeper/log

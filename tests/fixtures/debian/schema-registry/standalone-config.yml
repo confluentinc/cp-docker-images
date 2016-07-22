@@ -4,7 +4,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 2
+      ZOOKEEPER_SERVER_ID: 2
 
   failing-config:
     image: confluentinc/cp-schema-registry:latest
@@ -17,9 +17,9 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     environment:
-      BROKER_ID: 1
-      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
 
   default-config:
     image: confluentinc/cp-schema-registry:latest

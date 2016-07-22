@@ -5,7 +5,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure SERVER_ID
+dub ensure ZOOKEEPER_SERVER_ID
 dub path /etc/kafka/ writable
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/kafka/${COMPONENT}.properties"

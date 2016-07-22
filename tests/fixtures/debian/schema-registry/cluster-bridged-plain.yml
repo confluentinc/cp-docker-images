@@ -9,9 +9,9 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      # ZK_SERVERS: "zookeeper-1:2888:3888"
-      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_SERVER_ID: 1
+      # ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888"
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
     networks:
       - zk
     ports:
@@ -22,8 +22,8 @@ services:
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 2
-      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
     networks:
       - zk
     ports:
@@ -34,8 +34,8 @@ services:
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 3
-      ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
     networks:
       - zk
     ports:
@@ -48,28 +48,28 @@ services:
     networks:
       - zk
     environment:
-      BROKER_ID: 1
-      # ZOOKEEPER_CONNECT: "zookeeper-1:2181"
-      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-1:9092"
+      KAFKA_BROKER_ID: 1
+      # KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-1:9092"
 
   kafka-2:
     image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
-      BROKER_ID: 2
-      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-2:9092"
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-2:9092"
 
   kafka-3:
     image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
-      BROKER_ID: 3
-      ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-3:9092"
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-3:9092"
 
   schema-registry-1:
     image: confluentinc/cp-schema-registry:latest
