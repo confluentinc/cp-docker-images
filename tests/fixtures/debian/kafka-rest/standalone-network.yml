@@ -48,14 +48,14 @@ services:
     image: confluentinc/cp-kafka-rest:latest
     network_mode: host
     environment:
-      ZOOKEEPER_CONNECT: "localhost:32181"
+      KAFKA_REST_ZOOKEEPER_CONNECT: "localhost:32181"
 
   kafka-rest-bridge:
     image: confluentinc/cp-kafka-rest:latest
     networks:
       - zk
     environment:
-      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
     ports:
       - "18082:8082"
 

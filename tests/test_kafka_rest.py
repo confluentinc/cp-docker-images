@@ -26,9 +26,9 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
         assert "PASS" in cls.cluster.run_command_on_service("kafka", KAFKA_READY.format(brokers=1))
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.cluster.shutdown()
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
 
     @classmethod
     def is_kafka_rest_healthy_for_service(cls, service):
@@ -36,7 +36,7 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("KAFKA_REST_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_rest_healthy_for_service("default-config")

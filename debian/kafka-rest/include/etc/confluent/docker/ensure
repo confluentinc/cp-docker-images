@@ -6,7 +6,7 @@ set -o nounset \
     -o xtrace
 
 echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$ZOOKEEPER_CONNECT" 20 10 2
+cub zk-ready "$KAFKA_REST_ZOOKEEPER_CONNECT" 20 10 2
 
 echo "===> Check if Kafka is healthy ..."
-cub kafka-ready "$ZOOKEEPER_CONNECT" 1 20 10 2 
+cub kafka-ready "$KAFKA_REST_ZOOKEEPER_CONNECT" 1 20 10 2 

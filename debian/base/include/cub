@@ -214,12 +214,11 @@ def check_kafka_rest_ready(host, port, service_timeout):
     if status:
 
         # Check if service is responding as expected to basic request
-        # We post some data to a topic and check for a valid response (assumes auto-topic generation enabled)
-        data = {'records':[{'value':{'foo':'bar'}}]}
-        url = "http://%s:%s/topics/testtopic" % (host, port)
-        headers = {'Content-type': 'application/vnd.kafka.json.v1+json'}
-        r = requests.post(url, data=json.dumps(data), headers=headers)
-        if r.status_code // 100 == 2 and 'value_schema_id' in str(r.text):
+        # Try to get topic list
+        # NOTE: this will only test ZK <> REST Proxy interaction
+        url = "http://%s:%s/topics" % (host, port)
+        r = requests.get(url)
+        if r.status_code // 100 == 2:
             return True
         else:
             print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)), file=sys.stderr)

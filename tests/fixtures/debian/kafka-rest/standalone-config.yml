@@ -19,4 +19,4 @@ services:
   default-config:
     image: confluentinc/cp-kafka-rest:latest
     environment:
-      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"

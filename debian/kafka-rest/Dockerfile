@@ -8,7 +8,7 @@ MAINTAINER partner-support@confluent.io
 EXPOSE 8082
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-${COMPONENT} \
+    && apt-get update && apt-get install -y confluent-${COMPONENT} \ 
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     && echo "===> Setting up ${COMPONENT} dirs" \
