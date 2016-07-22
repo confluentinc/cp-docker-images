@@ -7,7 +7,7 @@ networks:
 
 services:
   zookeeper-1:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 1
       # ZK_SERVERS: "zookeeper-1:2888:3888"
@@ -20,7 +20,7 @@ services:
       - "23888:3888"
 
   zookeeper-2:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 2
       ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
@@ -32,7 +32,7 @@ services:
       - "33888:3888"
 
   zookeeper-3:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     environment:
       SERVER_ID: 3
       ZK_SERVERS: "zookeeper-1:2888:3888;zookeeper-2:32888:33888;zookeeper-3:42888:43888"
@@ -44,7 +44,7 @@ services:
       - "43888:3888"
 
   kafka-1:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
@@ -54,7 +54,7 @@ services:
       ADVERTISED_LISTENERS: "PLAINTEXT://kafka-1:9092"
 
   kafka-2:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
@@ -63,7 +63,7 @@ services:
       ADVERTISED_LISTENERS: "PLAINTEXT://kafka-2:9092"
 
   kafka-3:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
@@ -72,7 +72,7 @@ services:
       ADVERTISED_LISTENERS: "PLAINTEXT://kafka-3:9092"
 
   schema-registry-1:
-    image: confluentinc/schema-registry:latest
+    image: confluentinc/cp-schema-registry:latest
     networks:
       - zk
     environment:
@@ -83,7 +83,7 @@ services:
       - "18081:8081"
 
   schema-registry-2:
-    image: confluentinc/schema-registry:latest
+    image: confluentinc/cp-schema-registry:latest
     networks:
       - zk
     environment:
@@ -94,7 +94,7 @@ services:
       - "28081:8081"
 
   schema-registry-3:
-    image: confluentinc/schema-registry:latest
+    image: confluentinc/cp-schema-registry:latest
     networks:
       - zk
     environment:
