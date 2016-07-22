@@ -1,4 +1,4 @@
-FROM confluentinc/base
+FROM confluentinc/cp-base
 
 EXPOSE 2181 2888 3888
 

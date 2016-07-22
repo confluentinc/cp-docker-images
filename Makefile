@@ -6,17 +6,29 @@ REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
 build-debian:
+	# We need to build images with confluentinc namespace so that dependent image builds dont fail
+	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
         echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build -t ${REPOSITORY}/$${component}:${VERSION} debian/$${component} || exit 1 ; \
-				docker tag ${REPOSITORY}/$${component}:${VERSION} ${REPOSITORY}/$${component}:latest || exit 1 ; \
+				docker build -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
   done
 
 build-test-images:
 	for component in `ls tests/images` ; do \
         echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build -t confluentinc/$${component}:${VERSION} tests/images/$${component} || exit 1 ; \
-				docker tag confluentinc/$${component}:${VERSION} confluentinc/$${component}:latest || exit 1 ; \
+				docker build -t confluentinc/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+  done
+
+push:
+	for component in ${COMPONENTS}; do \
+        echo "\n\nPushing ${REPOSITORY}/cp-$${component}:latest to ${REPOSITORY}\n==========================================\n " ; \
+				docker push ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
+				echo "\n\nPushing ${REPOSITORY}/cp-$${component}:${VERSION} to ${REPOSITORY}\n==========================================\n " ; \
+				docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
   done
 
 venv: venv/bin/activate
@@ -25,7 +37,7 @@ venv/bin/activate: tests/requirements.txt
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
-test-build: venv
+test-build: venv build-debian build-test-images
 	docker ps -a -q | xargs  docker rm -f
 	docker images -q | xargs  docker rmi -f
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v

@@ -16,6 +16,7 @@ GET_SCHEMAS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/subjects'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 
+
 class ConfigTest(unittest.TestCase):
 
     @classmethod
@@ -35,7 +36,7 @@ class ConfigTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
         assert "PASS" in output
 
     def test_required_config_failure(self):
@@ -63,6 +64,7 @@ class ConfigTest(unittest.TestCase):
             """
         self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
 
+
 class StandaloneNetworkingTest(unittest.TestCase):
 
     @classmethod
@@ -80,7 +82,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
         assert "PASS" in output
 
     def test_bridged_network(self):
@@ -88,7 +90,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_schema_registry_healthy_for_service("schema-registry-bridge")
         # Test from outside the container on host network
         logs = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="localhost", port=18081),
             host_config={'NetworkMode': 'host'})
 
@@ -96,7 +98,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
         # Test from outside the container on bridge network
         logs_2 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="schema-registry-bridge", port=8081),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
 
@@ -107,11 +109,12 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_schema_registry_healthy_for_service("schema-registry-host")
         # Test from outside the container
         logs = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="localhost", port=8081),
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs)
+
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
 
@@ -132,7 +135,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
         assert "PASS" in output
 
     def test_bridged_network(self):
@@ -143,30 +146,29 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
         # Test from outside the container on bridge network
         logs_1 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="schema-registry-1", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
-        
         self.assertTrue("PASS" in logs_1)
 
         logs_2 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="schema-registry-2", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
         self.assertTrue("PASS" in logs_2)
 
         logs_3 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="schema-registry-3", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
         self.assertTrue("PASS" in logs_3)
 
         # Test writing a schema on SR instance 1
-        schema_name_1= "are-unicorns-real-1"
+        schema_name_1 = "are-unicorns-real-1"
         logs_4 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("schema-registry-1", 8081, schema_name_1),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
@@ -174,7 +176,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_5 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="schema-registry-1", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
@@ -183,7 +185,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
         # Test writing a schema to SR instance 2
         schema_name_2 = "are-unicorns-real-2"
         logs_6 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("schema-registry-2", 8081, schema_name_2),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
@@ -191,7 +193,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_7 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="schema-registry-2", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
@@ -200,7 +202,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
         # Test writing a schema to SR instance 3
         schema_name_3 = "are-unicorns-real-3"
         logs_8 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("schema-registry-3", 8081, schema_name_3),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
@@ -208,11 +210,12 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_9 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="schema-registry-3", port=8081),
             host_config={'NetworkMode': 'cluster-bridged-test_zk'})
 
         self.assertTrue(schema_name_3 in logs_9)
+
 
 class ClusterHostNetworkTest(unittest.TestCase):
 
@@ -233,7 +236,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost",port=8081))
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
         assert "PASS" in output
 
     def test_host_network(self):
@@ -243,21 +246,21 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.is_schema_registry_healthy_for_service("schema-registry-3")
         # Test from outside the container
         logs_1 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="localhost", port=8081),
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs_1)
 
         logs_2 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="localhost", port=8082),
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs_2)
 
         logs_3 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=HEALTH_CHECK.format(host="localhost", port=8083),
             host_config={'NetworkMode': 'host'})
 
@@ -266,7 +269,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         # Test writing a schema to SR instance 1
         schema_name_1 = "are-unicorns-real-1"
         logs_4 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("localhost", 8081, schema_name_1),
             host_config={'NetworkMode': 'host'})
 
@@ -274,7 +277,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_5 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="localhost", port=8081),
             host_config={'NetworkMode': 'host'})
 
@@ -283,7 +286,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         # Test writing a schema to SR instance 2
         schema_name_2 = "are-unicorns-real-2"
         logs_6 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("localhost", 8082, schema_name_2),
             host_config={'NetworkMode': 'host'})
 
@@ -291,7 +294,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_7 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="localhost", port=8082),
             host_config={'NetworkMode': 'host'})
 
@@ -300,7 +303,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         # Test writing a schema to SR instance 3
         schema_name_3 = "are-unicorns-real-3"
         logs_8 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=POST_SCHEMA_CHECK % ("localhost", 8083, schema_name_3),
             host_config={'NetworkMode': 'host'})
 
@@ -308,7 +311,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         # Test reading all schemas and checking for the one we created
         logs_9 = utils.run_docker_command(
-            image="confluentinc/schema-registry",
+            image="confluentinc/cp-schema-registry",
             command=GET_SCHEMAS_CHECK.format(host="localhost", port=8083),
             host_config={'NetworkMode': 'host'})
 
