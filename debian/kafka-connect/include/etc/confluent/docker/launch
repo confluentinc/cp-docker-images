@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "===> Launching ${COMPONENT} ... "
-exec connect-distributed /etc/${COMPONENT}/${COMPONENT}.properties
+exec connect-distributed /etc/"${COMPONENT}"/"${COMPONENT}".properties

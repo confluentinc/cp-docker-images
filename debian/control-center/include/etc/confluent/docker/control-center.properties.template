@@ -45,8 +45,8 @@ confluent.controlcenter.internal.topics.replication={{env['CONTROL_CENTER_REPLIC
     'SSL_ENDPOINT_IDENTIFICATION_ALGORITHM': 'ssl.endpoint.identification.algorithm',
  } -%}
 
-{% for k, property in other_props.iteritems() %}
-	{% if env.get(k) != None %}
-		{{property}}={{env[k]}}
-	{% endif %}
-{% endfor %}
+ {% for k, property in other_props.iteritems() -%}
+ {% if env.get(k) != None -%}
+ {{property}}={{env[k]}}
+ {% endif -%}
+ {% endfor -%}

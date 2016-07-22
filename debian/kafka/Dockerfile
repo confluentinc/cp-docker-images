@@ -1,9 +1,11 @@
 FROM confluentinc/cp-zookeeper
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=kafka
 
-# primary, jmx
-EXPOSE 9092 7203
+# primary
+EXPOSE 9092
 
 RUN echo "===> Setting up ${COMPONENT} dirs..." \
    && mkdir -p /opt/${COMPONENT}/data /etc/${COMPONENT}/secrets\

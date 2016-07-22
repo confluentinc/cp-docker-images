@@ -54,3 +54,7 @@ test-kafka: venv build-debian build-test-images
 test-schema-registry: venv build-debian build-test-images
 	docker ps -a -q | xargs  docker rm -f
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
+
+test-kafka-rest: venv build-debian build-test-images
+	docker ps -a -q | xargs  docker rm -f
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v

@@ -4,25 +4,34 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 22181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 2
-      CLIENT_PORT: 32181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      SERVER_ID: 3
-      CLIENT_PORT: 42181
-      ZK_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 42181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "localhost:22888:23888;localhost:32888:33888;localhost:42888:43888"
     network_mode: host
 
   kerberos:
@@ -38,19 +47,19 @@ services:
     image: confluentinc/cp-kafka:latest
     network_mode: host
     environment:
-      BROKER_ID: 1
-      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
-      ADVERTISED_LISTENERS: "SASL_SSL://localhost:19094"
-      SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
-      SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
-      SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
-      SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
-      SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
-      SASL_ENABLED_MECHANISMS: GSSAPI
-      SASL_KERBEROS_SERVICE_NAME: kafka
-      LOG4J_ROOT_LOGLEVEL: DEBUG
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
+      KAFKA_ADVERTISED_LISTENERS: "SASL_SSL://localhost:19094"
+      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
+      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
+      KAFKA_SASL_ENABLED_MECHANISMS: GSSAPI
+      KAFKA_SASL_KERBEROS_SERVICE_NAME: kafka
+      KAFKA_LOG4J_ROOT_LOGLEVEL: DEBUG
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"
     volumes:
       - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets
@@ -59,19 +68,19 @@ services:
     image: confluentinc/cp-kafka:latest
     network_mode: host
     environment:
-      BROKER_ID: 2
-      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
-      ADVERTISED_LISTENERS: "SASL_SSL://localhost:29094"
-      SSL_KEYSTORE_FILENAME: "kafka.broker2.keystore.jks"
-      SSL_KEYSTORE_CREDENTIALS: "broker2_keystore_creds"
-      SSL_KEY_CREDENTIALS: "broker2_sslkey_creds"
-      SSL_TRUSTSTORE_FILENAME: "kafka.broker2.truststore.jks"
-      SSL_TRUSTSTORE_CREDENTIALS: "broker2_truststore_creds"
-      SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
-      SASL_ENABLED_MECHANISMS: GSSAPI
-      SASL_KERBEROS_SERVICE_NAME: kafka
-      LOG4J_ROOT_LOGLEVEL: DEBUG
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
+      KAFKA_ADVERTISED_LISTENERS: "SASL_SSL://localhost:29094"
+      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker2.keystore.jks"
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker2_keystore_creds"
+      KAFKA_SSL_KEY_CREDENTIALS: "broker2_sslkey_creds"
+      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker2.truststore.jks"
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: "broker2_truststore_creds"
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
+      KAFKA_SASL_ENABLED_MECHANISMS: GSSAPI
+      KAFKA_SASL_KERBEROS_SERVICE_NAME: kafka
+      KAFKA_LOG4J_ROOT_LOGLEVEL: DEBUG
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker2_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"
     volumes:
       - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets
@@ -81,19 +90,19 @@ services:
     image: confluentinc/cp-kafka:latest
     network_mode: host
     environment:
-      BROKER_ID: 3
-      ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
-      ADVERTISED_LISTENERS: "SASL_SSL://localhost:39094"
-      SSL_KEYSTORE_FILENAME: "kafka.broker3.keystore.jks"
-      SSL_KEYSTORE_CREDENTIALS: "broker3_keystore_creds"
-      SSL_KEY_CREDENTIALS: "broker3_sslkey_creds"
-      SSL_TRUSTSTORE_FILENAME: "kafka.broker3.truststore.jks"
-      SSL_TRUSTSTORE_CREDENTIALS: "broker3_truststore_creds"
-      SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
-      SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
-      SASL_ENABLED_MECHANISMS: GSSAPI
-      SASL_KERBEROS_SERVICE_NAME: kafka
-      LOG4J_ROOT_LOGLEVEL: DEBUG
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: "localhost:22181,localhost:32181,localhost:42181/saslssl"
+      KAFKA_ADVERTISED_LISTENERS: "SASL_SSL://localhost:39094"
+      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker3.keystore.jks"
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker3_keystore_creds"
+      KAFKA_SSL_KEY_CREDENTIALS: "broker3_sslkey_creds"
+      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker3.truststore.jks"
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: "broker3_truststore_creds"
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
+      KAFKA_SASL_ENABLED_MECHANISMS: GSSAPI
+      KAFKA_SASL_KERBEROS_SERVICE_NAME: kafka
+      KAFKA_LOG4J_ROOT_LOGLEVEL: DEBUG
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"
     volumes:
       - /tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets

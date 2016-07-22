@@ -44,19 +44,17 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "localhost:32181"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
 
-  schema-registry-host:
-    image: confluentinc/cp-schema-registry:latest
+  kafka-rest-host:
+    image: confluentinc/cp-kafka-rest:latest
     network_mode: host
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "localhost:32181"
-      SCHEMA_REGISTRY_HOST_NAME: "localhost"
+      KAFKA_REST_ZOOKEEPER_CONNECT: "localhost:32181"
 
-  schema-registry-bridge:
-    image: confluentinc/cp-schema-registry:latest
+  kafka-rest-bridge:
+    image: confluentinc/cp-kafka-rest:latest
     networks:
       - zk
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper-bridge:2181"
-      SCHEMA_REGISTRY_HOST_NAME: "schema-registry-bridge"
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
     ports:
-      - "18081:8081"
+      - "18082:8082"

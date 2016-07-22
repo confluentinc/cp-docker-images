@@ -1,12 +1,14 @@
 FROM confluentinc/cp-base
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=kafka-rest
 
-# default listener 
+# default listener
 EXPOSE 8082
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-${COMPONENT} \
+    && apt-get update && apt-get install -y confluent-${COMPONENT}=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     && echo "===> Setting up ${COMPONENT} dirs" \
