@@ -11,8 +11,8 @@ services:
     networks:
       - zk
     environment:
-      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
       - "32888:2888"
@@ -33,8 +33,8 @@ services:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
-      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka-host:
     image: confluentinc/cp-kafka:latest

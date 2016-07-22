@@ -4,10 +4,39 @@ services:
   failing-config:
     image: confluentinc/cp-zookeeper:latest
 
+  failing-config-ticktime:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  failing-config-server-id:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVERS: abc:111:111
+
+  failing-config-init-limit:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVERS: abc:111:111
+      ZOOKEEPER_SERVER_ID: 1
+
+  failing-config-sync-limit:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVERS: abc:111:111
+      ZOOKEEPER_INIT_LIMIT: 20
+      ZOOKEEPER_SERVER_ID: 1
+
   default-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
 
   full-config:
@@ -19,8 +48,8 @@ services:
       ZOOKEEPER_INIT_LIMIT: 25
       ZOOKEEPER_SYNC_LIMIT: 20
       ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS: "false"
-      ZOOKEEPER_AUTO_PURGE_INTERVAL: 2
-      ZOOKEEPER_SNAP_RETAIN_COUNT: 4
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: 2
+      ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT: 4
       ZOOKEEPER_LOG4J_LOGGERS: "zookeeper.foo.bar=DEBUG"
       ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: WARN
       ZOOKEEPER_TOOLS_LOG4J_LOGLEVEL: ERROR
@@ -29,6 +58,8 @@ services:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
     volumes:
       - /tmp/zk-config-test/data:/opt/zookeeper/data
       - /tmp/zk-config-test/log:/opt/zookeeper/log
@@ -36,7 +67,8 @@ services:
   random-user:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
     user: "12345"
 
   kitchen-sink:

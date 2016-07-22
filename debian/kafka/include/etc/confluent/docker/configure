@@ -5,7 +5,6 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure KAFKA_BROKER_ID
 dub ensure KAFKA_ZOOKEEPER_CONNECT
 dub ensure KAFKA_ADVERTISED_LISTENERS
 

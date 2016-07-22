@@ -1,10 +1,10 @@
-broker.id={{env['KAFKA_BROKER_ID']}}
 advertised.listeners={{env['KAFKA_ADVERTISED_LISTENERS']}}
 listeners={{ env['KAFKA_LISTENERS'] | default(env['KAFKA_ADVERTISED_LISTENERS']) }}
 log.dirs={{ env['KAFKA_LOG_DIRS'] | default('/opt/kafka/data') }}
 zookeeper.connect={{env['KAFKA_ZOOKEEPER_CONNECT']}}
 
 {% set other_props = {
+ 'KAFKA_BROKER_ID': 'broker.id',
  'KAFKA_AUTHORIZER_CLASS_NAME': 'authorizer.class.name',
  'KAFKA_AUTO_CREATE_TOPICS_ENABLE': 'auto.create.topics.enable',
  'KAFKA_AUTO_LEADER_REBALANCE_ENABLE': 'auto.leader.rebalance.enable',
@@ -127,7 +127,11 @@ zookeeper.connect={{env['KAFKA_ZOOKEEPER_CONNECT']}}
  'KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS': 'zookeeper.connection.timeout.ms',
  'KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS': 'zookeeper.session.timeout.ms',
  'KAFKA_ZOOKEEPER_SET_ACL': 'zookeeper.set.acl',
- 'KAFKA_ZOOKEEPER_SYNC_TIME_MS': 'zookeeper.sync.time.ms'
+ 'KAFKA_ZOOKEEPER_SYNC_TIME_MS': 'zookeeper.sync.time.ms',
+ 'CONFLUENT_SUPPORT_METRICS_ENABLE' : 'confluent.support.metrics.enable',
+ 'CONFLUENT_SUPPORT_CUSTOMER_ID' : 'confluent.support.customer.id',
+ 'CONFLUENT_SUPPORT_METRICS_TOPIC' : 'confluent.support.metrics.topic',
+ 'CONFLUENT_SUPPORT_METRICS_REPORT_INTERVAL_HOURS' : 'confluent.support.metrics.report.interval.hours'
  } -%}
 
 {% for k, property in other_props.iteritems() -%}

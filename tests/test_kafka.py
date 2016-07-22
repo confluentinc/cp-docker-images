@@ -100,7 +100,6 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("KAFKA_BROKER_ID is required." in self.cluster.service_logs("failing-config", stopped=True))
         self.assertTrue("KAFKA_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-zk-connect", stopped=True))
         self.assertTrue("KAFKA_ADVERTISED_LISTENERS is required." in self.cluster.service_logs("failing-config-adv-listeners", stopped=True))
         # Deprecated props.
@@ -121,13 +120,22 @@ class ConfigTest(unittest.TestCase):
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
         props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/kafka.properties")
-        expected = """broker.id=1
+        expected = """
             advertised.listeners=PLAINTEXT://default-config:9092
             listeners=PLAINTEXT://0.0.0.0:9092
             log.dirs=/opt/kafka/data
             zookeeper.connect=zookeeper:2181/defaultconfig
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-kafkacat",
+            command=KAFKA_CHECK.format(host="default-config", port=9092),
+            host_config={'NetworkMode': 'config-test_default'})
+
+        parsed_logs = json.loads(logs)
+        expected_brokers = [{"id": 1001, "name": "default-config:9092"}]
+        self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
     def test_default_logging_config(self):
         self.is_kafka_healthy_for_service("default-config", 1)
@@ -164,11 +172,12 @@ class ConfigTest(unittest.TestCase):
     def test_full_config(self):
         self.is_kafka_healthy_for_service("full-config", 1)
         props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/kafka.properties")
-        expected = """broker.id=1
+        expected = """
                 advertised.listeners=PLAINTEXT://full-config:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/fullconfig
+                broker.id=1
                 """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
@@ -214,50 +223,53 @@ class ConfigTest(unittest.TestCase):
     def test_kitchen_sink(self):
         self.is_kafka_healthy_for_service("kitchen-sink", 1)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/kafka.properties")
-        expected = """broker.id=1
+        expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
+                broker.id=1
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_ssl_config(self):
         self.is_kafka_healthy_for_service("ssl-config", 1)
         zk_props = self.cluster.run_command_on_service("ssl-config", "cat /etc/kafka/kafka.properties")
-        expected = """broker.id=1
+        expected = """
                 advertised.listeners=SSL://ssl-config:9092
                 listeners=SSL://0.0.0.0:9092
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/sslconfig
 
-                ssl.keystore.password=confluent
-                ssl.truststore.password=confluent
-                ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
-                ssl.key.password=confluent
-                security.inter.broker.protocol=SSL
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                security.inter.broker.protocol=SSL
+                ssl.keystore.password=confluent
+                ssl.key.password=confluent
+                ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
+                ssl.truststore.password=confluent
+                broker.id=1
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_sasl_config(self):
         self.is_kafka_healthy_for_service("sasl-ssl-config", 1)
         zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "cat /etc/kafka/kafka.properties")
-        expected = """broker.id=1
+        expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
                 listeners=SSL://0.0.0.0:9092,SASL_SSL://0.0.0.0:9094
                 log.dirs=/opt/kafka/data
                 zookeeper.connect=zookeeper:2181/sslsaslconfig
 
+                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                security.inter.broker.protocol=SASL_SSL
                 sasl.kerberos.service.name=broker1
                 ssl.keystore.password=confluent
-                sasl.mechanism.inter.broker.protocol=GSSAPI
-                ssl.truststore.password=confluent
-                ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
                 ssl.key.password=confluent
+                ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
+                ssl.truststore.password=confluent
                 sasl.enabled.mechanisms=GSSAPI
-                security.inter.broker.protocol=SASL_SSL
-                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                broker.id=1
+                sasl.mechanism.inter.broker.protocol=GSSAPI
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
