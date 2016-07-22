@@ -1,0 +1,63 @@
+version: "2"
+
+networks:
+  zk:
+    # Use a custom driver
+    driver: bridge
+
+services:
+  zookeeper-bridge:
+    image: confluentinc/zookeeper:latest
+    networks:
+      - zk
+    environment:
+      SERVER_ID: 1
+      CLIENT_PORT: 2181
+    ports:
+      - "22181:2181"
+      - "32888:2888"
+      - "33888:3888"
+
+  kafka-bridge:
+    image: confluentinc/kafka:latest
+    networks:
+      - zk
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
+    ports:
+      - "19092:19092"
+
+  zookeeper-host:
+    image: confluentinc/zookeeper:latest
+    network_mode: host
+    environment:
+      SERVER_ID: 1
+      CLIENT_PORT: 32181
+
+  kafka-host:
+    image: confluentinc/kafka:latest
+    network_mode: host
+    environment:
+      BROKER_ID: 1
+      ZOOKEEPER_CONNECT: "localhost:32181"
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:29092"
+
+  schema-registry-host:
+    image: confluentinc/schema-registry:latest
+    network_mode: host
+    environment:
+      KAFKASTORE_CONNECTION_URL: "localhost:32181"
+      HOST_NAME: "localhost"
+
+  schema-registry-bridge:
+    image: confluentinc/schema-registry:latest
+    networks:
+      - zk
+    environment:
+      KAFKASTORE_CONNECTION_URL: "zookeeper-bridge:2181"
+      HOST_NAME: "schema-registry-bridge"
+    ports:
+      - "18081:8081"
+

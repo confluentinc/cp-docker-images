@@ -26,6 +26,7 @@ RUN echo "===> update debian ....." \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir jinja2 \
                                   kazoo \
+                                  requests \
     \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
