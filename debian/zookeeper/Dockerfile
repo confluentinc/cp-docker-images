@@ -2,6 +2,8 @@ FROM confluentinc/cp-base
 
 EXPOSE 2181 2888 3888
 
+MAINTAINER partner-support@confluent.io
+
 ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \

@@ -2,7 +2,7 @@
 
 FROM confluentinc/cp-base
 
-MAINTAINER contact@confluent.io
+MAINTAINER partner-support@confluent.io
 
 ENV COMPONENT=schema-registry
 

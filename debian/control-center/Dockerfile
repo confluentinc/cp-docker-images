@@ -2,7 +2,7 @@
 
 FROM confluentinc/cp-base
 
-MAINTAINER contact@confluent.io
+MAINTAINER partner-support@confluent.io
 
 ENV COMPONENT=control-center
 ENV CONTROL_CENTER_DATA_DIR=/var/lib/${COMPONENT}

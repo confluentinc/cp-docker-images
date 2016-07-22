@@ -2,6 +2,8 @@ FROM confluentinc/cp-base
 
 ENV COMPONENT=kafka-rest
 
+MAINTAINER partner-support@confluent.io
+
 # default listener 
 EXPOSE 8082
 
