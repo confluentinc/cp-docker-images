@@ -8,6 +8,10 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "zookeeper")
 QUORUM_CHECK = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep not && echo notready'"
 MODE_COMMAND = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep Mode'"
+JMX_CHECK = """bash -c "\
+    echo 'get -b org.apache.ZooKeeperService:name0=StandaloneServer_port-1 Version' |
+        java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
+"""
 
 
 class ConfigTest(unittest.TestCase):
@@ -176,6 +180,24 @@ class StandaloneNetworkingTest(unittest.TestCase):
             command=MODE_COMMAND.format(port=32181),
             host_config={'NetworkMode': 'host'})
         self.assertEquals("Mode: standalone\n", logs)
+
+    def test_jmx_host_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port="39999"),
+            host_config={'NetworkMode': 'host'})
+        self.assertTrue("Version = 3.4.6-1569965, built on 02/20/2014 09:09 GMT;" in logs)
+
+    def test_jmx_bridged_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="bridge-network-jmx", jmx_port="9999"),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+        self.assertTrue("Version = 3.4.6-1569965, built on 02/20/2014 09:09 GMT;" in logs)
 
 
 class ClusterBridgeNetworkTest(unittest.TestCase):

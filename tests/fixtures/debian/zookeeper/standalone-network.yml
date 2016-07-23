@@ -1,9 +1,13 @@
 ---
 version: '2'
+networks:
+  zk:
+    driver: bridge
 services:
   bridge-network:
     image: confluentinc/cp-zookeeper:latest
-    network_mode: bridge
+    networks:
+    - zk
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -19,5 +23,29 @@ services:
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 32181
+    labels:
+    - io.confluent.docker.testing=true
+  bridge-network-jmx:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+    - zk
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_JMX_PORT: 9999
+    ports:
+    - 42181:2181
+    - 42888:2888
+    - 43888:3888
+    - 9999:9999
+    labels:
+    - io.confluent.docker.testing=true
+  host-network-jmx:
+    image: confluentinc/cp-zookeeper:latest
+    network_mode: host
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 52181
+      KAFKA_JMX_PORT: 39999
     labels:
     - io.confluent.docker.testing=true
