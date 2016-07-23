@@ -9,16 +9,19 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
     - io.confluent.docker.testing=true
+
   failing-config:
     image: confluentinc/cp-kafka:latest
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-zk-connect:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-adv-listeners:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -26,6 +29,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: something
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-adv-port:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -35,6 +39,7 @@ services:
       KAFKA_ADVERTISED_PORT: kafka
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-adv-hostname:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -44,6 +49,7 @@ services:
       KAFKA_ADVERTISED_HOST: kafka
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-port:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -53,6 +59,7 @@ services:
       KAFKA_PORT: kafka
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ssl-keystore:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -61,6 +68,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ssl-key-password:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -72,6 +80,7 @@ services:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ssl-keystore-password:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -84,6 +93,7 @@ services:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ssl-truststore:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -97,6 +107,7 @@ services:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-sasl-jaas:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -105,6 +116,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://foo:9092
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-sasl-missing-prop:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -114,6 +126,7 @@ services:
       KAFKA_OPTS: blah
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ssl-truststore-password:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -128,6 +141,7 @@ services:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-host:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -137,6 +151,7 @@ services:
       KAFKA_HOST: kafka
     labels:
     - io.confluent.docker.testing=true
+
   default-config:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -144,6 +159,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://default-config:9092
     labels:
     - io.confluent.docker.testing=true
+
   full-config:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -155,6 +171,7 @@ services:
       KAFKA_TOOLS_LOG4J_LOGLEVEL: ERROR
     labels:
     - io.confluent.docker.testing=true
+
   external-volumes:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -165,6 +182,7 @@ services:
     - /tmp/kafka-config-test/data:/var/lib/kafka/data
     labels:
     - io.confluent.docker.testing=true
+
   random-user:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -174,6 +192,7 @@ services:
     user: '12345'
     labels:
     - io.confluent.docker.testing=true
+
   kitchen-sink:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -185,6 +204,7 @@ services:
     user: '12345'
     labels:
     - io.confluent.docker.testing=true
+
   ssl-config:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -201,6 +221,7 @@ services:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   kerberos:
     image: confluentinc/cp-kerberos
     environment:
@@ -210,6 +231,7 @@ services:
     - /dev/urandom:/dev/random
     labels:
     - io.confluent.docker.testing=true
+
   sasl-ssl-config:
     image: confluentinc/cp-kafka:latest
     environment:
