@@ -6,8 +6,8 @@ set -o nounset \
     -o xtrace
 
 
-echo "===> Check if /opt/zookeeper/data is writable ..."
-dub path /opt/zookeeper/data writable
+echo "===> Check if /var/lib/zookeeper/data is writable ..."
+dub path /var/lib/zookeeper/data writable
 
-echo "===> Check if /opt/zookeeper/log is writable ..."
-dub path /opt/zookeeper/log writable
+echo "===> Check if /var/lib/zookeeper/log is writable ..."
+dub path /var/lib/zookeeper/log writable

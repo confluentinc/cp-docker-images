@@ -44,8 +44,8 @@ class ConfigTest(unittest.TestCase):
         import string
         zk_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/zookeeper.properties")
         expected = """clientPort=2181
-            dataDir=/opt/zookeeper/data
-            dataLogDir=/opt/zookeeper/log
+            dataDir=/var/lib/zookeeper/data
+            dataLogDir=/var/lib/zookeeper/log
             tickTime=2000
             """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
@@ -76,8 +76,8 @@ class ConfigTest(unittest.TestCase):
         self.is_zk_healthy_for_service("full-config", 22181)
         zk_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/zookeeper.properties")
         expected = """clientPort=22181
-                dataDir=/opt/zookeeper/data
-                dataLogDir=/opt/zookeeper/log
+                dataDir=/var/lib/zookeeper/data
+                dataLogDir=/var/lib/zookeeper/log
                 tickTime=5555
 
 
@@ -89,7 +89,7 @@ class ConfigTest(unittest.TestCase):
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
-        zk_id = self.cluster.run_command_on_service("full-config", "cat /opt/zookeeper/data/myid")
+        zk_id = self.cluster.run_command_on_service("full-config", "cat /var/lib/zookeeper/data/myid")
         self.assertEquals(zk_id, "1")
 
     def test_full_logging_config(self):
@@ -126,8 +126,8 @@ class ConfigTest(unittest.TestCase):
         self.is_zk_healthy_for_service("kitchen-sink", 22181)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/zookeeper.properties")
         expected = """clientPort=22181
-                    dataDir=/opt/zookeeper/data
-                    dataLogDir=/opt/zookeeper/log
+                    dataDir=/var/lib/zookeeper/data
+                    dataLogDir=/var/lib/zookeeper/log
                     tickTime=5555
 
 
@@ -137,7 +137,7 @@ class ConfigTest(unittest.TestCase):
                     """
         self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
 
-        zk_id = self.cluster.run_command_on_service("full-config", "cat /opt/zookeeper/data/myid")
+        zk_id = self.cluster.run_command_on_service("full-config", "cat /var/lib/zookeeper/data/myid")
         self.assertTrue(zk_id == "1")
 
 

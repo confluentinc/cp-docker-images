@@ -2,8 +2,8 @@
 
 if [[ -n "${ZOOKEEPER_SERVER_ID-}" ]]
 then
-  echo "===> Printing /opt/${COMPONENT}/data/myid "
-  cat /opt/"${COMPONENT}"/data/myid
+  echo "===> Printing /var/lib/${COMPONENT}/data/myid "
+  cat /var/lib/"${COMPONENT}"/data/myid
 fi
 
 echo "===> Launching ${COMPONENT} ... "

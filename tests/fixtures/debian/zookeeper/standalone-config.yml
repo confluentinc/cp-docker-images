@@ -68,8 +68,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     volumes:
-    - /tmp/zk-config-test/data:/opt/zookeeper/data
-    - /tmp/zk-config-test/log:/opt/zookeeper/log
+    - /tmp/zk-config-test/data:/var/lib/zookeeper/data
+    - /tmp/zk-config-test/log:/var/lib/zookeeper/log
     labels:
     - io.confluent.docker.testing=true
   random-user:
@@ -92,8 +92,8 @@ services:
       ZOOKEEPER_AUTO_PURGE_INTERVAL: 2
       ZOOKEEPER_SNAP_RETAIN_COUNT: 4
     volumes:
-    - /tmp/zk-config-kitchen-sink-test/data:/opt/zookeeper/data
-    - /tmp/zk-config-kitchen-sink-test/log:/opt/zookeeper/log
+    - /tmp/zk-config-kitchen-sink-test/data:/var/lib/zookeeper/data
+    - /tmp/zk-config-kitchen-sink-test/log:/var/lib/zookeeper/log
     user: '12345'
     labels:
     - io.confluent.docker.testing=true
