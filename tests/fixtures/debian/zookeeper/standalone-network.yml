@@ -1,20 +1,23 @@
-version: "2"
-
+---
+version: '2'
 services:
   bridge-network:
     image: confluentinc/cp-zookeeper:latest
-    network_mode: "bridge"
+    network_mode: bridge
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
-      - "22181:2181"
-      - "32888:2888"
-      - "33888:3888"
-
+    - 22181:2181
+    - 32888:2888
+    - 33888:3888
+    labels:
+    - io.confluent.docker.testing=true
   host-network:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 32181
+    labels:
+    - io.confluent.docker.testing=true
