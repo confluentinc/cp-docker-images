@@ -1,5 +1,5 @@
-version: "2"
-
+---
+version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -7,202 +7,227 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config:
     image: confluentinc/cp-kafka:latest
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-zk-connect:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-adv-listeners:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "something"
-
+      KAFKA_ZOOKEEPER_CONNECT: something
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-adv-port:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
-      KAFKA_ADVERTISED_PORT: "kafka"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://foo:9092
+      KAFKA_ADVERTISED_PORT: kafka
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-adv-hostname:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
-      KAFKA_ADVERTISED_HOST: "kafka"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://foo:9092
+      KAFKA_ADVERTISED_HOST: kafka
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-port:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
-      KAFKA_PORT: "kafka"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://foo:9092
+      KAFKA_PORT: kafka
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ssl-keystore:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://foo:9092"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ssl-key-password:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://foo:9092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
-
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ssl-keystore-password:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://foo:9092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
+      KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
-
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ssl-truststore:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://foo:9092"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
-      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
-
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-sasl-jaas:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "SASL_PLAINTEXT://foo:9092"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://foo:9092
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-sasl-missing-prop:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "SASL_PLAINTEXT://foo:9092"
-      KAFKA_OPTS: "blah"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://foo:9092
+      KAFKA_OPTS: blah
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-ssl-truststore-password:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://foo:9092"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
-      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
-      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: SSL://foo:9092
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
-
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
   failing-config-host:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://foo:9092"
-      KAFKA_HOST: "kafka"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://foo:9092
+      KAFKA_HOST: kafka
+    labels:
+    - io.confluent.docker.testing=true
   default-config:
     image: confluentinc/cp-kafka:latest
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://default-config:9092"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://default-config:9092
+    labels:
+    - io.confluent.docker.testing=true
   full-config:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/fullconfig"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://full-config:9092"
-      KAFKA_LOG4J_LOGGERS: "kafka.controller=WARN,kafka.foo.bar=DEBUG"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/fullconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://full-config:9092
+      KAFKA_LOG4J_LOGGERS: kafka.controller=WARN,kafka.foo.bar=DEBUG
       KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
       KAFKA_TOOLS_LOG4J_LOGLEVEL: ERROR
-
+    labels:
+    - io.confluent.docker.testing=true
   external-volumes:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/externalvolumes"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://external-volumes:9092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/externalvolumes
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://external-volumes:9092
     volumes:
-      - /tmp/kafka-config-test/data:/var/lib/kafka/data
-
+    - /tmp/kafka-config-test/data:/var/lib/kafka/data
+    labels:
+    - io.confluent.docker.testing=true
   random-user:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/randomuser"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://random-user:9092"
-    user: "12345"
-
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/randomuser
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://random-user:9092
+    user: '12345'
+    labels:
+    - io.confluent.docker.testing=true
   kitchen-sink:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/kitchensink"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kitchen-sink:9092"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/kitchensink
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kitchen-sink:9092
     volumes:
-      - /tmp/kafka-config-kitchen-sink-test/data:/var/lib/kafka/data
-    user: "12345"
-
+    - /tmp/kafka-config-kitchen-sink-test/data:/var/lib/kafka/data
+    user: '12345'
+    labels:
+    - io.confluent.docker.testing=true
   ssl-config:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/sslconfig"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://ssl-config:9092"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
-      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
-      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/sslconfig
+      KAFKA_ADVERTISED_LISTENERS: SSL://ssl-config:9092
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
-
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
   kerberos:
     image: confluentinc/cp-kerberos
     environment:
       BOOTSTRAP: 0
     volumes:
-      - /tmp/kafka-config-test/secrets:/tmp/keytab
-      - /dev/urandom:/dev/random
-
+    - /tmp/kafka-config-test/secrets:/tmp/keytab
+    - /dev/urandom:/dev/random
+    labels:
+    - io.confluent.docker.testing=true
   sasl-ssl-config:
     image: confluentinc/cp-kafka:latest
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/sslsaslconfig"
-      KAFKA_ADVERTISED_LISTENERS: "SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094"
-      KAFKA_SSL_KEYSTORE_FILENAME: "kafka.broker1.keystore.jks"
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: "broker1_keystore_creds"
-      KAFKA_SSL_KEY_CREDENTIALS: "broker1_sslkey_creds"
-      KAFKA_SSL_TRUSTSTORE_FILENAME: "kafka.broker1.truststore.jks"
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: "broker1_truststore_creds"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/sslsaslconfig
+      KAFKA_ADVERTISED_LISTENERS: SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
       KAFKA_SASL_ENABLED_MECHANISMS: GSSAPI
       KAFKA_SASL_KERBEROS_SERVICE_NAME: broker1
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/config_server1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/config_krb.conf"
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/config_server1_jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/config_krb.conf
     volumes:
-      - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true

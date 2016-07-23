@@ -3,6 +3,7 @@
 FROM confluentinc/cp-kafka
 
 MAINTAINER partner-support@confluent.io
+LABEL io.confluent.docker=true
 
 ENV COMPONENT=kafka-connect
 
