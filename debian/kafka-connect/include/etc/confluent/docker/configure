@@ -11,6 +11,12 @@ dub ensure CONNECT_GROUP_ID
 dub ensure CONNECT_CONFIG_STORAGE_TOPIC
 dub ensure CONNECT_OFFSET_STORAGE_TOPIC
 dub ensure CONNECT_STATUS_STORAGE_TOPIC
+dub ensure CONNECT_KEY_CONVERTER
+dub ensure CONNECT_VALUE_CONVERTER
+dub ensure CONNECT_INTERNAL_KEY_CONVERTER
+dub ensure CONNECT_INTERNAL_VALUE_CONVERTER
+# Required for zk-ready and kafka-ready checks
+dub ensure CONNECT_ZOOKEEPER_CONNECT
 
 dub path /etc/"${COMPONENT}"/ writable
 

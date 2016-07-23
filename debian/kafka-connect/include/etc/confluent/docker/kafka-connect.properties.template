@@ -7,12 +7,14 @@ group.id={{env['CONNECT_GROUP_ID']}}
 config.storage.topic={{env['CONNECT_CONFIG_STORAGE_TOPIC']}}
 offset.storage.topic={{env['CONNECT_OFFSET_STORAGE_TOPIC']}}
 status.storage.topic={{env['CONNECT_STATUS_STORAGE_TOPIC']}}
+key.converter={{env['CONNECT_KEY_CONVERTER']}}
+value.converter={{env['CONNECT_VALUE_CONVERTER']}}
+internal.key.converter={{env['CONNECT_INTERNAL_KEY_CONVERTER']}}
+internal.value.converter={{env['CONNECT_INTERNAL_VALUE_CONVERTER']}}
 
 {# optional properties #}
 {% set other_props = {
-	'CONNECT_KEY_CONVERTER': 'key.converter',
-	'CONNECT_VALUE_CONVERTER': 'value.converter',
-	'CONNECT_INTERNAL_KEY_CONVERTER': 'internal.key.converter',
+
 	'CONNECT_OFFSET_FLUSH_INTERVAL_MS': 'offset.flush.interval.ms',
 	'CONNECT_OFFSET_FLUSH_TIMEOUT_MS': 'offset.flush.timeout.ms',
 	'CONNECT_REST_ADVERTISED_HOST_NAME': 'rest.advertised.host.name',
@@ -23,21 +25,21 @@ status.storage.topic={{env['CONNECT_STATUS_STORAGE_TOPIC']}}
 	'CONNECT_SESSION_TIMEOUT_MS': 'session.timeout.ms',
 	'CONNECT_CONNECTIONS_MAX_IDLE_MS': 'connections.max.idle.ms',
 	'CONNECT_RECEIVE_BUFFER_BYTES': 'receive.buffer.bytes',
-	'CONNECT_REQUEST_TIMEOUT_MS': 'request.timeout.ms', 
-	'CONNECT_SECURITY_PROTOCOL': 'security.protocol', 
+	'CONNECT_REQUEST_TIMEOUT_MS': 'request.timeout.ms',
+	'CONNECT_SECURITY_PROTOCOL': 'security.protocol',
 	'CONNECT_SEND_BUFFER_BYTES': 'send.buffer.bytes',
-	'CONNECT_WORKER_SYNC_TIMEOUT_MS': 'worker.sync.timeout.ms', 
-	'CONNECT_WORKER_UNSYNC_BACKOFF_MS': 'worker.unsync.backoff.ms', 
-	'CONNECT_CLIENT_ID': 'client.id', 
+	'CONNECT_WORKER_SYNC_TIMEOUT_MS': 'worker.sync.timeout.ms',
+	'CONNECT_WORKER_UNSYNC_BACKOFF_MS': 'worker.unsync.backoff.ms',
+	'CONNECT_CLIENT_ID': 'client.id',
 	'CONNECT_METADATA_MAX_AGE_MS': 'metadata.max.age.ms',
-	'CONNECT_METRIC_REPORTERS': 'metric.reporters', 
-	'CONNECT_METRICS_NUM_SAMPLES': 'metrics.num.samples', 
-	'CONNECT_METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms', 
-	'CONNECT_RECONNECT_BACKOFF_MS': 'retry.backoff.ms'	
+	'CONNECT_METRIC_REPORTERS': 'metric.reporters',
+	'CONNECT_METRICS_NUM_SAMPLES': 'metrics.num.samples',
+	'CONNECT_METRICS_SAMPLE_WINDOW_MS': 'metrics.sample.window.ms',
+	'CONNECT_RECONNECT_BACKOFF_MS': 'retry.backoff.ms'
  } -%}
 
-{% for k, property in other_props.iteritems() %}
-	{% if env.get(k) != None %}
-		{{property}}={{env[k]}}
-	{% endif %}
-{% endfor %}
+{% for k, property in other_props.iteritems() -%}
+{% if env.get(k) != None -%}
+{{property}}={{env[k]}}
+{% endif -%}
+{% endfor -%}
