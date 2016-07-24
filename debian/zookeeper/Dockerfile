@@ -15,10 +15,10 @@ RUN echo "===> installing ${COMPONENT}..." \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
-    && mkdir -p /opt/${COMPONENT}/data /opt/${COMPONENT}/log \
-    && chmod -R ag+w /etc/kafka /opt/${COMPONENT}/data /opt/${COMPONENT}/log
+    && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log \
+    && chmod -R ag+w /etc/kafka /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log
 
-VOLUME ["/opt/${COMPONENT}/data", "/opt/${COMPONENT}/log"]
+VOLUME ["/var/lib/${COMPONENT}/data", "/var/lib/${COMPONENT}/log"]
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 

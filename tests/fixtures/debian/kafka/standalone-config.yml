@@ -162,7 +162,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/externalvolumes
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://external-volumes:9092
     volumes:
-    - /tmp/kafka-config-test/data:/opt/kafka/data
+    - /tmp/kafka-config-test/data:/var/lib/kafka/data
     labels:
     - io.confluent.docker.testing=true
   random-user:
@@ -181,7 +181,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/kitchensink
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kitchen-sink:9092
     volumes:
-    - /tmp/kafka-config-kitchen-sink-test/data:/opt/kafka/data
+    - /tmp/kafka-config-kitchen-sink-test/data:/var/lib/kafka/data
     user: '12345'
     labels:
     - io.confluent.docker.testing=true

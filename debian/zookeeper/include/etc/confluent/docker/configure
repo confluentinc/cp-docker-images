@@ -21,7 +21,15 @@ fi
 
 if [[ -n "${ZOOKEEPER_SERVER_ID-}" ]]
 then
-  dub template "/etc/confluent/docker/myid.template" "/opt/${COMPONENT}/data/myid"
+  dub template "/etc/confluent/docker/myid.template" "/var/lib/${COMPONENT}/data/myid"
+fi
+
+if [[ -n "${KAFKA_JMX_OPTS-}" ]]
+then
+  if [[ ! $KAFKA_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
 fi
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/kafka/${COMPONENT}.properties"
