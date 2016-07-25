@@ -123,7 +123,7 @@ class ConfigTest(unittest.TestCase):
         expected = """
             advertised.listeners=PLAINTEXT://default-config:9092
             listeners=PLAINTEXT://0.0.0.0:9092
-            log.dirs=/opt/kafka/data
+            log.dirs=/var/lib/kafka/data
             zookeeper.connect=zookeeper:2181/defaultconfig
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
@@ -175,7 +175,7 @@ class ConfigTest(unittest.TestCase):
         expected = """
                 advertised.listeners=PLAINTEXT://full-config:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
-                log.dirs=/opt/kafka/data
+                log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/fullconfig
                 broker.id=1
                 """
@@ -226,7 +226,7 @@ class ConfigTest(unittest.TestCase):
         expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
                 listeners=PLAINTEXT://0.0.0.0:9092
-                log.dirs=/opt/kafka/data
+                log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
                 broker.id=1
                 """
@@ -238,7 +238,7 @@ class ConfigTest(unittest.TestCase):
         expected = """
                 advertised.listeners=SSL://ssl-config:9092
                 listeners=SSL://0.0.0.0:9092
-                log.dirs=/opt/kafka/data
+                log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/sslconfig
 
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
@@ -257,7 +257,7 @@ class ConfigTest(unittest.TestCase):
         expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
                 listeners=SSL://0.0.0.0:9092,SASL_SSL://0.0.0.0:9094
-                log.dirs=/opt/kafka/data
+                log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/sslsaslconfig
 
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
