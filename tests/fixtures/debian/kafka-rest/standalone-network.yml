@@ -17,6 +17,7 @@ services:
     - 33888:3888
     labels:
     - io.confluent.docker.testing=true
+
   kafka-bridge:
     image: confluentinc/cp-kafka:latest
     networks:
@@ -29,6 +30,7 @@ services:
     - 19092:19092
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-host:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
@@ -37,6 +39,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     labels:
     - io.confluent.docker.testing=true
+
   kafka-host:
     image: confluentinc/cp-kafka:latest
     network_mode: host
@@ -46,6 +49,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
     labels:
     - io.confluent.docker.testing=true
+
   kafka-rest-host:
     image: confluentinc/cp-kafka-rest:latest
     network_mode: host
@@ -53,6 +57,7 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181
     labels:
     - io.confluent.docker.testing=true
+
   kafka-rest-bridge:
     image: confluentinc/cp-kafka-rest:latest
     networks:
@@ -61,5 +66,25 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
     ports:
     - 18082:8082
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-rest-bridged-jmx:
+    image: confluentinc/cp-kafka-rest:latest
+    networks:
+      - zk
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
+      KAFKA_REST_JMX_PORT: 9999
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-rest-host-jmx:
+    image: confluentinc/cp-kafka-rest:latest
+    network_mode: host
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_REST_JMX_PORT: 39999
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:28082"
     labels:
     - io.confluent.docker.testing=true

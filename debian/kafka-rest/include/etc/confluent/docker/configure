@@ -9,5 +9,19 @@ dub ensure KAFKA_REST_ZOOKEEPER_CONNECT
 
 dub path /etc/"${COMPONENT}"/ writable
 
+if [[ -n "${KAFKA_REST_PORT-}" ]]
+then
+  echo "PORT is deprecated. Please use KAFKA_REST_LISTENERS instead."
+  exit 1
+fi
+
+if [[ -n "${KAFKA_REST_JMX_OPTS-}" ]]
+then
+  if [[ ! $KAFKA_REST_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "KAFKA_REST_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
+fi
+
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"

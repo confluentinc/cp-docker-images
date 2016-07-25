@@ -9,10 +9,20 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka-rest")
 KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
 HEALTH_CHECK = "bash -c 'cub kr-ready {host} {port} 20 && echo PASS || echo FAIL'"
-GET_TOPICS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/topics'"
+
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 
+GET_TOPICS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/topics'"
+
+POST_TO_TOPIC_CHECK = """curl -X POST -H "Content-Type: application/vnd.kafka.json.v1+json" \
+    --data '{"records":[{"value":{"foo":"bar"}}]}' \
+    %s:%s/topics/%s"""
+
+JMX_CHECK = """bash -c "\
+    echo 'get -b kafka.rest:type=jetty-metrics connections-active' |
+        java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
+"""
 
 class ConfigTest(unittest.TestCase):
 
@@ -75,9 +85,14 @@ class StandaloneNetworkingTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.cluster.shutdown()
 
+    # @classmethod
+    # def is_kafka_rest_healthy_for_service(cls, service):
+    #     output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8082))
+    #     assert "PASS" in output
+
     @classmethod
-    def is_kafka_rest_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8082))
+    def is_kafka_rest_healthy_for_service(cls, service, port=8082):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=port))
         assert "PASS" in output
 
     def test_bridged_network(self):
@@ -99,6 +114,21 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
         self.assertTrue("PASS" in logs_2)
 
+        # Test writing a topic and confirm it was written by checking for it
+        logs_3 = utils.run_docker_command(
+            image="confluentinc/cp-kafka-rest",
+            command=POST_TO_TOPIC_CHECK % ("kafka-rest-bridge", 8082, "testtopicbridge"),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+
+        self.assertTrue("value_schema_id" in logs_3)
+
+        logs_4 = utils.run_docker_command(
+            image="confluentinc/cp-kafka-rest",
+            command=GET_TOPICS_CHECK.format(host="kafka-rest-bridge", port=8082),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+
+        self.assertTrue("testtopicbridge" in logs_4)
+
     def test_host_network(self):
         # Test from within the container
         self.is_kafka_rest_healthy_for_service("kafka-rest-host")
@@ -109,3 +139,40 @@ class StandaloneNetworkingTest(unittest.TestCase):
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs)
+
+        # Test writing a topic and confirm it was written by checking for it
+        logs_2 = utils.run_docker_command(
+            image="confluentinc/cp-kafka-rest",
+            command=POST_TO_TOPIC_CHECK % ("localhost", 8082, "testtopichost"),
+            host_config={'NetworkMode': 'host'})
+
+        self.assertTrue("value_schema_id" in logs_2)
+
+        logs_3 = utils.run_docker_command(
+            image="confluentinc/cp-kafka-rest",
+            command=GET_TOPICS_CHECK.format(host="localhost", port=8082),
+            host_config={'NetworkMode': 'host'})
+
+        self.assertTrue("testtopichost" in logs_3)
+
+    def test_jmx_bridged_network(self):
+
+        self.is_kafka_rest_healthy_for_service("kafka-rest-bridged-jmx")
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="kafka-rest-bridged-jmx", jmx_port=9999),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+        self.assertTrue("connections-active =" in logs)
+
+    def test_jmx_host_network(self):
+
+        self.is_kafka_rest_healthy_for_service("kafka-rest-host-jmx", 28082)
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port=39999),
+            host_config={'NetworkMode': 'host'})
+        self.assertTrue("connections-active =" in logs)
