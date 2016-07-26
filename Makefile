@@ -7,17 +7,18 @@ REPOSITORY := confluentinc
 
 clean-container:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
-        echo "Removing container $${container} \n==========================================\n " ; \
+        echo "\nRemoving container $${container} \n========================================== " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
 
 clean-image:
 	for image in `docker image -q -f label=io.confluent.docker` ; do \
-        echo "Removing container $${container} \n==========================================\n " ; \
+        echo "\nRemoving container $${container} \n========================================== " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
 
 build-debian:
+	#
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
@@ -65,6 +66,8 @@ test-kafka: venv clean-container build-debian build-test-images
 test-schema-registry: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
 
-test-kafka-rest: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
+test-kafka-rest: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
+
+test-kafka-connect: venv clean-container build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v

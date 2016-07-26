@@ -377,10 +377,10 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
             image="confluentinc/cp-kafka",
             name="kafka-producer",
             environment={'KAFKA_ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"},
-            command=PLAIN_CLIENTS.format(brokers="kafka-1:9092", topic="foo", messages=100),
+            command=PLAIN_CLIENTS.format(brokers="kafka-1:9092", topic="foo", messages=10000),
             host_config={'NetworkMode': 'cluster-test_zk'})
 
-        self.assertTrue("Processed a total of 100 messages" in client_logs)
+        self.assertTrue("Processed a total of 10000 messages" in client_logs)
 
 
 class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
