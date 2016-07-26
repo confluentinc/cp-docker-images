@@ -9,5 +9,19 @@ dub ensure SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL
 dub ensure SCHEMA_REGISTRY_HOST_NAME
 dub path /etc/"${COMPONENT}"/ writable
 
+if [[ -n "${SCHEMA_REGISTRY_PORT-}" ]]
+then
+  echo "PORT is deprecated. Please use SCHEMA_REGISTRY_LISTENERS instead."
+  exit 1
+fi
+
+if [[ -n "${SCHEMA_REGISTRY_JMX_OPTS-}" ]]
+then
+  if [[ ! $SCHEMA_REGISTRY_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "SCHEMA_REGISTRY_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
+fi
+
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"
