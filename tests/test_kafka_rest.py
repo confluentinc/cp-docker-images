@@ -85,11 +85,6 @@ class StandaloneNetworkingTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.cluster.shutdown()
 
-    # @classmethod
-    # def is_kafka_rest_healthy_for_service(cls, service):
-    #     output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8082))
-    #     assert "PASS" in output
-
     @classmethod
     def is_kafka_rest_healthy_for_service(cls, service, port=8082):
         output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=port))

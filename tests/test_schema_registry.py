@@ -16,6 +16,10 @@ GET_SCHEMAS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/subjects'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 
+JMX_CHECK = """bash -c "\
+    echo 'get -b kafka.schema.registry:type=jetty-metrics connections-active' |
+        java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
+"""
 
 class ConfigTest(unittest.TestCase):
 
@@ -81,13 +85,13 @@ class StandaloneNetworkingTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     @classmethod
-    def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
+    def is_schema_registry_healthy_for_service(cls, service, port=8081):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=port))
         assert "PASS" in output
 
     def test_bridged_network(self):
         # Test from within the container
-        self.is_schema_registry_healthy_for_service("schema-registry-bridge")
+        self.is_schema_registry_healthy_for_service("schema-registry-bridge", 18081)
         # Test from outside the container on host network
         logs = utils.run_docker_command(
             image="confluentinc/cp-schema-registry",
@@ -99,7 +103,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         # Test from outside the container on bridge network
         logs_2 = utils.run_docker_command(
             image="confluentinc/cp-schema-registry",
-            command=HEALTH_CHECK.format(host="schema-registry-bridge", port=8081),
+            command=HEALTH_CHECK.format(host="schema-registry-bridge", port=18081),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
 
         self.assertTrue("PASS" in logs_2)
@@ -114,6 +118,30 @@ class StandaloneNetworkingTest(unittest.TestCase):
             host_config={'NetworkMode': 'host'})
 
         self.assertTrue("PASS" in logs)
+
+    def test_jmx_bridged_network(self):
+
+        self.is_schema_registry_healthy_for_service("schema-registry-bridge-jmx")
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="schema-registry-bridge-jmx", jmx_port=39999),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+        
+        self.assertTrue("connections-active =" in logs)
+
+    def test_jmx_host_network(self):
+
+        self.is_schema_registry_healthy_for_service("schema-registry-host-jmx", 28081)
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port=9999),
+            host_config={'NetworkMode': 'host'})
+        
+        self.assertTrue("connections-active =" in logs)
 
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
@@ -134,8 +162,8 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     @classmethod
-    def is_schema_registry_healthy_for_service(cls, service):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=8081))
+    def is_schema_registry_healthy_for_service(cls, service, port=8081):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host="localhost", port=port))
         assert "PASS" in output
 
     def test_bridged_network(self):
