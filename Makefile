@@ -5,16 +5,16 @@ COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect cont
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
-clean-container:
+clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
         echo "Removing container $${container} \n==========================================\n " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
 
-clean-image:
-	for image in `docker image -q -f label=io.confluent.docker` ; do \
-        echo "Removing container $${container} \n==========================================\n " ; \
-				docker rm -f $${container} || exit 1 ; \
+clean-images:
+	for image in `docker images -q -f label=io.confluent.docker` ; do \
+        echo "Removing container $${image} \n==========================================\n " ; \
+				docker rmi -f $${image} || exit 1 ; \
   done
 
 build-debian:
