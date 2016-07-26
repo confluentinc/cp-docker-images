@@ -176,7 +176,7 @@ Development
 
 ###Building the images
 
-`make build-debian`
+```make build-debian```
 
 You can run build tests by running `make test-build`. Use this when you want to test the builds with a clean slate. This deletes all images and starts from scratch.
 
@@ -192,7 +192,7 @@ Running a single test: `venv/bin/py.test tests/test_zookeeper.py::ConfigTest -v`
 
 ###Delete all docker containers
 
-`docker rm -f $(docker ps -a -q)`
+```docker rm -f $(docker ps -a -q)```
 
 
 References

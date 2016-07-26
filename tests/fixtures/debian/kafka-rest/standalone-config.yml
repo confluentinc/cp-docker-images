@@ -9,6 +9,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
     - io.confluent.docker.testing=true
+
   kafka:
     image: confluentinc/cp-kafka:latest
     environment:
@@ -17,10 +18,12 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     labels:
     - io.confluent.docker.testing=true
+
   failing-config:
     image: confluentinc/cp-kafka-rest:latest
     labels:
     - io.confluent.docker.testing=true
+
   default-config:
     image: confluentinc/cp-kafka-rest:latest
     environment:
