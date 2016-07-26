@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
 echo "===> Launching ${COMPONENT} ... "
+
+# This is to make sure that the CLASSPATH does not start with ":/etc/..."
+# because this causes the plugin scanner to scan the entire disk.
+export CLASSPATH="/etc/kafka-connect"
 exec connect-distributed /etc/"${COMPONENT}"/"${COMPONENT}".properties

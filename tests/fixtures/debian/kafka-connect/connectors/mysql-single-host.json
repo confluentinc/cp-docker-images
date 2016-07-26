@@ -1,0 +1,13 @@
+{
+  "name": "test-mysql-jdbc",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": 1,
+    "connection.url": "jdbc:mysql://localhost:3306/demo?user=root&password=confluent",
+    "mode": "timestamp+incrementing",
+    "incrementing.column.name": "id",
+    "timestamp.column.name": "modified",
+    "topic.prefix": "test_jdbc_",
+    "poll.interval.ms": 1000
+  }
+}
