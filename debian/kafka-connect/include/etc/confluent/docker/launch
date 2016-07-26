@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
 
 echo "===> Launching ${COMPONENT} ... "
-
-# Add external jars to the classpath
-# And this also makes sure that the CLASSPATH does not start with ":/etc/..."
-# because this causes the plugin scanner to scan the entire disk.
-export CLASSPATH="/etc/kafka-connect/jars"
 exec connect-distributed /etc/"${COMPONENT}"/"${COMPONENT}".properties
