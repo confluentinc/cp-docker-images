@@ -8,7 +8,7 @@ import json
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka-connect")
 KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
-CONNECT_HEALTH_CHECK = "bash -c 'curl -X GET --fail --silent {host}:{port}/connectors && echo PASS || echo FAIL'"
+CONNECT_HEALTH_CHECK = "bash -c 'dub wait {host} {port} 30 && curl -X GET --fail --silent {host}:{port}/connectors && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 SR_READY = "bash -c 'cub sr-ready {host} {port} 20 && echo PASS || echo FAIL'"
 FILE_SOURCE_CONNECTOR_CREATE = """
@@ -112,7 +112,7 @@ class SingleNodeDistributedTest(unittest.TestCase):
         output = cls.cluster.run_command_on_service(service, CONNECT_HEALTH_CHECK.format(host="localhost", port=28082))
         assert "PASS" in output
 
-    def test_host_network(self):
+    def test_file_connector_on_host_network(self):
         # Test from within the container
         self.is_connect_healthy_for_service("connect-host")
 
@@ -129,43 +129,145 @@ class SingleNodeDistributedTest(unittest.TestCase):
             command=FILE_SOURCE_CONNECTOR_CREATE % ("one-node-source-test", "one-node-test", "/tmp/test/source.test.txt", "localhost", "28082"),
             host_config={'NetworkMode': 'host'})
 
-        time.sleep(5)
-
         utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
             command=FILE_SINK_CONNECTOR_CREATE % ("one-node-sink-test", "one-node-test", "/tmp/test/sink.test.txt", "localhost", "28082"),
             host_config={'NetworkMode': 'host'})
 
-        time.sleep(5)
+        for i in xrange(5):
+            source_logs = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command=CONNECTOR_STATUS.format(host="localhost", port="28082", name="one-node-source-test"),
+                host_config={'NetworkMode': 'host'})
 
-        source_logs = utils.run_docker_command(
+            source_connector = json.loads(source_logs)
+            source_status = source_connector["connector"]["state"]
+            if source_status == "FAILED":
+                self.fail("Source Connector failed.")
+            elif source_status == "RUNNING":
+                break
+            elif source_status == "UNASSIGNED":
+                time.sleep(5)
+
+        self.assertEquals(source_status, "RUNNING")
+
+        for i in xrange(5):
+            sink_logs = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command=CONNECTOR_STATUS.format(host="localhost", port="28082", name="one-node-sink-test"),
+                host_config={'NetworkMode': 'host'})
+
+            sink_connector = json.loads(sink_logs)
+            sink_status = sink_connector["connector"]["state"]
+            if sink_status == "FAILED":
+                self.fail("Source Connector failed.")
+            elif sink_status == "RUNNING":
+                break
+            elif sink_status == "UNASSIGNED":
+                time.sleep(5)
+
+        self.assertEquals(sink_status, "RUNNING")
+
+        for i in xrange(20):
+            sink_record_count = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command="bash -c 'wc -l /tmp/test/sink.test.txt | cut -d\" \" -f1'",
+                host_config={'NetworkMode': 'host', 'Binds': ['/tmp/connect-file-test/:/tmp/test']})
+
+            if int(sink_record_count.strip()) == record_count:
+                break
+            time.sleep(10)
+
+        self.assertEquals(int(sink_record_count.strip()), record_count)
+
+
+class ClusterHostNetworkTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # TODO: Do file connect source file setup and teardown here.
+        cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host-plain.yml")
+        cls.cluster.start()
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+        assert "PASS" in cls.cluster.run_command_on_service("kafka-1", KAFKA_READY.format(brokers=3))
+        # assert "PASS" in cls.cluster.run_command_on_service("schema-registry-1", SR_READY.format(host="localhost", port="8081"))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+
+    def test_cluster_running(self):
+        self.assertTrue(self.cluster.is_running())
+
+    @classmethod
+    def is_connect_healthy_for_service(cls, service, port):
+        assert "PASS" in cls.cluster.run_command_on_service(service, CONNECT_HEALTH_CHECK.format(host="localhost", port=port))
+
+    def test_file_connector(self):
+        # Test from within the container
+        self.is_connect_healthy_for_service("connect-host-1", 28082)
+        self.is_connect_healthy_for_service("connect-host-2", 38082)
+        self.is_connect_healthy_for_service("connect-host-3", 48082)
+
+        # Create a file
+        record_count = 10000
+
+        utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
-            command=CONNECTOR_STATUS.format(host="localhost", port="28082", name="one-node-source-test"),
+            command="bash -c 'rm -rf /tmp/test/sink.test.txt && seq {count} > /tmp/test/source.test.txt'".format(count=record_count),
+            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/connect-cluster-host-file-test/:/tmp/test']})
+
+        utils.run_docker_command(
+            image="confluentinc/cp-kafka-connect",
+            command=FILE_SOURCE_CONNECTOR_CREATE % ("cluster-host-source-test", "cluster-host-test", "/tmp/test/source.test.txt", "localhost", "28082"),
             host_config={'NetworkMode': 'host'})
 
-        source_connector = json.loads(source_logs)
-
-        self.assertEquals(source_connector["connector"]["state"], "RUNNING")
-
-        sink_logs = utils.run_docker_command(
+        utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
-            command=CONNECTOR_STATUS.format(host="localhost", port="28082", name="one-node-sink-test"),
+            command=FILE_SINK_CONNECTOR_CREATE % ("cluster-host-sink-test", "cluster-host-test", "/tmp/test/sink.test.txt", "localhost", "38082"),
             host_config={'NetworkMode': 'host'})
 
-        sink_connector = json.loads(sink_logs)
+        for i in xrange(5):
+            source_logs = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command=CONNECTOR_STATUS.format(host="localhost", port="48082", name="cluster-host-source-test"),
+                host_config={'NetworkMode': 'host'})
 
-        self.assertEquals(sink_connector["connector"]["state"], "RUNNING")
+            source_connector = json.loads(source_logs)
+            source_status = source_connector["connector"]["state"]
+            if source_status == "FAILED":
+                self.fail("Source Connector failed.")
+            elif source_status == "RUNNING":
+                break
+            elif source_status == "UNASSIGNED":
+                time.sleep(5)
 
-        logs = utils.run_docker_command(
-            image="confluentinc/cp-kafka-connect",
-            command="bash -c '[ -e /tmp/test/sink.test.txt ] && echo PASS || echo FAIL' ",
-            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/connect-file-test/:/tmp/test']})
+        self.assertEquals(source_status, "RUNNING")
 
-        self.assertTrue("PASS" in logs)
+        for i in xrange(5):
+            sink_logs = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command=CONNECTOR_STATUS.format(host="localhost", port="48082", name="cluster-host-sink-test"),
+                host_config={'NetworkMode': 'host'})
 
-        sink_record_count = utils.run_docker_command(
-            image="confluentinc/cp-kafka-connect",
-            command="bash -c 'wc -l /tmp/test/sink.test.txt | cut -d\" \" -f1'",
-            host_config={'NetworkMode': 'host', 'Binds': ['/tmp/connect-file-test/:/tmp/test']})
+            sink_connector = json.loads(sink_logs)
+            sink_status = sink_connector["connector"]["state"]
+            if sink_status == "FAILED":
+                self.fail("Source Connector failed.")
+            elif sink_status == "RUNNING":
+                break
+            elif sink_status == "UNASSIGNED":
+                time.sleep(5)
+
+        self.assertEquals(sink_status, "RUNNING")
+
+        for i in xrange(20):
+            sink_record_count = utils.run_docker_command(
+                image="confluentinc/cp-kafka-connect",
+                command="bash -c 'wc -l /tmp/test/sink.test.txt | cut -d\" \" -f1'",
+                host_config={'NetworkMode': 'host', 'Binds': ['/tmp/connect-cluster-host-file-test/:/tmp/test']})
+
+            if int(sink_record_count.strip()) == record_count:
+                break
+            time.sleep(10)
 
         self.assertEquals(int(sink_record_count.strip()), record_count)
