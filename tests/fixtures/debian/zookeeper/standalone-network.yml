@@ -17,7 +17,6 @@ services:
     - 33888:3888
     labels:
     - io.confluent.docker.testing=true
-
   host-network:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
@@ -26,7 +25,6 @@ services:
       ZOOKEEPER_CLIENT_PORT: 32181
     labels:
     - io.confluent.docker.testing=true
-
   bridge-network-jmx:
     image: confluentinc/cp-zookeeper:latest
     networks:
@@ -42,7 +40,6 @@ services:
     - 9999:9999
     labels:
     - io.confluent.docker.testing=true
-
   host-network-jmx:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host

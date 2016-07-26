@@ -13,7 +13,6 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
-
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -26,7 +25,6 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
-
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -39,7 +37,6 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
-
   kafka-1:
     image: confluentinc/cp-kafka:latest
     network_mode: host
@@ -49,7 +46,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
     labels:
     - io.confluent.docker.testing=true
-
   kafka-2:
     image: confluentinc/cp-kafka:latest
     network_mode: host
@@ -59,7 +55,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
     labels:
     - io.confluent.docker.testing=true
-
   kafka-3:
     image: confluentinc/cp-kafka:latest
     network_mode: host
