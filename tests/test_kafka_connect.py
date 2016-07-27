@@ -208,10 +208,10 @@ class SingleNodeDistributedTest(unittest.TestCase):
         assert "PASS" in cls.cluster.run_command_on_service("kafka-host", KAFKA_READY.format(brokers=1))
         assert "PASS" in cls.cluster.run_command_on_service("schema-registry-host", SR_READY.format(host="localhost", port="8081"))
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.machine.ssh("sudo rm -rf /tmp/kafka-connect-single-node-test")
-    #     cls.cluster.shutdown()
+    @classmethod
+    def tearDownClass(cls):
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-connect-single-node-test")
+        cls.cluster.shutdown()
 
     @classmethod
     def is_connect_healthy_for_service(cls, service, port):
