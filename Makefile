@@ -1,6 +1,8 @@
 VERSION := 3.0.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
+COMMIT_ID := $(shell git rev-parse --short HEAD)
+
 
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
@@ -12,20 +14,20 @@ clean-container:
   done
 
 clean-image:
-	for image in `docker image -q -f label=io.confluent.docker` ; do \
-        echo "\nRemoving container $${container} \n========================================== " ; \
-				docker rm -f $${container} || exit 1 ; \
+	for image in `docker images -q -f label=io.confluent.docker` ; do \
+        echo "Removing image $${image} \n==========================================\n " ; \
+				docker rmi -f $${image}; \
   done
 
 build-debian:
-	#
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
         echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
+				docker build --build-arg COMMIT_ID=$${COMMIT_ID} --build-arg BUILD_NUMBER=$${BUILD_NUMBER}  -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
 				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
 				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
   done
 
 build-test-images:
@@ -34,17 +36,32 @@ build-test-images:
 				docker build -t confluentinc/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
 				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
 				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
   done
 
-push:
-	for component in ${COMPONENTS}; do \
-        echo "\n\nPushing ${REPOSITORY}/cp-$${component}:latest to ${REPOSITORY}\n==========================================\n " ; \
-				docker push ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
-				echo "\n\nPushing ${REPOSITORY}/cp-$${component}:${VERSION} to ${REPOSITORY}\n==========================================\n " ; \
-				docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+tag-remote:
+ifndef DOCKER_REMOTE_REPOSITORY
+	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
+endif
+	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
+        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image}"; \
+        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image}; \
   done
 
+push-private: clean-container clean-image build-debian build-test-images tag-remote
+ifndef DOCKER_REMOTE_REPOSITORY
+	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
+endif
+	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
+        echo "\n Pushing $${image}"; \
+        docker push $${image}; \
+  done
 
+push-public: clean-container clean-image build-debian build-test-images
+	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep -v $$DOCKER_REMOTE_REPOSITORY` ; do \
+        echo "\n Pushing $${image}"; \
+        docker push $${image}; \
+  done
 
 clean: clean-container clean-image
 
