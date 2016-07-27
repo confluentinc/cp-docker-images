@@ -74,17 +74,17 @@ services:
   mysql-host:
     image: mysql
     network_mode: host
-    ports:
-      - "3306:3306"
+    labels:
+    - io.confluent.docker.testing=true
     environment:
       MYSQL_ROOT_PASSWORD: confluent
       MYSQL_USER: confluent
       MYSQL_PASSWORD: confluent
       MYSQL_DATABASE: connect_test
-    labels:
-    - io.confluent.docker.testing=true
+    volumes:
+    - /tmp/kafka-connect-single-node-test/sql:/tmp/sql
 
-  connect-host:
+  connect-host-json:
     image: confluentinc/cp-kafka-connect:latest
     network_mode: host
     labels:
@@ -102,9 +102,10 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
       CONNECT_ZOOKEEPER_CONNECT: "localhost:32181"
-      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
     volumes:
-    - /tmp/connect-file-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/jars:/etc/kafka-connect/jars
 
   connect-host-avro:
     image: confluentinc/cp-kafka-connect:latest
@@ -128,7 +129,8 @@ services:
       CONNECT_ZOOKEEPER_CONNECT: "localhost:32181"
       # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
     volumes:
-    - /tmp/connect-file-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/jars:/etc/kafka-connect/jars
 
 
   # namenode-host:

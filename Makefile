@@ -8,7 +8,7 @@ REPOSITORY := confluentinc
 clean-container:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
         echo "\nRemoving container $${container} \n========================================== " ; \
-				docker rm -f $${container} || exit 1 ; \
+				docker stop -t=5 $${container} && docker rm -f $${container} || exit 1 ; \
   done
 
 clean-image:
@@ -69,5 +69,9 @@ test-schema-registry: venv clean-container build-debian build-test-images
 test-kafka-rest: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
 
-test-kafka-connect: venv clean-container build-debian build-test-images
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
+tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-5.1.39-bin.jar:
+	mkdir -p tests/fixtures/debian/kafka-connect/jars
+	curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz" | tar -xzf - -C tests/fixtures/debian/kafka-connect/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-5.1.39-bin.jar
+
+test-kafka-connect: venv clean-container build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-5.1.39-bin.jar
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v

@@ -105,6 +105,9 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    # This is a workaround for the invalid topic exception. If you allow auto-topic creation, sometimes
+    # the worker fails with Invalid topic exception, restarting fixes the issue.
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 28082
@@ -127,6 +130,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 38082
@@ -149,6 +153,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 48082
@@ -167,11 +172,13 @@ services:
     - /tmp/connect-cluster-host-file-test/:/tmp/test
 
 
+
   connect-host-avro-1:
     image: confluentinc/cp-kafka-connect:latest
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 28083
@@ -194,6 +201,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 38083
@@ -216,6 +224,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+    restart: on-failure:3
     environment:
       CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
       CONNECT_REST_PORT: 48083

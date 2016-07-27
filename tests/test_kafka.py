@@ -76,7 +76,7 @@ class ConfigTest(unittest.TestCase):
         cls.machine.ssh("sudo chown -R 12345 /tmp/kafka-config-kitchen-sink-test/data")
 
         # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-config-test/secrets")
+        cls.machine.ssh("mkdir -p /tmp/kafka-config-test/secrets")
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
         cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-config-test")
 
