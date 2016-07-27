@@ -74,4 +74,4 @@ tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-5.1.39-bin.jar:
 	curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz" | tar -xzf - -C tests/fixtures/debian/kafka-connect/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-5.1.39-bin.jar
 
 test-kafka-connect: venv clean-container build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-5.1.39-bin.jar
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
