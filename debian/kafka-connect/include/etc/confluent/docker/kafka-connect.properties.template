@@ -16,6 +16,10 @@ internal.value.converter={{env['CONNECT_INTERNAL_VALUE_CONVERTER']}}
 
 {# optional properties #}
 {% set other_props = {
+	'CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL': 'key.converter.schema.registry.url',
+	'CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL': 'value.converter.schema.registry.url',
+	'CONNECT_INTERNAL_KEY_CONVERTER_SCHEMA_REGISTRY_URL': 'internal.key.converter.schema.registry.url',
+	'CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMA_REGISTRY_URL': 'internal.value.converter.schema.registry.url',
 	'CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE' : 'internal.key.converter.schemas.enable',
 	'CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE' : 'internal.value.converter.schemas.enable',
 	'CONNECT_OFFSET_FLUSH_INTERVAL_MS': 'offset.flush.interval.ms',

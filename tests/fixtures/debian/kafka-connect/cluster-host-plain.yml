@@ -165,3 +165,70 @@ services:
       # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
     volumes:
     - /tmp/connect-cluster-host-file-test/:/tmp/test
+
+
+  connect-host-avro-1:
+    image: confluentinc/cp-kafka-connect:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
+      CONNECT_REST_PORT: 28083
+      CONNECT_GROUP_ID: "default-avro"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.avro.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.avro.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.avro.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/connect-cluster-host-file-test/:/tmp/test
+
+  connect-host-avro-2:
+    image: confluentinc/cp-kafka-connect:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
+      CONNECT_REST_PORT: 38083
+      CONNECT_GROUP_ID: "default-avro"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.avro.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.avro.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.avro.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/connect-cluster-host-file-test/:/tmp/test
+
+  connect-host-avro-3:
+    image: confluentinc/cp-kafka-connect:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:29092,localhost:39092,localhost:49092
+      CONNECT_REST_PORT: 48083
+      CONNECT_GROUP_ID: "default-avro"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.avro.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.avro.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.avro.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/connect-cluster-host-file-test/:/tmp/test
