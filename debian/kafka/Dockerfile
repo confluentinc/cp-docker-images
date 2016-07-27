@@ -1,5 +1,10 @@
 FROM confluentinc/cp-zookeeper
 
+ARG COMMIT_ID=unknown
+LABEL io.confluent.docker.git.id=$COMMIT_ID
+ARG BUILD_NUMBER=-1
+LABEL io.confluent.docker.build.number=$BUILD_NUMBER
+
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
