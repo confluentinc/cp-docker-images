@@ -17,43 +17,43 @@ Using Docker Client
 
 	.. sourcecode:: bash
 		
-		brew install docker
+		$ brew install docker
 
 2. Run Zookeeper
 
 	.. sourcecode:: bash
 	
-		docker run -d \
-			--net=host \
-			--name=zookeeper \
-			-e ZOOKEEPER_CLIENT_PORT=32181 \
-			-e ZOOKEEPER_TICK_TIME=2000 \
-			confluentinc/cp-zookeeper:3.0.0
+		$ docker run -d \
+				--net=host \
+				--name=zookeeper \
+				-e ZOOKEEPER_CLIENT_PORT=32181 \
+				-e ZOOKEEPER_TICK_TIME=2000 \
+				confluentinc/cp-zookeeper:3.0.0
 			
 	Check the logs to see the server has booted up successfully:
 	
 	.. sourcecode:: bash
 
 		$ docker logs zookeeper
-		[2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+			[2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 
 		
 2. Start Kafka.
 
 	.. sourcecode:: bash
 
-		docker run -d \
-			--net=host \
-			--name=kafka \
-      		-e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
-      		-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
-			confluentinc/cp-kafka:3.0.0
+		$ docker run -d \
+				--net=host \
+				--name=kafka \
+	      		-e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+	      		-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+				confluentinc/cp-kafka:3.0.0
 
 	Check the logs to see the broker has booted up successfully:
 
 	.. sourcecode:: bash
 
-		docker logs kafka
+		$ docker logs kafka
 
 	You should see the following at the end of the log output:
 
@@ -72,22 +72,22 @@ Using Docker Client
 
 	.. sourcecode:: bash
 
-		docker run -d \
-			--net=host \
-			--name=schema-registry \
-      		-e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
-      		-e SCHEMA_REGISTRY_HOST_NAME=localhost \
-			confluentinc/cp-schema-registry:3.0.0
+		$ docker run -d \
+				--net=host \
+				--name=schema-registry \
+	      		-e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
+	      		-e SCHEMA_REGISTRY_HOST_NAME=localhost \
+				confluentinc/cp-schema-registry:3.0.0
 
 4. Start the REST Proxy.
 
 	.. sourcecode:: bash
 
-		docker run -d \
-			--net=host \
-			--name=kafka-rest \
-      		-e KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181 \
-			confluentinc/cp-kafka-rest:3.0.0
+		$ docker run -d \
+				--net=host \
+				--name=kafka-rest \
+	      		-e KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181 \
+				confluentinc/cp-kafka-rest:3.0.0
 
 5. Start Kafka Connect.
 
@@ -164,31 +164,31 @@ docker run --net=host --rm confluentinc/cp-schema-registry:3.0.0 bash -c "kafka-
 
 docker run --net=host --rm confluentinc/cp-kafka:3.0.0 bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
 
-   You should see all the messages you created in the previous step written to
-   the console in the same format.
+  You should see all the messages you created in the previous step written to
+  the console in the same format.
 
-   The consumer does not exit after reading all the messages so it can listen
-   for and process new messages as they are published.  Try keeping the consumer
-   running and repeating step 5 -- you will see messages delivered to the
-   consumer immediately after you hit ``Enter`` for each message in the
-   producer.
+  The consumer does not exit after reading all the messages so it can listen
+  for and process new messages as they are published.  Try keeping the consumer
+  running and repeating step 5 -- you will see messages delivered to the
+  consumer immediately after you hit ``Enter`` for each message in the
+  producer.
 
-   When you're done, shut down the consumer with ``Ctrl+C``.
+  When you're done, shut down the consumer with ``Ctrl+C``.
 
 7. Now let's try to produce data to the same topic using an incompatible
-   schema. We'll run the producer with nearly the same command, but change the
-   schema to expect plain integers.
+  schema. We'll run the producer with nearly the same command, but change the
+  schema to expect plain integers.
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
       $ ./bin/kafka-avro-console-producer \
                --broker-list localhost:9092 --topic test \
                --property value.schema='{"type":"int"}'
 
-   Now if you enter an integer and hit enter, you should see the following
+  Now if you enter an integer and hit enter, you should see the following
    (expected) exception:
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
       org.apache.kafka.common.errors.SerializationException: Error registering Avro schema: "int"
       Caused by: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: Schema being registered is incompatible with the latest schema; error code: 409
@@ -201,15 +201,15 @@ docker run --net=host --rm confluentinc/cp-kafka:3.0.0 bash -c "seq 42 | kafka-c
              at kafka.tools.ConsoleProducer$.main(ConsoleProducer.scala:94)
              at kafka.tools.ConsoleProducer.main(ConsoleProducer.scala)
 
-   When the producer tried to send a message, it checked the schema with the
-   Schema Registry, which returned an error indicating the schema was invalid
-   because it does not preserve backwards compatibility (the default Schema
-   Registry setting). The console producer simply reports this error and exits,
-   but your own applications could handle the problem more gracefully. Most
-   importantly, we've guaranteed no incompatible data was published to Kafka.
+  When the producer tried to send a message, it checked the schema with the 
+  Schema Registry, which returned an error indicating the schema was invalid 
+  because it does not preserve backwards compatibility (the default Schema 
+  Registry setting). The console producer simply reports this error and exits, 
+  but your own applications could handle the problem more gracefully. Most 
+  importantly, we've guaranteed no incompatible data was published to Kafka.
 
-8. When you're done testing, you can use ``Ctrl+C`` to shutdown each service, in
-   the reverse order that you started them.
+8. When you're done testing, you can use ``Ctrl+C`` to shutdown each service, 
+	in the reverse order that you started them.
 
 
 
