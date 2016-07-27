@@ -1,5 +1,9 @@
 CREATE DATABASE IF NOT EXISTS connect_test;
 USE connect_test;
+
+DROP TABLE IF EXISTS test;
+
+
 CREATE TABLE IF NOT EXISTS test (
   id serial NOT NULL PRIMARY KEY,
   name varchar(100),
