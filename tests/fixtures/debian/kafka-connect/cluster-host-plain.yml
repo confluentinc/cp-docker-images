@@ -70,36 +70,6 @@ services:
     labels:
     - io.confluent.docker.testing=true
 
-  # schema-registry-1:
-  #   image: confluentinc/cp-schema-registry:latest
-  #   network_mode: host
-  #   environment:
-  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:22181,localhost:32181,localhost:42181
-  #     SCHEMA_REGISTRY_HOST_NAME: localhost
-  #     SCHEMA_REGISTRY_LISTENERS: http://localhost:8081
-  #   labels:
-  #   - io.confluent.docker.testing=true
-  #
-  # schema-registry-2:
-  #   image: confluentinc/cp-schema-registry:latest
-  #   network_mode: host
-  #   environment:
-  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:22181,localhost:32181,localhost:42181
-  #     SCHEMA_REGISTRY_HOST_NAME: localhost
-  #     SCHEMA_REGISTRY_LISTENERS: http://localhost:8082
-  #   labels:
-  #   - io.confluent.docker.testing=true
-  #
-  # schema-registry-3:
-  #   image: confluentinc/cp-schema-registry:latest
-  #   network_mode: host
-  #   environment:
-  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:22181,localhost:32181,localhost:42181
-  #     SCHEMA_REGISTRY_HOST_NAME: localhost
-  #     SCHEMA_REGISTRY_LISTENERS: http://localhost:8083
-  #   labels:
-  #   - io.confluent.docker.testing=true
-
   connect-host-1:
     image: confluentinc/cp-kafka-connect:latest
     network_mode: host

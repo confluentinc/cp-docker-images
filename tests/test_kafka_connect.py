@@ -136,7 +136,7 @@ def create_connector(name, create_command, host, port):
         host_config={'NetworkMode': 'host'})
 
     status = None
-    for i in xrange(5):
+    for i in xrange(25):
         source_logs = utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
             command=CONNECTOR_STATUS.format(host=host, port=port, name=name),
@@ -145,7 +145,7 @@ def create_connector(name, create_command, host, port):
         connector = json.loads(source_logs)
         # Retry if you see errors, connect might still be creating the connector.
         if "error_code" in connector:
-            time.sleep(5)
+            time.sleep(1)
         else:
             status = connector["connector"]["state"]
             if status == "FAILED":
@@ -153,7 +153,7 @@ def create_connector(name, create_command, host, port):
             elif status == "RUNNING":
                 return status
             elif status == "UNASSIGNED":
-                time.sleep(5)
+                time.sleep(1)
 
     return status
 
@@ -169,6 +169,7 @@ def create_file_source_test_data(host_dir, file, num_records):
 
 
 def wait_and_get_sink_output(host_dir, file, expected_num_records):
+    # Polls the output of file sink and tries to wait until an expected no of records appear in the file.
     volumes = []
     volumes.append("%s/:/tmp/test" % host_dir)
     for i in xrange(60):
@@ -177,6 +178,7 @@ def wait_and_get_sink_output(host_dir, file, expected_num_records):
             command="bash -c '[ -e /tmp/test/%s ] && (wc -l /tmp/test/%s | cut -d\" \" -f1) || echo -1'" % (file, file),
             host_config={'NetworkMode': 'host', 'Binds': volumes})
 
+        # The bash command returns -1, if the file is not found. otherwise it returns the no of lines in the file.
         if int(sink_record_count.strip()) == expected_num_records:
             break
         time.sleep(10)
@@ -225,53 +227,77 @@ class SingleNodeDistributedTest(unittest.TestCase):
 
     def test_file_connector_on_host_network(self):
 
-        # # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
-        self.create_topics("kafka-host", "default", "one-node-file-test")
-        # # Test from within the container
+        data_topic = "one-node-file-test"
+        file_source_input_file = "source.test.txt"
+        file_sink_output_file = "sink.test.txt"
+        source_connector_name = "one-node-source-test"
+        sink_connector_name = "one-node-sink-test"
+        worker_host = "localhost"
+        worker_port = 28082
+
+        # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
+        self.create_topics("kafka-host", "default", data_topic)
+
+        # Test from within the container
         self.is_connect_healthy_for_service("connect-host-json", 28082)
 
         # Create a file
         record_count = 10000
-        create_file_source_test_data("/tmp/kafka-connect-single-node-test", "source.test.txt", record_count)
+        create_file_source_test_data("/tmp/kafka-connect-single-node-test", file_source_input_file, record_count)
 
-        file_source_create_cmd = FILE_SOURCE_CONNECTOR_CREATE % ("one-node-source-test", "one-node-file-test", "/tmp/test/source.test.txt", "localhost", "28082")
-        source_status = create_connector("one-node-source-test", file_source_create_cmd, "localhost", "28082")
+        file_source_create_cmd = FILE_SOURCE_CONNECTOR_CREATE % (source_connector_name, data_topic, "/tmp/test/%s" % file_source_input_file, worker_host, worker_port)
+        source_status = create_connector(source_connector_name, file_source_create_cmd, worker_host, worker_port)
         self.assertEquals(source_status, "RUNNING")
 
-        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % ("one-node-sink-test", "one-node-file-test", "/tmp/test/sink.test.txt", "localhost", "28082")
-        sink_status = create_connector("one-node-sink-test", file_sink_create_cmd, "localhost", "28082")
+        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % (sink_connector_name, data_topic, "/tmp/test/%s" % file_sink_output_file, worker_host, worker_port)
+        sink_status = create_connector(sink_connector_name, file_sink_create_cmd, worker_host, worker_port)
         self.assertEquals(sink_status, "RUNNING")
 
-        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", "sink.test.txt", record_count)
+        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
         self.assertEquals(sink_op, record_count)
 
     def test_file_connector_on_host_network_with_avro(self):
 
+        data_topic = "one-node-avro-test"
+        file_source_input_file = "source.avro.test.txt"
+        file_sink_output_file = "sink.avro.test.txt"
+        source_connector_name = "one-node-source-test"
+        sink_connector_name = "one-node-sink-test"
+        worker_host = "localhost"
+        worker_port = 38082
+
         # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
-        self.create_topics("kafka-host", "default.avro", "one-node-avro-test")
+        self.create_topics("kafka-host", "default.avro", data_topic)
 
         # Test from within the container
         self.is_connect_healthy_for_service("connect-host-avro", 38082)
 
         # Create a file
         record_count = 10000
-        create_file_source_test_data("/tmp/kafka-connect-single-node-test", "source.avro.test.txt", record_count)
+        create_file_source_test_data("/tmp/kafka-connect-single-node-test", file_source_input_file, record_count)
 
-        file_source_create_cmd = FILE_SOURCE_CONNECTOR_CREATE % ("one-node-source-test", "one-node-avro-test", "/tmp/test/source.avro.test.txt", "localhost", "38082")
-        source_status = create_connector("one-node-source-test", file_source_create_cmd, "localhost", "38082")
+        file_source_create_cmd = FILE_SOURCE_CONNECTOR_CREATE % (source_connector_name, data_topic, "/tmp/test/%s" % file_source_input_file, worker_host, worker_port)
+        source_status = create_connector(source_connector_name, file_source_create_cmd, worker_host, worker_port)
         self.assertEquals(source_status, "RUNNING")
 
-        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % ("one-node-sink-test", "one-node-avro-test", "/tmp/test/sink.avro.test.txt", "localhost", "38082")
-        sink_status = create_connector("one-node-sink-test", file_sink_create_cmd, "localhost", "38082")
+        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % (sink_connector_name, data_topic, "/tmp/test/%s" % file_sink_output_file, worker_host, worker_port)
+        sink_status = create_connector(sink_connector_name, file_sink_create_cmd, worker_host, worker_port)
         self.assertEquals(sink_status, "RUNNING")
 
-        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", "sink.avro.test.txt", record_count)
+        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
         self.assertEquals(sink_op, record_count)
 
-    def test_jdbc_connector_on_host_network(self):
+    def test_jdbc_source_connector_on_host_network(self):
+        jdbc_topic_prefix = "one-node-jdbc-source-"
+        data_topic = "%stest" % jdbc_topic_prefix
+        file_sink_output_file = "file.sink.jdbcsource.test.txt"
+        source_connector_name = "one-node-jdbc-source-test"
+        sink_connector_name = "one-node-file-sink-test"
+        worker_host = "localhost"
+        worker_port = 28082
 
         # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
-        self.create_topics("kafka-host", "default", "one-node-jdbc-test")
+        self.create_topics("kafka-host", "default", data_topic)
 
         assert "PASS" in self.cluster.run_command_on_service("mysql-host", "bash -c 'mysql -u root -pconfluent < /tmp/sql/mysql-test.sql && echo PASS'")
 
@@ -279,27 +305,40 @@ class SingleNodeDistributedTest(unittest.TestCase):
         self.is_connect_healthy_for_service("connect-host-json", 28082)
 
         jdbc_source_create_cmd = JDBC_SOURCE_CONNECTOR_CREATE % (
-            "one-node-jdbc-test-source",
+            source_connector_name,
             "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent",
-            "one-node-jdbc-",
-            "localhost",
-            "28082")
+            jdbc_topic_prefix,
+            worker_host,
+            worker_port)
 
-        source_status = create_connector("one-node-jdbc-test-source", jdbc_source_create_cmd, "localhost", "28082")
-        self.assertEquals(source_status, "RUNNING")
+        jdbc_source_status = create_connector(source_connector_name, jdbc_source_create_cmd, worker_host, worker_port)
+        self.assertEquals(jdbc_source_status, "RUNNING")
 
-        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % ("one-node-sink-jdbc-test", "one-node-jdbc-test", "/tmp/test/sink.jdbc.test.txt", "localhost", "28082")
-        sink_status = create_connector("one-node-sink-jdbc-test", file_sink_create_cmd, "localhost", "28082")
+        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % (
+            sink_connector_name,
+            data_topic,
+            "/tmp/test/%s" % file_sink_output_file,
+            worker_host,
+            worker_port)
+        sink_status = create_connector(sink_connector_name, file_sink_create_cmd, worker_host, worker_port)
         self.assertEquals(sink_status, "RUNNING")
 
         record_count = 10
-        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", "sink.jdbc.test.txt", record_count)
+        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
         self.assertEquals(sink_op, 10)
 
-    def test_jdbc_connector_on_host_network_with_avro(self):
+    def test_jdbc_source_connector_on_host_network_with_avro(self):
+
+        jdbc_topic_prefix = "one-node-jdbc-source-avro-"
+        data_topic = "%stest" % jdbc_topic_prefix
+        file_sink_output_file = "file.sink.jdbcsource.avro.test.txt"
+        source_connector_name = "one-node-jdbc-source-test"
+        sink_connector_name = "one-node-file-sink-test"
+        worker_host = "localhost"
+        worker_port = 38082
 
         # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
-        self.create_topics("kafka-host", "default.avro", "one-node-jdbc-avro-test")
+        self.create_topics("kafka-host", "default.avro", data_topic)
 
         assert "PASS" in self.cluster.run_command_on_service("mysql-host", "bash -c 'mysql -u root -pconfluent < /tmp/sql/mysql-test.sql && echo PASS'")
 
@@ -307,21 +346,26 @@ class SingleNodeDistributedTest(unittest.TestCase):
         self.is_connect_healthy_for_service("connect-host-avro", 38082)
 
         jdbc_source_create_cmd = JDBC_SOURCE_CONNECTOR_CREATE % (
-            "one-node-jdbc-test-source",
+            source_connector_name,
             "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent",
-            "one-node-jdbc-avro-",
-            "localhost",
-            "38082")
+            jdbc_topic_prefix,
+            worker_host,
+            worker_port)
 
-        source_status = create_connector("one-node-jdbc-test-source", jdbc_source_create_cmd, "localhost", "38082")
-        self.assertEquals(source_status, "RUNNING")
+        jdbc_source_status = create_connector(source_connector_name, jdbc_source_create_cmd, worker_host, worker_port)
+        self.assertEquals(jdbc_source_status, "RUNNING")
 
-        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % ("one-node-sink-jdbc-test", "one-node-jdbc-avro-test", "/tmp/test/sink.jdbc.avro.test.txt", "localhost", "38082")
-        sink_status = create_connector("one-node-sink-jdbc-test", file_sink_create_cmd, "localhost", "38082")
+        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % (
+            sink_connector_name,
+            data_topic,
+            "/tmp/test/%s" % file_sink_output_file,
+            worker_host,
+            worker_port)
+        sink_status = create_connector(sink_connector_name, file_sink_create_cmd, worker_host, worker_port)
         self.assertEquals(sink_status, "RUNNING")
 
         record_count = 10
-        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", "sink.jdbc.avro.test.txt", record_count)
+        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
         self.assertEquals(sink_op, 10)
 
 
@@ -339,8 +383,6 @@ class ClusterHostNetworkTest(unittest.TestCase):
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
         assert "PASS" in cls.cluster.run_command_on_service("kafka-1", KAFKA_READY.format(brokers=3))
-
-        # assert "PASS" in cls.cluster.run_command_on_service("schema-registry-1", SR_READY.format(host="localhost", port="8081"))
 
     @classmethod
     def tearDownClass(cls):

@@ -1,48 +1,7 @@
 ---
 version: '2'
-# networks:
-#   zk:
-#     driver: bridge
-services:
-  # zookeeper-bridge:
-  #   image: confluentinc/cp-zookeeper:latest
-  #   networks:
-  #   - zk
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   ports:
-  #   - 22181:2181
-  #   - 32888:2888
-  #   - 33888:3888
-  #   labels:
-  #   - io.confluent.docker.testing=true
-  #
-  # kafka-bridge:
-  #   image: confluentinc/cp-kafka:latest
-  #   networks:
-  #   - zk
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-bridge:19092
-  #   ports:
-  #   - 19092:19092
-  #   labels:
-  #   - io.confluent.docker.testing=true
-  #
-  # schema-registry-bridge:
-  #   image: confluentinc/cp-schema-registry:latest
-  #   networks:
-  #   - zk
-  #   environment:
-  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper-bridge:2181
-  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry-bridge
-  #   ports:
-  #   - 18081:8081
-  #   labels:
-  #   - io.confluent.docker.testing=true
 
+services:
   zookeeper-host:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
@@ -131,22 +90,3 @@ services:
     volumes:
     - /tmp/kafka-connect-single-node-test/:/tmp/test
     - /tmp/kafka-connect-single-node-test/jars:/etc/kafka-connect/jars
-
-
-  # namenode-host:
-  #   image: confluentinc/hdfs:latest
-  #   environment:
-  #     TYPE: NAMENODE
-  #     NAMENODE_HOST: 0.0.0.0
-  #     DFS_REPLICATION: 1
-  #   labels:
-  #     - io.confluent.docker.testing=true
-  #
-  # datanode-host:
-  #   image: confluentinc/hdfs:latest
-  #   environment:
-  #     TYPE: DATANODE
-  #     NAMENODE_HOST: localhost
-  #     DFS_REPLICATION: 1
-  #   labels:
-  #   - io.confluent.docker.testing=true
