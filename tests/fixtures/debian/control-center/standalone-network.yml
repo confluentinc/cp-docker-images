@@ -1,3 +1,4 @@
+---
 version: "2"
 
 networks:
@@ -11,23 +12,26 @@ services:
     networks:
       - zk
     environment:
-      SERVER_ID: 1
-      CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "22181:2181"
       - "32888:2888"
       - "33888:3888"
+    labels:
+    - io.confluent.docker.testing=true
 
   kafka-bridge:
     image: confluentinc/kafka:latest
     networks:
       - zk
     environment:
-      BROKER_ID: 1
-      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
-      ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
     ports:
       - "19092:19092"
+    labels:
+      - io.confluent.docker.testing=true
 
   control-center-bridge:
     networks:
@@ -42,3 +46,5 @@ services:
       MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_STREAM_THREADS: 2
+    labels:
+      - io.confluent.docker.testing=true
