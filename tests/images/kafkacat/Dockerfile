@@ -1,5 +1,11 @@
 FROM debian:jessie
 
+ARG COMMIT_ID=unknown
+LABEL io.confluent.docker.git.id=$COMMIT_ID
+ARG BUILD_NUMBER=-1
+LABEL io.confluent.docker.build.number=$BUILD_NUMBER
+LABEL io.confluent.docker=true
+
 WORKDIR /build
 ENV VERSION=1.3.0-1
 

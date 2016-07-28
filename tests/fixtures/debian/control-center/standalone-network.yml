@@ -1,0 +1,51 @@
+---
+version: "2"
+
+networks:
+  zk:
+    # Use a custom driver
+    driver: bridge
+
+services:
+  zookeeper-bridge:
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - zk
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+      - "32888:2888"
+      - "33888:3888"
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-bridge:
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - zk
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-bridge:19092"
+    ports:
+      - "19092:19092"
+    labels:
+      - io.confluent.docker.testing=true
+
+  control-center-bridge:
+    networks:
+      - zk
+    ports:
+      - "19021:9021"
+    image: confluentinc/cp-control-center:latest
+    environment:
+      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      BOOTSTRAP_SERVERS: "kafka-bridge:19092"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_STREAM_THREADS: 2
+    labels:
+      - io.confluent.docker.testing=true

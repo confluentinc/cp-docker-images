@@ -13,6 +13,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -25,6 +26,7 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
