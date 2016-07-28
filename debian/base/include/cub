@@ -17,6 +17,7 @@ import requests
 ZookeeperServer = collections.namedtuple('ZookeeperServer', 'host port')
 KafkaServer = collections.namedtuple('KafkaServer', 'id host port endpoints')
 KafkaEndpoint = collections.namedtuple('KafkaEndpoint', 'id protocol host port')
+ZOOKEEPER_STAT_SOCKET_BUFFER = 20480
 
 
 def wait_for_service(host, port, timeout):
@@ -50,7 +51,7 @@ def get_zk_stat(server):
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
         s.connect(server)
         s.send('stat')
-        data = s.recv(1048)
+        data = s.recv(ZOOKEEPER_STAT_SOCKET_BUFFER)
     return data
 
 
@@ -203,7 +204,7 @@ def check_schema_registry_ready(host, port, service_timeout):
             return False
     else:
         print("%s cannot be reached on port %s." % (str(host), str(port)), file=sys.stderr)
-        return False 
+        return False
 
 
 def check_kafka_rest_ready(host, port, service_timeout):
