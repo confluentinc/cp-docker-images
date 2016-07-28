@@ -90,10 +90,10 @@ class StandaloneNetworkingTest(unittest.TestCase):
             export MESSAGES="{messages}" \
             export CHECK_MESSAGES="{check_messages}"
             cub kafka-ready "$ZOOKEEPER_CONNECT" 1 20 20 10 \
-            && control-center-run-class kafka.admin.TopicCommand --create --topic "$TOPIC" --partitions 1 --replication-factor 1 --if-not-exists --zookeeper "$ZOOKEEPER_CONNECT" \
+            && control-center-run-class kafka.admin.TopicCommand --create --topic "$TOPIC" --partitions 1 --replication-factor 1 --zookeeper "$ZOOKEEPER_CONNECT" \
             && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor" > /tmp/producer.config \
             && echo "acks=all" >> /tmp/producer.config \
-            && seq "$MESSAGES" | control-center-run-class kafka.tools.ConsoleProducer --broker-list "$BOOTSTRAP_SERVERS" --topic "$TOPIC" \
+            && seq "$MESSAGES" | control-center-run-class kafka.tools.ConsoleProducer --broker-list "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --producer.config /tmp/producer.config \
             && echo PRODUCED "$MESSAGES" messages. \
             && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor" > /tmp/consumer.config \
             && control-center-run-class kafka.tools.ConsoleConsumer --bootstrap-server "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --new-consumer --from-beginning --max-messages "$CHECK_MESSAGES" --consumer.config /tmp/consumer.config'
