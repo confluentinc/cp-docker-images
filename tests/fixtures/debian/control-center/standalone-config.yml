@@ -9,7 +9,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
-    - io.confluent.docker.testing=true
+      - io.confluent.docker.testing=true
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -18,19 +18,19 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
     labels:
-    - io.confluent.docker.testing=true
+      - io.confluent.docker.testing=true
 
   failing-config:
     image: confluentinc/cp-control-center:latest
     labels:
-    - io.confluent.docker.testing=true
+      - io.confluent.docker.testing=true
 
   failing-config-missing-zk-connect:
     environment:
       BOOTSTRAP_SERVERS: fake
     image: confluentinc/cp-control-center:latest
     labels:
-    - io.confluent.docker.testing=true
+      - io.confluent.docker.testing=true
 
   failing-config-missing-rep-factor:
     environment:
@@ -38,13 +38,13 @@ services:
       ZOOKEEPER_CONNECT: fakeZk
     image: confluentinc/cp-control-center:latest
     labels:
-    - io.confluent.docker.testing=true
+      - io.confluent.docker.testing=true
 
   default-config:
     image: confluentinc/cp-control-center:latest
     environment:
       ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
       BOOTSTRAP_SERVERS: "kafka:9092"
-    labels:
-    - io.confluent.docker.testing=true
       CONTROL_CENTER_REPLICATION_FACTOR: 1
+    labels:
+      - io.confluent.docker.testing=true
