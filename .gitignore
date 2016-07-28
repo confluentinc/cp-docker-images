@@ -7,3 +7,6 @@ __pycache__
 *.csr
 *.srl
 *.req
+*.log
+*.jar
+Untitled*

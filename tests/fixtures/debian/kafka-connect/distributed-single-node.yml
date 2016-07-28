@@ -1,0 +1,92 @@
+---
+version: '2'
+
+services:
+  zookeeper-host:
+    image: confluentinc/cp-zookeeper:latest
+    network_mode: host
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-host:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+    labels:
+    - io.confluent.docker.testing=true
+
+  schema-registry-host:
+    image: confluentinc/cp-schema-registry:latest
+    network_mode: host
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
+      SCHEMA_REGISTRY_HOST_NAME: localhost
+    labels:
+    - io.confluent.docker.testing=true
+
+  mysql-host:
+    image: mysql
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      MYSQL_ROOT_PASSWORD: confluent
+      MYSQL_USER: confluent
+      MYSQL_PASSWORD: confluent
+      MYSQL_DATABASE: connect_test
+    volumes:
+    - /tmp/kafka-connect-single-node-test/sql:/tmp/sql
+
+  connect-host-json:
+    image: confluentinc/cp-kafka-connect:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:29092
+      CONNECT_REST_PORT: 28082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_ZOOKEEPER_CONNECT: "localhost:32181"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/kafka-connect-single-node-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/jars:/etc/kafka-connect/jars
+
+  connect-host-avro:
+    image: confluentinc/cp-kafka-connect:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:29092
+      CONNECT_REST_PORT: 38082
+      CONNECT_GROUP_ID: "default-avro"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.avro.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.avro.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.avro.status"
+      CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://localhost:8081"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://localhost:8081"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_ZOOKEEPER_CONNECT: "localhost:32181"
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/kafka-connect-single-node-test/:/tmp/test
+    - /tmp/kafka-connect-single-node-test/jars:/etc/kafka-connect/jars

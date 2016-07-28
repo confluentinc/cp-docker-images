@@ -2,19 +2,16 @@ VERSION := 3.0.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
 COMMIT_ID := $(shell git rev-parse --short HEAD)
+MYSQL_DRIVER_VERSION := 5.1.39
 
 
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
 clean-container:
-	for container in `docker ps -q -f label=io.confluent.docker.testing=true` ; do \
-        echo "Removing container $${container} \n==========================================\n " ; \
-				docker kill -f $${container}; \
-  done
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
-        echo "Removing container $${container} \n==========================================\n " ; \
-				docker rm -f $${container}; \
+        echo "\nRemoving container $${container} \n========================================== " ; \
+				docker rm -f $${container} || exit 1 ; \
   done
 
 clean-image:
@@ -61,7 +58,7 @@ endif
         docker push $${image}; \
   done
 
-push-public: clean-container clean-image build-debian build-test-images
+push-public: clean-container  build-debian
 	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep -v $$DOCKER_REMOTE_REPOSITORY` ; do \
         echo "\n Pushing $${image}"; \
         docker push $${image}; \
@@ -87,6 +84,12 @@ test-kafka: venv clean-container build-debian build-test-images
 test-schema-registry: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
 
-test-kafka-rest: venv build-debian build-test-images
-	docker ps -a -q | xargs  docker rm -f
+test-kafka-rest: venv clean-container build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
+
+tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar:
+	mkdir -p tests/fixtures/debian/kafka-connect/jars
+	curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" | tar -xzf - -C tests/fixtures/debian/kafka-connect/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+
+test-kafka-connect: venv clean-container build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
