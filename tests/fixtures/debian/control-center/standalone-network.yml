@@ -8,11 +8,12 @@ networks:
 
 services:
   zookeeper-bridge:
-    image: confluentinc/zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     networks:
       - zk
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
       - "32888:2888"
@@ -21,7 +22,7 @@ services:
     - io.confluent.docker.testing=true
 
   kafka-bridge:
-    image: confluentinc/kafka:latest
+    image: confluentinc/cp-kafka:latest
     networks:
       - zk
     environment:
@@ -38,7 +39,7 @@ services:
       - zk
     ports:
       - "19021:9021"
-    image: confluentinc/control-center:latest
+    image: confluentinc/cp-control-center:latest
     environment:
       ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
       BOOTSTRAP_SERVERS: "kafka-bridge:19092"

@@ -7,7 +7,7 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "control-center")
-KAFKA_READY = "bash -c 'cub kafka-ready $ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
+KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
 C3_CHECK = "bash -c 'dub wait {host} {port} 240 && curl -fs -X GET -i {host}:{port}/ && echo PASS || echo FAIL'"
 
@@ -34,7 +34,7 @@ class ConfigTest(unittest.TestCase):
     def is_c3_healthy_for_service(cls, service):
         output = utils.run_docker_command(
             600,
-            image="confluentinc/control-center",
+            image="confluentinc/cp-control-center",
             command=C3_CHECK.format(host=service, port=9021),
             host_config={'NetworkMode': 'config-test_default'}
         )
@@ -75,7 +75,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
     def is_c3_healthy_for_service(cls, service, network):
         output = utils.run_docker_command(
             600,
-            image="confluentinc/control-center",
+            image="confluentinc/cp-control-center",
             command=C3_CHECK.format(host=service, port=9021),
             host_config={'NetworkMode': network}
         )
@@ -103,7 +103,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         TOPIC = 'test-topic'
         # Run producer and consumer with interceptor to generate monitoring data
         out = utils.run_docker_command(
-            image="confluentinc/control-center",
+            image="confluentinc/cp-control-center",
             # TODO - check that all messages are read back when this bug is fixed - https://issues.apache.org/jira/browse/KAFKA-3993
             command=INTERCEPTOR_CLIENTS_CMD.format(topic=TOPIC, messages=MESSAGES, check_messages=MESSAGES // 2),
             host_config={'NetworkMode': 'standalone-network-test_zk'},
@@ -121,7 +121,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         cmd = FETCH_MONITORING_DATA_CMD.format(host="control-center-bridge", port=9021, start=prev_hr_start_unix * 1000, stop=next_hr_start_unix * 1000)
 
         fetch_cmd_args = {
-            'image': "confluentinc/control-center",
+            'image': "confluentinc/cp-control-center",
             'command': cmd,
             'host_config': {'NetworkMode': 'standalone-network-test_zk'},
         }
