@@ -15,7 +15,7 @@ clean-containers:
   done
 
 clean-images:
-	for image in `docker images -q -f label=io.confluent.docker` ; do \
+	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
         echo "Removing image $${image} \n==========================================\n " ; \
 				docker rmi -f $${image} || exit 1 ; \
   done
