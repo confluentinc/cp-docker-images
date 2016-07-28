@@ -11,14 +11,14 @@ MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
 ENV COMPONENT=control-center
-ENV CONTROL_CENTER_DATA_DIR=/var/lib/${COMPONENT}
+ENV CONTROL_CENTER_DATA_DIR=/var/lib/confluent-${COMPONENT}
 ENV CONTROL_CENTER_CONFIG_DIR=/etc/confluent-${COMPONENT}
 
 # Default listener
 EXPOSE 9021
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-${COMPONENT} \
+    && apt-get update && apt-get install -y confluent-${COMPONENT}=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
