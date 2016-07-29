@@ -12,16 +12,19 @@ import time
 from kazoo.client import KazooClient
 import json
 import re
+import requests
 
 ZookeeperServer = collections.namedtuple('ZookeeperServer', 'host port')
 KafkaServer = collections.namedtuple('KafkaServer', 'id host port endpoints')
+KafkaEndpoint = collections.namedtuple('KafkaEndpoint', 'id protocol host port')
+ZOOKEEPER_STAT_SOCKET_BUFFER = 20480
 
 
 def wait_for_service(host, port, timeout):
     start = time.time()
     while True:
         try:
-            s = socket.create_connection((host, port), timeout)
+            s = socket.create_connection((host, int(port)), float(timeout))
             s.close()
             return True
         except socket.error:
@@ -48,7 +51,7 @@ def get_zk_stat(server):
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
         s.connect(server)
         s.send('stat')
-        data = s.recv(1048)
+        data = s.recv(ZOOKEEPER_STAT_SOCKET_BUFFER)
     return data
 
 
@@ -98,6 +101,19 @@ def check_zookeeper_ready(zk_connect_str, service_timeout, ensemble_retries, ens
         return False
 
 
+def parse_kafka_endpoints(broker_id, endpoints):
+
+    parsed_endpoints = []
+    for endpoint in endpoints:
+        protocol_address = endpoint.split("://")
+        host_port = protocol_address[1].split(":")
+        parsed_endpoints.append(KafkaEndpoint(id=broker_id,
+                                              protocol=protocol_address[0],
+                                              host=host_port[0],
+                                              port=host_port[1]))
+    return parsed_endpoints
+
+
 def get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wait):
     brokers = []
 
@@ -110,8 +126,15 @@ def get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wai
         server = zk_connect
         chroot = "/"
 
-    for _ in xrange(cluster_retries):
+    for i in xrange(cluster_retries):
+
         try:
+            # Sleep between iterations. An iteration can fail if :
+            # 1. ZK chroot not found
+            # 2. Exception in communicating with ZK
+            # 3. /brokers/ids znode is not created yet
+            # 4. if count(/brokers/ids) < min_broker_count
+            time.sleep(cluster_wait)
             zk = KazooClient(hosts=server, read_only=True)
             zk.start()
 
@@ -119,12 +142,12 @@ def get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wai
             if zk.exists(chroot):
                 zk.chroot = chroot
             else:
-                time.sleep(cluster_wait)
                 continue
 
             # Check for brokers
             if zk.exists("/brokers/ids"):
                 broker_ids = zk.get_children("/brokers/ids")
+
                 brokers = []
                 for i in broker_ids:
                     znode = zk.get("/brokers/ids/" + i)
@@ -132,12 +155,11 @@ def get_brokers_in_zk(zk_connect, min_broker_count, cluster_retries, cluster_wai
                     brokers.append(KafkaServer(id=i,
                                                host=broker["host"],
                                                port=broker["port"],
-                                               endpoints=broker["endpoints"]))
+                                               endpoints=parse_kafka_endpoints(i, broker["endpoints"])))
                 if len(broker_ids) >= min_broker_count:
                     print("Brokers in ZK: %s" % brokers, file=sys.stderr)
                     return (len(broker_ids) >= min_broker_count, brokers)
-            else:
-                time.sleep(cluster_wait)
+
         except Exception, e:
             print(e, file=sys.stderr)
         finally:
@@ -152,14 +174,58 @@ def check_kafka_ready(zk_connect, min_broker_count, service_timeout, cluster_ret
         print("Expected %s brokers but found %s. [%s] " % (min_broker_count, len(brokers), str(brokers)), file=sys.stderr)
         return False
 
-    status = [wait_for_service(server.host, server.port, service_timeout) for server in brokers]
+    # Check if you can connect to the endpoints, they should be up and running at this point.
+    endpoints = [endpoint for server in brokers for endpoint in server.endpoints]
+    status = [wait_for_service(endpoint.host, endpoint.port, service_timeout) for endpoint in endpoints]
 
     if all(status):
         return True
     else:
-        for i in xrange(len(brokers)):
+        for i in xrange(len(endpoints)):
             if not status[i]:
-                print("%s cannot be reached." % str(brokers[i]), file=sys.stderr)
+                print("%s cannot be reached." % str(endpoints[i]), file=sys.stderr)
+        return False
+
+
+def check_schema_registry_ready(host, port, service_timeout):
+
+    # Check if you can connect to the endpoint
+    status = wait_for_service(host, port, service_timeout)
+
+    if status:
+        # Check if service is responding as expected to basic request
+        url = "http://%s:%s/config" % (host, port)
+        r = requests.get(url)
+        # The call should always return the compatibilityLevel
+        if r.status_code // 100 == 2 and 'compatibilityLevel' in str(r.text):
+            return True
+        else:
+            print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)), file=sys.stderr)
+            return False
+    else:
+        print("%s cannot be reached on port %s." % (str(host), str(port)), file=sys.stderr)
+        return False
+
+
+def check_kafka_rest_ready(host, port, service_timeout):
+
+    # Check if you can connect to the endpoint
+    status = wait_for_service(host, port, service_timeout)
+
+    if status:
+
+        # Check if service is responding as expected to basic request
+        # Try to get topic list
+        # NOTE: this will only test ZK <> REST Proxy interaction
+        url = "http://%s:%s/topics" % (host, port)
+        r = requests.get(url)
+        if r.status_code // 100 == 2:
+            return True
+        else:
+            print("Unexpected response with code: %s and content: %s" % (str(r.status_code),str(r.text)), file=sys.stderr)
+            return False
+    else:
+        print("%s cannot be reached on port %s." % (str(host), str(port)), file=sys.stderr)
         return False
 
 
@@ -188,6 +254,16 @@ if __name__ == '__main__':
     kafka.add_argument('retries', help='No of retries to check if leader election is complete.', type=int)
     kafka.add_argument('wait', help='Time in secs between retries', type=int)
 
+    sr = actions.add_parser('sr-ready', description='Check if Schema Registry is ready.')
+    sr.add_argument('host', help='Hostname for Schema Registry.')
+    sr.add_argument('port', help='Port for Schema Registry.')
+    sr.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+
+    kr = actions.add_parser('kr-ready', description='Check if Kafka REST Proxy is ready.')
+    kr.add_argument('host', help='Hostname for REST Proxy.')
+    kr.add_argument('port', help='Port for REST Proxy.')
+    kr.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+
     config = actions.add_parser('listeners', description='Get listeners value from advertised.listeners. Replaces host to 0.0.0.0')
     config.add_argument('advertised_listeners', help='advertised.listeners string.')
 
@@ -200,9 +276,13 @@ if __name__ == '__main__':
     success = False
 
     if args.action == "zk-ready":
-        success = check_zookeeper_ready(args.connect_string, args.timeout, args.retries, args.wait)
+        success = check_zookeeper_ready(args.connect_string, int(args.timeout), int(args.retries), int(args.wait))
     elif args.action == "kafka-ready":
-        success = check_kafka_ready(args.connect_string, args.min_brokers, args.timeout, args.retries, args.wait)
+        success = check_kafka_ready(args.connect_string, int(args.min_brokers), int(args.timeout), int(args.retries), int(args.wait))
+    elif args.action == "sr-ready":
+        success = check_schema_registry_ready(args.host, args.port, int(args.timeout))
+    elif args.action == "kr-ready":
+        success = check_kafka_rest_ready(args.host, args.port, int(args.timeout))
     elif args.action == "listeners":
         listeners = get_kafka_listeners(args.advertised_listeners)
         if listeners:

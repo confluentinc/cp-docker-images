@@ -8,6 +8,10 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "zookeeper")
 QUORUM_CHECK = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep not && echo notready'"
 MODE_COMMAND = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep Mode'"
+JMX_CHECK = """bash -c "\
+    echo 'get -b org.apache.ZooKeeperService:name0=StandaloneServer_port-1 Version' |
+        java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
+"""
 
 
 class ConfigTest(unittest.TestCase):
@@ -33,30 +37,22 @@ class ConfigTest(unittest.TestCase):
         assert "Mode: standalone\n" == output
 
     def test_required_config_failure(self):
-        expected = "SERVER_ID is required."
-        self.assertTrue(expected in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("ZOOKEEPER_CLIENT_PORT is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("ZOOKEEPER_TICK_TIME is required." in self.cluster.service_logs("failing-config-ticktime", stopped=True))
+        self.assertTrue("ZOOKEEPER_SERVER_ID is required." in self.cluster.service_logs("failing-config-server-id", stopped=True))
+        self.assertTrue("ZOOKEEPER_INIT_LIMIT is required." in self.cluster.service_logs("failing-config-init-limit", stopped=True))
+        self.assertTrue("ZOOKEEPER_SYNC_LIMIT is required." in self.cluster.service_logs("failing-config-sync-limit", stopped=True))
 
     def test_default_config(self):
         self.is_zk_healthy_for_service("default-config", 2181)
         import string
         zk_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/zookeeper.properties")
-        expected = """tickTime=3000
-            initLimit=10
-            syncLimit=5
-
-            dataDir=/opt/zookeeper/data
-            dataLogDir=/opt/zookeeper/log
-
-            clientPort=2181
-            quorumListenOnAllIPs=true
-
-            autopurge.purgeInterval=1
-            autopurge.snapRetainCount=3
+        expected = """clientPort=2181
+            dataDir=/var/lib/zookeeper/data
+            dataLogDir=/var/lib/zookeeper/log
+            tickTime=2000
             """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
-
-        zk_id = self.cluster.run_command_on_service("default-config", "cat /opt/zookeeper/data/myid")
-        self.assertEquals(zk_id, "1")
 
     def test_default_logging_config(self):
         self.is_zk_healthy_for_service("default-config", 2181)
@@ -83,22 +79,21 @@ class ConfigTest(unittest.TestCase):
     def test_full_config(self):
         self.is_zk_healthy_for_service("full-config", 22181)
         zk_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/zookeeper.properties")
-        expected = """tickTime=5555
-                initLimit=25
-                syncLimit=20
+        expected = """clientPort=22181
+                dataDir=/var/lib/zookeeper/data
+                dataLogDir=/var/lib/zookeeper/log
+                tickTime=5555
 
-                dataDir=/opt/zookeeper/data
-                dataLogDir=/opt/zookeeper/log
 
-                clientPort=22181
-                quorumListenOnAllIPs=false
-
-                autopurge.purgeInterval=2
                 autopurge.snapRetainCount=4
+                quorumListenOnAllIPs=false
+                initLimit=25
+                autopurge.purgeInterval=2
+                syncLimit=20
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
-        zk_id = self.cluster.run_command_on_service("full-config", "cat /opt/zookeeper/data/myid")
+        zk_id = self.cluster.run_command_on_service("full-config", "cat /var/lib/zookeeper/data/myid")
         self.assertEquals(zk_id, "1")
 
     def test_full_logging_config(self):
@@ -134,22 +129,19 @@ class ConfigTest(unittest.TestCase):
     def test_kitchen_sink(self):
         self.is_zk_healthy_for_service("kitchen-sink", 22181)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/zookeeper.properties")
-        expected = """tickTime=5555
+        expected = """clientPort=22181
+                    dataDir=/var/lib/zookeeper/data
+                    dataLogDir=/var/lib/zookeeper/log
+                    tickTime=5555
+
+
+                    quorumListenOnAllIPs=false
                     initLimit=25
                     syncLimit=20
-
-                    dataDir=/opt/zookeeper/data
-                    dataLogDir=/opt/zookeeper/log
-
-                    clientPort=22181
-                    quorumListenOnAllIPs=false
-
-                    autopurge.purgeInterval=2
-                    autopurge.snapRetainCount=4
                     """
         self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
 
-        zk_id = self.cluster.run_command_on_service("full-config", "cat /opt/zookeeper/data/myid")
+        zk_id = self.cluster.run_command_on_service("full-config", "cat /var/lib/zookeeper/data/myid")
         self.assertTrue(zk_id == "1")
 
 
@@ -174,7 +166,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_zk_healthy_for_service("bridge-network", 2181)
         # Test from outside the container
         logs = utils.run_docker_command(
-            image="confluentinc/zookeeper",
+            image="confluentinc/cp-zookeeper",
             command=MODE_COMMAND.format(port=22181),
             host_config={'NetworkMode': 'host'})
         self.assertEquals("Mode: standalone\n", logs)
@@ -184,10 +176,28 @@ class StandaloneNetworkingTest(unittest.TestCase):
         self.is_zk_healthy_for_service("host-network", 32181)
         # Test from outside the container
         logs = utils.run_docker_command(
-            image="confluentinc/zookeeper",
+            image="confluentinc/cp-zookeeper",
             command=MODE_COMMAND.format(port=32181),
             host_config={'NetworkMode': 'host'})
         self.assertEquals("Mode: standalone\n", logs)
+
+    def test_jmx_host_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port="39999"),
+            host_config={'NetworkMode': 'host'})
+        self.assertTrue("Version = 3.4.6-1569965, built on 02/20/2014 09:09 GMT;" in logs)
+
+    def test_jmx_bridged_network(self):
+
+        # Test from outside the container
+        logs = utils.run_docker_command(
+            image="confluentinc/cp-jmxterm",
+            command=JMX_CHECK.format(jmx_hostname="bridge-network-jmx", jmx_port="9999"),
+            host_config={'NetworkMode': 'standalone-network-test_zk'})
+        self.assertTrue("Version = 3.4.6-1569965, built on 02/20/2014 09:09 GMT;" in logs)
 
 
 class ClusterBridgeNetworkTest(unittest.TestCase):
@@ -228,7 +238,7 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
 
         for port in client_ports:
             output = utils.run_docker_command(
-                image="confluentinc/zookeeper",
+                image="confluentinc/cp-zookeeper",
                 command=MODE_COMMAND.format(port=port),
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)
@@ -265,7 +275,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
         for port in client_ports:
             output = utils.run_docker_command(
-                image="confluentinc/zookeeper",
+                image="confluentinc/cp-zookeeper",
                 command=MODE_COMMAND.format(port=port),
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)

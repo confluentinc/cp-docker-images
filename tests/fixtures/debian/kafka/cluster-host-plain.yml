@@ -1,0 +1,71 @@
+---
+version: '2'
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-3:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 42181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-3:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39092
+    labels:
+    - io.confluent.docker.testing=true

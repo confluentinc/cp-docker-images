@@ -5,11 +5,33 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure SERVER_ID
+
+dub ensure ZOOKEEPER_CLIENT_PORT
+dub ensure ZOOKEEPER_TICK_TIME
+
 dub path /etc/kafka/ writable
+
+# myid is required for clusters
+if [[ -n "${ZOOKEEPER_SERVERS-}" ]]
+then
+  dub ensure ZOOKEEPER_SERVER_ID
+  dub ensure ZOOKEEPER_INIT_LIMIT
+  dub ensure ZOOKEEPER_SYNC_LIMIT
+fi
+
+if [[ -n "${ZOOKEEPER_SERVER_ID-}" ]]
+then
+  dub template "/etc/confluent/docker/myid.template" "/var/lib/${COMPONENT}/data/myid"
+fi
+
+if [[ -n "${KAFKA_JMX_OPTS-}" ]]
+then
+  if [[ ! $KAFKA_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  then
+    echo "KAFKA_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
+  fi
+fi
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/kafka/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "/etc/kafka/log4j.properties"
 dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties"
-
-dub template "/etc/confluent/docker/myid.template" "/opt/${COMPONENT}/data/myid"

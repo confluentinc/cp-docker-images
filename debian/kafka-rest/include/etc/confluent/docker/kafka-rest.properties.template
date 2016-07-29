@@ -1,26 +1,26 @@
 
 {# required properties #}
-zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}	
-schema.registry.url={{env['SCHEMA_REGISTRY_URL']}}
+zookeeper.connect={{env['KAFKA_REST_ZOOKEEPER_CONNECT']}}
 
 {# optional properties #}
 {% set other_props = {
-	'LISTENERS': 'listeners',
-	'ID_CONFIG': 'id',
-	'HOST_NAME': 'host.name',
-	'PRODUCER_THREADS': 'producer.threads',
-	'CONSUMER_ITERATOR_TIMEOUT_MS': 'consumer.iterator.timeout.ms',
-	'CONSUMER_ITERATOR_BACKOFF_MS': 'consumer.iterator.backoff.ms',
-	'CONSUMER_REQUEST_TIMEOUT_MS': 'consumer.request.timeout.ms',
-	'CONSUMER_REQUEST_MAX_BYTES': 'consumer.request.max.bytes',
-	'CONSUMER_THREADS': 'consumer.threads',
-	'CONSUMER_INSTANCE_TIMEOUT_MS': 'consumer.instance.timeout.ms',
-	'SIMPLE_CONSUMER_MAX_POOL_SIZE': 'simpleconsumer.pool.size.max',
-	'SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms'
+	'KAFKA_REST_LISTENERS': 'listeners',
+	'KAFKA_REST_ID_CONFIG': 'id',
+	'KAFKA_REST_HOST_NAME': 'host.name',
+	'KAFKA_REST_SCHEMA_REGISTRY_URL': 'schema.registry.url',
+	'KAFKA_REST_PRODUCER_THREADS': 'producer.threads',
+	'KAFKA_REST_CONSUMER_ITERATOR_TIMEOUT_MS': 'consumer.iterator.timeout.ms',
+	'KAFKA_REST_CONSUMER_ITERATOR_BACKOFF_MS': 'consumer.iterator.backoff.ms',
+	'KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS': 'consumer.request.timeout.ms',
+	'KAFKA_REST_CONSUMER_REQUEST_MAX_BYTES': 'consumer.request.max.bytes',
+	'KAFKA_REST_CONSUMER_THREADS': 'consumer.threads',
+	'KAFKA_REST_CONSUMER_INSTANCE_TIMEOUT_MS': 'consumer.instance.timeout.ms',
+	'KAFKA_REST_SIMPLE_CONSUMER_MAX_POOL_SIZE': 'simpleconsumer.pool.size.max',
+	'KAFKA_REST_SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms'
  } -%}
 
-{% for k, property in other_props.iteritems() %}
-	{% if env.get(k) != None %}
-		{{property}}={{env[k]}}
-	{% endif %}
-{% endfor %}
+ {% for k, property in other_props.iteritems() -%}
+ {% if env.get(k) != None -%}
+ {{property}}={{env[k]}}
+ {% endif -%}
+ {% endfor -%}

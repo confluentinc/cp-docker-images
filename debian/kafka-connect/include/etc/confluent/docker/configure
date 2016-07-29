@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure CONNECT_BOOTSTRAP_SERVERS
+dub ensure CONNECT_REST_PORT
+dub ensure CONNECT_GROUP_ID
+dub ensure CONNECT_CONFIG_STORAGE_TOPIC
+dub ensure CONNECT_OFFSET_STORAGE_TOPIC
+dub ensure CONNECT_STATUS_STORAGE_TOPIC
+dub ensure CONNECT_KEY_CONVERTER
+dub ensure CONNECT_VALUE_CONVERTER
+dub ensure CONNECT_INTERNAL_KEY_CONVERTER
+dub ensure CONNECT_INTERNAL_VALUE_CONVERTER
+# This is required to avoid config bugs. You should set this to a value that is
+# resolvable by all containers.
+dub ensure CONNECT_REST_ADVERTISED_HOST_NAME
+# Required for zk-ready and kafka-ready checks
+dub ensure CONNECT_ZOOKEEPER_CONNECT
+
+
+# Fix for https://issues.apache.org/jira/browse/KAFKA-3988
+if [[ $CONNECT_INTERNAL_KEY_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]] || [[ $CONNECT_INTERNAL_VALUE_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]]
+then
+  export CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE=false
+  export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=false
+fi
+
+if [[ $CONNECT_KEY_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]] || [[ $CONNECT_VALUE_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]]
+then
+  dub ensure CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+  dub ensure CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+fi
+
+dub path /etc/"${COMPONENT}"/ writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
+
+# The connect-distributed script expects the log4j config at /etc/kafka/connect-log4j.properties.
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/kafka/connect-log4j.properties"
