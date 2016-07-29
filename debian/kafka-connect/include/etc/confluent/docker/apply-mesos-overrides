@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Mesos DC/OS docker deployments will have HOST and PORT0 
+# set for the proxying of the service.
+# 
+# Use those values provide things we know we'll need.
+
+[ -n "${HOST:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_HOST_NAME:-}" ] && \
+	export CONNECT_REST_ADVERTISED_HOST_NAME=$HOST
+
+[ -n "${PORT0:-}" ] && [ -z "${CONNECT_REST_PORT:-}" ] && \
+	export CONNECT_REST_PORT=$PORT0
+
