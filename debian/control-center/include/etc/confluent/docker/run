@@ -6,7 +6,7 @@ set -o nounset \
     -o xtrace
 
 echo "===> ENV Variables ..."
-env
+env | sort
 
 echo "===> User"
 id
