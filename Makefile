@@ -58,10 +58,11 @@ endif
         docker push $${image}; \
   done
 
-push-public: clean-container  build-debian
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep -v $$DOCKER_REMOTE_REPOSITORY` ; do \
-        echo "\n Pushing $${image}"; \
-        docker push $${image}; \
+push-public: clean build-debian
+	for component in ${COMPONENTS} ; do \
+        echo "\n Pushing cp-$${component}  \n==========================================\n "; \
+        docker push confluentinc/cp-$${component}:latest; \
+				docker push confluentinc/cp-$${component}:${VERSION}; \
   done
 
 clean: clean-container clean-image
