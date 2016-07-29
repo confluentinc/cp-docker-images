@@ -58,7 +58,7 @@ endif
         docker push $${image}; \
   done
 
-push-public:  build-debian
+push-public: clean build-debian
 	for component in ${COMPONENTS} ; do \
         echo "\n Pushing cp-$${component}  \n==========================================\n "; \
         docker push confluentinc/cp-$${component}:latest; \
