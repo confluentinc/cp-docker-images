@@ -8,16 +8,16 @@ MYSQL_DRIVER_VERSION := 5.1.39
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
-clean-container:
+clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
         echo "\nRemoving container $${container} \n========================================== " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
 
-clean-image:
-	for image in `docker images -q -f label=io.confluent.docker` ; do \
+clean-images:
+	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
         echo "Removing image $${image} \n==========================================\n " ; \
-				docker rmi -f $${image}; \
+				docker rmi -f $${image} || exit 1 ; \
   done
 
 build-debian:
