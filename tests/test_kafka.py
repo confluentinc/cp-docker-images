@@ -7,8 +7,11 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
-HEALTH_CHECK = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
-ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
+HEALTH_CHECK = """bash -c 'cp /etc/kafka/kafka.properties /tmp/client.properties \
+                  && echo security.protocol={security_protocol} >> /tmp/client.properties \
+                  && cub kafka-ready {host}:{port} /tmp/client.properties {brokers} 40 && echo PASS || echo FAIL'
+                """
+ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 KAFKA_SASL_SSL_CHECK = """bash -c "kafkacat -X 'security.protocol=sasl_ssl' \
       -X 'ssl.ca.location=/etc/kafka/secrets/snakeoil-ca-1.crt' \
@@ -84,7 +87,7 @@ class ConfigTest(unittest.TestCase):
         cls.cluster.start()
 
         # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="broker1", principal="broker1", hostname="sasl-ssl-config"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="broker1", principal="kafka", hostname="sasl-ssl-config"))
 
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
 
@@ -95,8 +98,8 @@ class ConfigTest(unittest.TestCase):
         cls.machine.ssh("sudo rm -rf /tmp/kafka-config-test/secrets")
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_required_config_failure(self):
@@ -118,7 +121,7 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue("KAFKA_OPTS should contain 'java.security.auth.login.config' property." in self.cluster.service_logs("failing-config-sasl-missing-prop", stopped=True))
 
     def test_default_config(self):
-        self.is_kafka_healthy_for_service("default-config", 1)
+        self.is_kafka_healthy_for_service("default-config", 9092, 1)
         props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/kafka.properties")
         expected = """
             advertised.listeners=PLAINTEXT://default-config:9092
@@ -138,7 +141,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
     def test_default_logging_config(self):
-        self.is_kafka_healthy_for_service("default-config", 1)
+        self.is_kafka_healthy_for_service("default-config", 9092, 1)
 
         log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/log4j.properties")
         expected_log4j_props = """log4j.rootLogger=INFO, stdout
@@ -170,7 +173,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_full_config(self):
-        self.is_kafka_healthy_for_service("full-config", 1)
+        self.is_kafka_healthy_for_service("full-config", 9092, 1)
         props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=PLAINTEXT://full-config:9092
@@ -182,7 +185,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_full_logging_config(self):
-        self.is_kafka_healthy_for_service("full-config", 1)
+        self.is_kafka_healthy_for_service("full-config", 9092, 1)
 
         log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/log4j.properties")
         expected_log4j_props = """log4j.rootLogger=WARN, stdout
@@ -215,13 +218,13 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_volumes(self):
-        self.is_kafka_healthy_for_service("external-volumes", 1)
+        self.is_kafka_healthy_for_service("external-volumes", 9092, 1)
 
     def test_random_user(self):
-        self.is_kafka_healthy_for_service("random-user", 1)
+        self.is_kafka_healthy_for_service("random-user", 9092, 1)
 
     def test_kitchen_sink(self):
-        self.is_kafka_healthy_for_service("kitchen-sink", 1)
+        self.is_kafka_healthy_for_service("kitchen-sink", 9092, 1)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
@@ -233,7 +236,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_ssl_config(self):
-        self.is_kafka_healthy_for_service("ssl-config", 1)
+        self.is_kafka_healthy_for_service("ssl-config", 9092, 1, "ssl-config", "SSL")
         zk_props = self.cluster.run_command_on_service("ssl-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=SSL://ssl-config:9092
@@ -252,7 +255,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_sasl_config(self):
-        self.is_kafka_healthy_for_service("sasl-ssl-config", 1)
+        self.is_kafka_healthy_for_service("sasl-ssl-config", 9094, 1, "sasl-ssl-config", "SASL_SSL")
         zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
@@ -262,7 +265,7 @@ class ConfigTest(unittest.TestCase):
 
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
                 security.inter.broker.protocol=SASL_SSL
-                sasl.kerberos.service.name=broker1
+                sasl.kerberos.service.name=kafka
                 ssl.keystore.password=confluent
                 ssl.key.password=confluent
                 ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
@@ -471,7 +474,7 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
         # Test from within the container
         self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
 
-        # FIXME: Figure out how to kafkacat with SASL/Kerberos
+        # FIXME: Figure out how to use kafkacat with SASL/Kerberos
         # Test from outside the container
         # logs = utils.run_docker_command(
         #     image="confluentinc/cp-kafkacat",

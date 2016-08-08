@@ -36,7 +36,6 @@ RUN echo "===> update debian ....." \
     && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir jinja2 \
-                                  kazoo \
                                   requests \
     \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
@@ -52,3 +51,4 @@ RUN echo "===> update debian ....." \
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
+COPY include/etc/confluent/docker /etc/confluent/docker

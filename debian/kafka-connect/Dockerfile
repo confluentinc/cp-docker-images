@@ -14,11 +14,12 @@ ENV COMPONENT=kafka-connect
 # Default kafka-connect rest.port
 EXPOSE 8083
 
-RUN echo "===> Installing JDBC and Hadoop connectors ..." \
+RUN echo "===> Installing Schema Registry (for Avro jars), JDBC and Hadoop connectors ..." \
     && apt-get -qq update \
     && apt-get install -y \
-        confluent-kafka-connect-jdbc \
-        confluent-kafka-connect-hdfs \
+        confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+        confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+        confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
