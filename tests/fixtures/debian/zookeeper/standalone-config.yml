@@ -51,6 +51,31 @@ services:
     labels:
     - io.confluent.docker.testing=true
 
+  kerberos:
+    image: confluentinc/cp-kerberos
+    environment:
+      BOOTSTRAP: 0
+    volumes:
+    - /tmp/zookeeper-config-test/secrets:/tmp/keytab
+    - /dev/urandom:/dev/random
+    labels:
+    - io.confluent.docker.testing=true
+
+  sasl-config:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: sasl-config
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 52181
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/config_jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/config_krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-config-test/secrets:/etc/kafka/secrets
+    labels:
+    - io.confluent.docker.testing=true
+
   full-config:
     image: confluentinc/cp-zookeeper:latest
     environment:

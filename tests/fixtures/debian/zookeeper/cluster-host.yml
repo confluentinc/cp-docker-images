@@ -39,3 +39,78 @@ services:
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
+
+
+  kerberos:
+    image: confluentinc/cp-kerberos
+    network_mode: host
+    environment:
+      BOOTSTRAP: 0
+    volumes:
+    - /tmp/zookeeper-host-test/secrets:/tmp/keytab
+    - /dev/urandom:/dev/random
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-1:
+    image: confluentinc/cp-zookeeper:latest
+    # This is required because Zookeeper can fail if kerberos is still initializing.
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22889:23889;localhost:32889:33889;localhost:42889:43889
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-1-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-host-test/secrets:/etc/kafka/secrets
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-2:
+    image: confluentinc/cp-zookeeper:latest
+    # This is required because Zookeeper can fail if kerberos is still initializing.
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 32182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22889:23889;localhost:32889:33889;localhost:42889:43889
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-2-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-host-test/secrets:/etc/kafka/secrets
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-3:
+    image: confluentinc/cp-zookeeper:latest
+    # This is required because Zookeeper can fail if kerberos is still initializing.
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 42182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22889:23889;localhost:32889:33889;localhost:42889:43889
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-3-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-host-test/secrets:/etc/kafka/secrets
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
