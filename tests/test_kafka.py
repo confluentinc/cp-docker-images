@@ -7,9 +7,9 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
-HEALTH_CHECK = """bash -c 'cp /etc/kafka/kafka.properties /tmp/client.properties \
-                  && echo security.protocol={security_protocol} >> /tmp/client.properties \
-                  && cub kafka-ready {host}:{port} /tmp/client.properties {brokers} 40 && echo PASS || echo FAIL'
+HEALTH_CHECK = """bash -c 'cp /etc/kafka/kafka.properties /tmp/cub.properties \
+                  && echo security.protocol={security_protocol} >> /tmp/cub.properties \
+                  && cub kafka-ready {host}:{port} /tmp/cub.properties {brokers} 40 && echo PASS || echo FAIL'
                 """
 ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
@@ -22,7 +22,6 @@ KAFKA_SASL_SSL_CHECK = """bash -c "kafkacat -X 'security.protocol=sasl_ssl' \
       -X 'sasl.kerberos.keytab=/etc/kafka/secrets/{client_principal}.keytab' \
       -X 'sasl.kerberos.principal={client_principal}/{client_host}' \
       -L -b {host}:{port} -J "
-
       """
 
 KAFKA_SSL_CHECK = """kafkacat -X security.protocol=ssl \
@@ -38,8 +37,7 @@ KADMIN_KEYTAB_CREATE = """bash -c \
         """
 
 PRODUCER = """bash -c "\
-    cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
-    && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
+    kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && echo PRODUCED {messages} messages."
@@ -48,13 +46,11 @@ PRODUCER = """bash -c "\
 CONSUMER = """bash -c "\
         export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
         && dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties" \
-        && cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
         && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
         """
 
 PLAIN_CLIENTS = """bash -c "\
-    cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
-    && export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
+    export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
     && dub template /etc/confluent/docker/tools-log4j.properties.template /etc/kafka/tools-log4j.properties \
     && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} \
@@ -291,8 +287,8 @@ class StandaloneNetworkingTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_bridged_network(self):
@@ -357,8 +353,8 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_bridge_network(self):
@@ -528,8 +524,8 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_host_network(self):
@@ -633,17 +629,24 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker3", principal="kafka", hostname="localhost"))
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_producer", principal="host_producer", hostname="localhost"))
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_consumer", principal="host_consumer", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="localhost"))
 
-        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-sasl-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
 
     @classmethod
     def tearDownClass(cls):
-        cls.cluster.shutdown()
-        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
+        # cls.cluster.shutdown()
+        # cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
+        pass
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 19094, 3, "localhost", "SASL_SSL")
 
         producer_env = {'KAFKA_ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/saslssl",
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/host_producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
