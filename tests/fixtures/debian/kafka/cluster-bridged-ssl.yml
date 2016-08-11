@@ -22,6 +22,7 @@ services:
     - 23888:3888
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -40,6 +41,7 @@ services:
     - 33888:3888
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -58,6 +60,7 @@ services:
     - 43888:3888
     labels:
     - io.confluent.docker.testing=true
+
   kafka-ssl-1:
     image: confluentinc/cp-kafka:latest
     networks:
@@ -77,6 +80,7 @@ services:
     - /tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   kafka-ssl-2:
     image: confluentinc/cp-kafka:latest
     networks:
@@ -96,6 +100,7 @@ services:
     - /tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets
     labels:
     - io.confluent.docker.testing=true
+
   kafka-ssl-3:
     image: confluentinc/cp-kafka:latest
     networks:

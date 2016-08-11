@@ -5,8 +5,10 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
+. /etc/confluent/docker/apply-mesos-overrides
+
 echo "===> ENV Variables ..."
-env
+env | sort
 
 echo "===> User"
 id

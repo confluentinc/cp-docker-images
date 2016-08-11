@@ -5,12 +5,14 @@ services:
     image: confluentinc/cp-zookeeper:latest
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-ticktime:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-server-id:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -19,6 +21,7 @@ services:
       ZOOKEEPER_SERVERS: abc:111:111
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-init-limit:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -28,6 +31,7 @@ services:
       ZOOKEEPER_SERVER_ID: 1
     labels:
     - io.confluent.docker.testing=true
+
   failing-config-sync-limit:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -38,6 +42,7 @@ services:
       ZOOKEEPER_SERVER_ID: 1
     labels:
     - io.confluent.docker.testing=true
+
   default-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -45,6 +50,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
     - io.confluent.docker.testing=true
+
   full-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -61,6 +67,7 @@ services:
       ZOOKEEPER_TOOLS_LOG4J_LOGLEVEL: ERROR
     labels:
     - io.confluent.docker.testing=true
+
   external-volumes:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -72,6 +79,7 @@ services:
     - /tmp/zk-config-test/log:/var/lib/zookeeper/log
     labels:
     - io.confluent.docker.testing=true
+
   random-user:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -80,6 +88,7 @@ services:
     user: '12345'
     labels:
     - io.confluent.docker.testing=true
+
   kitchen-sink:
     image: confluentinc/cp-zookeeper:latest
     environment:

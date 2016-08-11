@@ -21,6 +21,7 @@ services:
     - 23888:3888
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -38,6 +39,7 @@ services:
     - 33888:3888
     labels:
     - io.confluent.docker.testing=true
+
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     environment:

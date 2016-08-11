@@ -171,3 +171,33 @@ class ConnectImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
+
+
+class ControlCenterImageTest(unittest.TestCase):
+
+    def setUp(self):
+        self.image = "confluentinc/control-center"
+        utils.build_image(self.image, get_dockerfile_path("debian/base"))
+        utils.build_image(self.image, get_dockerfile_path("debian/control-center"))
+
+    def test_image_build(self):
+        self.assertTrue(utils.image_exists(self.image))
+
+    def test_c3_install(self):
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent-control-center"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/var/lib/confluent-control-center"))
+
+    def test_boot_scripts_present(self):
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/configure"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.path_exists_in_image(self.image, "/etc/confluent/docker/run"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/configure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/ensure"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/launch"))
+        self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
+
+    def test_c3_commands(self):
+        expected = "control-center-start: ERROR: Properties file is required"
+        self.assertTrue(expected in utils.run_docker_command(image=self.image, command="control-center-start"))
