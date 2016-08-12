@@ -20,7 +20,7 @@ clean-images:
   done
 
 debian/base/include/etc/confluent/docker/docker-utils.jar:
-	mkdir -p ../debian/base/include/etc/confluent/docker
+	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
 	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
