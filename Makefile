@@ -45,11 +45,11 @@ ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
 	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
-        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image}"; \
-        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image}; \
+        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
+        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
-push-private: clean-containers clean-image build-debian build-test-images tag-remote
+push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
@@ -65,7 +65,7 @@ push-public: clean build-debian
 				docker push confluentinc/cp-$${component}:${VERSION}; \
   done
 
-clean: clean-containers clean-image
+clean: clean-containers clean-images
 
 venv: venv/bin/activate
 venv/bin/activate: tests/requirements.txt
