@@ -1,15 +1,46 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+"""Docker utility belt.
 
+This script contains a set of utility functions required for running docker
+containers.
+
+The script has 4 commands:
+
+1. template : Uses Jinja2 and enviornment variables to generate configuration files.
+2. ensure: ensures that a environment variable is set. Used to ensure required properties.
+3. wait: waits for a service to become available on a host:port.
+4. path: Checks a path for permissions (read, write, execute, exists)
+
+These commands log any output to stderr and returns with exitcode=0 if successful, exitcode=1 otherwise.
+
+"""
+
+from __future__ import print_function
 import os
 import sys
 from jinja2 import Environment, FileSystemLoader
 import socket
 import time
+import argparse
 
 
 def parse_log4j_loggers(overrides_str, defaults={}):
+    """Parses *_LOG4J_PROPERTIES string and returns a list of log4j propeties.
+
+    For example: if LOG4J_PROPERTIES = "foo.bar=DEBUG,baz.bam=TRACE"
+        and
+        defaults={"foo.bar: "INFO"}
+        the this function will return {"foo.bar: "DEBUG", "baz.bam": "TRACE"}
+
+    Args:
+        overrides_str: String containing the overrides for the default properties.
+        defaults: Map of default log4j properties.
+
+    Returns:
+        Map of log4j properties.
+
+    """
     overrides = overrides_str.split(",")
     if len(overrides) > 0:
         for override in overrides:
@@ -20,6 +51,17 @@ def parse_log4j_loggers(overrides_str, defaults={}):
 
 
 def wait_for_service(host, port, timeout):
+    """Waits for a service to start listening on a port.
+
+    Args:
+        host: Hostname where the service is hosted.
+        port: Port where the service is expected to bind.
+        timeout: Time in secs to wait for the service to be available.
+
+    Returns:
+        False, if the timeout expires and the service is unreachable, True otherwise.
+
+    """
     start = time.time()
 
     while True:
@@ -37,11 +79,34 @@ def wait_for_service(host, port, timeout):
 
 
 def check_path_for_permissions(path, mode):
+    """Checks a path on the filesystem for permissions. The permissions can be:
+        1. writable
+        2. readable
+        3. executable
+        4. existence
+
+    Args:
+        path: Full unix path.
+        mode: Permission (writable, readable, executable, exists) to check for.
+
+    Returns:
+        Returns True if path has the required permissions, False otherwise.
+
+    """
     string_to_mode_map = {"writable": os.W_OK, "readable": os.R_OK, "executable": os.X_OK, "exists": os.F_OK}
     return os.access(path, string_to_mode_map[mode])
 
 
 def exit_if_absent(env_var):
+    """Check if an enviornment variable is absent.
+
+    Args:
+        env_var: Name of environment variable.
+
+    Returns:
+        Returns True if env variable exists, False otherwise.
+
+    """
     if not os.environ.get(env_var):
         print("%s is required." % (env_var,), file=sys.stderr)
         return False
@@ -49,6 +114,20 @@ def exit_if_absent(env_var):
 
 
 def fill_and_write_template(template_file, output_file, context=os.environ):
+    """Uses Jinja2 template and enviornment variables to create configuration
+       files.
+
+       Adds parse_log4j_loggers as a custom function for log4j.property parsing.
+
+    Args:
+        template_file: template file path.
+        output_file: output file path.
+        context: the data for the filling in the template, defaults to enviornment variables.
+
+    Returns:
+        Returns False if an Exception occurs, True otherwise.
+
+    """
     try:
         j2_env = Environment(
             loader=FileSystemLoader(searchpath="/"),
@@ -66,7 +145,6 @@ def fill_and_write_template(template_file, output_file, context=os.environ):
 
 if __name__ == '__main__':
 
-    import argparse
     root = argparse.ArgumentParser(description='Docker Utility Belt.')
 
     actions = root.add_subparsers(help='Actions', dest='action')

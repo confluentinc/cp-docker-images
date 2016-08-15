@@ -1,7 +1,22 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+"""Confluent utility belt.
 
+This script contains a set of utility functions required for running the
+Confluent platform on docker.
+
+The script has 4 commands:
+
+1. kafka-ready : Ensures a Kafka cluster is ready to accept client requests.
+2. zk-ready: Ensures that a Zookeeper ensemble is ready to accept client requests.
+3. sr-ready: Ensures that Schema Registry is ready to accept client requests.
+4. kr-ready: Ensures that Kafka REST Proxy is ready to accept client requests.
+5. listeners: Derives the listeners property from advertised.listeners.
+
+These commands log any output to stderr and returns with exitcode 0 if successful, 1 otherwise.
+
+"""
+from __future__ import print_function
 import os
 import sys
 import socket
@@ -16,6 +31,17 @@ import subprocess
 
 
 def wait_for_service(host, port, timeout):
+    """Waits for a service to start listening on a port.
+
+    Args:
+        host: Hostname where the service is hosted.
+        port: Port where the service is expected to bind.
+        timeout: Time in secs to wait for the service to be available.
+
+    Returns:
+        False, if the timeout expires and the service is unreachable, True otherwise.
+
+    """
     start = time.time()
     while True:
         try:
@@ -31,6 +57,19 @@ def wait_for_service(host, port, timeout):
 
 
 def check_zookeeper_ready(connect_string, timeout):
+    """Waits for a Zookeeper ensemble be ready. This commands uses the Java
+       docker-utils library to get the Zookeeper status.
+       This command supports a secure Zookeeper cluster. It expects the KAFKA_OPTS
+       enviornment variable to contain the JAAS configuration.
+
+    Args:
+        connect_string: Zookeeper connection string (host:port, ....)
+        timeout: Time in secs to wait for the Zookeeper to be available.
+
+    Returns:
+        False, if the timeout expires and Zookeeper is unreachable, True otherwise.
+
+    """
     cmd_template = """
              java {jvm_opts} \
                  -jar /etc/confluent/docker/docker-utils.jar  \
@@ -60,6 +99,27 @@ def check_zookeeper_ready(connect_string, timeout):
 
 
 def check_kafka_ready(bootstrap_broker_list, client_properties, expected_brokers, timeout):
+    """Waits for a Kafka cluster to be ready and have atleast the
+       expected_brokers to present. This commands uses the Java docker-utils
+       library to get the Kafka status.
+
+       This command supports a secure Kafka cluster. If SSL is enabled, it
+       expects the client_properties file to have the relevant SSL properties.
+       If SASL is enabled, the command expects the JAAS config to present in the
+       KAFKA_OPTS environment variable and the SASL properties to present in the
+       client_properties file.
+
+
+    Args:
+        bootstrap_broker_list: Kafka bootstrap broker list string (host:port, ....)
+        client_properties: properties file with client config for SSL and SASL.
+        expected_brokers: expected number of brokers in the cluster.
+        timeout: Time in secs to wait for the Zookeeper to be available.
+
+    Returns:
+        False, if the timeout expires and Kafka cluster is unreachable, True otherwise.
+
+    """
     cmd_template = """
              java {jvm_opts} \
                  -jar /etc/confluent/docker/docker-utils.jar  \
@@ -85,6 +145,17 @@ def check_kafka_ready(bootstrap_broker_list, client_properties, expected_brokers
 
 
 def check_schema_registry_ready(host, port, service_timeout):
+    """Waits for Schema registry to be ready.
+
+    Args:
+        host: Hostname where schema registry is hosted.
+        port: Schema registry port.
+        timeout: Time in secs to wait for the service to be available.
+
+    Returns:
+        False, if the timeout expires and Schema registry is unreachable, True otherwise.
+
+    """
 
     # Check if you can connect to the endpoint
     status = wait_for_service(host, port, service_timeout)
@@ -105,7 +176,17 @@ def check_schema_registry_ready(host, port, service_timeout):
 
 
 def check_kafka_rest_ready(host, port, service_timeout):
+    """Waits for Kafka REST Proxy to be ready.
 
+    Args:
+        host: Hostname where Kafka REST Proxy is hosted.
+        port: Kafka REST Proxy port.
+        timeout: Time in secs to wait for the service to be available.
+
+    Returns:
+        False, if the timeout expires and Kafka REST Proxy is unreachable, True otherwise.
+
+    """
     # Check if you can connect to the endpoint
     status = wait_for_service(host, port, service_timeout)
 
@@ -127,6 +208,21 @@ def check_kafka_rest_ready(host, port, service_timeout):
 
 
 def get_kafka_listeners(advertised_listeners):
+    """Derives listeners property from advertised.listeners. It just converts the
+       hostname to 0.0.0.0 so that Kafka process listens to all the interfaces.
+
+       For example, if
+            advertised_listeners = PLAINTEXT://foo:9999,SSL://bar:9098, SASL_SSL://10.0.4.5:7888
+            then, the function will return
+            PLAINTEXT://0.0.0.0:9999,SSL://0.0.0.0:9098, SASL_SSL://0.0.0.0:7888
+
+    Args:
+        advertised_listeners: advertised.listeners string.
+
+    Returns:
+        listeners string.
+
+    """
     host = re.compile(r'://(.*?):', re.UNICODE)
     return host.sub(r'://0.0.0.0:', advertised_listeners)
 
