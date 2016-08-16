@@ -10,3 +10,6 @@ __pycache__
 *.log
 *.jar
 Untitled*
+docs/_build
+
+docs/README.md
