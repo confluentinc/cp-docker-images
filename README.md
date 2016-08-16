@@ -10,7 +10,7 @@ Versions
 --
 Confluent Platform : 3.0.0
 
-Java : Oracle JRE 
+Java : Azul Zulu JRE 
 
 
 Overview
@@ -52,7 +52,7 @@ The `launch` script runs the actual process. The script should ensure that :
 Guidelines for the scripts
 ----
 - Make it executable
-- Fail fast 
+- Fail fast
 - Fail with good error messages
 - Return 0 if success, 1 if fail
 
@@ -60,9 +60,9 @@ Guidelines for the scripts
 
 How to extend the images ?
 ----
-You can extend the images to fit your build/deploy system. 
+You can extend the images to fit your build/deploy system.
 
-How to : 
+How to :
 
 1. Add more software ? (For eg : New relic monitoring)
 2. Use the server.properties that puppet/chef generated ?
@@ -78,28 +78,28 @@ Utility scripts
 1. Template
 
 		usage: dub template [-h] input output
-		
+
 		Generate template from env vars.
-		
+
 		positional arguments:
 		  input       Path to template file.
 		  output      Path of output file.
-	
+
 2. ensure
 
 		usage: dub ensure [-h] name
 
 		Check if env var exists.
-		
+
 		positional arguments:
 		  name        Name of env var.
-		  
+
 3. wait
-		
+
 		usage: dub wait [-h] host port timeout
 
 		wait for network service to appear.
-		
+
 		positional arguments:
 		  host        Host.
 		  port        Host.
@@ -109,7 +109,7 @@ Utility scripts
 		usage: dub path [-h] path {writable,readable,executable,exists}
 
 		Check for path permissions and existence.
-		
+
 		positional arguments:
 		  path                  Full path.
 		  {writable,readable,executable,exists} One of [writable, readable, executable, exists].
@@ -122,7 +122,7 @@ Utility scripts
 		usage: cub zk-ready [-h] connect_string timeout retries wait
 
 		Check if ZK is ready.
-		
+
 		positional arguments:
 		  connect_string  Zookeeper connect string.
 		  timeout         Time in secs to wait for service to be ready.
@@ -133,7 +133,7 @@ Utility scripts
 		usage: cub kafka-ready [-h] connect_string min_brokers timeout retries wait
 
 		Check if Kafka is ready.
-		
+
 		positional arguments:
 		  connect_string  Zookeeper connect string.
 		  min_brokers     Minimum number of brokers to wait for
@@ -147,19 +147,19 @@ Development
 
 ###Setup
 
-1. Install docker 
+1. Install docker
 
 		brew install docker docker-machine
-		
-2. Create a docker machine. 
+
+2. Create a docker machine.
 
 		docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 	This command local env but it is recommended that you create one on AWS. The builds are much faster and is more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).
-	
+
 	[Docker Machine AWS Example](https://docs.docker.com/machine/examples/aws/)
-	
+
 	`m4.large` is good choice : It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
-		
+
 		export INSTANCE_NAME=$USER-docker-machine
 		docker-machine create \
 			--driver amazonec2 \
@@ -172,7 +172,7 @@ Development
 3. Setup env
 
 		eval $(docker-machine env confluent)
-		
+
 
 ###Building the images
 
@@ -187,7 +187,7 @@ You'll need to first install virtualenv: `pip install virtualenv`
 	cd cp-docker-images
 	make test-zookeeper
 	make test-kafka
-	
+
 Running a single test: `venv/bin/py.test tests/test_zookeeper.py::ConfigTest -v`
 
 ###Delete all docker containers
