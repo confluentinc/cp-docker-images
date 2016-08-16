@@ -2,5 +2,6 @@
 from livereload import Server, shell
 
 server = Server()
+server.watch('*.rst', shell('make html'))
 server.watch('*/*.rst', shell('make html'))
 server.serve()
