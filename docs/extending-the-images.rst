@@ -197,9 +197,7 @@ The following examples show to extend the images.
 
   The images ship with Zulu OpenJDK. We cannot bundle Oracle JDK because of licensing restrictions. Follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
 
-  1. Download the debian (.deb) package for Oracle JDK 8 from the Oracle website and copy it to the folder which has the Dockerfile.
-
-  2. Change the base image to install Oracle JDK instead of Zulu OpenJDK.
+  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK.
 
   ``Dockerfile``
 
@@ -273,7 +271,7 @@ The following examples show to extend the images.
      COPY include/etc/confluent/docker /etc/confluent/docker
 
 
-  3. Build all the images
+  2. Build all the images
 
     ::
 
