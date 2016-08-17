@@ -15,11 +15,13 @@
 # limitations under the License.
 
 set -o nounset \
-    -o errexit \
     -o verbose \
     -o xtrace
 
-. /etc/confluent/docker/apply-mesos-overrides
+[ -f /etc/confluent/docker/apply-mesos-overrides ] && \
+	. /etc/confluent/docker/apply-mesos-overrides
+
+set -o errexit
 
 echo "===> ENV Variables ..."
 env | sort
