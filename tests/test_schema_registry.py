@@ -34,9 +34,9 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
         assert "PASS" in cls.cluster.run_command_on_service("kafka", KAFKA_READY.format(brokers=1))
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.cluster.shutdown()
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.cluster.shutdown()
 
     @classmethod
     def is_schema_registry_healthy_for_service(cls, service):
