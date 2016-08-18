@@ -1,3 +1,4 @@
+
 log4j.rootLogger={{ env["KAFKA_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, stdout
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender

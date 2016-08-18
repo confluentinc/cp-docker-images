@@ -10,5 +10,5 @@ __pycache__
 *.log
 *.jar
 Untitled*
-
-docker-utils/
+docs/_build
+docs/README.md

@@ -1,3 +1,4 @@
+
 {# required properties #}
 bootstrap.servers={{env['BOOTSTRAP_SERVERS']}}
 zookeeper.connect={{env['ZOOKEEPER_CONNECT']}}

@@ -13,12 +13,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#
 # Mesos DC/OS docker deployments will have HOST and PORT0 
-# set for the proxying of the service.
+# set for the proxying of the service.  We need to
+# make sure that we don't override PORT, which is used
+# when setting control-center properties.
+#
+# DC/OS will set PORT_<port> to the proxy port when
+# exposing an internal port via a Docker Bridge network;
+# but it also sets PORT and PORT0 for the same values.
 # 
 # Use those values provide things we know we'll need.
 
-[ -n "${HOST:-}" ] && [ -z "${SCHEMA_REGISTRY_HOST_NAME:-}" ] && \
-	export SCHEMA_REGISTRY_HOST_NAME=$HOST || true # we don't want the setup to fail if not on Mesos
+[ -n "${PORT:-}" ] && [ -n "${PORT_9021:-}" ] && [ "$PORT" = "${PORT_9021}" ] &&\
+	export PORT=9021 || true
 
