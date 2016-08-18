@@ -20,5 +20,5 @@
 # Use those values provide things we know we'll need.
 
 [ -n "${HOST:-}" ] && [ -z "${SCHEMA_REGISTRY_HOST_NAME:-}" ] && \
-	export SCHEMA_REGISTRY_HOST_NAME=$HOST || exit 0 # we don't want the setup to fail if not on Mesos
+	export SCHEMA_REGISTRY_HOST_NAME=$HOST || true # we don't want the setup to fail if not on Mesos
 

@@ -20,13 +20,13 @@
 # Use those values provide things we know we'll need.
 
 [ -n "${HOST:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_HOST_NAME:-}" ] && \
-	export CONNECT_REST_ADVERTISED_HOST_NAME=$HOST || exit 0
+	export CONNECT_REST_ADVERTISED_HOST_NAME=$HOST || true
 
 [ -n "${PORT0:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_PORT:-}" ] && \
-	export CONNECT_REST_ADVERTISED_PORT=$PORT0 || exit 0
+	export CONNECT_REST_ADVERTISED_PORT=$PORT0 || true
 
 # And default to 8083, which MUST match the containerPort specification
 # in the Mesos package for this service.
 [ -z "${CONNECT_REST_PORT:-}" ] && \
-	export CONNECT_REST_PORT=8083 || exit 0
+	export CONNECT_REST_PORT=8083 || true
 

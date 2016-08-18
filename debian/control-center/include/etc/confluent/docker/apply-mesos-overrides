@@ -26,5 +26,5 @@
 # Use those values provide things we know we'll need.
 
 [ -n "${PORT:-}" ] && [ -n "${PORT_9021:-}" ] && [ "$PORT" = "${PORT_9021}" ] &&\
-	export PORT=9021 || exit 0
+	export PORT=9021 || true
 
