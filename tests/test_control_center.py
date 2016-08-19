@@ -41,8 +41,8 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("BOOTSTRAP_SERVERS is required." in self.cluster.service_logs("failing-config", stopped=True))
-        self.assertTrue("ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-missing-zk-connect", stopped=True))
+        self.assertTrue("CONTROL_CENTER_BOOTSTRAP_SERVERS is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("CONTROL_CENTER_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-missing-zk-connect", stopped=True))
         self.assertTrue("CONTROL_CENTER_REPLICATION_FACTOR is required." in self.cluster.service_logs("failing-config-missing-rep-factor", stopped=True))
 
     def test_default_config(self):
