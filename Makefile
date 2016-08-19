@@ -19,16 +19,14 @@ clean-images:
 				docker rmi -f $${image} || exit 1 ; \
   done
 
-build-docker-utils:
-	[ -d docker-utils ] || git clone git@github.com:arrawatia/docker-utils.git
-	cd docker-utils \
-	&& git pull \
-	&& git checkout ${DOCKER_UTILS_VERSION} \
+debian/base/include/etc/confluent/docker/docker-utils.jar:
+	mkdir -p ../debian/base/include/etc/confluent/docker
+	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
 	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
-build-debian: build-docker-utils
+build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
