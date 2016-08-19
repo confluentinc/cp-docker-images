@@ -27,15 +27,15 @@ services:
 
   failing-config-missing-zk-connect:
     environment:
-      BOOTSTRAP_SERVERS: fake
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: fake
     image: confluentinc/cp-control-center:latest
     labels:
       - io.confluent.docker.testing=true
 
   failing-config-missing-rep-factor:
     environment:
-      BOOTSTRAP_SERVERS: fakeKafka
-      ZOOKEEPER_CONNECT: fakeZk
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: fakeKafka
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: fakeZk
     image: confluentinc/cp-control-center:latest
     labels:
       - io.confluent.docker.testing=true
@@ -43,8 +43,8 @@ services:
   default-config:
     image: confluentinc/cp-control-center:latest
     environment:
-      ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
-      BOOTSTRAP_SERVERS: "kafka:9092"
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
     labels:
       - io.confluent.docker.testing=true
