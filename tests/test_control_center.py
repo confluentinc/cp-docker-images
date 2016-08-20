@@ -70,6 +70,7 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.internal.topics.replication=1
         confluent.controlcenter.rest.listeners=http://0.0.0.0:9021,https://0.0.0.0:443
         confluent.controlcenter.streams.security.protocol=SASL_SS
+        confluent.controlcenter.streams.sasl.kerberos.service.name=kafka
         confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
         """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
