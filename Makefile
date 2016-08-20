@@ -45,8 +45,8 @@ ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
 	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
-        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image}"; \
-        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image}; \
+        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
+        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
 push-private: clean-containers clean-images build-debian build-test-images tag-remote

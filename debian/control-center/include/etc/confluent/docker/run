@@ -19,8 +19,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-[ -f /etc/confluent/docker/apply-mesos-overrides ] &&
-	. /etc/confluent/docker/apply-mesos-overrides
+. /etc/confluent/docker/apply-mesos-overrides
 
 echo "===> ENV Variables ..."
 env | sort
