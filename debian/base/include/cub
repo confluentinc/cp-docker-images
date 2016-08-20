@@ -112,7 +112,7 @@ def check_zookeeper_ready(connect_string, timeout):
         return False
 
 
-def check_kafka_ready(bootstrap_broker_list, client_properties, expected_brokers, timeout):
+def check_kafka_ready(expected_brokers, timeout, config, bootstrap_broker_list=None, zookeeper_connect=None, security_protocol=None):
     """Waits for a Kafka cluster to be ready and have atleast the
        expected_brokers to present. This commands uses the Java docker-utils
        library to get the Kafka status.
@@ -126,9 +126,9 @@ def check_kafka_ready(bootstrap_broker_list, client_properties, expected_brokers
 
     Args:
         bootstrap_broker_list: Kafka bootstrap broker list string (host:port, ....)
-        client_properties: properties file with client config for SSL and SASL.
         expected_brokers: expected number of brokers in the cluster.
         timeout: Time in secs to wait for the Zookeeper to be available.
+        config: properties file with client config for SSL and SASL.
 
     Returns:
         False, if the timeout expires and Kafka cluster is unreachable, True otherwise.
@@ -138,17 +138,25 @@ def check_kafka_ready(bootstrap_broker_list, client_properties, expected_brokers
              java {jvm_opts} \
                  -jar /etc/confluent/docker/docker-utils.jar  \
                  kafka-ready \
-                 {bootstrap_broker_list} \
-                 {client_properties} \
                  {expected_brokers} \
                  {timeout_in_ms}"""
 
     cmd = cmd_template.format(
         jvm_opts=os.environ.get("KAFKA_OPTS") or "",
         bootstrap_broker_list=bootstrap_broker_list,
-        client_properties=client_properties,
         expected_brokers=expected_brokers,
         timeout_in_ms=timeout * 1000)
+
+    if config:
+        cmd = "{cmd} --config {config_path}".format(cmd=cmd, config_path=config)
+
+    if security_protocol:
+        cmd = "{cmd} --security-protocol {protocol}".format(cmd=cmd, protocol=security_protocol)
+
+    if bootstrap_broker_list:
+        cmd = "{cmd} -b {broker_list}".format(cmd=cmd, broker_list=bootstrap_broker_list)
+    else:
+        cmd = "{cmd} -z {zookeeper_connect}".format(cmd=cmd, zookeeper_connect=zookeeper_connect)
 
     exit_code = subprocess.call(cmd, shell=True)
 
@@ -253,10 +261,13 @@ if __name__ == '__main__':
     zk.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
 
     kafka = actions.add_parser('kafka-ready', description='Check if Kafka is ready.')
-    kafka.add_argument('bootstrap_broker_list', help='Zookeeper connect string.')
-    kafka.add_argument('client_properties_path', help='Path to client properties.')
-    kafka.add_argument('min_brokers', help='Minimum number of brokers to wait for', type=int)
+    kafka.add_argument('expected_brokers', help='Minimum number of brokers to wait for', type=int)
     kafka.add_argument('timeout', help='Time in secs to wait for service to be ready.', type=int)
+    kafka_or_zk = kafka.add_mutually_exclusive_group(required=True)
+    kafka_or_zk.add_argument('-b', '--bootstrap_broker_list', help='List of bootstrap brokers.')
+    kafka_or_zk.add_argument('-z', '--zookeeper_connect', help='Zookeeper connect string.')
+    kafka.add_argument('-c', '--config', help='Path to config properties file (required when security is enabled).')
+    kafka.add_argument('-s', '--security-protocol', help='Security protocol to use when multiple listeners are enabled.')
 
     sr = actions.add_parser('sr-ready', description='Check if Schema Registry is ready.')
     sr.add_argument('host', help='Hostname for Schema Registry.')
@@ -282,7 +293,7 @@ if __name__ == '__main__':
     if args.action == "zk-ready":
         success = check_zookeeper_ready(args.connect_string, int(args.timeout))
     elif args.action == "kafka-ready":
-        success = check_kafka_ready(args.bootstrap_broker_list, args.client_properties_path, int(args.min_brokers), int(args.timeout))
+        success = check_kafka_ready(int(args.expected_brokers), int(args.timeout), args.config, args.bootstrap_broker_list, args.zookeeper_connect, args.security_protocol)
     elif args.action == "sr-ready":
         success = check_schema_registry_ready(args.host, args.port, int(args.timeout))
     elif args.action == "kr-ready":
@@ -290,6 +301,7 @@ if __name__ == '__main__':
     elif args.action == "listeners":
         listeners = get_kafka_listeners(args.advertised_listeners)
         if listeners:
+            # Print the output to stdout. Don't delete this, this is not for debugging.
             print(listeners)
             success = True
 

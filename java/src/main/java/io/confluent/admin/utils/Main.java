@@ -1,11 +1,16 @@
 package io.confluent.admin.utils;
 
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.*;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import static net.sourceforge.argparse4j.impl.Arguments.store;
 
 /**
  * Provides two commands:
@@ -15,7 +20,7 @@ import java.util.Map;
  * where:
  * <connectString> : Zookeeper connect string
  * <timeout> : timeout in millisecs for all operations .
- *
+ * <p>
  * 2. kakfa-ready <path to client.properties> <minExpectedBrokers> <timeout> : This
  * command checks if the kafka cluster has the expected number of brokers and is ready to accept
  * requests.
@@ -30,44 +35,143 @@ public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
+    private static ArgumentParser createArgsParser() {
+        ArgumentParser root = ArgumentParsers
+                .newArgumentParser("cub")
+                .defaultHelp(true)
+                .description("Confluent Platform Utility Belt.");
+
+        Subparser kafkaReady = root.addSubparsers()
+                .dest("name")
+                .addParser("kafka-ready")
+                .description("Check if Kafka is ready.");
+
+
+
+        kafkaReady.addArgument("expected-brokers")
+                .action(store())
+                .required(true)
+                .type(Integer.class)
+                .metavar("EXPECTED_BROKERS")
+                .help("Minimum number of brokers to wait for.");
+
+        kafkaReady.addArgument("timeout")
+                .action(store())
+                .required(true)
+                .type(Integer.class)
+                .metavar("TIMEOUT_IN_MS")
+                .help("Time (in ms) to wait for service to be ready.");
+
+        kafkaReady.addArgument("--config", "-c")
+                .action(store())
+                .type(String.class)
+                .metavar("CONFIG")
+                .help("List of bootstrap brokers.");
+
+        MutuallyExclusiveGroup kafkaOrZK = kafkaReady.addMutuallyExclusiveGroup();
+        kafkaOrZK.addArgument("--bootstrap-broker-list", "-b")
+                .action(store())
+                .type(String.class)
+                .metavar("BOOTSTRAP_BROKER_LIST")
+                .help("List of bootstrap brokers.");
+
+        kafkaOrZK.addArgument("--zookeeper-connect", "-z")
+                .action(store())
+                .type(String.class)
+                .metavar("ZOOKEEPER_CONNECT_STRING")
+                .help("Zookeeper connect string.");
+
+        kafkaReady.addArgument("--security-protocol", "-s")
+                .action(store())
+                .type(String.class)
+                .metavar("SECURITY_PROTOCOL")
+                .setDefault("PLAINTEXT")
+                .help("Which endpoint to connect to ? ");
+
+        Subparser zkReady = root.addSubparsers()
+                .dest("name")
+                .addParser("zk-ready")
+                .description("Check if ZK is ready.");
+
+        zkReady.addArgument("connect_string")
+                .action(store())
+                .required(true)
+                .type(String.class)
+                .metavar("CONNECT_STRING")
+                .help("Zookeeper connect string.");
+
+        zkReady.addArgument("timeout")
+                .action(store())
+                .required(true)
+                .type(Integer.class)
+                .metavar("TIMEOUT IN MS")
+                .help("Time (in ms) to wait for service to be ready.");
+
+        Subparser doc = root.addSubparsers()
+                .dest("name")
+                .addParser("doc")
+                .description("Print config docs in HTML.");
+
+        return root;
+    }
+
     public static void main(String[] args) {
 
-        if (args.length == 0) {
-            log.error("Usage : <command> <action> where action = kafka-ready or zk-ready>");
-            System.exit(1);
-        }
-
-        if (args[0].equals("doc")) {
-            KafkaMetadataClient.MetadataClientConfig.main(new String[]{});
-        }
-
+        ArgumentParser parser = createArgsParser();
         boolean success = false;
         try {
+            Namespace res = parser.parseArgs(args);
+            String command = res.getString("name");
+            log.debug("Args: " + res);
 
-            if (args[0].equals("zk-ready")) {
-                if (args.length != 3) {
-                    log.error("Usage : <command> zk-ready connect_string timeout");
-                    System.exit(1);
-                }
-                String connectString = args[1];
-                int timeOut = Integer.parseInt(args[2]);
-                log.debug(connectString);
-                success = ClusterStatus.isZookeeperReady(connectString, timeOut);
-            } else if (args[0].equals("kafka-ready")) {
-                if (args.length != 5) {
-                    log.error("Usage : <command> kafka-ready bootstrap_broker_list path_to_client" +
-                            ".properties min_brokers timeout ");
-                    System.exit(1);
+            if (command.equals("doc")) {
+                KafkaMetadataClient.MetadataClientConfig.main(new String[]{});
+                success = true;
+            } else if (command.equals("zk-ready")) {
+                success = ClusterStatus.isZookeeperReady(
+                        res.getString("connect_string"),
+                        res.getInt("timeout"));
+            } else if (command.equals("kafka-ready")) {
+
+                Map<String, String> workerProps = new HashMap<>();
+
+                if (res.getString("config") == null &&
+                        !(res.getString("security_protocol").equals("PLAINTEXT"))) {
+                    throw new IllegalArgumentException("config is required for all protocols except PLAINTEXT");
                 }
 
-                String bootStrapBrokersList = args[1];
-                String metaDataClientProps = args[2];
-                int minBrokers = Integer.parseInt(args[3]);
-                int timeOut = Integer.parseInt(args[4]);
-                Map<String, String> workerProps =
-                        Utils.propsToStringMap(Utils.loadProps(metaDataClientProps));
-                workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootStrapBrokersList);
-                success = ClusterStatus.isKafkaReady(workerProps, minBrokers, timeOut);
+                if (res.getString("config") != null) {
+                    workerProps = Utils.propsToStringMap(Utils.loadProps(res.getString("config")));
+                }
+                if (res.getString("bootstrap_broker_list") != null) {
+                    workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+                            res.getString("bootstrap_broker_list"));
+                } else {
+                    String zkConnectString = res.getString("zookeeper_connect");
+                    boolean zkReady = ClusterStatus.isZookeeperReady(zkConnectString, res.getInt("timeout"));
+                    if (! zkReady) {
+                        throw new RuntimeException("Could not reach zookeeper " + zkConnectString);
+                    }
+                    Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZookeeper(
+                            zkConnectString,
+                            res.getInt("timeout"));
+
+                    String bootstrap_broker = endpoints.get(res.getString("security_protocol"));
+                    workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
+
+                }
+                success = ClusterStatus.isKafkaReady(workerProps,
+                        res.getInt("expected_brokers"),
+                        res.getInt("timeout"));
+            }
+
+        } catch (ArgumentParserException e) {
+            if (args.length == 0) {
+                parser.printHelp();
+                success = true;
+            } else {
+                parser.handleError(e);
+                success = false;
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -9,7 +9,8 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
 HEALTH_CHECK = """bash -c 'cp /etc/kafka/kafka.properties /tmp/cub.properties \
                   && echo security.protocol={security_protocol} >> /tmp/cub.properties \
-                  && cub kafka-ready {host}:{port} /tmp/cub.properties {brokers} 40 && echo PASS || echo FAIL'
+                  && cub kafka-ready {brokers} 40 -b {host}:{port} -c /tmp/cub.properties \
+                  && echo PASS || echo FAIL'
                 """
 ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
@@ -57,6 +58,7 @@ PLAIN_CLIENTS = """bash -c "\
     && echo PRODUCED {messages} messages. \
     && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --max-messages {messages}"
     """
+
 JMX_CHECK = """bash -c "\
     echo 'get -b kafka.server:id=1,type=app-info Version' |
         java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
@@ -640,9 +642,8 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
 
     @classmethod
     def tearDownClass(cls):
-        # cls.cluster.shutdown()
-        # cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
-        pass
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
 
     def test_host_network(self):
         # Test from within the container

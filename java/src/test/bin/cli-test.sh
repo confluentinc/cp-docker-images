@@ -56,15 +56,28 @@ java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
      -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar  \
      kafka-ready \
-     localhost:49092 \
-     /tmp/client.properties \
      3 \
-     30000 &> /tmp/test-kafka-ready.log
+     30000 \
+     -b localhost:49092 \
+     --config /tmp/client.properties &> /tmp/test-kafka-ready.log
 
-KAFKA_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
+KAFKA_BROKER_OPTION_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
+
+java -Djava.security.auth.login.config="$JAAS_CONF" \
+     -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
+     -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar  \
+     kafka-ready \
+     3 \
+     30000 \
+     -z localhost:11117 \
+     -s SASL_SSL \
+     --config /tmp/client.properties &> /tmp/test-kafka-zk-ready.log
+
+KAFKA_ZK_OPTION_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 
 kill "$KAFKA_PID"
 
 echo "TEST RESULTS:"
 echo "ZOOKEEPER_TEST=$ZOOKEEPER_TEST"
-echo "KAFKA_TEST=$KAFKA_TEST"
+echo "KAFKA_ZK_OPTION_TEST=$KAFKA_ZK_OPTION_TEST"
+echo "KAFKA_BROKER_OPTION_TEST=$KAFKA_BROKER_OPTION_TEST"

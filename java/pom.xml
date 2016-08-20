@@ -15,7 +15,7 @@
     </organization>
     <url>http://confluent.io</url>
     <description>
-        Kafka Java consumer example
+        Docker utilities for CP.
     </description>
 
     <licenses>
@@ -32,8 +32,9 @@
             <url>http://packages.confluent.io/maven/</url>
         </repository>
     </repositories>
+
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <zookeeper.version>3.4.6</zookeeper.version>
         <zkclient.version>0.8</zkclient.version>
         <kafka.version>0.10.0.0-cp1</kafka.version>
@@ -44,7 +45,11 @@
         <apacheds.version>2.0.0-M21</apacheds.version>
         <bcpkix.version>1.54</bcpkix.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <argparse4j.version>0.7.0</argparse4j.version>
+        <slf4j-api.version>1.7.6</slf4j-api.version>
+        <gson.version>2.7</gson.version>
     </properties>
+    
     <dependencies>
         <dependency>
             <groupId>com.101tec</groupId>
@@ -61,6 +66,23 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
         </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+                <scope>compile</scope>
+            </dependency>
+        <dependency>
+            <groupId>net.sourceforge.argparse4j</groupId>
+            <artifactId>argparse4j</artifactId>
+            <version>${argparse4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+        <!--Test dependencies-->
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
@@ -96,18 +118,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.6</version>
-        </dependency>
-
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.directory.api</groupId>
             <artifactId>api-ldap-codec-standalone</artifactId>

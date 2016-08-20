@@ -15,20 +15,28 @@
  */
 package io.confluent.admin.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.common.Node;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.common.utils.Time;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.client.ConnectStringParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -93,7 +101,7 @@ public class ClusterStatus {
      * Checks if the zookeeper cluster is ready to accept requests.
      *
      * @param zkConnectString Zookeeper connect string
-     * @param timeoutMs         timeoutMs in milliseconds
+     * @param timeoutMs       timeoutMs in milliseconds
      * @return true if the cluster is ready, false otherwise.
      */
     public static boolean isZookeeperReady(String zkConnectString, int timeoutMs) {
@@ -159,7 +167,7 @@ public class ClusterStatus {
      * has at least minBrokerCount brokers.
      *
      * @param minBrokerCount Expected no of brokers
-     * @param timeoutMs        timeoutMs in milliseconds
+     * @param timeoutMs      timeoutMs in milliseconds
      * @return true is the cluster is ready, false otherwise.
      */
     public static boolean isKafkaReady(Map<String, String> config, int
@@ -219,5 +227,133 @@ public class ClusterStatus {
         }
 
         return false;
+    }
+
+    private static List<String> getBrokerMetadataFromZookeeper(String zkConnectString, int
+            timeoutMs) throws KeeperException, InterruptedException, IOException {
+        ZooKeeper zookeeper = null;
+        try {
+
+            CountDownLatch waitForConnection = new CountDownLatch(1);
+
+            boolean isSASLEnabled = false;
+            if (System.getProperty("java.security.auth.login.config", null) != null) {
+                isSASLEnabled = true;
+            }
+            ZookeeperConnectionWatcher connectionWatcher =
+                    new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
+            // Make it large enough that it will not expire for any of the preceding operations.
+            int zkTimeoutMs = timeoutMs * 10;
+            zookeeper = new ZooKeeper(zkConnectString, zkTimeoutMs, connectionWatcher);
+            boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
+
+            if (timedOut) {
+                String message = "Timed out waiting for connection to Zookeeper. timeout (ms) = " +
+                        timeoutMs + ", Zookeeper connect = " + zkConnectString;
+                throw new TimeoutException(message);
+            } else if (!connectionWatcher.isSuccessful()) {
+                throw new TimeoutException("Error occurred while connecting to zookeeper. " +
+                        connectionWatcher.getFailureMessage());
+            }
+
+            // Make sure /brokers/ids exists. Countdown when node created event is triggered.
+            CountDownLatch kafkaRegistrationSignal = new CountDownLatch(1);
+            zookeeper.exists("/brokers/ids",
+                    (event) -> {
+                        System.out.println("exists : " + event.getType());
+                        System.out.println("exists : " + event.getPath());
+                        if (event.getType() == Watcher.Event.EventType.NodeCreated) {
+                            kafkaRegistrationSignal.countDown();
+                        }
+                    },
+                    null,
+                    null
+
+            );
+            
+            boolean kafkaRegistrationTimedOut = !kafkaRegistrationSignal.await(
+                    timeoutMs,
+                    TimeUnit.MILLISECONDS);
+            if (kafkaRegistrationTimedOut) {
+                String message = "Timed out waiting  for Kafka to create /brokers/ids in Zookeeper. timeout (ms) = " +
+                        timeoutMs + ", Zookeeper connect = " + zkConnectString;
+                throw new TimeoutException(message);
+            }
+
+            // Get the data.
+            CountDownLatch waitForBroker = new CountDownLatch(1);
+
+            // Get children async. If the callback gets the data, then countdown otherwise wait for NodeChildrenChanged event.
+            final List<String> brokers = new CopyOnWriteArrayList<>();
+            zookeeper.getChildren("/brokers/ids",
+                    (event) -> {
+                        System.out.println("getchildren : " + event.getType());
+                        System.out.println("getchildren : " + event.getPath());
+                        if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                            waitForBroker.countDown();
+                        }
+                    },
+                    (rc, path, ctx, children) -> {
+                        System.out.println("getchildren " + children);
+                        if (children != null && children.size() > 0) {
+                            children.forEach((child) -> brokers.add(child));
+                            waitForBroker.countDown();
+                        }
+                    },
+                    null
+            );
+
+
+            boolean waitForBrokerTimedOut = !waitForBroker.await(timeoutMs, TimeUnit.MILLISECONDS);
+            if (waitForBrokerTimedOut) {
+                throw new TimeoutException("Timed out waiting for Kafka to register brokers in Zookeeper. timeout (ms) = " +
+                        timeoutMs + ", Zookeeper connect = " + zkConnectString);
+            }
+            // Get children if the callback had no children and the NodeChildrenChanged event is fired.
+            if (brokers.size() == 0) {
+                zookeeper.getChildren("/brokers/ids", false, null).forEach((child) -> brokers.add(child));
+            }
+
+            List<String> brokerMetadata = new ArrayList<>();
+
+            for (String broker : brokers) {
+                brokerMetadata.add(new String(zookeeper.getData("/brokers/ids/" + broker, false, null)));
+            }
+            return brokerMetadata;
+
+        } finally {
+            if (zookeeper != null) {
+                try {
+                    zookeeper.close();
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    public static Map<String, String> getKafkaEndpointFromZookeeper(
+            String zkConnectString,
+            int timeoutMs) throws InterruptedException, IOException, KeeperException {
+
+        List<String> brokerMetadata = getBrokerMetadataFromZookeeper(zkConnectString, timeoutMs);
+
+        String broker = brokerMetadata.get(0);
+
+        System.out.println(broker);
+        Map<String, String> endpointMap = new HashMap<>();
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, Object>>() {
+        }.getType();
+        Map<String, Object> parsedBroker = gson.fromJson(broker, type);
+
+        for (String rawEndpoint : (List<String>) parsedBroker.get("endpoints")) {
+            String[] protocolAddress = rawEndpoint.split("://");
+
+            String protocol = protocolAddress[0];
+            String address = protocolAddress[1];
+            endpointMap.put(protocol, address);
+        }
+        return endpointMap;
     }
 }
