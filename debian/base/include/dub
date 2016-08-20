@@ -77,7 +77,7 @@ def env_to_props(env_prefix, prop_prefix, exclude=[]):
     props = {}
     for (env_name, val) in os.environ.iteritems():
         if env_name not in exclude and env_name.startswith(env_prefix):
-            prop_name = prop_prefix + '.'.join(env_name[len(env_prefix)].lower().split('_'))
+            prop_name = prop_prefix + '.'.join(env_name[len(env_prefix):].lower().split('_'))
             props[prop_name] = val
     return props
 

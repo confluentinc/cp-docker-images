@@ -21,20 +21,20 @@ confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_IN
     'CONTROL_CENTER_INTERNAL_TOPICS_CHANGELOG_SEGEMENT_BYTES': 'confluent.controlcenter.internal.topics.changelog.segment.bytes',
     'CONTROL_CENTER_NAME': 'confluent.controlcenter.name',
     'CONTROL_CENTER_CONNECT_TIMEOUT': 'confluent.controlcenter.connect.timeout',
- } -%}
+} -%}
 
- {% for k, property in other_props.iteritems() -%}
- {% if env.get(k) != None -%}
- {{property}}={{env[k]}}
- {% endif -%}
- {% endfor -%}
+{% for k, property in other_props.iteritems() -%}
+{% if env.get(k) != None -%}
+{{property}}={{env[k]}}
+{% endif -%}
+{% endfor -%}
 
-{% set streams_props = env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=other_props.keys()) %}
+{% set streams_props = env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=other_props.keys()) -%}
 {% for name, value in streams_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
 
-{% set rest_props = env_to_props('CONTROL_CENTER_REST_', 'confluent.controlcenter.rest.', exclude=other_props.keys()) %}
+{% set rest_props = env_to_props('CONTROL_CENTER_REST_', 'confluent.controlcenter.rest.', exclude=other_props.keys()) -%}
 {% for name, value in rest_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
