@@ -48,3 +48,17 @@ services:
       CONTROL_CENTER_REPLICATION_FACTOR: 1
     labels:
       - io.confluent.docker.testing=true
+
+  wildcards-config:
+    image: confluentinc/cp-control-center:latest
+    command: "bash -c '/etc/confluent/docker/configure && touch /tmp/config-is-done && sleep infinity'"
+    environment:
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SS
+      CONTROL_CENTER_STREAMS_SASL_KERBEROS_SERVICE_NAME: kafka
+      CONTROL_CENTER_REST_LISTENERS: "http://0.0.0.0:9021,https://0.0.0.0:443"
+      CONTROL_CENTER_REST_SSL_KEYSTORE_LOCATION: "/path/to/keystore"
+    labels:
+      - io.confluent.docker.testing=true

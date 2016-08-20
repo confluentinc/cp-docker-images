@@ -57,6 +57,23 @@ class ConfigTest(unittest.TestCase):
         """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
+    def test_wildcards_config(self):
+        output = self.cluster.run_command_on_service("wildcards-config", "bash -c 'while [ ! -f /tmp/config-is-done ]; do echo waiting && sleep 1; done; echo PASS'")
+        assert "PASS" in output
+
+        props = self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/control-center.properties")
+        expected = """
+        bootstrap.servers=kafka:9092
+        zookeeper.connect=zookeeper:2181/defaultconfig
+        confluent.controlcenter.data.dir=/var/lib/confluent-control-center
+        confluent.monitoring.interceptor.topic.replication=1
+        confluent.controlcenter.internal.topics.replication=1
+        confluent.controlcenter.rest.listeners=http://0.0.0.0:9021,https://0.0.0.0:443
+        confluent.controlcenter.streams.security.protocol=SASL_SS
+        confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
+        """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
 
 class StandaloneNetworkingTest(unittest.TestCase):
 
