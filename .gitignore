@@ -15,3 +15,4 @@ docs/README.md
 target
 .idea
 *.iml
+java/src/main/java/*.java
