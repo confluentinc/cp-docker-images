@@ -266,7 +266,9 @@ public class ClusterStatus {
                         connectionWatcher.getFailureMessage());
             }
 
-            // Make sure /brokers/ids exists. Countdown when node created event is triggered.
+            // Make sure /brokers/ids exists. Countdown when one of the following happen:
+            // 1. node created event is triggered (this happens when /brokers/ids is created after the call is made).
+            // 2. StatCallback gets a non-null callback (this happens when /brokers/ids exists when the call is made) .
             CountDownLatch kafkaRegistrationSignal = new CountDownLatch(1);
             zookeeper.exists("/brokers/ids",
                     (event) -> {
@@ -298,7 +300,9 @@ public class ClusterStatus {
             // Get the data.
             CountDownLatch waitForBroker = new CountDownLatch(1);
 
-            // Get children async. If the callback gets the data, then countdown otherwise wait for NodeChildrenChanged event.
+            // Get children async. Countdown when one of the following happen:
+            // 1. NodeChildrenChanged is triggered (this happens when children are created after the call is made).
+            // 2. ChildrenCallback gets a callback with children present (this happens when node has children when the call is made) .
             final List<String> brokers = new CopyOnWriteArrayList<>();
             zookeeper.getChildren("/brokers/ids",
                     (event) -> {
@@ -324,13 +328,18 @@ public class ClusterStatus {
                 throw new TimeoutException("Timed out waiting for Kafka to register brokers in Zookeeper. timeout (ms) = " +
                         timeoutMs + ", Zookeeper connect = " + zkConnectString);
             }
-            // Get children if the callback had no children and the NodeChildrenChanged event is fired.
+
+
             if (brokers.size() == 0) {
+                // Get children. Broker list will be empty if the getChildren call above is made before the children are
+                // present. In that case, the ChildrenCallback will be called with an empty children list and we will wait
+                // for the NodeChildren event to be fired. At this point, this has happened and we can the children
+                // safely using a sync call.
                 zookeeper.getChildren("/brokers/ids", false, null).forEach((child) -> brokers.add(child));
             }
 
+            // Get metadata for brokers.
             List<String> brokerMetadata = new ArrayList<>();
-
             for (String broker : brokers) {
                 brokerMetadata.add(new String(zookeeper.getData("/brokers/ids/" + broker, false, null)));
             }
@@ -365,6 +374,7 @@ public class ClusterStatus {
 
         List<String> brokerMetadata = getBrokerMetadataFromZookeeper(zkConnectString, timeoutMs);
 
+        // Get the first broker. We will use this as the bootstrap broker for isKafkaReady method.
         String broker = brokerMetadata.get(0);
 
         System.out.println(broker);
