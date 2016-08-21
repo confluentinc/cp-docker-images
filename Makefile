@@ -101,3 +101,6 @@ tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VER
 
 test-kafka-connect: venv clean-containers build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
+
+test-control-center: venv clean-containers build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
