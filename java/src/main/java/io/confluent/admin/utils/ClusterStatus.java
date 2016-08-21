@@ -231,8 +231,9 @@ public class ClusterStatus {
 
     /**
      * Gets metadata from Zookeeper. This method only waits for atleast one broker to be present.
+     *
      * @param zkConnectString Zookeeper connect string
-     * @param timeoutMs Timeout in milliseconds
+     * @param timeoutMs       Timeout in milliseconds
      * @return A list of broker metadata with atleast one broker.
      * @throws KeeperException
      * @throws InterruptedException
@@ -269,14 +270,14 @@ public class ClusterStatus {
             CountDownLatch kafkaRegistrationSignal = new CountDownLatch(1);
             zookeeper.exists("/brokers/ids",
                     (event) -> {
-                        System.out.println("exists : " + event.getType());
-                        System.out.println("exists : " + event.getPath());
+                        log.debug("Got event when checking for existence of /brokers/ids. type="
+                                + event.getType() + " path=" + event.getPath());
                         if (event.getType() == Watcher.Event.EventType.NodeCreated) {
                             kafkaRegistrationSignal.countDown();
                         }
                     },
                     (rc, path, ctx, stat) -> {
-                        System.out.println("exists " + stat);
+                        log.debug("StatsCallback got data for path=" + path + " stat=" + stat);
                         if (stat != null) {
                             kafkaRegistrationSignal.countDown();
                         }
@@ -301,14 +302,14 @@ public class ClusterStatus {
             final List<String> brokers = new CopyOnWriteArrayList<>();
             zookeeper.getChildren("/brokers/ids",
                     (event) -> {
-                        System.out.println("getchildren : " + event.getType());
-                        System.out.println("getchildren : " + event.getPath());
+                        log.debug("Got event when checking for children of /brokers/ids. type="
+                                + event.getType() + " path=" + event.getPath());
                         if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
                             waitForBroker.countDown();
                         }
                     },
                     (rc, path, ctx, children) -> {
-                        System.out.println("getchildren " + children);
+                        log.debug("ChildrenCallback got data for path=" + path + " children=" + children);
                         if (children != null && children.size() > 0) {
                             children.forEach((child) -> brokers.add(child));
                             waitForBroker.countDown();
@@ -347,10 +348,12 @@ public class ClusterStatus {
     }
 
     /**
-     * Gets a kafka endpoint from Zookeeper. This method is used to get a broker for the bootstrap broker list.
-     * This method is expected to used in conjunction with isKafkaReady to determine if Kafka is ready.
+     * Gets a kafka endpoint for one broker from Zookeeper. This method is used to get a broker for the
+     * bootstrap broker list. This method is expected to used in conjunction with isKafkaReady to
+     * determine if Kafka is ready.
+     *
      * @param zkConnectString Zookeeper connect string
-     * @param timeoutMs Timeout in milliseconds
+     * @param timeoutMs       Timeout in milliseconds
      * @return A map of security-protocol->endpoints
      * @throws InterruptedException
      * @throws IOException
@@ -367,8 +370,7 @@ public class ClusterStatus {
         System.out.println(broker);
         Map<String, String> endpointMap = new HashMap<>();
         Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        Type type = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> parsedBroker = gson.fromJson(broker, type);
 
         for (String rawEndpoint : (List<String>) parsedBroker.get("endpoints")) {

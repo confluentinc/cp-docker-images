@@ -15,21 +15,24 @@ import static net.sourceforge.argparse4j.impl.Arguments.store;
 /**
  * Provides two commands:
  * <p/>
- * 1. zk-ready <connectString> <timeout> : This command checks if the zookeeper cluster
- * is ready to accept requests.
+ * 1. zk-ready <connectString> <timeout>
+ * This command checks if the zookeeper cluster is ready to accept requests.
  * where:
  * <connectString> : Zookeeper connect string
  * <timeout> : timeout in millisecs for all operations .
  * <p>
- * 2. kakfa-ready <path to client.properties> <minExpectedBrokers> <timeout> : This
- * command checks if the kafka cluster has the expected number of brokers and is ready to accept
+ *
+ * 2. kakfa-ready <minExpectedBrokers> <timeout> (<broker_list>or <zookeeper_connect>) <config> <security_protocol>
+ * This command checks if the kafka cluster has the expected number of brokers and is ready to accept
  * requests.
  * where:
- * <path to client.properties> : path to properties with client config.
+ * <config> : path to properties with client config.
  * <minExpectedBrokers> : minimum brokers to wait for.
  * <timeout> : timeout in millisecs for all operations . Operations include waiting for Kafka
  * process to bind to the port, waiting for metadata request to return and waiting for
  * <minExpectedBrokers> to appear in the metadata.
+ * (<broker_list>or <zookeeper_connect>) : Either a bootstrap broker list or zookeeper connect string
+ * security_protocol : Security protocol to use to connect to the broker.
  */
 public class Main {
 

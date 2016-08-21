@@ -91,7 +91,55 @@ public class ClusterWaitTest {
             assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
                     .isTrue();
         } catch (Exception e) {
-            fail("Unexpected error.");
+            fail("Unexpected error." + e.getMessage());
+        } finally {
+            kafkaWait.shutdown();
+        }
+        kafkaClusterThread.join(60000);
+    }
+
+
+    @Test(timeout = 180000)
+    public void isKafkaReadyWaitUsingZooKeeper() throws Exception {
+        final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
+
+        Thread kafkaClusterThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    kafkaWait.start();
+                    while (kafkaWait.isRunning()) {
+                        Thread.sleep(1000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        kafkaClusterThread.start();
+        try {
+
+            boolean zkReady = ClusterStatus.isZookeeperReady(kafkaWait.getZookeeperConnectString(), 30000);
+
+            if (! zkReady) {
+                fail("Could not reach zookeeper " + kafkaWait.getZookeeperConnectString());
+            }
+
+            Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZookeeper(
+                    kafkaWait.getZookeeperConnectString(),
+                    30000);
+
+            String bootstrap_broker = endpoints.get("PLAINTEXT");
+            Map<String, String> config = new HashMap<>();
+            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
+
+
+            assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
+                    .isTrue();
+        } catch (Exception e) {
+            fail("Unexpected error." + e.getMessage());
         } finally {
             kafkaWait.shutdown();
         }

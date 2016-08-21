@@ -125,10 +125,12 @@ def check_kafka_ready(expected_brokers, timeout, config, bootstrap_broker_list=N
 
 
     Args:
-        bootstrap_broker_list: Kafka bootstrap broker list string (host:port, ....)
         expected_brokers: expected number of brokers in the cluster.
         timeout: Time in secs to wait for the Zookeeper to be available.
         config: properties file with client config for SSL and SASL.
+        security_protocol: Security protocol to use.
+        bootstrap_broker_list: Kafka bootstrap broker list string (host:port, ....)
+        zookeeper_connect: Zookeeper connect string.
 
     Returns:
         False, if the timeout expires and Kafka cluster is unreachable, True otherwise.
