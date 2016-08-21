@@ -295,7 +295,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     def test_bridged_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-bridge", 1)
+        self.is_kafka_healthy_for_service("kafka-bridge", 19092, 1)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -309,7 +309,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-host", 1)
+        self.is_kafka_healthy_for_service("kafka-host", 29092, 1)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -361,7 +361,7 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-1", 3)
+        self.is_kafka_healthy_for_service("kafka-1", 9092, 3)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -406,7 +406,7 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 9093, 3, "kafka-ssl-1", "SSL")
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -470,7 +470,7 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 9094, 3, "kafka-sasl-ssl-1", "SASL_SSL")
 
         # FIXME: Figure out how to use kafkacat with SASL/Kerberos
         # Test from outside the container
@@ -532,7 +532,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-1", 3)
+        self.is_kafka_healthy_for_service("kafka-1", 19092, 3)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -578,7 +578,7 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 19093, 3, "localhost", "SSL")
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",

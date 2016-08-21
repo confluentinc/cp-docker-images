@@ -46,8 +46,6 @@ public class Main {
                 .addParser("kafka-ready")
                 .description("Check if Kafka is ready.");
 
-
-
         kafkaReady.addArgument("expected-brokers")
                 .action(store())
                 .required(true)

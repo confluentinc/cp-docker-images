@@ -42,11 +42,11 @@ class ConfigTest(unittest.TestCase):
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-config", principal="zookeeper", hostname="sasl-config"))
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-config", principal="zkclient", hostname="sasl-config"))
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.cluster.shutdown()
-        utils.run_command_on_host("rm -rf /tmp/zk-config-kitchen-sink-test")
-        utils.run_command_on_host(" rm -rf /tmp/zookeeper-config-test")
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.cluster.shutdown()
+    #     utils.run_command_on_host("rm -rf /tmp/zk-config-kitchen-sink-test")
+    #     utils.run_command_on_host(" rm -rf /tmp/zookeeper-config-test")
 
     @classmethod
     def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):

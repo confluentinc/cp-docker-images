@@ -229,6 +229,15 @@ public class ClusterStatus {
         return false;
     }
 
+    /**
+     * Gets metadata from Zookeeper. This method only waits for atleast one broker to be present.
+     * @param zkConnectString Zookeeper connect string
+     * @param timeoutMs Timeout in milliseconds
+     * @return A list of broker metadata with atleast one broker.
+     * @throws KeeperException
+     * @throws InterruptedException
+     * @throws IOException
+     */
     private static List<String> getBrokerMetadataFromZookeeper(String zkConnectString, int
             timeoutMs) throws KeeperException, InterruptedException, IOException {
         ZooKeeper zookeeper = null;
@@ -266,11 +275,16 @@ public class ClusterStatus {
                             kafkaRegistrationSignal.countDown();
                         }
                     },
-                    null,
+                    (rc, path, ctx, stat) -> {
+                        System.out.println("exists " + stat);
+                        if (stat != null) {
+                            kafkaRegistrationSignal.countDown();
+                        }
+                    },
                     null
 
             );
-            
+
             boolean kafkaRegistrationTimedOut = !kafkaRegistrationSignal.await(
                     timeoutMs,
                     TimeUnit.MILLISECONDS);
@@ -332,6 +346,16 @@ public class ClusterStatus {
         }
     }
 
+    /**
+     * Gets a kafka endpoint from Zookeeper. This method is used to get a broker for the bootstrap broker list.
+     * This method is expected to used in conjunction with isKafkaReady to determine if Kafka is ready.
+     * @param zkConnectString Zookeeper connect string
+     * @param timeoutMs Timeout in milliseconds
+     * @return A map of security-protocol->endpoints
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws KeeperException
+     */
     public static Map<String, String> getKafkaEndpointFromZookeeper(
             String zkConnectString,
             int timeoutMs) throws InterruptedException, IOException, KeeperException {
