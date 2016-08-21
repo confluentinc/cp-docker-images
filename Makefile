@@ -1,9 +1,9 @@
 VERSION := 3.0.0
 
-COMPONENTS := base zookeeper kafka
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
-DOCKER_UTILS_VERSION := kafka-admin
+
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
@@ -72,6 +72,7 @@ push-public: clean build-debian
   done
 
 clean: clean-containers clean-images
+	rm -rf debian/base/include/etc/confluent/docker/docker-utils.jar
 
 venv: venv/bin/activate
 venv/bin/activate: tests/requirements.txt
