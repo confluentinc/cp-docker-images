@@ -49,7 +49,7 @@ endif
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
-push-private: clean-containers clean-images build-debian build-test-images tag-remote
+push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
