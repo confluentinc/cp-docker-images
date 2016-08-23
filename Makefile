@@ -95,7 +95,17 @@ test-zookeeper: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
 
 test-kafka: venv clean-containers build-debian build-test-images
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v
+	# Running tests one-by-one makes them less flaky (I think it gives the docker
+	# daemon some more time to clean up properly, otherwise after 10-20 test runs,
+	# it starts to hang while deleting containers )
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ConfigTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::StandaloneNetworkingTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterBridgedNetworkTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterSSLBridgedNetworkTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterSASLBridgedNetworkTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterHostNetworkTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterSSLHostNetworkTest -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py::ClusterSASLHostNetworkTest -v
 
 test-schema-registry: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
@@ -113,11 +123,16 @@ test-kafka-connect: venv clean-containers build-debian build-test-images tests/f
 test-control-center: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
 
-test-all: venv clean-containers test-docker-utils build-debian build-test-images
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
+test-all: \
+	venv \
+	clean \
+	test-docker-utils \
+	build-debian \
+	build-test-images \
+	test-build \
+	test-zookeeper \
+	test-kafka \
+	test-kafka-connect \
+	test-schema-registry \
+	test-kafka-rest \
+	test-control-center
