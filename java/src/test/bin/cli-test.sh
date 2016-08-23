@@ -15,11 +15,10 @@
 # limitations under the License.
 
 set -o nounset \
-    -o errexit \
     -o verbose \
     -o xtrace
 
-    ps ax | grep -i 'io.confluent.admin.utils.EmbeddedKafkaCluster' | grep -v grep | awk '{print $1}' | xargs kill -SIGTERM
+ps ax | grep -i 'io.confluent.admin.utils.EmbeddedKafkaCluster' | grep -v grep | awk '{print $1}' | xargs kill -SIGTERM
 
 mvn clean compile package assembly:single -DskipTests=true
 
@@ -80,7 +79,16 @@ KAFKA_ZK_OPTION_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 
 kill "$KAFKA_PID"
 
+# Wait for Kafka to die.
+sleep 10
+
 echo "TEST RESULTS:"
 echo "ZOOKEEPER_TEST=$ZOOKEEPER_TEST"
 echo "KAFKA_ZK_OPTION_TEST=$KAFKA_ZK_OPTION_TEST"
 echo "KAFKA_BROKER_OPTION_TEST=$KAFKA_BROKER_OPTION_TEST"
+
+[ ${ZOOKEEPER_TEST} == "PASS" ] \
+    && [ ${KAFKA_ZK_OPTION_TEST} == "PASS" ] \
+    && [ ${KAFKA_BROKER_OPTION_TEST} == "PASS" ] \
+    && exit 0 \
+    || exit 1

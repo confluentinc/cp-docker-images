@@ -80,6 +80,14 @@ venv/bin/activate: tests/requirements.txt
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
+test-docker-utils:
+	mkdir -p ../debian/base/include/etc/confluent/docker
+	cd java \
+	&& mvn clean compile package assembly:single \
+	&& src/test/bin/cli-test.sh \
+	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cd -
+
 test-build: venv clean build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
 
@@ -104,3 +112,12 @@ test-kafka-connect: venv clean-containers build-debian build-test-images tests/f
 
 test-control-center: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
+
+test-all: venv clean-containers test-docker-utils build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
