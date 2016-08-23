@@ -9,7 +9,7 @@ This is set of utilites which are used by the Confluent Docker images. It has tw
 
 **zk-ready**
 
-This command tries to connect to the cluster and waits for events which signify if the Zookeeper ensemble is ready. 
+This command tries to connect to the cluster and waits for events which signify if the Zookeeper ensemble is ready.
 
 | SASL Enabled ?   | Zookeeper Events   |
 |---|---|
@@ -28,7 +28,7 @@ This command sends a metadata query to the broker and verifies that expected no.
 
 2. Run the jar.
 
-		java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar zk-ready localhost:2181 30000 false &&  echo "READY" || echo "NOTREADY"
+		  java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar zk-ready localhost:2181 30000 false &&  echo "READY" || echo "NOTREADY"
 	    java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar kafka-ready localhost:2181/ssl client.props 1 30000 &&  echo "READY" || echo "NOTREADY"
 
 ## How to test ?
@@ -40,5 +40,6 @@ This command sends a metadata query to the broker and verifies that expected no.
         test/bin/cli-test.sh
 
 
-## Client.properties 
-See client.properties.html
+## Client.properties
+
+Run `java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar doc` to get a list of properties.

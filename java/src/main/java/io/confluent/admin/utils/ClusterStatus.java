@@ -105,7 +105,7 @@ public class ClusterStatus {
      * @return true if the cluster is ready, false otherwise.
      */
     public static boolean isZookeeperReady(String zkConnectString, int timeoutMs) {
-
+        log.debug("Checking is Zookeeper is ready for " + zkConnectString);
         ZooKeeper zookeeper = null;
         try {
 
@@ -155,6 +155,7 @@ public class ClusterStatus {
     public static boolean isKafkaReady(Map<String, String> config, int
             minBrokerCount, int timeoutMs) {
 
+        log.debug("Checking is Kafka is ready for " + config);
         KafkaMetadataClient adminClient = new KafkaMetadataClient(config);
 
         Time time = new SystemTime();
@@ -183,7 +184,9 @@ public class ClusterStatus {
                 // Swallow exception because we want to retry until timeoutMs expires.
             }
 
-            log.info("Trying again ...");
+            log.info(String.format("Expected %s brokers but found only %s." +
+                    " Trying to query Kafka for metadata again ..."),
+                    minBrokerCount, brokers == null ? 0 : brokers.size());
             long elapsed = time.milliseconds() - begin;
             remainingWaitMs = timeoutMs - elapsed;
         }
@@ -207,6 +210,7 @@ public class ClusterStatus {
      */
     private static List<String> getBrokerMetadataFromZookeeper(String zkConnectString, int
             timeoutMs) throws KeeperException, InterruptedException, IOException {
+        log.debug("Get a bootstrap broker from Zookeeper " + zkConnectString);
         ZooKeeper zookeeper = null;
         try {
 
@@ -218,8 +222,7 @@ public class ClusterStatus {
             }
             ZookeeperConnectionWatcher connectionWatcher =
                     new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
-            // Make it large enough that it will not expire for any of the preceding operations.
-            int zkTimeoutMs = timeoutMs * 10;
+            int zkTimeoutMs = timeoutMs ;
             zookeeper = new ZooKeeper(zkConnectString, zkTimeoutMs, connectionWatcher);
             boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
 

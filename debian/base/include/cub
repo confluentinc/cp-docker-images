@@ -19,7 +19,7 @@
 This script contains a set of utility functions required for running the
 Confluent platform on docker.
 
-The script has 4 commands:
+The script supports following commands:
 
 1. kafka-ready : Ensures a Kafka cluster is ready to accept client requests.
 2. zk-ready: Ensures that a Zookeeper ensemble is ready to accept client requests.
