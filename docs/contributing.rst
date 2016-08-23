@@ -1,3 +1,5 @@
+.. _contributing_guide :
+
 How to Contribute
 -----------------
 
@@ -10,7 +12,7 @@ When submitting a pull request (PR), please use the following guidelines:
   the same coding style as the code that you are modifying.
 * Do add/update documentation appropriately for the change you are making.
 * If you are introducing a new feature you may want to first submit your idea
-  for feedback to the [Confluent mailing list](mailto:partner-support@confluent.io).
+  for feedback to the `Confluent mailing list <mailto:partner-support@confluent.io>`_.
 * Non-trivial features should include unit tests covering the new functionality.
 * Bugfixes should include a unit test or integration test reproducing the issue.
 * Try to keep pull requests short and submit separate ones for unrelated
@@ -47,7 +49,6 @@ GitHub Workflow
 
     $ git fetch upstream
   
-
 4. Create a feature branch to work in
 
   .. sourcecode:: bash
@@ -115,7 +116,6 @@ GitHub Workflow
   .. sourcecode:: bash
 
     $ git push origin --force feature-xxx
-
 
 FAQ
 ~~~

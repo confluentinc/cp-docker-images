@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 3
 
    intro
-   security
-   development
+   quickstart
+   image-design
+   security/security.rst
+   development/
    contributing
