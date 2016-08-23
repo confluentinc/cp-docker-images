@@ -106,61 +106,43 @@ public class ClusterStatus {
      */
     public static boolean isZookeeperReady(String zkConnectString, int timeoutMs) {
 
-        ConnectStringParser connectStringParser = new ConnectStringParser(zkConnectString);
+        ZooKeeper zookeeper = null;
+        try {
 
-        // Wait for ZK process to start listening on the socket.
-        boolean isAnyEndpointLive = false;
-        for (InetSocketAddress node : connectStringParser.getServerAddresses()) {
-            // If you find a live endpoint, exit the loop.
-            if (checkConnectivity(node.getHostName(), node.getPort(), timeoutMs)) {
-                isAnyEndpointLive = true;
-                break;
+            CountDownLatch waitForConnection = new CountDownLatch(1);
+
+            boolean isSASLEnabled = false;
+            if (System.getProperty("java.security.auth.login.config", null) != null) {
+                isSASLEnabled = true;
             }
-            log.error("Timed out waiting for endpoints: " + connectStringParser
-                    .getServerAddresses());
-        }
+            ZookeeperConnectionWatcher connectionWatcher =
+                    new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
+            zookeeper = new ZooKeeper(zkConnectString, timeoutMs, connectionWatcher);
+            boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
 
-        if (isAnyEndpointLive) {
-
-            ZooKeeper zookeeper = null;
-            try {
-
-                CountDownLatch waitForConnection = new CountDownLatch(1);
-
-                boolean isSASLEnabled = false;
-                if (System.getProperty("java.security.auth.login.config", null) != null) {
-                    isSASLEnabled = true;
-                }
-                ZookeeperConnectionWatcher connectionWatcher =
-                        new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
-                zookeeper = new ZooKeeper(zkConnectString, timeoutMs, connectionWatcher);
-                boolean timedOut = !waitForConnection.await(timeoutMs, TimeUnit.MILLISECONDS);
-
-                if (timedOut) {
-                    log.error("Timed out waiting for connection to " + zkConnectString);
-                    return false;
-                } else if (!connectionWatcher.isSuccessful()) {
-                    log.error("Error occurred while connecting to zookeeper. " +
-                            connectionWatcher.getFailureMessage());
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
+            if (timedOut) {
+                log.error("Timed out waiting for connection to " + zkConnectString);
                 return false;
-            } finally {
-                if (zookeeper != null) {
-                    try {
-                        zookeeper.close();
-                    } catch (InterruptedException e) {
-                        log.error(e.getMessage(), e);
-                    }
+            } else if (!connectionWatcher.isSuccessful()) {
+                log.error("Error occurred while connecting to zookeeper. " +
+                        connectionWatcher.getFailureMessage());
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return false;
+        } finally {
+            if (zookeeper != null) {
+                try {
+                    zookeeper.close();
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage(), e);
                 }
             }
         }
-        return false;
-    }
+}
 
     /**
      * Checks if the kafka cluster is accepting client requests and
@@ -175,56 +157,40 @@ public class ClusterStatus {
 
         KafkaMetadataClient adminClient = new KafkaMetadataClient(config);
 
-        // Wait for Kafka process to start listening on the socket before making the metadata
-        // request, otherwise the request fails.
-        boolean isEndpointLive = false;
-        for (InetSocketAddress brokerEndpoint : adminClient.getBrokerAddresses()) {
-            // If you find a live endpoint, exit the loop.
-            if (checkConnectivity(brokerEndpoint, timeoutMs)) {
-                isEndpointLive = true;
-                break;
-            }
-            log.error("Timed out waiting for endpoints: " + adminClient.getBrokerAddresses());
-        }
+        Time time = new SystemTime();
+        long begin = time.milliseconds();
+        long remainingWaitMs = timeoutMs;
+        List<Node> brokers = new ArrayList<>();
+        while (remainingWaitMs > 0) {
 
-        // If we have a live endpoint, get the metadata. If not return false.
-        if (isEndpointLive) {
-
-            Time time = new SystemTime();
-            long begin = time.milliseconds();
-            long remainingWaitMs = timeoutMs;
-            List<Node> brokers = new ArrayList<>();
-            while (remainingWaitMs > 0) {
-
-                // The metadata query doesnot wait for all brokers to be ready before
-                // returning the brokers. So, wait until expected brokers are present
-                // or the time out expires.
-                try {
-                    brokers = adminClient.findAllBrokers(timeoutMs);
-                    log.debug("Broker list: " + (brokers != null ? brokers : "[]"));
-                    if ((brokers != null) && (brokers.size() >= minBrokerCount)) {
-                        return true;
-                    }
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    // Swallow exceptions because we want to retry until timeoutMs expires.
+            // The metadata query doesnot wait for all brokers to be ready before
+            // returning the brokers. So, wait until expected brokers are present
+            // or the time out expires.
+            try {
+                brokers = adminClient.findAllBrokers(timeoutMs);
+                log.debug("Broker list: " + (brokers != null ? brokers : "[]"));
+                if ((brokers != null) && (brokers.size() >= minBrokerCount)) {
+                    return true;
                 }
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    // Swallow exception because we want to retry until timeoutMs expires.
-                }
-
-                log.info("Trying again ...");
-                long elapsed = time.milliseconds() - begin;
-                remainingWaitMs = timeoutMs - elapsed;
+            } catch (Exception e) {
+                log.error("Error while getting broker list [ " + e.getMessage() + "] ", e);
+                // Swallow exceptions because we want to retry until timeoutMs expires.
             }
 
-            if (brokers.size() < minBrokerCount)
-                log.error(String.format("Expected %s brokers but found only %s. Brokers found %s",
-                        minBrokerCount, brokers.size(), brokers));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                // Swallow exception because we want to retry until timeoutMs expires.
+            }
+
+            log.info("Trying again ...");
+            long elapsed = time.milliseconds() - begin;
+            remainingWaitMs = timeoutMs - elapsed;
         }
+
+        if (brokers == null || brokers.size() < minBrokerCount)
+            log.error(String.format("Expected %s brokers but found only %s. Brokers found %s",
+                    minBrokerCount, brokers == null ? 0 : brokers.size(), brokers));
 
         return false;
     }
@@ -377,10 +343,10 @@ public class ClusterStatus {
         // Get the first broker. We will use this as the bootstrap broker for isKafkaReady method.
         String broker = brokerMetadata.get(0);
 
-        System.out.println(broker);
         Map<String, String> endpointMap = new HashMap<>();
         Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>() {}.getType();
+        Type type = new TypeToken<Map<String, Object>>() {
+        }.getType();
         Map<String, Object> parsedBroker = gson.fromJson(broker, type);
 
         for (String rawEndpoint : (List<String>) parsedBroker.get("endpoints")) {

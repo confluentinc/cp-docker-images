@@ -35,7 +35,7 @@ public class ClusterWaitTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(20000);
                     zookeeperWait.start();
                     while (zookeeperWait.isRunning()) {
                         Thread.sleep(1000);

@@ -57,6 +57,13 @@ public class ClusterStatusTest {
     }
 
     @Test(timeout = 120000)
+    public void zookeeperReadyWithBadConnectString() throws Exception {
+        assertThat(
+                ClusterStatus.isZookeeperReady("localhost:3245", 10000))
+                .isFalse();
+    }
+
+    @Test(timeout = 120000)
     public void isKafkaReady() throws Exception {
 
         Map<String, String> config = new HashMap<>();
@@ -87,6 +94,7 @@ public class ClusterStatusTest {
             config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:6789");
             assertThat(ClusterStatus.isKafkaReady(config, 3, 10000)).isFalse();
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Unexpected error." + e.getMessage());
         }
     }

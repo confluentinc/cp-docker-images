@@ -114,8 +114,7 @@ public class KafkaMetadataClient {
                 return send(broker, api, request, timeOutInMs);
             } catch (Exception e) {
                 log.error(String.format("Request %s failed against node %s with error %s", api,
-                        broker, e.getMessage()), e);
-                e.printStackTrace();
+                        broker, e));
             }
         }
         log.error(String.format("Request %s failed on all bootstrap brokers %s", api, this

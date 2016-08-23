@@ -15,22 +15,12 @@
  */
 package io.confluent.admin.utils;
 
-import kafka.security.minikdc.MiniKdc;
-import kafka.server.KafkaConfig;
-import kafka.server.KafkaServer;
-import kafka.utils.CoreUtils;
-import kafka.utils.SystemTime$;
-import kafka.utils.TestUtils;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.common.protocol.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Option;
-import scala.Option$;
-import scala.collection.JavaConversions;
 
-import javax.security.auth.login.Configuration;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -41,6 +31,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.security.auth.login.Configuration;
+
+import kafka.security.minikdc.MiniKdc;
+import kafka.server.KafkaConfig;
+import kafka.server.KafkaServer;
+import kafka.utils.CoreUtils;
+import kafka.utils.SystemTime$;
+import kafka.utils.TestUtils;
+import scala.Option;
+import scala.Option$;
+import scala.collection.JavaConversions;
 
 /**
  * This class is based on code from
@@ -107,8 +109,6 @@ public class EmbeddedKafkaCluster {
         this.numBrokers = numBrokers;
         this.numZookeeperPeers = numZookeeperPeers;
 
-        zookeeper = new EmbeddedZookeeperEnsemble(numZookeeperPeers);
-
         if (this.enableSASLSSL) {
             File workDir;
             if (miniKDCDir != null) {
@@ -137,6 +137,8 @@ public class EmbeddedKafkaCluster {
             this.brokerTrustStoreFile = Option.apply(trustStoreFile);
             this.brokerSaslProperties = Option.apply(saslProperties);
         }
+
+        zookeeper = new EmbeddedZookeeperEnsemble(numZookeeperPeers);
     }
 
     private String createJAASFile() throws IOException {
@@ -302,7 +304,6 @@ public class EmbeddedKafkaCluster {
 
     private void initializeZookeeper() {
         try {
-
             zookeeper.start();
         } catch (IOException e) {
             throw new RuntimeException(e);

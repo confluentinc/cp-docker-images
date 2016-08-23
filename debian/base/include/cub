@@ -96,7 +96,9 @@ def check_zookeeper_ready(connect_string, timeout):
     # should enable it for all the components. This is an option if SASL
     # cannot be enabled on Zookeeper.
     jvm_opts = ""
-    if (not os.environ.get("ZOOKEEPER_SASL_ENABLED") == "FALSE") and os.environ.get("KAFKA_OPTS"):
+    if os.environ.get("ZOOKEEPER_SASL_ENABLED") \
+        and (not os.environ.get("ZOOKEEPER_SASL_ENABLED").upper() == "FALSE") \
+            and os.environ.get("KAFKA_OPTS"):
         jvm_opts = os.environ.get("KAFKA_OPTS")
 
     cmd = cmd_template.format(
@@ -104,22 +106,17 @@ def check_zookeeper_ready(connect_string, timeout):
         connect_string=connect_string,
         timeout_in_ms=timeout * 1000)
 
-    exit_code = subprocess.call(cmd, shell=True)
-
-    if exit_code == 0:
-        return True
-    else:
-        return False
+    return subprocess.call(cmd, shell=True) == 0
 
 
 def check_kafka_ready(expected_brokers, timeout, config, bootstrap_broker_list=None, zookeeper_connect=None, security_protocol=None):
-    """Waits for a Kafka cluster to be ready and have atleast the
+    """Waits for a Kafka cluster to be ready and have at least the
        expected_brokers to present. This commands uses the Java docker-utils
        library to get the Kafka status.
 
        This command supports a secure Kafka cluster. If SSL is enabled, it
        expects the client_properties file to have the relevant SSL properties.
-       If SASL is enabled, the command expects the JAAS config to present in the
+       If SASL is enabled, the command expects the JAAS config to be present in the
        KAFKA_OPTS environment variable and the SASL properties to present in the
        client_properties file.
 

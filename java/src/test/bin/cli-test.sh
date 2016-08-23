@@ -39,6 +39,9 @@ java -cp target/docker-utils-1.0.0-SNAPSHOT-tests.jar:$( mvn dependency:build-cl
 
 KAFKA_PID=$!
 
+# Wait for Kafka to get ready. This is required because ZK Client fails (with AuthFailed event) if the MiniKDC is not up.
+sleep 10
+
 echo "Kafka : $KAFKA_PID"
 
 (java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar || exit 0)
