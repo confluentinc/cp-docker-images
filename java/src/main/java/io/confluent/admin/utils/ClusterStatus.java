@@ -185,8 +185,8 @@ public class ClusterStatus {
             }
 
             log.info(String.format("Expected %s brokers but found only %s." +
-                    " Trying to query Kafka for metadata again ..."),
-                    minBrokerCount, brokers == null ? 0 : brokers.size());
+                    " Trying to query Kafka for metadata again ...",
+                    minBrokerCount, brokers == null ? 0 : brokers.size()));
             long elapsed = time.milliseconds() - begin;
             remainingWaitMs = timeoutMs - elapsed;
         }
