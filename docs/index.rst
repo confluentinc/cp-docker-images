@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 3
 
    intro
-   security
+   quickstart
+   security/security
+   operations/operations
    development
    contributing
