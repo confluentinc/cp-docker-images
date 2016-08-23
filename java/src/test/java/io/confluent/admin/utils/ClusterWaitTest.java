@@ -42,7 +42,7 @@ public class ClusterWaitTest {
                     }
                 } catch (Exception e) {
                     // Just fail.
-                    throw new RuntimeException(e);
+                    fail("Unexpected error." + e.getMessage());
                 }
             }
         });
