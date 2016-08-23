@@ -24,13 +24,25 @@ Getting Started with Docker Client
 
 If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
-Now that we have all of the Docker dependencies installed, we can begin starting up Confluent Platform.
+Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up Confluent Platform.
 
   .. note::
 
     In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
 
-1. Start Zookeeper.  You'll need to keep this service running throughout, so if you will be running things in the foreground, you'll need to have it in a dedicated terminal window.  
+1. Create and configure  the Docker Machine.
+
+  .. sourcecode:: bash
+
+    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+
+  Next, configure your terminal window to attach it to your new Docker Machine:
+
+  .. sourcecode:: bash
+
+    eval $(docker-machine env confluent)
+
+2. Start Zookeeper.  You'll need to keep this service running throughout, so if you will be running things in the foreground, you'll need to have it in a dedicated terminal window.  
 
   .. sourcecode:: bash
 
@@ -57,7 +69,7 @@ Now that we have all of the Docker dependencies installed, we can begin starting
 
     [2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 
-2. Start Kafka.  
+3. Start Kafka.  
 
   .. sourcecode:: bash
 
@@ -92,7 +104,7 @@ Now that we have all of the Docker dependencies installed, we can begin starting
     [2016-07-15 23:31:00,350] INFO [Controller-1-to-broker-1-send-thread], Starting  (kafka.controller.RequestSendThread)
     ...
 
-3. Take it for a test drive.  Test that the broker is functioning as expected by creating a topic and producing data to it:
+4. Take it for a test drive.  Test that the broker is functioning as expected by creating a topic and producing data to it:
 
   First, we'll create a topic.  We'll name it ``foo`` and keep things simple by just giving it one partition and only one replica.  You'll likely want to increase both if you're running in a more high-stakes environment in which you are concerned about data loss.
 
@@ -320,4 +332,4 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 
-3. Follow section 3 in "CP Quickstart with Docker Client" guide above to test the broker.
+3. Follow step 4 in "Getting Started with Docker Client" guide above to test the broker.

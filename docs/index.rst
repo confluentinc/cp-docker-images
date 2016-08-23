@@ -13,7 +13,7 @@ Contents:
 
    intro
    quickstart
-   image-design
-   security/security.rst
-   development/
+   security/security
+   operations/operations
+   development
    contributing

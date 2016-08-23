@@ -1,10 +1,11 @@
 Configuring logging
-======================
+-------------
 
-All logs are sent to stdout by default. You can change this by extending the image (link to extending images)
+All logs are sent to ``stdout`` by default. You can change this by `extending the images <development.html/_extending_images>`_. 
 
-log4j log levels
-------------------
+log4j Log Levels
+~~~~~~~~~~~~~~~~
+
 To change the default logging levels or add new logging levels:
 
 1. Change the ``{COMPONENT}_LOG4J_ROOT_LOGLEVEL`` to change ``rootLogger`` loglevel.
@@ -15,7 +16,7 @@ Note: The component names table lists the ``{COMPONENT}`` names for each compone
 
 A full example for Kafka is shown below:
 
-  ::
+  .. sourcecode:: bash
 
     docker run -d \
       --name=kafka-log-example \
@@ -30,8 +31,8 @@ A full example for Kafka is shown below:
       confluentinc/cp-kafka:3.0.0
 
 
-Component names
-------------------
+Component Names
+~~~~~~~~~~~~~~~~
 
 .. csv-table::
    :header: "Component", "Name"

@@ -87,7 +87,7 @@ Setup
 
       docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
-  This command local env but it is recommended that you create one on AWS. The builds are much faster and more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).  When choosing an instance type, ``m4.large`` is good choice. It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
+  This command will create a local environment but it is recommended that you create one on AWS. The builds are much faster and more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).  When choosing an instance type, ``m4.large`` is good choice. It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
 
   .. sourcecode:: bash
 
@@ -106,12 +106,6 @@ Setup
    .. sourcecode:: bash
 
        eval $(docker-machine env confluent)
-
-Alternatively, you may want to use virtualbox to run on your local machine.  If so, you can replace step 2 with the following:
-
-  .. sourcecode:: bash
-
-    docker-machine create --driver virtualbox confluent
 
 .. _building_the_images :
 
