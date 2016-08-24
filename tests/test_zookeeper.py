@@ -42,11 +42,11 @@ class ConfigTest(unittest.TestCase):
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-config", principal="zookeeper", hostname="sasl-config"))
         cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-config", principal="zkclient", hostname="sasl-config"))
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.cluster.shutdown()
-    #     utils.run_command_on_host("rm -rf /tmp/zk-config-kitchen-sink-test")
-    #     utils.run_command_on_host(" rm -rf /tmp/zookeeper-config-test")
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
+        utils.run_command_on_host("rm -rf /tmp/zk-config-kitchen-sink-test")
+        utils.run_command_on_host(" rm -rf /tmp/zookeeper-config-test")
 
     @classmethod
     def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):
@@ -277,8 +277,11 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
         self.is_zk_healthy_for_service("zookeeper-sasl-2", 2181, "zookeeper-sasl-2")
         self.is_zk_healthy_for_service("zookeeper-sasl-3", 2181, "zookeeper-sasl-3")
 
-        # This doesnot work because zk code resolves the dns name to the internal
-        # docker container name which causes the kerberos authentication to fail.
+        # Trying to connect from one container to another  doesnot work because
+        # zk code resolves the dns name to the internal docker container name
+        # which causes the kerberos authentication to fail.
+
+        # Connect to zookeeper-sasl-2 & zookeeper-sasl-3 from zookeeper-sasl-1
         # self.is_zk_healthy_for_service("zookeeper-sasl-1", 2181, "zookeeper-sasl-2")
         # self.is_zk_healthy_for_service("zookeeper-sasl-1", 2181, "zookeeper-sasl-3")
 
@@ -299,12 +302,12 @@ class ClusterHostNetworkTest(unittest.TestCase):
         cls.cluster.start()
 
         # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="127.0.0.1"))
 
     @classmethod
     def tearDownClass(cls):
@@ -315,7 +318,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):
+    def is_zk_healthy_for_service(cls, service, client_port, host="127.0.0.1"):
         output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
         assert "PASS" in output
 
@@ -336,12 +339,6 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.assertEquals(sorted(outputs), expected)
 
     def test_sasl_on_service(self):
-        self.is_zk_healthy_for_service("zookeeper-sasl-1", 22182)
-        self.is_zk_healthy_for_service("zookeeper-sasl-2", 32182)
-        self.is_zk_healthy_for_service("zookeeper-sasl-3", 42182)
-
-        # This doesnot work because zk code resolves the dns name to the internal
-        # docker container name which causes the kerberos authentication to fail.
         self.is_zk_healthy_for_service("zookeeper-sasl-1", 22182)
         self.is_zk_healthy_for_service("zookeeper-sasl-1", 32182)
         self.is_zk_healthy_for_service("zookeeper-sasl-1", 42182)
