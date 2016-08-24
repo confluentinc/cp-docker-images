@@ -1,3 +1,4 @@
+
 advertised.listeners={{env['KAFKA_ADVERTISED_LISTENERS']}}
 listeners={{ env['KAFKA_LISTENERS'] | default(env['KAFKA_ADVERTISED_LISTENERS']) }}
 log.dirs={{ env['KAFKA_LOG_DIRS'] | default('/var/lib/kafka/data') }}

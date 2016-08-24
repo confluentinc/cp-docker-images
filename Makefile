@@ -4,7 +4,6 @@ COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect cont
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
-
 REPOSITORY := confluentinc
 #	REPOSITORY := <your_personal_repo>
 
@@ -20,7 +19,14 @@ clean-images:
 				docker rmi -f $${image} || exit 1 ; \
   done
 
-build-debian:
+debian/base/include/etc/confluent/docker/docker-utils.jar:
+	mkdir -p ../debian/base/include/etc/confluent/docker
+	cd java \
+	&& mvn clean compile package assembly:single -DskipTests \
+	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cd -
+
+build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
@@ -45,11 +51,11 @@ ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
 	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
-        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image}"; \
-        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image}; \
+        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
+        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
-push-private: clean-container clean-image build-debian build-test-images tag-remote
+push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
@@ -65,7 +71,8 @@ push-public: clean build-debian
 				docker push confluentinc/cp-$${component}:${VERSION}; \
   done
 
-clean: clean-container clean-image
+clean: clean-containers clean-images
+	rm -rf debian/base/include/etc/confluent/docker/docker-utils.jar
 
 venv: venv/bin/activate
 venv/bin/activate: tests/requirements.txt
@@ -73,24 +80,49 @@ venv/bin/activate: tests/requirements.txt
 	venv/bin/pip install -Ur tests/requirements.txt
 	touch venv/bin/activate
 
+test-docker-utils:
+	mkdir -p ../debian/base/include/etc/confluent/docker
+	cd java \
+	&& mvn clean compile package assembly:single \
+	&& src/test/bin/cli-test.sh \
+	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cd -
+
 test-build: venv clean build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
 
-test-zookeeper: venv clean-container build-debian build-test-images
+test-zookeeper: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_zookeeper.py -v
 
-test-kafka: venv clean-container build-debian build-test-images
+test-kafka: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka.py -v
 
-test-schema-registry: venv clean-container build-debian build-test-images
+test-schema-registry: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_schema_registry.py -v
 
-test-kafka-rest: venv clean-container build-debian build-test-images
+test-kafka-rest: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_rest.py -v
 
 tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar:
 	mkdir -p tests/fixtures/debian/kafka-connect/jars
-	curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" | tar -xzf - -C tests/fixtures/debian/kafka-connect/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+	curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" | tar -xzf - -C tests/fixtures/debian/kafka-connect/jars --strip-components=1 mysql-connector-java-${MYSQL_DRIVER_VERSION}/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
 
-test-kafka-connect: venv clean-container build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+test-kafka-connect: venv clean-containers build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
+
+test-control-center: venv clean-containers build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
+
+test-all: \
+	venv \
+	clean \
+	test-docker-utils \
+	build-debian \
+	build-test-images \
+	test-build \
+	test-zookeeper \
+	test-kafka \
+	test-kafka-connect \
+	test-schema-registry \
+	test-kafka-rest \
+	test-control-center

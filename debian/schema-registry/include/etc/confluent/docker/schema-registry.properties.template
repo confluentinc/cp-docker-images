@@ -1,3 +1,4 @@
+
 {# required properties #}
 kafkastore.connection.url={{env['SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL']}}
 host.name={{env['SCHEMA_REGISTRY_HOST_NAME']}}

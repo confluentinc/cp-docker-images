@@ -1,3 +1,18 @@
+#
+# Copyright 2016 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 FROM debian:jessie
 
 ARG COMMIT_ID=unknown
@@ -36,7 +51,6 @@ RUN echo "===> update debian ....." \
     && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir jinja2 \
-                                  kazoo \
                                   requests \
     \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
@@ -52,3 +66,4 @@ RUN echo "===> update debian ....." \
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
+COPY include/etc/confluent/docker /etc/confluent/docker

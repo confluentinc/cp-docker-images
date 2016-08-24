@@ -1,3 +1,4 @@
+
 clientPort={{ env['ZOOKEEPER_CLIENT_PORT'] }}
 dataDir=/var/lib/zookeeper/data
 dataLogDir=/var/lib/zookeeper/log

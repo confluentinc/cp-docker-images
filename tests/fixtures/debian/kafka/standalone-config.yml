@@ -246,9 +246,11 @@ services:
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: GSSAPI
       KAFKA_SASL_ENABLED_MECHANISMS: GSSAPI
-      KAFKA_SASL_KERBEROS_SERVICE_NAME: broker1
+      KAFKA_SASL_KERBEROS_SERVICE_NAME: kafka
+      ZOOKEEPER_SASL_ENABLED: "FALSE"
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/config_server1_jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/config_krb.conf
+        -Dsun.security.krb5.debug=true
     volumes:
     - /tmp/kafka-config-test/secrets:/etc/kafka/secrets
     labels:
