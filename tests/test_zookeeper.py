@@ -293,6 +293,14 @@ class ClusterHostNetworkTest(unittest.TestCase):
         machine_name = os.environ["DOCKER_MACHINE_NAME"]
         cls.machine = utils.TestMachine(machine_name)
 
+        # Add a hostname mapped to eth0, required for SASL to work predictably.
+        # localhost and hostname both resolve to 127.0.0.1 in the docker image, so using localhost causes unprodicatable behaviour
+        #  with zkclient
+        cmd = """
+            "sudo sh -c 'grep sasl.kafka.com /etc/hosts || echo {IP} sasl.kafka.com >> /etc/hosts'"
+        """.strip()
+
+        cls.machine.ssh(cmd.format(IP=cls.machine.get_internal_ip().strip()))
         # Copy SSL files.
         cls.machine.ssh("mkdir -p /tmp/zookeeper-host-test/secrets")
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
@@ -302,12 +310,12 @@ class ClusterHostNetworkTest(unittest.TestCase):
         cls.cluster.start()
 
         # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="127.0.0.1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="127.0.0.1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="127.0.0.1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="127.0.0.1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="127.0.0.1"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="127.0.0.1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="sasl.kafka.com"))
 
     @classmethod
     def tearDownClass(cls):
@@ -318,7 +326,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_zk_healthy_for_service(cls, service, client_port, host="127.0.0.1"):
+    def is_zk_healthy_for_service(cls, service, client_port, host="sasl.kafka.com"):
         output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
         assert "PASS" in output
 

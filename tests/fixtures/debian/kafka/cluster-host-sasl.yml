@@ -11,7 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22888:23888;127.0.0.1:32888:33888;127.0.0.1:42888:43888
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22888:23888;sasl.kafka.com:32888:33888;sasl.kafka.com:42888:43888
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host_zookeeper_1_jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -32,7 +32,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22888:23888;127.0.0.1:32888:33888;127.0.0.1:42888:43888
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22888:23888;sasl.kafka.com:32888:33888;sasl.kafka.com:42888:43888
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host_zookeeper_2_jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -53,7 +53,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22888:23888;127.0.0.1:32888:33888;127.0.0.1:42888:43888
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22888:23888;sasl.kafka.com:32888:33888;sasl.kafka.com:42888:43888
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host_zookeeper_3_jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -82,8 +82,8 @@ services:
     restart: on-failure:3
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 127.0.0.1:22181,127.0.0.1:32181,127.0.0.1:42181/saslssl
-      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://localhost:19094
+      KAFKA_ZOOKEEPER_CONNECT: sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181/saslssl
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://sasl.kafka.com:19094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
@@ -108,8 +108,8 @@ services:
     restart: on-failure:3
     environment:
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: 127.0.0.1:22181,127.0.0.1:32181,127.0.0.1:42181/saslssl
-      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://localhost:29094
+      KAFKA_ZOOKEEPER_CONNECT: sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181/saslssl
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://sasl.kafka.com:29094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: broker2_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: broker2_sslkey_creds
@@ -134,8 +134,8 @@ services:
     restart: on-failure:3
     environment:
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: 127.0.0.1:22181,127.0.0.1:32181,127.0.0.1:42181/saslssl
-      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://localhost:39094
+      KAFKA_ZOOKEEPER_CONNECT: sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181/saslssl
+      KAFKA_ADVERTISED_LISTENERS: SASL_SSL://sasl.kafka.com:39094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker3.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: broker3_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: broker3_sslkey_creds

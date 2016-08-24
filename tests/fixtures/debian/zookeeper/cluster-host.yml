@@ -62,7 +62,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22889:23889;127.0.0.1:32889:33889;127.0.0.1:42889:43889
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22889:23889;sasl.kafka.com:32889:33889;sasl.kafka.com:42889:43889
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-1-jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -83,7 +83,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22889:23889;127.0.0.1:32889:33889;127.0.0.1:42889:43889
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22889:23889;sasl.kafka.com:32889:33889;sasl.kafka.com:42889:43889
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-2-jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
@@ -104,7 +104,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: 127.0.0.1:22889:23889;127.0.0.1:32889:33889;127.0.0.1:42889:43889
+      ZOOKEEPER_SERVERS: sasl.kafka.com:22889:23889;sasl.kafka.com:32889:33889;sasl.kafka.com:42889:43889
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/host-3-jaas.conf
         -Djava.security.krb5.conf=/etc/kafka/secrets/host-krb.conf
         -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
