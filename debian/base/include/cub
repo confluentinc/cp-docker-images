@@ -96,9 +96,9 @@ def check_zookeeper_ready(connect_string, timeout):
     # should enable it for all the components. This is an option if SASL
     # cannot be enabled on Zookeeper.
     jvm_opts = ""
-    if os.environ.get("ZOOKEEPER_SASL_ENABLED") \
-        and (not os.environ.get("ZOOKEEPER_SASL_ENABLED").upper() == "FALSE") \
-            and os.environ.get("KAFKA_OPTS"):
+    is_zk_sasl_enabled = os.environ.get("ZOOKEEPER_SASL_ENABLED") or ""
+
+    if (not is_zk_sasl_enabled.upper() == "FALSE") and os.environ.get("KAFKA_OPTS"):
         jvm_opts = os.environ.get("KAFKA_OPTS")
 
     cmd = cmd_template.format(
