@@ -105,7 +105,7 @@ public class ClusterStatus {
      * @return true if the cluster is ready, false otherwise.
      */
     public static boolean isZookeeperReady(String zkConnectString, int timeoutMs) {
-        log.debug("Checking is Zookeeper is ready for " + zkConnectString);
+        log.debug("Check if Zookeeper is ready: " + zkConnectString);
         ZooKeeper zookeeper = null;
         try {
 
@@ -114,6 +114,8 @@ public class ClusterStatus {
             boolean isSASLEnabled = false;
             if (System.getProperty("java.security.auth.login.config", null) != null) {
                 isSASLEnabled = true;
+                log.info("SASL is enabled. java.security.auth.login.config=" +
+                        System.getProperty("java.security.auth.login.config"));
             }
             ZookeeperConnectionWatcher connectionWatcher =
                     new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
@@ -155,7 +157,7 @@ public class ClusterStatus {
     public static boolean isKafkaReady(Map<String, String> config, int
             minBrokerCount, int timeoutMs) {
 
-        log.debug("Checking is Kafka is ready for " + config);
+        log.debug("Check if Kafka is ready: " + config);
         KafkaMetadataClient adminClient = new KafkaMetadataClient(config);
 
         Time time = new SystemTime();
@@ -193,7 +195,9 @@ public class ClusterStatus {
 
         if (brokers == null || brokers.size() < minBrokerCount)
             log.error(String.format("Expected %s brokers but found only %s. Brokers found %s",
-                    minBrokerCount, brokers == null ? 0 : brokers.size(), brokers));
+                    minBrokerCount,
+                    brokers == null ? 0 : brokers.size(),
+                    brokers != null ? brokers : "[]"));
 
         return false;
     }
