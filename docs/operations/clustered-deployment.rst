@@ -1,12 +1,17 @@
-3 node Kafka cluster
+Clustered Deployment
 --------------------
 
+
+
+Tutorial: Setting Up a Three Node Kafka Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Using Docker client
-~~~~~~~~~~~~~~~~~~~
+""""""""
 
 1. Run a 3-node Zookeeper ensemble
 
-   ::
+   .. sourcecode:: bash
 
        docker run -d \
            --net=host \
@@ -43,13 +48,13 @@ Using Docker client
 
    Check the logs to see the broker has booted up successfully
 
-   ::
+   .. sourcecode:: bash
 
        docker logs zk-1
 
    You should see messages like this at the end of the log output
 
-   ::
+   .. sourcecode:: bash
 
        [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
        [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.zookeeper.server.quorum.Learner)
@@ -60,7 +65,7 @@ Using Docker client
 
    Verify that ZK ensemble is ready
 
-   ::
+   .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
           docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
@@ -68,7 +73,7 @@ Using Docker client
 
    You should see one ``leader`` and two ``follower``
 
-   ::
+   .. sourcecode:: bash
 
        Mode: follower
        Mode: leader
@@ -76,7 +81,7 @@ Using Docker client
 
 2. Run a 3 node Kafka cluster
 
-   ::
+   .. sourcecode:: bash
 
        docker run -d \
            --net=host \
@@ -101,7 +106,7 @@ Using Docker client
 
    Check the logs to see the broker has booted up successfully
 
-   ::
+   .. sourcecode:: bash
 
        docker logs kafka-1
        docker logs kafka-2
@@ -110,7 +115,7 @@ Using Docker client
    You should see start see bootup messages. For example,
    ``docker logs kafka-3 | grep started`` shows the following
 
-   ::
+   .. sourcecode:: bash
 
        [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
        [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
@@ -118,7 +123,7 @@ Using Docker client
    You should see the messages like the following on the broker acting
    as controller.
 
-   ::
+   .. sourcecode:: bash
 
        [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
        [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
@@ -131,7 +136,7 @@ Using Docker client
 
    i. Create a topic
 
-   ::
+   .. sourcecode:: bash
 
       docker run \
         --net=host \
@@ -141,13 +146,13 @@ Using Docker client
 
    You should see
 
-   ::
+   .. sourcecode:: bash
 
        Created topic "bar".
 
    ii. Verify that the topic is created successfully
 
-   ::
+   .. sourcecode:: bash
 
        docker run \
           --net=host \
@@ -157,7 +162,7 @@ Using Docker client
 
    You should see
 
-   ::
+   .. sourcecode:: bash
 
        Topic:bar   PartitionCount:3    ReplicationFactor:3 Configs:
        Topic: bar  Partition: 0    Leader: 1003    Replicas: 1003,1002,1001    Isr: 1003,1002,1001
@@ -166,7 +171,7 @@ Using Docker client
 
    iii. Generate data
 
-   ::
+   .. sourcecode:: bash
 
         docker run \
           --net=host \
@@ -175,13 +180,13 @@ Using Docker client
 
    You should see
 
-   ::
+   .. sourcecode:: bash
 
        Produced 42 messages.
 
    iv. Read back the message using the Console consumer
 
-   ::
+   .. sourcecode:: bash
 
        docker run \
         --net=host \
@@ -189,9 +194,9 @@ Using Docker client
         confluentinc/cp-kafka:3.0.0 \
         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
 
-   You should see
+   You should see the following:
 
-   ::
+   .. sourcecode:: bash
 
        1
        4
@@ -202,3 +207,102 @@ Using Docker client
        ....
        41
        Processed a total of 42 messages
+
+
+Using Docker Compose
+""""""""""""""""""""
+
+0. Install compose
+1. Clone the repo
+
+   .. sourcecode:: bash
+
+       git clone https://github.com/confluentinc/cp-docker-images
+       cd cp-docker-images/examples/kafka-cluster
+
+2. Start the services
+
+   .. sourcecode:: bash
+
+       docker-compose start
+       docker-compose run
+
+   Make sure the services are up and running
+
+   .. sourcecode:: bash
+
+       docker-compose ps
+
+   You should see
+
+   .. sourcecode:: bash
+
+              Name                       Command            State   Ports
+       ----------------------------------------------------------------------
+       kafkacluster_kafka-1_1       /etc/confluent/docker/run   Up
+       kafkacluster_kafka-2_1       /etc/confluent/docker/run   Up
+       kafkacluster_kafka-3_1       /etc/confluent/docker/run   Up
+       kafkacluster_zookeeper-1_1   /etc/confluent/docker/run   Up
+       kafkacluster_zookeeper-2_1   /etc/confluent/docker/run   Up
+       kafkacluster_zookeeper-3_1   /etc/confluent/docker/run   Up
+
+   Check the zookeeper logs to verify that Zookeeper is healthy. For
+   example, for service zookeeper-1
+
+   .. sourcecode:: bash
+
+       docker-compose log zookeeper-1
+
+   You should see messages like the following
+
+   .. sourcecode:: bash
+
+       zookeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
+       zookeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.zookeeper.server.quorum.Learner)
+
+   Verify that ZK ensemble is ready
+
+   .. sourcecode:: bash
+
+       for i in 22181 32181 42181; do
+          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+       done
+
+   You should see one ``leader`` and two ``follower``
+
+   .. sourcecode:: bash
+
+       Mode: follower
+       Mode: leader
+       Mode: follower
+
+   Check the logs to see the broker has booted up successfully
+
+   .. sourcecode:: bash
+
+       docker-compose logs kafka-1
+       docker-compose logs kafka-2
+       docker-compose logs kafka-3
+
+   You should see start see bootup messages. For example,
+   ``docker-compose logs kafka-3 | grep started`` shows the following
+
+   .. sourcecode:: bash
+
+       kafka-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
+       kafka-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
+
+   You should see the messages like the following on the broker acting
+   as controller.
+
+   .. sourcecode:: bash
+
+       (Tip: `docker-compose log | grep controller` makes it easy to grep through logs for all services.)
+
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+
+3. Follow section 3 in "Using Docker Client" to test the broker.

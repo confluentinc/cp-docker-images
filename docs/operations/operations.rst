@@ -16,6 +16,7 @@ We will cover the following topics:
 .. toctree::
    :maxdepth: 3
 
-   jmx
+   clustered-deployment
+   monitoring
    logging
    external-volumes
