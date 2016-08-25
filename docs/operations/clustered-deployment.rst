@@ -224,10 +224,9 @@ Using Docker Compose
 
    .. sourcecode:: bash
 
-       docker-compose start
-       docker-compose run
+       docker-compose up
 
-   Make sure the services are up and running
+   In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
    .. sourcecode:: bash
 
@@ -251,7 +250,7 @@ Using Docker Compose
 
    .. sourcecode:: bash
 
-       docker-compose log zookeeper-1
+       docker-compose logs zookeeper-1
 
    You should see messages like the following
 
