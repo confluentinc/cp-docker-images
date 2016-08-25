@@ -39,8 +39,42 @@ import time
 import argparse
 
 
+def env_to_props(env_prefix, prop_prefix, exclude=[]):
+    """Converts environment variables with a prefix into key/value properties
+        in order to support wildcard handling of properties.  Naming convention
+        is to convert env vars to lower case and replace '_' with '.'
+
+    For example: if these are set in the environment
+        CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS=4
+        CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL=SASL_SS
+        CONTROL_CENTER_STREAMS_SASL_KERBEROS_SERVICE_NAME=kafka
+
+        then
+            env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=['CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS'])
+        will produce
+            {
+                'confluent.controlcenter.streams.security.protocol': 'SASL_SS',
+                'confluent.controlcenter.streams.sasl.kerberos.service.name': 'kafka'
+            }
+
+    Args:
+        env_prefix: prefix of environment variables to include. (e.g. CONTROL_CENTER_STREAMS_)
+        prop_prefix: prefix of the resulting properties (e.g. confluent.controlcenter.streams.)
+        exclude: list of environment variables to exclude
+
+    Returns:
+        Map of matching properties.
+    """
+    props = {}
+    for (env_name, val) in os.environ.iteritems():
+        if env_name not in exclude and env_name.startswith(env_prefix):
+            prop_name = prop_prefix + '.'.join(env_name[len(env_prefix):].lower().split('_'))
+            props[prop_name] = val
+    return props
+
+
 def parse_log4j_loggers(overrides_str, defaults={}):
-    """Parses *_LOG4J_PROPERTIES string and returns a list of log4j propeties.
+    """Parses *_LOG4J_PROPERTIES string and returns a list of log4j properties.
 
     For example: if LOG4J_PROPERTIES = "foo.bar=DEBUG,baz.bam=TRACE"
         and
@@ -147,6 +181,7 @@ def fill_and_write_template(template_file, output_file, context=os.environ):
             loader=FileSystemLoader(searchpath="/"),
             trim_blocks=True)
         j2_env.globals['parse_log4j_loggers'] = parse_log4j_loggers
+        j2_env.globals['env_to_props'] = env_to_props
         with open(output_file, 'w') as f:
             template = j2_env.get_template(template_file)
             f.write(template.render(env=context))
