@@ -24,7 +24,7 @@ The Zookeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variabl
       -e ZOOKEEPER_CLIENT_PORT=32181 \
       -e ZOOKEEPER_TICK_TIME=2000 \
       -e ZOOKEEPER_SYNC_LIMIT=2
-      confluentinc/cp-zookeeper:3.0.0
+      confluentinc/cp-zookeeper:3.0.1
 
 Required Settings
 """""""""""""""""
@@ -58,7 +58,7 @@ The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) s
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
-          confluentinc/cp-kafka:3.0.0
+          confluentinc/cp-kafka:3.0.1
 
   .. note::
 
@@ -87,7 +87,7 @@ For the Schema Registry image, use variables prefixed with ``SCHEMA_REGISTRY_`` 
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
       -e SCHEMA_REGISTRY_DEBUG=true \
-      confluentinc/cp-schema-registry:3.0.0 
+      confluentinc/cp-schema-registry:3.0.1 
 
 Required Settings
 """""""""""""""""
@@ -114,7 +114,7 @@ For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with 
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
-      confluentinc/cp-kafka-rest:3.0.0
+      confluentinc/cp-kafka-rest:3.0.1
 
 Required Settings
 """""""""""""""""

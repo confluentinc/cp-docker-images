@@ -51,9 +51,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         -e ZOOKEEPER_TICK_TIME=2000 \
-        confluentinc/cp-zookeeper:3.0.0
+        confluentinc/cp-zookeeper:3.0.1
 
-  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.0`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the two required parameters for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT`` and ``ZOOKEEPER_TICK_TIME``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `go to this link that is yet to be created <addlink.com>`_.
+  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.1`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the two required parameters for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT`` and ``ZOOKEEPER_TICK_TIME``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `go to this link that is yet to be created <addlink.com>`_.
 
   Now that we've attempted to start Zookeeper, we'll check the logs to see the server has booted up successfully by running the following command:
 
@@ -78,7 +78,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
           --name=kafka \
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
-          confluentinc/cp-kafka:3.0.0
+          confluentinc/cp-kafka:3.0.1
 
   .. note::
 
@@ -112,7 +112,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.0.0 \
+      --rm confluentinc/cp-kafka:3.0.1 \
       kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   You should see the following output in your terminal window:
@@ -127,7 +127,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.0.0 \
+      --rm confluentinc/cp-kafka:3.0.1 \
       kafka-topics --describe --topic foo --zookeeper localhost:32181
 
   You should see the following output in your terminal window:
@@ -144,7 +144,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.0.0 \
+      confluentinc/cp-kafka:3.0.1 \
       bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
 
   This command will use the built-in Kafka Console Producer to produce 42 simple messages to the topic. Upon running it, you should see the following:
@@ -160,7 +160,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.0.0 \
+      confluentinc/cp-kafka:3.0.1 \
       kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --new-consumer --from-beginning --max-messages 42
 
   If everything is working as expected, each of the original messages we produced should be written back out:
@@ -184,7 +184,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-      confluentinc/cp-schema-registry:3.0.0 
+      confluentinc/cp-schema-registry:3.0.1 
 
   As we did before, we can check that it started correctly by viewing the logs.
 
@@ -196,7 +196,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.0 bash
+    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.1 bash
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``foo``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
@@ -232,13 +232,13 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
-      confluentinc/cp-kafka-rest:3.0.0
+      confluentinc/cp-kafka-rest:3.0.1
 
   For the next two steps, we're going to use CURL commands to talk to the REST Proxy.  You should be able to run these from your local machine, but that will require you to know the IP address of your Docker image.  For the sake of simplicity, we'll just exec into the Schema Registry again to run them from the host network by pointing to http://localhost:8082.  
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.0 bash
+    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.1 bash
 
   Next, we'll need to create a consumer for Avro data, starting at the beginning of the log for our topic, ``bar``.  As you can see in the startup command, we passed the ``KAFKA_REST_LISTENERS`` to ensure that the REST Proxy will be listening on port ``8082``.
 
@@ -276,7 +276,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.0.0 \
+      confluentinc/cp-kafka:3.0.1 \
       kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   .. sourcecode:: bash
@@ -284,7 +284,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.0.0 \
+      confluentinc/cp-kafka:3.0.1 \
       kafka-topics --create --topic quickstart-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   .. sourcecode:: bash
@@ -292,7 +292,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.0.0 \
+      confluentinc/cp-kafka:3.0.1 \
       kafka-topics --create --topic quickstart-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   .. note::
@@ -306,7 +306,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic quickstart-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
 
@@ -317,7 +317,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:3.0.0 \
+       confluentinc/cp-kafka:3.0.1 \
        kafka-topics --describe --zookeeper localhost:32181
 
   For this example, we'll create File Connectors and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. You may also need to run the command as root.  
@@ -412,7 +412,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
      --net=host \
      --rm \
-     confluentinc/cp-kafka:3.0.0 \
+     confluentinc/cp-kafka:3.0.1 \
      kafka-console-consumer --bootstrap-server localhost:29092 --topic quickstart-data --new-consumer --from-beginning --max-messages 10
 
   You should see the following:
