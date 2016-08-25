@@ -17,9 +17,6 @@
 
 FROM confluentinc/cp-base
 
-# TODO - remove this
-ENV CONFLUENT_VERSION=3.0.1
-
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
@@ -35,16 +32,10 @@ ENV CONTROL_CENTER_CONFIG_DIR=/etc/confluent-${COMPONENT}
 # Default listener
 EXPOSE 9021
 
-# TODO - remove this
-RUN echo "===> add confluent repository..." \
-    && curl -SL http://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.0.1/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-    && echo "deb [arch=amd64] http://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.0.1/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list
-
-
-RUN echo "===> installing ${COMPONENT}..." \
+RUN echo "===> Installing ${COMPONENT}..." \
     && apt-get update && apt-get install -y confluent-${COMPONENT}=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     \
-    && echo "===> clean up ..."  \
+    && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
