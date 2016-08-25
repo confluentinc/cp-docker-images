@@ -30,9 +30,14 @@ ENV PYTHON_PIP_VERSION="8.1.2"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
-ENV CONFLUENT_MAJOR_VERSION="3.0"
-ENV CONFLUENT_VERSION="3.0.0"
+ENV CONFLUENT_MAJOR_VERSION="3"
+ENV CONFLUENT_MINOR_VERSION="0"
+ENV CONFLUENT_PATCH_VERSION="1"
+ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
+#ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
+#TODO - remove this once the packages are released
+ENV CONFLUENT_DEB_REPO="http://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.0.1"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
@@ -61,8 +66,8 @@ RUN echo "===> update debian ....." \
     && rm -rf /var/lib/apt/lists/* \
     \
     && echo "===> add confluent repository..." \
-    && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-    && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list
+    && curl -SL ${PACKAGE_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && echo "deb [arch=amd64] ${PACKAGE_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub

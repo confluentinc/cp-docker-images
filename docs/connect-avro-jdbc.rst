@@ -9,7 +9,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic quickstart-avro-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    ::
@@ -17,7 +17,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic quickstart-avro-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    ::
@@ -25,7 +25,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   2. Next we will create a topic for storing data for our quickstart.
@@ -35,7 +35,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic quickstart-avro-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
 
@@ -46,7 +46,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
          --net=host \
          --rm \
-         confluentinc/cp-kafka:3.0.0 \
+         confluentinc/cp-kafka:3.0.1 \
          kafka-topics --describe --zookeeper localhost:32181
 
 
@@ -194,7 +194,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
          --net=host \
          --rm \
-         confluentinc/cp-kafka:3.0.0 \
+         confluentinc/cp-kafka:3.0.1 \
          kafka-topics --describe --zookeeper localhost:32181
 
 
@@ -205,7 +205,7 @@ Now, lets extend this example to use Avro as the data format and use a JDBC Sour
       docker run \
        --net=host \
        --rm \
-       confluentinc/cp-schema-registry:3.0.0 \
+       confluentinc/cp-schema-registry:3.0.1 \
        kafka-avro-console-consumer --bootstrap-server localhost:29092 --topic quickstart-jdbc-test --new-consumer --from-beginning --max-messages 10
 
     You should see the following:

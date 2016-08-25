@@ -1,4 +1,4 @@
-VERSION := 3.0.0
+VERSION := 3.0.1
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
 COMMIT_ID := $(shell git rev-parse --short HEAD)
