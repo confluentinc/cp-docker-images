@@ -7,10 +7,10 @@ In this section, we provide a simple guide for running a Kafka cluster along wit
 
 In order to keep things simple, this quickstart guide is limited to a single node Kafka cluster.  For more advanced tutorials, you can refer to the following guides:
 
-* Securing Your Cluster on Docker
-* Running in a Clustered Environment 
+* `Securing Your Cluster on Docker <security_with_docker.html>`_
+* `Running in a Clustered Environment <clustered_quickstart.html>`_
 
-It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
+It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine. 
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -274,7 +274,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 Getting Started with Docker Compose
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services 
+Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services .
 
 1. Clone the CP Docker Images Github Repository.
 
