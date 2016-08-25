@@ -7,8 +7,8 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "control-center")
-KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
-ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
+KAFKA_READY = "bash -c 'cub kafka-ready {brokers} 40 -z $KAFKA_ZOOKEEPER_CONNECT && echo PASS || echo FAIL'"
+ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 C3_CHECK = "bash -c 'dub wait {host} {port} 240 && curl -fs -X GET -i {host}:{port}/ && echo PASS || echo FAIL'"
 
 
@@ -89,7 +89,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             export TOPIC="{topic}" \
             export MESSAGES="{messages}" \
             export CHECK_MESSAGES="{check_messages}"
-            cub kafka-ready "$ZOOKEEPER_CONNECT" 1 20 20 10 \
+            cub kafka-ready 1 40 -z "$ZOOKEEPER_CONNECT" \
             && control-center-run-class kafka.admin.TopicCommand --create --topic "$TOPIC" --partitions 1 --replication-factor 1 --zookeeper "$ZOOKEEPER_CONNECT" \
             && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor" > /tmp/producer.config \
             && echo "acks=all" >> /tmp/producer.config \

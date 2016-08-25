@@ -6,35 +6,52 @@ import string
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "zookeeper")
-QUORUM_CHECK = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep not && echo notready'"
 MODE_COMMAND = "bash -c 'dub wait localhost {port} 30 && echo stat | nc localhost {port} | grep Mode'"
+HEALTH_CHECK = "bash -c 'cub zk-ready {host}:{port} 30 && echo PASS || echo FAIL'"
 JMX_CHECK = """bash -c "\
     echo 'get -b org.apache.ZooKeeperService:name0=StandaloneServer_port-1 Version' |
         java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
 """
+KADMIN_KEYTAB_CREATE = """bash -c \
+        'kadmin.local -q "addprinc -randkey {principal}/{hostname}@TEST.CONFLUENT.IO" && \
+        kadmin.local -q "ktadd -norandkey -k /tmp/keytab/{filename}.keytab {principal}/{hostname}@TEST.CONFLUENT.IO"'
+        """
 
 
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
         # Create directories with the correct permissions for test with userid and external volumes.
         utils.run_command_on_host(
             "mkdir -p /tmp/zk-config-kitchen-sink-test/data /tmp/zk-config-kitchen-sink-test/log")
         utils.run_command_on_host(
             "chown -R 12345 /tmp/zk-config-kitchen-sink-test/data /tmp/zk-config-kitchen-sink-test/log")
 
+        # Copy SSL files.
+        cls.machine.ssh("mkdir -p /tmp/zookeeper-config-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/zookeeper-config-test")
+
         cls.cluster = utils.TestCluster("config-test", FIXTURES_DIR, "standalone-config.yml")
         cls.cluster.start()
+
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-config", principal="zookeeper", hostname="sasl-config"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-config", principal="zkclient", hostname="sasl-config"))
 
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
         utils.run_command_on_host("rm -rf /tmp/zk-config-kitchen-sink-test")
+        utils.run_command_on_host(" rm -rf /tmp/zookeeper-config-test")
 
     @classmethod
-    def is_zk_healthy_for_service(cls, service, client_port):
-        output = cls.cluster.run_command_on_service(service, MODE_COMMAND.format(port=client_port))
-        assert "Mode: standalone\n" == output
+    def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
+        assert "PASS" in output
 
     def test_required_config_failure(self):
         self.assertTrue("ZOOKEEPER_CLIENT_PORT is required." in self.cluster.service_logs("failing-config", stopped=True))
@@ -123,6 +140,9 @@ class ConfigTest(unittest.TestCase):
     def test_volumes(self):
         self.is_zk_healthy_for_service("external-volumes", 2181)
 
+    def test_sasl_config(self):
+        self.is_zk_healthy_for_service("sasl-config", 52181, "sasl-config")
+
     def test_random_user(self):
         self.is_zk_healthy_for_service("random-user", 2181)
 
@@ -157,9 +177,9 @@ class StandaloneNetworkingTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     @classmethod
-    def is_zk_healthy_for_service(cls, service, client_port):
-        output = cls.cluster.run_command_on_service(service, MODE_COMMAND.format(port=client_port))
-        assert "Mode: standalone\n" == output
+    def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
+        assert "PASS" in output
 
     def test_bridge_network(self):
         # Test from within the container
@@ -167,9 +187,9 @@ class StandaloneNetworkingTest(unittest.TestCase):
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-zookeeper",
-            command=MODE_COMMAND.format(port=22181),
+            command=HEALTH_CHECK.format(port=22181, host="localhost"),
             host_config={'NetworkMode': 'host'})
-        self.assertEquals("Mode: standalone\n", logs)
+        self.assertTrue("PASS" in logs)
 
     def test_host_network(self):
         # Test from within the container
@@ -177,9 +197,9 @@ class StandaloneNetworkingTest(unittest.TestCase):
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-zookeeper",
-            command=MODE_COMMAND.format(port=32181),
+            command=HEALTH_CHECK.format(port=32181, host="localhost"),
             host_config={'NetworkMode': 'host'})
-        self.assertEquals("Mode: standalone\n", logs)
+        self.assertTrue("PASS" in logs)
 
     def test_jmx_host_network(self):
 
@@ -203,35 +223,43 @@ class StandaloneNetworkingTest(unittest.TestCase):
 class ClusterBridgeNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Copy SSL files.
+        cls.machine.ssh("mkdir -p /tmp/zookeeper-bridged-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/zookeeper-bridged-test")
+
         cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-bridged.yml")
         cls.cluster.start()
 
-        # Wait for docker containers to bootup and zookeeper to finish leader election
-        for _ in xrange(5):
-            if cls.cluster.is_running():
-                quorum_response = cls.cluster.run_command_on_all(QUORUM_CHECK.format(port=2181))
-                print quorum_response
-                if "notready" not in quorum_response:
-                    break
-            else:
-                time.sleep(1)
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-bridged-1", principal="zookeeper", hostname="zookeeper-sasl-1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-bridged-2", principal="zookeeper", hostname="zookeeper-sasl-2"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-bridged-3", principal="zookeeper", hostname="zookeeper-sasl-3"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-bridged-1", principal="zkclient", hostname="zookeeper-sasl-1"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-bridged-2", principal="zkclient", hostname="zookeeper-sasl-2"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-bridged-3", principal="zkclient", hostname="zookeeper-sasl-3"))
 
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
+        utils.run_command_on_host("rm -rf /tmp/zookeeper-bridged-test")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
 
-    def test_zk_healthy(self):
+    @classmethod
+    def is_zk_healthy_for_service(cls, service, client_port, host="localhost"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
+        assert "PASS" in output
 
-        output = self.cluster.run_command_on_all(MODE_COMMAND.format(port=2181))
-        print output
-        expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
+    def test_zookeeper_on_service(self):
+        self.is_zk_healthy_for_service("zookeeper-1", 2181, "zookeeper-1")
+        self.is_zk_healthy_for_service("zookeeper-1", 2181, "zookeeper-2")
+        self.is_zk_healthy_for_service("zookeeper-1", 2181, "zookeeper-3")
 
-        self.assertEquals(sorted(output.values()), expected)
-
-    def test_zk_serving_requests(self):
         client_ports = [22181, 32181, 42181]
         expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
         outputs = []
@@ -243,36 +271,73 @@ class ClusterBridgeNetworkTest(unittest.TestCase):
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)
         self.assertEquals(sorted(outputs), expected)
+
+    def test_sasl_on_service(self):
+        self.is_zk_healthy_for_service("zookeeper-sasl-1", 2181, "zookeeper-sasl-1")
+        self.is_zk_healthy_for_service("zookeeper-sasl-2", 2181, "zookeeper-sasl-2")
+        self.is_zk_healthy_for_service("zookeeper-sasl-3", 2181, "zookeeper-sasl-3")
+
+        # Trying to connect from one container to another  doesnot work because
+        # zk code resolves the dns name to the internal docker container name
+        # which causes the kerberos authentication to fail.
+
+        # Connect to zookeeper-sasl-2 & zookeeper-sasl-3 from zookeeper-sasl-1
+        # self.is_zk_healthy_for_service("zookeeper-sasl-1", 2181, "zookeeper-sasl-2")
+        # self.is_zk_healthy_for_service("zookeeper-sasl-1", 2181, "zookeeper-sasl-3")
 
 
 class ClusterHostNetworkTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+
+        machine_name = os.environ["DOCKER_MACHINE_NAME"]
+        cls.machine = utils.TestMachine(machine_name)
+
+        # Add a hostname mapped to eth0, required for SASL to work predictably.
+        # localhost and hostname both resolve to 127.0.0.1 in the docker image, so using localhost causes unprodicatable behaviour
+        #  with zkclient
+        cmd = """
+            "sudo sh -c 'grep sasl.kafka.com /etc/hosts || echo {IP} sasl.kafka.com >> /etc/hosts'"
+        """.strip()
+
+        cls.machine.ssh(cmd.format(IP=cls.machine.get_internal_ip().strip()))
+        # Copy SSL files.
+        cls.machine.ssh("mkdir -p /tmp/zookeeper-host-test/secrets")
+        local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
+        cls.machine.scp_to_machine(local_secrets_dir, "/tmp/zookeeper-host-test")
+
         cls.cluster = utils.TestCluster("cluster-test", FIXTURES_DIR, "cluster-host.yml")
         cls.cluster.start()
 
-        # Wait for docker containers to bootup and zookeeper to finish leader election
-        for _ in xrange(5):
-            if cls.cluster.is_running():
-                quorum_response = cls.cluster.run_command_on_all(QUORUM_CHECK.format(port=2181))
-                print quorum_response
-                if "notready" not in quorum_response:
-                    break
-            else:
-                time.sleep(1)
+        # Create keytabs
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="sasl.kafka.com"))
 
     @classmethod
     def tearDownClass(cls):
         cls.cluster.shutdown()
+        utils.run_command_on_host("rm -rf /tmp/zookeeper-host-test")
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
 
-    def test_zk_serving_requests(self):
-        client_ports = [22181, 32181, 42181]
+    @classmethod
+    def is_zk_healthy_for_service(cls, service, client_port, host="sasl.kafka.com"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(port=client_port, host=host))
+        assert "PASS" in output
+
+    def test_zookeeper_on_service(self):
+        self.is_zk_healthy_for_service("zookeeper-1", 22182)
+        self.is_zk_healthy_for_service("zookeeper-1", 32182)
+        self.is_zk_healthy_for_service("zookeeper-1", 42182)
+
+        client_ports = [22182, 32182, 42182]
         expected = sorted(["Mode: follower\n", "Mode: follower\n", "Mode: leader\n"])
         outputs = []
-
         for port in client_ports:
             output = utils.run_docker_command(
                 image="confluentinc/cp-zookeeper",
@@ -280,3 +345,8 @@ class ClusterHostNetworkTest(unittest.TestCase):
                 host_config={'NetworkMode': 'host'})
             outputs.append(output)
         self.assertEquals(sorted(outputs), expected)
+
+    def test_sasl_on_service(self):
+        self.is_zk_healthy_for_service("zookeeper-sasl-1", 22182)
+        self.is_zk_healthy_for_service("zookeeper-sasl-1", 32182)
+        self.is_zk_healthy_for_service("zookeeper-sasl-1", 42182)

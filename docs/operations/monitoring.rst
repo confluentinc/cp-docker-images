@@ -1,5 +1,9 @@
-Using JMX
+Monitoring
 ---------
+
+
+Using JMX
+~~~~~~~~~~~~~
 
 For JMX to work with docker containers, the following properties must be set:
 
@@ -18,16 +22,16 @@ Note about ``hostname``:
 
   The hostname is set to ``hostname -i`` in the docker container. If you have more that one network configured for the container, ``hostname -i`` gives you all the IPs, the default is to pick the first IP (or network).
 
-Security
-~~~~~~~~~~
+Security on JMX
+"""""""""""""""
 
 To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
 
 Kafka & Zookeeper
-~~~~~~~~~~
+"""""""""""""""""
 
 Properties
-""""""""
+``````````
 
   ``KAFKA_JMX_PORT``
     JMX Port.
@@ -36,16 +40,19 @@ Properties
   ``KAFKA_JMX_OPTS``
     JMX options.
 
+  ``KAFKA_JMX_HOSTNAME``
+    hostname associated with locally created remote objects.
+
     The default setting is as follows:
 
     .. sourcecode:: bash
     
-      -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
+      -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
 Launching Kafka and Zookeeper with JMX Enabled
-""""""""""""""""""""""""""""""""""""""""""""""""
+``````````````````````````````````````````````
 
-The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <quickstart.html>`, with the only difference being that you set the ``KAFKA_JMX_PORT`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. sourcecode:: bash
 
@@ -53,8 +60,9 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     --name=zk-jmx \
     --net=host \
     -e ZOOKEEPER_TICK_TIME=2000 \
-    -e ZOOKEEPER_CLIENT_PORT=52181 \
-    -e KAFKA_JMX_PORT=49999 \
+    -e ZOOKEEPER_CLIENT_PORT=32181 \
+    -e KAFKA_JMX_PORT=39999 \
+    -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
     confluentinc/cp-zookeeper:3.0.0
 
 
@@ -64,5 +72,8 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e KAFKA_BROKER_ID=1 \
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181/jmx \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
-    -e KAFKA_JMX_PORT=39999 \
+    -e KAFKA_JMX_PORT=49999 \
+    -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`    
     confluentinc/cp-kafka:3.0.0
+
+Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a docker machine named "Confluent".  You should substitute with your docker machine name where appropriate.
