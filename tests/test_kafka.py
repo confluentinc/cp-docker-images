@@ -658,9 +658,8 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
 
     @classmethod
     def tearDownClass(cls):
-        # cls.cluster.shutdown()
-        # cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
-        pass
+        cls.cluster.shutdown()
+        cls.machine.ssh("sudo rm -rf /tmp/kafka-cluster-host-test/secrets")
 
     def test_host_network(self):
         # Test from within the container
