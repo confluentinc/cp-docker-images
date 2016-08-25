@@ -15,8 +15,7 @@ We've provided additional details and guidance on each of these use cases in the
 
     In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <_extending_images>`_.
 
-1. Data Volumes for Kafka & Zookeeper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Volumes for Kafka & Zookeeper
 
 Kafka exposes volumes for data and Zookeeper exposes volumes and transaction logs. It is recommended to seperate volumes (on the host) for these volumes. You will also need to ensure that the host directory has read/write permissions for Docker container user (which is root by default unless you assign a user using Docker run command).
 
@@ -63,8 +62,8 @@ Then start the containers:
 
 The data volumes are mounted using the ``-v`` flag.  
 
-2. Security: Data Volumes for Configuring Secrets
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Security: Data Volumes for Configuring Secrets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When security is enabled, the secrets are made available to the containers using volumes.  For example, if the host has the secrets (credentials, keytab, certificates, kerberos config, JAAS config) in ``/vol007/kafka-node-1-secrets``, we can configure Kafka as follows to use the secrets:
 
@@ -95,14 +94,14 @@ In the example above, we specify the location of the data volumes by setting ``-
 
   -e KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
 
-3. Configuring Connect with External jars
+Configuring Connect with External jars
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka connect can be configured to use third-party jars by storing them on a volume on the host and mapping the volume to ``/etc/kafka-connect/jars`` on the container.
 
 At the host (e.g. Virtualbox VM), download the MySQL driver:
 
-.. sourcecode:: bash  
+.. sourcecode:: bash
 
   # Create a dir for jars and download the mysql jdbc driver into the directories
   mkdir -p /vol42/kafka-connect/jars
