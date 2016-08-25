@@ -57,3 +57,82 @@ services:
     - 43888:3888
     labels:
     - io.confluent.docker.testing=true
+
+  kerberos:
+    image: confluentinc/cp-kerberos
+    environment:
+      BOOTSTRAP: 0
+    volumes:
+    - /tmp/zookeeper-bridged-test/secrets:/tmp/keytab
+    - /dev/urandom:/dev/random
+    networks:
+    - zk
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-1:
+    hostname: zookeeper-sasl-1
+    image: confluentinc/cp-zookeeper:latest
+    # This is required because Zookeeper can fail if kerberos is still initializing.
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-sasl-1:2888:3888;zookeeper-sasl-2:2888:3888;zookeeper-sasl-3:2888:3888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/bridged-1-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/bridged-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-bridged-test/secrets:/etc/kafka/secrets
+    networks:
+    - zk
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-2:
+    hostname: zookeeper-sasl-2
+    image: confluentinc/cp-zookeeper:latest
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-sasl-1:2888:3888;zookeeper-sasl-2:2888:3888;zookeeper-sasl-3:2888:3888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/bridged-2-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/bridged-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-bridged-test/secrets:/etc/kafka/secrets
+    networks:
+    - zk
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-sasl-3:
+    hostname: zookeeper-sasl-3
+    image: confluentinc/cp-zookeeper:latest
+    restart: on-failure:3
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-sasl-1:2888:3888;zookeeper-sasl-2:2888:3888;zookeeper-sasl-3:2888:3888
+      KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/bridged-3-jaas.conf
+        -Djava.security.krb5.conf=/etc/kafka/secrets/bridged-krb.conf
+        -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        -Dsun.security.krb5.debug=true
+    volumes:
+    - /tmp/zookeeper-bridged-test/secrets:/etc/kafka/secrets
+    networks:
+    - zk
+    labels:
+    - io.confluent.docker.testing=true

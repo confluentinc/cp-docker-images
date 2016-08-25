@@ -1,3 +1,4 @@
+.DS_Store
 venv
 __pycache__
 *.pyc
@@ -11,5 +12,8 @@ __pycache__
 *.jar
 Untitled*
 docs/_build
-
 docs/README.md
+target
+.idea
+*.iml
+java/src/main/java/*.java

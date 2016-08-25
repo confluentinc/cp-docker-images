@@ -20,7 +20,6 @@ set -o nounset \
     -o xtrace
 
 dub ensure CONNECT_BOOTSTRAP_SERVERS
-dub ensure CONNECT_REST_PORT
 dub ensure CONNECT_GROUP_ID
 dub ensure CONNECT_CONFIG_STORAGE_TOPIC
 dub ensure CONNECT_OFFSET_STORAGE_TOPIC
@@ -32,9 +31,11 @@ dub ensure CONNECT_INTERNAL_VALUE_CONVERTER
 # This is required to avoid config bugs. You should set this to a value that is
 # resolvable by all containers.
 dub ensure CONNECT_REST_ADVERTISED_HOST_NAME
-# Required for zk-ready and kafka-ready checks
-dub ensure CONNECT_ZOOKEEPER_CONNECT
 
+# Default to 8083, which matches the mesos-overrides. This is here in case we extend the containers to remove the mesos overrides.
+if [ -z "$CONNECT_REST_PORT" ]; then
+  export CONNECT_REST_PORT=8083
+fi
 
 # Fix for https://issues.apache.org/jira/browse/KAFKA-3988
 if [[ $CONNECT_INTERNAL_KEY_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]] || [[ $CONNECT_INTERNAL_VALUE_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]]

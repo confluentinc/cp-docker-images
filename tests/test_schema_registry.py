@@ -7,19 +7,20 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "schema-registry")
-KAFKA_READY = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
+KAFKA_READY = "bash -c 'cub kafka-ready {brokers} 40 -z $KAFKA_ZOOKEEPER_CONNECT && echo PASS || echo FAIL'"
 HEALTH_CHECK = "bash -c 'cub sr-ready {host} {port} 20 && echo PASS || echo FAIL'"
 POST_SCHEMA_CHECK = """curl -X POST -i -H "Content-Type: application/vnd.schemaregistry.v1+json" \
     --data '{"schema": "{\\"type\\": \\"string\\"}"}' \
     %s:%s/subjects/%s/versions"""
 GET_SCHEMAS_CHECK = "bash -c 'curl -X GET -i {host}:{port}/subjects'"
-ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
+ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 
 JMX_CHECK = """bash -c "\
     echo 'get -b kafka.schema.registry:type=jetty-metrics connections-active' |
         java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
 """
+
 
 class ConfigTest(unittest.TestCase):
 
@@ -128,7 +129,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             image="confluentinc/cp-jmxterm",
             command=JMX_CHECK.format(jmx_hostname="schema-registry-bridge-jmx", jmx_port=39999),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
-        
+
         self.assertTrue("connections-active =" in logs)
 
     def test_jmx_host_network(self):
@@ -140,7 +141,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             image="confluentinc/cp-jmxterm",
             command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port=9999),
             host_config={'NetworkMode': 'host'})
-        
+
         self.assertTrue("connections-active =" in logs)
 
 

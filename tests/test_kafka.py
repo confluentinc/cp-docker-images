@@ -7,8 +7,12 @@ import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "kafka")
-HEALTH_CHECK = "bash -c 'cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT {brokers} 20 20 10 && echo PASS || echo FAIL'"
-ZK_READY = "bash -c 'cub zk-ready {servers} 10 10 2 && echo PASS || echo FAIL'"
+HEALTH_CHECK = """bash -c 'cp /etc/kafka/kafka.properties /tmp/cub.properties \
+                  && echo security.protocol={security_protocol} >> /tmp/cub.properties \
+                  && cub kafka-ready {brokers} 40 -b {host}:{port} -c /tmp/cub.properties -s {security_protocol}\
+                  && echo PASS || echo FAIL'
+                """
+ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 KAFKA_CHECK = "bash -c 'kafkacat -L -b {host}:{port} -J' "
 KAFKA_SASL_SSL_CHECK = """bash -c "kafkacat -X 'security.protocol=sasl_ssl' \
       -X 'ssl.ca.location=/etc/kafka/secrets/snakeoil-ca-1.crt' \
@@ -19,7 +23,6 @@ KAFKA_SASL_SSL_CHECK = """bash -c "kafkacat -X 'security.protocol=sasl_ssl' \
       -X 'sasl.kerberos.keytab=/etc/kafka/secrets/{client_principal}.keytab' \
       -X 'sasl.kerberos.principal={client_principal}/{client_host}' \
       -L -b {host}:{port} -J "
-
       """
 
 KAFKA_SSL_CHECK = """kafkacat -X security.protocol=ssl \
@@ -35,8 +38,7 @@ KADMIN_KEYTAB_CREATE = """bash -c \
         """
 
 PRODUCER = """bash -c "\
-    cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
-    && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
+    kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} --producer.config /etc/kafka/secrets/{config} \
     && echo PRODUCED {messages} messages."
@@ -45,19 +47,27 @@ PRODUCER = """bash -c "\
 CONSUMER = """bash -c "\
         export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
         && dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties" \
-        && cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
         && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
         """
 
+KAFKACAT_SSL_CONSUMER = """kafkacat -X security.protocol=ssl \
+      -X ssl.ca.location=/etc/kafka/secrets/snakeoil-ca-1.crt \
+      -X ssl.certificate.location=/etc/kafka/secrets/kafkacat-ca1-signed.pem \
+      -X ssl.key.location=/etc/kafka/secrets/kafkacat.client.key \
+      -X ssl.key.password=confluent \
+      -b {brokers} \
+      -C -t {topic} -c {messages}
+    """
+
 PLAIN_CLIENTS = """bash -c "\
-    cub kafka-ready $KAFKA_ZOOKEEPER_CONNECT 3 20 20 10 \
-    && export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
+    export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
     && dub template /etc/confluent/docker/tools-log4j.properties.template /etc/kafka/tools-log4j.properties \
     && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} \
     && echo PRODUCED {messages} messages. \
     && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --max-messages {messages}"
     """
+
 JMX_CHECK = """bash -c "\
     echo 'get -b kafka.server:id=1,type=app-info Version' |
         java -jar jmxterm-1.0-alpha-4-uber.jar -l {jmx_hostname}:{jmx_port} -n -v silent "
@@ -84,7 +94,7 @@ class ConfigTest(unittest.TestCase):
         cls.cluster.start()
 
         # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="broker1", principal="broker1", hostname="sasl-ssl-config"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="broker1", principal="kafka", hostname="sasl-ssl-config"))
 
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper", ZK_READY.format(servers="localhost:2181"))
 
@@ -95,8 +105,8 @@ class ConfigTest(unittest.TestCase):
         cls.machine.ssh("sudo rm -rf /tmp/kafka-config-test/secrets")
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_required_config_failure(self):
@@ -118,7 +128,7 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue("KAFKA_OPTS should contain 'java.security.auth.login.config' property." in self.cluster.service_logs("failing-config-sasl-missing-prop", stopped=True))
 
     def test_default_config(self):
-        self.is_kafka_healthy_for_service("default-config", 1)
+        self.is_kafka_healthy_for_service("default-config", 9092, 1)
         props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/kafka.properties")
         expected = """
             advertised.listeners=PLAINTEXT://default-config:9092
@@ -138,7 +148,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(sorted(expected_brokers), sorted(parsed_logs["brokers"]))
 
     def test_default_logging_config(self):
-        self.is_kafka_healthy_for_service("default-config", 1)
+        self.is_kafka_healthy_for_service("default-config", 9092, 1)
 
         log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/log4j.properties")
         expected_log4j_props = """log4j.rootLogger=INFO, stdout
@@ -170,7 +180,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_full_config(self):
-        self.is_kafka_healthy_for_service("full-config", 1)
+        self.is_kafka_healthy_for_service("full-config", 9092, 1)
         props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=PLAINTEXT://full-config:9092
@@ -182,7 +192,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_full_logging_config(self):
-        self.is_kafka_healthy_for_service("full-config", 1)
+        self.is_kafka_healthy_for_service("full-config", 9092, 1)
 
         log4j_props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/log4j.properties")
         expected_log4j_props = """log4j.rootLogger=WARN, stdout
@@ -215,13 +225,13 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(tools_log4j_props.translate(None, string.whitespace), expected_tools_log4j_props.translate(None, string.whitespace))
 
     def test_volumes(self):
-        self.is_kafka_healthy_for_service("external-volumes", 1)
+        self.is_kafka_healthy_for_service("external-volumes", 9092, 1)
 
     def test_random_user(self):
-        self.is_kafka_healthy_for_service("random-user", 1)
+        self.is_kafka_healthy_for_service("random-user", 9092, 1)
 
     def test_kitchen_sink(self):
-        self.is_kafka_healthy_for_service("kitchen-sink", 1)
+        self.is_kafka_healthy_for_service("kitchen-sink", 9092, 1)
         zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
@@ -233,7 +243,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_ssl_config(self):
-        self.is_kafka_healthy_for_service("ssl-config", 1)
+        self.is_kafka_healthy_for_service("ssl-config", 9092, 1, "ssl-config", "SSL")
         zk_props = self.cluster.run_command_on_service("ssl-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=SSL://ssl-config:9092
@@ -252,7 +262,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_sasl_config(self):
-        self.is_kafka_healthy_for_service("sasl-ssl-config", 1)
+        self.is_kafka_healthy_for_service("sasl-ssl-config", 9094, 1, "sasl-ssl-config", "SASL_SSL")
         zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "cat /etc/kafka/kafka.properties")
         expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
@@ -262,7 +272,7 @@ class ConfigTest(unittest.TestCase):
 
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
                 security.inter.broker.protocol=SASL_SSL
-                sasl.kerberos.service.name=broker1
+                sasl.kerberos.service.name=kafka
                 ssl.keystore.password=confluent
                 ssl.key.password=confluent
                 ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
@@ -288,13 +298,13 @@ class StandaloneNetworkingTest(unittest.TestCase):
         cls.cluster.shutdown()
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_bridged_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-bridge", 1)
+        self.is_kafka_healthy_for_service("kafka-bridge", 19092, 1)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -308,7 +318,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-host", 1)
+        self.is_kafka_healthy_for_service("kafka-host", 29092, 1)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -354,13 +364,13 @@ class ClusterBridgedNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-1", 3)
+        self.is_kafka_healthy_for_service("kafka-1", 9092, 3)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -405,7 +415,7 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 9093, 3, "kafka-ssl-1", "SSL")
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -420,7 +430,7 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
         producer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
-            name="kafka-ssl-producer",
+            name="kafka-ssl-bridged-producer",
             environment={'KAFKA_ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/ssl"},
             command=PRODUCER.format(brokers="kafka-ssl-1:9093", topic="foo", config="bridged.producer.ssl.config", messages=100),
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
@@ -429,13 +439,12 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
 
         consumer_logs = utils.run_docker_command(
             300,
-            image="confluentinc/cp-kafka",
-            name="kafka-ssl-consumer",
-            environment={'KAFKA_ZOOKEEPER_CONNECT': "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181/ssl"},
-            command=CONSUMER.format(brokers="kafka-ssl-1:9093", topic="foo", config="bridged.consumer.ssl.config", messages=10),
+            image="confluentinc/cp-kafkacat",
+            name="kafkacat-ssl-bridged-consumer",
+            command=KAFKACAT_SSL_CONSUMER.format(brokers="kafka-ssl-1:9093", topic="foo", messages=10),
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
 
-        self.assertTrue("Processed a total of 10 messages" in consumer_logs)
+        self.assertEquals("\n".join([str(i + 1) for i in xrange(10)]), consumer_logs.strip())
 
 
 class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
@@ -469,9 +478,9 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
 
     def test_bridge_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 9094, 3, "kafka-sasl-ssl-1", "SASL_SSL")
 
-        # FIXME: Figure out how to kafkacat with SASL/Kerberos
+        # FIXME: Figure out how to use kafkacat with SASL/Kerberos
         # Test from outside the container
         # logs = utils.run_docker_command(
         #     image="confluentinc/cp-kafkacat",
@@ -489,7 +498,7 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
         producer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
-            name="kafka-sasl-ssl-producer",
+            name="kafka-sasl-ssl-bridged-producer",
             environment=producer_env,
             command=PRODUCER.format(brokers="kafka-sasl-ssl-1:9094", topic="foo", config="bridged.producer.ssl.sasl.config", messages=100),
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
@@ -502,7 +511,7 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
         consumer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
-            name="kafka-sasl-ssl-consumer",
+            name="kafka-sasl-ssl-bridged-consumer",
             environment=consumer_env,
             command=CONSUMER.format(brokers="kafka-sasl-ssl-1:9094", topic="foo", config="bridged.consumer.ssl.sasl.config", messages=10),
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
@@ -525,13 +534,13 @@ class ClusterHostNetworkTest(unittest.TestCase):
         self.assertTrue(self.cluster.is_running())
 
     @classmethod
-    def is_kafka_healthy_for_service(cls, service, num_brokers):
-        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(brokers=num_brokers))
+    def is_kafka_healthy_for_service(cls, service, port, num_brokers, host="localhost", security_protocol="PLAINTEXT"):
+        output = cls.cluster.run_command_on_service(service, HEALTH_CHECK.format(host=host, port=port, brokers=num_brokers, security_protocol=security_protocol))
         assert "PASS" in output
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-1", 3)
+        self.is_kafka_healthy_for_service("kafka-1", 19092, 3)
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -577,7 +586,7 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-ssl-1", 19093, 3, "localhost", "SSL")
         # Test from outside the container
         logs = utils.run_docker_command(
             image="confluentinc/cp-kafkacat",
@@ -592,7 +601,7 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
         producer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
-            name="kafka-ssl-producer",
+            name="kafka-ssl-host-producer",
             environment={'KAFKA_ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/ssl"},
             command=PRODUCER.format(brokers="localhost:29093", topic="foo", config="host.producer.ssl.config", messages=100),
             host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
@@ -601,13 +610,12 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
 
         consumer_logs = utils.run_docker_command(
             300,
-            image="confluentinc/cp-kafka",
-            name="kafka-ssl-consumer",
-            environment={'KAFKA_ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/ssl"},
-            command=CONSUMER.format(brokers="localhost:29093", topic="foo", config="host.consumer.ssl.config", messages=10),
+            image="confluentinc/cp-kafkacat",
+            name="kafkacat-ssl-host-consumer",
+            command=KAFKACAT_SSL_CONSUMER.format(brokers="localhost:29093", topic="foo", messages=10),
             host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
 
-        self.assertTrue("Processed a total of 10 messages" in consumer_logs)
+        self.assertEquals("\n".join([str(i + 1) for i in xrange(10)]), consumer_logs.strip())
 
 
 class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
@@ -616,8 +624,17 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
         machine_name = os.environ["DOCKER_MACHINE_NAME"]
         cls.machine = utils.TestMachine(machine_name)
 
+        # Add a hostname mapped to eth0, required for SASL to work predictably.
+        # localhost and hostname both resolve to 127.0.0.1 in the docker image, so using localhost causes unprodicatable behaviour
+        #  with zkclient
+        cmd = """
+            "sudo sh -c 'grep sasl.kafka.com /etc/hosts || echo {IP} sasl.kafka.com >> /etc/hosts'"
+        """.strip()
+        cls.machine.ssh(cmd.format(IP=cls.machine.get_internal_ip().strip()))
+
         # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+        cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
         cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
 
@@ -625,13 +642,19 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
         cls.cluster.start()
 
         # Create keytabs
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker1", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker2", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker3", principal="kafka", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_producer", principal="host_producer", hostname="localhost"))
-        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_consumer", principal="host_consumer", hostname="localhost"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker1", principal="kafka", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker2", principal="kafka", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_broker3", principal="kafka", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_producer", principal="host_producer", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="host_consumer", principal="host_consumer", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-1", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-2", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zookeeper-host-3", principal="zookeeper", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-1", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-2", principal="zkclient", hostname="sasl.kafka.com"))
+        cls.cluster.run_command_on_service("kerberos", KADMIN_KEYTAB_CREATE.format(filename="zkclient-host-3", principal="zkclient", hostname="sasl.kafka.com"))
 
-        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
+        assert "PASS" in cls.cluster.run_command_on_service("zookeeper-sasl-1", ZK_READY.format(servers="sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181"))
 
     @classmethod
     def tearDownClass(cls):
@@ -640,27 +663,29 @@ class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):
 
     def test_host_network(self):
         # Test from within the container
-        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 3)
+        self.is_kafka_healthy_for_service("kafka-sasl-ssl-1", 19094, 3, "sasl.kafka.com", "SASL_SSL")
 
-        producer_env = {'KAFKA_ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/saslssl",
+        producer_env = {'KAFKA_ZOOKEEPER_CONNECT': "sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181/saslssl",
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/host_producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
         producer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
+            name="kafka-ssl-sasl-host-producer",
             environment=producer_env,
-            command=PRODUCER.format(brokers="localhost:29094", topic="foo", config="host.producer.ssl.sasl.config", messages=100),
+            command=PRODUCER.format(brokers="sasl.kafka.com:29094", topic="foo", config="host.producer.ssl.sasl.config", messages=100),
             host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
 
         self.assertTrue("PRODUCED 100 messages" in producer_logs)
 
-        consumer_env = {'KAFKA_ZOOKEEPER_CONNECT': "localhost:22181,localhost:32181,localhost:42181/saslssl",
+        consumer_env = {'KAFKA_ZOOKEEPER_CONNECT': "sasl.kafka.com:22181,sasl.kafka.com:32181,sasl.kafka.com:42181/saslssl",
                         'KAFKA_OPTS': "-Djava.security.auth.login.config=/etc/kafka/secrets/host_consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf -Dsun.net.spi.nameservice.provider.1=sun -Dsun.security.krb5.debug=true"}
 
         consumer_logs = utils.run_docker_command(
             300,
             image="confluentinc/cp-kafka",
+            name="kafka-ssl-sasl-host-consumer",
             environment=consumer_env,
-            command=CONSUMER.format(brokers="localhost:29094", topic="foo", config="host.consumer.ssl.sasl.config", messages=10),
+            command=CONSUMER.format(brokers="sasl.kafka.com:29094", topic="foo", config="host.consumer.ssl.sasl.config", messages=10),
             host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
 
         self.assertTrue("Processed a total of 10 messages" in consumer_logs)

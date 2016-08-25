@@ -19,8 +19,9 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$CONNECT_ZOOKEEPER_CONNECT" 20 10 2
-
 echo "===> Check if Kafka is healthy ..."
-cub kafka-ready "$CONNECT_ZOOKEEPER_CONNECT" 1 20 10 2 
+
+cub kafka-ready \
+    "${CONNECT_CUB_KAFKA_MIN_BROKERS:-1}" \
+    "${CONNECT_CUB_KAFKA_TIMEOUT:-40}" \
+    -b "$CONNECT_BOOTSTRAP_SERVERS"
