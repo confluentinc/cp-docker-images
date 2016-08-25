@@ -22,26 +22,16 @@ Note about ``hostname``:
 
   The hostname is set to ``hostname -i`` in the docker container. If you have more that one network configured for the container, ``hostname -i`` gives you all the IPs, the default is to pick the first IP (or network).
 
-<<<<<<< HEAD:docs/operations/monitoring.rst
-Security
-"""""""""
-=======
 Security on JMX
 """""""""""""""
->>>>>>> confluentinc/master:docs/operations/monitoring.rst
 
 To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
 
 Kafka & Zookeeper
 """""""""""""""""
 
-<<<<<<< HEAD:docs/operations/monitoring.rst
-Properties
-``````````
-=======
 Environment Variables
 `````````````````````
->>>>>>> confluentinc/master:docs/operations/monitoring.rst
 
   ``KAFKA_JMX_PORT``
     JMX Port.
