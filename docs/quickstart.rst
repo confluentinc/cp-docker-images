@@ -10,11 +10,7 @@ In order to keep things simple, this quickstart guide is limited to a single nod
 * `Securing Your Cluster on Docker <security_with_docker.html>`_
 * `Running in a Clustered Environment <clustered_quickstart.html>`_
 
-<<<<<<< HEAD
 It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine. 
-=======
-It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
->>>>>>> confluentinc/master
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
