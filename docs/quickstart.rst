@@ -3,19 +3,19 @@
 Quickstart
 ==========
 
-In this section, we provide a simple guide for running a Kafka cluster along with all of the other Confluent Platform components.  By the end of this quickstart, you will have successfully installed and run a simple deployment including each component with Docker.  
+In this section, we provide a simple guide for running a Kafka cluster along with all of the other Confluent Platform components.  By the end of this tutorial, you will have successfully installed and run a simple deployment including each component with Docker.  
 
 In order to keep things simple, this quickstart guide is limited to a single node Kafka cluster.  For more advanced tutorials, you can refer to the following guides:
 
 * Securing Your Cluster on Docker
 * Running in a Clustered Environment 
 
-It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `bla bla bla <addlink.com>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
+It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `we have docs for that too <addlink>`_.
+For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <quickstart_compose>`_.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.  
 
@@ -269,6 +269,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 7. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and Zookeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <machine-name>>``.
 
+.. _quickstart_compose :
 
 Getting Started with Docker Compose
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
