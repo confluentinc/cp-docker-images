@@ -15,22 +15,14 @@ We've provided additional details and guidance on each of these use cases in the
 
     In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <_extending_images>`_.
 
-<<<<<<< HEAD
 Data Volumes for Kafka & Zookeeper
-=======
-1. Data Volumes for Kafka & Zookeeper
->>>>>>> confluentinc/master
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka exposes volumes for data and Zookeeper exposes volumes and transaction logs. It is recommended to seperate volumes (on the host) for these volumes. You will also need to ensure that the host directory has read/write permissions for Docker container user (which is root by default unless you assign a user using Docker run command).
 
 An example of how to use Kafka and Zookeeper with mounted volumes. We also show how to configure volumes if you are running Docker container as non root user. In this example, we run the container as user 12345.
 
-<<<<<<< HEAD
-=======
 At the Docker host (e.g. Virtualbox VM), create the directories:
 
->>>>>>> confluentinc/master
 .. sourcecode:: bash
 
   # Create dirs for Kafka / ZK data
@@ -69,21 +61,12 @@ Then start the containers:
     confluentinc/cp-kafka:3.0.0
 
 The data volumes are mounted using the ``-v`` flag.  
-<<<<<<< HEAD
 
 Security: Data Volumes for Configuring Secrets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When security is enabled, the secrets are made available to the containers using volumes.  For example, if the host has the secrets (credentials, keytab, certificates, kerberos config, JAAS config) in ``/vol007/kafka-node-1-secrets``, we can configure Kafka as follows to use the secrets:
 
-=======
-
-2. Security: Data Volumes for Configuring Secrets
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When security is enabled, the secrets are made available to the containers using volumes.  For example, if the host has the secrets (credentials, keytab, certificates, kerberos config, JAAS config) in ``/vol007/kafka-node-1-secrets``, we can configure Kafka as follows to use the secrets:
-
->>>>>>> confluentinc/master
 .. sourcecode:: bash
   
   docker run -d \
@@ -111,22 +94,14 @@ In the example above, we specify the location of the data volumes by setting ``-
 
   -e KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
 
-<<<<<<< HEAD
 Configuring Connect with External jars
-=======
-3. Configuring Connect with External jars
->>>>>>> confluentinc/master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka connect can be configured to use third-party jars by storing them on a volume on the host and mapping the volume to ``/etc/kafka-connect/jars`` on the container.
 
 At the host (e.g. Virtualbox VM), download the MySQL driver:
 
-<<<<<<< HEAD
 .. sourcecode:: bash
-=======
-.. sourcecode:: bash  
->>>>>>> confluentinc/master
 
   # Create a dir for jars and download the mysql jdbc driver into the directories
   mkdir -p /vol42/kafka-connect/jars

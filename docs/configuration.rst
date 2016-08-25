@@ -11,7 +11,6 @@ Some configuration variables are required when starting up the Docker images.  W
 
 		As you will notice, the configuration variable names have prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.   
 
-
 Zookeeper
 ---------
 
@@ -19,7 +18,6 @@ The Zookeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variabl
 
 	.. sourcecode:: bash
 		
-		docker run --name zk -e ZOOKEEPER_syncLimit=2 -e ZOOKEEPER__server.1=localhost:2888:3888 confluent/zookeeper.
 		docker run -d \
       --net=host \
       --name=zookeeper \
@@ -32,21 +30,48 @@ Required Settings
 """""""""""""""""
 
 ``ZOOKEEPER_CLIENT_PORT``
+  This field is always required.  Tells Zookeeper where to listen for connections by clients such as Kafka. 
 
+``ZOOKEEPER_TICK_TIME``
+  This field is always required.  The length of a single tick, which is the basic time unit used by ZooKeeper, as measured in milliseconds. It is used to regulate heartbeats, and timeouts. For example, the minimum session timeout will be two ticks.
 
+``ZOOKEEPER_SYNC_LIMIT``
+  Only required when running in clustered mode.  Amount of time, in ticks (see ``ZOOKEEPER_TICK_TIME``), to allow followers to sync with ZooKeeper. If followers fall too far behind a leader, they will be dropped.
+
+``ZOOKEEPER_INIT_LIMIT``
+  Only required when running in clustered mode. Amount of time, in ticks (see ``ZOOKEEPER_TICK_TIME``), to allow followers to connect and sync to a leader. Increased this value as needed, if the amount of data managed by ZooKeeper is large.
+
+``ZOOKEEPER_SERVER_ID``
+  Only required when running in clustered mode.  Sets the server ID in the ``myid`` file, which consists of a single line containing only the text of that machine's id. So ``myid`` of server 1 would contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
 
 
 Kafka
 -----
 
-The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id`` and ``offsets.storage`` you'd run docker run --name kafka --link zookeeper:zookeeper -e KAFKA_BROKER_ID=2 -e KAFKA_OFFSETS_STORAGE=kafka confluent/kafka.
+The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
+
+  .. sourcecode:: bash
+
+      docker run -d \
+          --net=host \
+          --name=kafka \
+          -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+          -e KAFKA_BROKER_ID=2 \
+          confluentinc/cp-kafka:3.0.0
+
+  .. note::
+
+    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host. 
 
 Required Settings
 """""""""""""""""
 
+``KAFKA_ZOOKEEPER_CONNECT``
+  Tells Kafka how to get in touch with Zookeeper.
 
-advertised hostnames is required because you need to think through how other clients are going to connect to kafka.  in a docker environment you need to make sure that your clients can connect to Kafka and other services.  Advertised Listeners is how it gives out a host name that can be reached by the client.  
-
+``KAFKA_ADVERTISED_LISTENERS``
+  Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.  
 
 Schema Registry
 ---------------
@@ -110,8 +135,29 @@ The following settings must be passed to run the REST Proxy Docker image.
 
   The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
+Kafka Connect
+---------------
 
+The Kafka Connect image uses variables prefixed with ``KAFKA_CONNECT_`` with an underscore (_) separating each word instead of periods. As an example....
 
+TODO: Sumit add example
+
+Required Settings
+"""""""""""""""""
+
+TODO: Sumit add this
+
+Confluent Control Center
+---------------
+
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example,
+
+TODO: Sumit add example
+
+Required Settings
+"""""""""""""""""
+
+TODO: Sumit add this
 
 
 
