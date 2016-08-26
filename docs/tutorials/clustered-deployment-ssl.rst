@@ -1,15 +1,32 @@
-Clustered Deployment
---------------------
+.. _clustered_deployment_ssl:
 
+Clustered Deployment using SSL
+-------------------------------
 
-
-Tutorial: Setting Up a Three Node Kafka Cluster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tutorial: Setting Up a Three Node Kafka Cluster with SSL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using Docker client
 """"""""
+0. Clone the git repo
 
-1. Run a 3-node Zookeeper ensemble
+  ::
+
+    git clone https://github.com/confluentinc/cp-docker-images
+    cd cp-docker-images
+
+1. Generate credentials
+  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use this ``create-certs.sh`` in ``examples/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+
+  For this example, we will use the credentials available in the examples/secrets directory in cp-docker-images. See "security" section for more details on security.
+
+  Set the environment variable for secrets directory. We will use this later in our commands.
+
+    ::
+
+      export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+
+2. Run a 3-node Zookeeper ensemble
 
    .. sourcecode:: bash
 
@@ -22,7 +39,7 @@ Using Docker client
            -e ZOOKEEPER_INIT_LIMIT=5 \
            -e ZOOKEEPER_SYNC_LIMIT=2 \
            -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
+           confluentinc/cp-zookeeper:3.0.1
 
        docker run -d \
            --net=host \
@@ -33,7 +50,7 @@ Using Docker client
            -e ZOOKEEPER_INIT_LIMIT=5 \
            -e ZOOKEEPER_SYNC_LIMIT=2 \
            -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
+           confluentinc/cp-zookeeper:3.0.1
 
        docker run -d \
            --net=host \
@@ -44,7 +61,7 @@ Using Docker client
            -e ZOOKEEPER_INIT_LIMIT=5 \
            -e ZOOKEEPER_SYNC_LIMIT=2 \
            -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
+           confluentinc/cp-zookeeper:3.0.1
 
    Check the logs to see the broker has booted up successfully
 
@@ -68,7 +85,7 @@ Using Docker client
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.1 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower``
@@ -85,35 +102,56 @@ Using Docker client
 
        docker run -d \
            --net=host \
-           --name=kafka-1 \
+           --name=kafka-ssl-1 \
            -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
-           confluentinc/cp-kafka:3.0.0
+           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:29092 \
+           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
+           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
+           -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
+           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
+           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
+           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+           confluentinc/cp-kafka:3.0.1
 
        docker run -d \
            --net=host \
-           --name=kafka-2 \
+           --name=kafka-ssl-2 \
            -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
-           confluentinc/cp-kafka:3.0.0
+           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:39092 \
+           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
+           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
+           -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
+           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
+           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
+           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+           confluentinc/cp-kafka:3.0.1
 
        docker run -d \
            --net=host \
-           --name=kafka-3 \
+           --name=kafka-ssl-3 \
            -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:49092 \
-           confluentinc/cp-kafka:3.0.0
+           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:49092 \
+           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
+           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
+           -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
+           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
+           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
+           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+           confluentinc/cp-kafka:3.0.1
 
    Check the logs to see the broker has booted up successfully
 
    .. sourcecode:: bash
 
-       docker logs kafka-1
-       docker logs kafka-2
-       docker logs kafka-3
+       docker logs kafka-ssl-1
+       docker logs kafka-ssl-2
+       docker logs kafka-ssl-3
 
    You should see start see bootup messages. For example,
-   ``docker logs kafka-3 | grep started`` shows the following
+   ``docker logs kafka-ssl-3 | grep started`` shows the following
 
    .. sourcecode:: bash
 
@@ -141,7 +179,7 @@ Using Docker client
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
    You should see
@@ -157,7 +195,7 @@ Using Docker client
        docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:3.0.0 \
+          confluentinc/cp-kafka:3.0.1 \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
    You should see
@@ -175,8 +213,10 @@ Using Docker client
 
         docker run \
           --net=host \
-          --rm confluentinc/cp-kafka:3.0.0 \
-          bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar && echo 'Produced 42 messages.'"
+          --rm \
+          -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+          confluentinc/cp-kafka:3.0.1 \
+          bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar -producer.config /etc/kafka/secrets/host.producer.ssl.config && echo 'Produced 42 messages.'"
 
    You should see
 
@@ -191,10 +231,11 @@ Using Docker client
        docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
-        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
+        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+        confluentinc/cp-kafka:3.0.1 \
+        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42 --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
 
-   You should see the following:
+   You should see the following (it might take some time for this command to return data. Kafka has to create ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
    .. sourcecode:: bash
 
@@ -213,17 +254,21 @@ Using Docker Compose
 """"""""""""""""""""
 
 0. Install compose
+
+
 1. Clone the repo
 
    .. sourcecode:: bash
 
        git clone https://github.com/confluentinc/cp-docker-images
-       cd cp-docker-images/examples/kafka-cluster
+       cd cp-docker-images/examples/kafka-cluster-ssl
+
 
 2. Start the services
 
    .. sourcecode:: bash
 
+       export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
        docker-compose up
 
    In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
@@ -236,14 +281,14 @@ Using Docker Compose
 
    .. sourcecode:: bash
 
-              Name                       Command            State   Ports
-       ----------------------------------------------------------------------
-       kafkacluster_kafka-1_1       /etc/confluent/docker/run   Up
-       kafkacluster_kafka-2_1       /etc/confluent/docker/run   Up
-       kafkacluster_kafka-3_1       /etc/confluent/docker/run   Up
-       kafkacluster_zookeeper-1_1   /etc/confluent/docker/run   Up
-       kafkacluster_zookeeper-2_1   /etc/confluent/docker/run   Up
-       kafkacluster_zookeeper-3_1   /etc/confluent/docker/run   Up
+         Name                         Command            State   Ports
+      -------------------------------------------------------------------------
+      kafkaclusterssl_kafka-ssl-1_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_kafka-ssl-2_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_kafka-ssl-3_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_zookeeper-1_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_zookeeper-2_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_zookeeper-3_1   /etc/confluent/docker/run   Up
 
    Check the zookeeper logs to verify that Zookeeper is healthy. For
    example, for service zookeeper-1
@@ -264,7 +309,7 @@ Using Docker Compose
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.1 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower``
@@ -279,29 +324,39 @@ Using Docker Compose
 
    .. sourcecode:: bash
 
-       docker-compose logs kafka-1
-       docker-compose logs kafka-2
-       docker-compose logs kafka-3
+       docker-compose logs kafka-ssl-1
+       docker-compose logs kafka-ssl-2
+       docker-compose logs kafka-ssl-3
 
    You should see start see bootup messages. For example,
    ``docker-compose logs kafka-3 | grep started`` shows the following
 
    .. sourcecode:: bash
 
-       kafka-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
-       kafka-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
+       kafka-ssl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
+       kafka-ssl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
 
    You should see the messages like the following on the broker acting
    as controller.
 
    .. sourcecode:: bash
 
-       (Tip: `docker-compose log | grep controller` makes it easy to grep through logs for all services.)
+      (Tip: `docker-compose logs | grep controller` makes it easy to grep through logs for all services.)
 
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+      kafka-ssl-3_1  | [2016-08-24 23:38:22,762] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19093 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+      kafka-ssl-3_1  | [2016-08-24 23:38:22,763] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29093 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+      kafka-ssl-3_1  | [2016-08-24 23:38:22,763] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29093 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+      kafka-ssl-3_1  | [2016-08-24 23:38:22,763] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29093 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+      kafka-ssl-3_1  | [2016-08-24 23:38:22,762] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19093 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
 3. Follow section 3 in "Using Docker Client" to test the broker.
+
+4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
+
+  ::
+
+    docker-compose stop kafka-ssl-1
+    docker-compose stop kafka-ssl-2
+    docker-compose stop kafka-ssl-3
+    docker-compose stop
+    docker-compose remove

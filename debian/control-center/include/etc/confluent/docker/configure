@@ -19,8 +19,8 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure BOOTSTRAP_SERVERS
-dub ensure ZOOKEEPER_CONNECT
+dub ensure CONTROL_CENTER_BOOTSTRAP_SERVERS
+dub ensure CONTROL_CENTER_ZOOKEEPER_CONNECT
 dub ensure CONTROL_CENTER_DATA_DIR
 dub ensure CONTROL_CENTER_REPLICATION_FACTOR
 dub ensure CONTROL_CENTER_CONFIG_DIR

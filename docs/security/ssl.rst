@@ -148,4 +148,4 @@ To install the signed certificate, use keytool -importcert to add it to the node
 Enabling SSL in the Broker Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once you have added the signed certificate to the broker's keystore, you need to modify the broker configuration to enable SSL. See [Enabling SSL on brokers](http://docs.confluent.io/3.0.0/kafka/ssl.html#configuring-kafka-brokers) 
+Once you have added the signed certificate to the broker's keystore, you need to modify the broker configuration to enable SSL. See [Enabling SSL on brokers](http://docs.confluent.io/3.0.1/kafka/ssl.html#configuring-kafka-brokers) 

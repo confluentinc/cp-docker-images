@@ -14,6 +14,8 @@ Contents:
    intro
    quickstart
    security/security
+   configuration
    operations/operations
+   tutorials/tutorials
    development
    contributing
