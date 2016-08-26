@@ -101,7 +101,7 @@ Kafka connect can be configured to use third-party jars by storing them on a vol
 
 At the host (e.g. Virtualbox VM), download the MySQL driver:
 
-.. sourcecode:: bash
+.. sourcecode:: bash  
 
   # Create a dir for jars and download the mysql jdbc driver into the directories
   mkdir -p /vol42/kafka-connect/jars

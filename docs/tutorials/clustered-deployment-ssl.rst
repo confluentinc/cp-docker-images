@@ -267,11 +267,11 @@ Using Docker Compose
 2. Start the services
 
    .. sourcecode:: bash
-       export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
-       docker-compose create
-       docker-compose start
 
-   Make sure the services are up and running
+       export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
+       docker-compose up
+
+   In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
    .. sourcecode:: bash
 
@@ -295,7 +295,7 @@ Using Docker Compose
 
    .. sourcecode:: bash
 
-       docker-compose log zookeeper-1
+       docker-compose logs zookeeper-1
 
    You should see messages like the following
 
@@ -359,4 +359,4 @@ Using Docker Compose
     docker-compose stop kafka-ssl-2
     docker-compose stop kafka-ssl-3
     docker-compose stop
-    docker-compose remove
+    docker-compose rm

@@ -29,8 +29,8 @@ To set security on JMX, you can follow the SSL and authentication sections in th
 Kafka & Zookeeper
 """""""""""""""""
 
-Properties
-``````````
+Environment Variables
+`````````````````````
 
   ``KAFKA_JMX_PORT``
     JMX Port.
@@ -63,7 +63,6 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
     confluentinc/cp-zookeeper:3.0.1
-
 
   docker run -d \
     --name=kafka-jmx \
