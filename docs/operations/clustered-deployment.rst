@@ -163,7 +163,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     [2016-07-24 07:29:20,286] INFO [Controller-1001-to-broker-1003-send-thread], Starting  (kafka.controller.RequestSendThread)
     [2016-07-24 07:29:20,287] INFO [Controller-1001-to-broker-1003-send-thread], Controller 1001 connected to localhost:49092 (id: 1003 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-3. Test that the broker is working fine
+4. Test that the broker is working as expected.
 
   Now that the brokers are up, we'll test that they're working as expected by creating a topic.
 
@@ -225,7 +225,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      confluentinc/cp-kafka:3.0.0 \
      kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
 
-  You should see the following:
+  You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
     .. sourcecode:: bash
 
@@ -258,7 +258,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
   .. sourcecode:: bash       
     cd cp-docker-images/examples/kafka-cluster
 
-2. Start Zookeeper and Kafka using Docker Compose ``start`` and ``run`` commands.
+2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
 
    .. sourcecode:: bash
 
@@ -340,4 +340,4 @@ Before you get started, you will first need to install `Docker <https://docs.doc
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-3. Follow section 3 in the "Docker Client" section above to test that your brokers are functioning as expected.
+3. Follow section 4 in the "Docker Client" section above to test that your brokers are functioning as expected.
