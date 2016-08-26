@@ -234,7 +234,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       confluentinc/cp-kafka-rest:3.0.1
 
-  For the next two steps, we're going to use CURL commands to talk to the REST Proxy.  You should be able to run these from your local machine, but that will require you to know the IP address of your Docker container.  For the sake of simplicity, we'll just run a Schema Registry container to run them from the host network by pointing to http://localhost:8082.  
+  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. For the sake of simplicity, we'll run a new Schema Registry container on the same host to run them from the host network by pointing to http://localhost:8082.  
 
   .. sourcecode:: bash
 
