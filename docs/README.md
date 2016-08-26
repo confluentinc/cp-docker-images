@@ -21,3 +21,5 @@ Then run the monitoring script in the background:
 
 If you install the [browser extensions](http://livereload.com/) then everything should update every time any files are
 saved without any manual steps on your part.
+
+Note: If you're already running the autoreloader, you may need to run `make clean html` if you add new sections.

@@ -15,7 +15,7 @@ It is also worth noting that we will be configuring Kafka and Zookeeper to store
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `we have docs for that too <addlink>`_.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `we have docs for that too <addlink>`_.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.  
 
@@ -267,7 +267,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   
     [{"key":null,"value":{"f1":"value1"},"partition":0,"offset":0},{"key":null,"value":{"f1":"value2"},"partition":0,"offset":1},{"key":null,"value":{"f1":"value3"},"partition":0,"offset":2}]
 
-7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and write it back to a file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our other super awesome connect tutorial <addlink>`_.
+7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and write it back to a file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our tutorial on using a JDBC connector with avro data <connect_quickstart_avro_jdbc.html>`_.
 
   First, let's start up Kafka Connect.  Connect stores config, status, and offsets of the connectors in Kafka topics. We will create these topics now.  We already have Kafka up and running from the steps above.
 

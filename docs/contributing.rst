@@ -1,7 +1,7 @@
 .. _contributing_guide :
 
 How to Contribute
------------------
+=================
 
 General Guidelines
 ~~~~~~~~~~~~~~
