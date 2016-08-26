@@ -69,60 +69,57 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_connect_healthy_for_service("default-config")
-        props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka-connect/kafka-connect.properties")
-        expected = """bootstrap.servers=kafka:9092
-            rest.port=8082
-            rest.advertised.host.name=default-config
-            group.id=default
+        props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka-connect/kafka-connect.properties | sort'")
+        expected = """
+            bootstrap.servers=kafka:9092
             config.storage.topic=default.config
-            offset.storage.topic=default.offsets
-            status.storage.topic=default.status
-            key.converter=org.apache.kafka.connect.json.JsonConverter
-            value.converter=org.apache.kafka.connect.json.JsonConverter
-            internal.key.converter=org.apache.kafka.connect.json.JsonConverter
-            internal.value.converter=org.apache.kafka.connect.json.JsonConverter
-
-
-
-            internal.value.converter.schemas.enable=false
+            group.id=default
             internal.key.converter.schemas.enable=false
+            internal.key.converter=org.apache.kafka.connect.json.JsonConverter
+            internal.value.converter.schemas.enable=false
+            internal.value.converter=org.apache.kafka.connect.json.JsonConverter
+            key.converter=org.apache.kafka.connect.json.JsonConverter
+            offset.storage.topic=default.offsets
+            rest.advertised.host.name=default-config
+            rest.port=8082
+            status.storage.topic=default.status
+            value.converter=org.apache.kafka.connect.json.JsonConverter
+            zookeeper.connect=zookeeper:2181/defaultconfig
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_default_config_avro(self):
         self.is_connect_healthy_for_service("default-config-avro")
-        props = self.cluster.run_command_on_service("default-config-avro", "cat /etc/kafka-connect/kafka-connect.properties")
-        expected = """bootstrap.servers=kafka:9092
-            rest.port=8082
-            rest.advertised.host.name=default-config
-            group.id=default
+        props = self.cluster.run_command_on_service("default-config-avro", "bash -c 'cat /etc/kafka-connect/kafka-connect.properties | sort'")
+        expected = """
+            bootstrap.servers=kafka:9092
             config.storage.topic=default.config
-            offset.storage.topic=default.offsets
-            status.storage.topic=default.status
-            key.converter=io.confluent.connect.avro.AvroConverter
-            value.converter=io.confluent.connect.avro.AvroConverter
-            internal.key.converter=org.apache.kafka.connect.json.JsonConverter
-            internal.value.converter=org.apache.kafka.connect.json.JsonConverter
-
-
-
-            value.converter.schema.registry.url=http://schema-registry:8081
-            internal.value.converter.schemas.enable=false
-            key.converter.schema.registry.url=http://schema-registry:8081
+            group.id=default
             internal.key.converter.schemas.enable=false
+            internal.key.converter=org.apache.kafka.connect.json.JsonConverter
+            internal.value.converter.schemas.enable=false
+            internal.value.converter=org.apache.kafka.connect.json.JsonConverter
+            key.converter.schema.registry.url=http://schema-registry:8081
+            key.converter=io.confluent.connect.avro.AvroConverter
+            offset.storage.topic=default.offsets
+            rest.advertised.host.name=default-config
+            rest.port=8082
+            status.storage.topic=default.status
+            value.converter.schema.registry.url=http://schema-registry:8081
+            value.converter=io.confluent.connect.avro.AvroConverter
+            zookeeper.connect=zookeeper:2181/defaultconfig
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_default_logging_config(self):
         self.is_connect_healthy_for_service("default-config")
 
-        log4j_props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/connect-log4j.properties")
-        expected_log4j_props = """log4j.rootLogger=INFO, stdout
-
-            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+        log4j_props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka/connect-log4j.properties | sort'")
+        expected_log4j_props = """
             log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
-
+            log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+            log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+            log4j.rootLogger=INFO, stdout
             """
         self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
 

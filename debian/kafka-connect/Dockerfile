@@ -29,18 +29,22 @@ ENV COMPONENT=kafka-connect
 # Default kafka-connect rest.port
 EXPOSE 8083
 
+COPY include/etc/confluent/docker /etc/confluent/docker
+
 RUN echo "===> Installing Schema Registry (for Avro jars), JDBC and Hadoop connectors ..." \
     && apt-get -qq update \
     && apt-get install -y \
+        maven \
         confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-    && echo "===> clean up ..."  \
+    && echo "===> Installing Controlcenter for monitoring interceptors ..."\
+    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
     && mkdir -p /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars \
     && chmod -R ag+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars
 
-COPY include/etc/confluent/docker /etc/confluent/docker
 
 CMD ["/etc/confluent/docker/run"]
