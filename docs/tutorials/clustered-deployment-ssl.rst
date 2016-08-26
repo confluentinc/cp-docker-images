@@ -359,4 +359,4 @@ Using Docker Compose
     docker-compose stop kafka-ssl-2
     docker-compose stop kafka-ssl-3
     docker-compose stop
-    docker-compose remove
+    docker-compose rm
