@@ -41,11 +41,11 @@ services:
       - "19021:9021"
     image: confluentinc/cp-control-center:latest
     environment:
-      ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
-      BOOTSTRAP_SERVERS: "kafka-bridge:19092"
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka-bridge:19092"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
-      MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
-      CONTROL_CENTER_STREAM_THREADS: 2
+      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 2
     labels:
       - io.confluent.docker.testing=true

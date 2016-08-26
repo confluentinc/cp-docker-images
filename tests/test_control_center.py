@@ -41,8 +41,8 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("BOOTSTRAP_SERVERS is required." in self.cluster.service_logs("failing-config", stopped=True))
-        self.assertTrue("ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-missing-zk-connect", stopped=True))
+        self.assertTrue("CONTROL_CENTER_BOOTSTRAP_SERVERS is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("CONTROL_CENTER_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config-missing-zk-connect", stopped=True))
         self.assertTrue("CONTROL_CENTER_REPLICATION_FACTOR is required." in self.cluster.service_logs("failing-config-missing-rep-factor", stopped=True))
 
     def test_default_config(self):
@@ -54,6 +54,24 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.data.dir=/var/lib/confluent-control-center
         confluent.monitoring.interceptor.topic.replication=1
         confluent.controlcenter.internal.topics.replication=1
+        """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+    def test_wildcards_config(self):
+        output = self.cluster.run_command_on_service("wildcards-config", "bash -c 'while [ ! -f /tmp/config-is-done ]; do echo waiting && sleep 1; done; echo PASS'")
+        assert "PASS" in output
+
+        props = self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/control-center.properties")
+        expected = """
+        bootstrap.servers=kafka:9092
+        zookeeper.connect=zookeeper:2181/defaultconfig
+        confluent.controlcenter.data.dir=/var/lib/confluent-control-center
+        confluent.monitoring.interceptor.topic.replication=1
+        confluent.controlcenter.internal.topics.replication=1
+        confluent.controlcenter.rest.listeners=http://0.0.0.0:9021,https://0.0.0.0:443
+        confluent.controlcenter.streams.security.protocol=SASL_SS
+        confluent.controlcenter.streams.sasl.kerberos.service.name=kafka
+        confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
         """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
