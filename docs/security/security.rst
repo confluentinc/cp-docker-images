@@ -1,7 +1,7 @@
 .. _security_with_docker :
 
 Security Overview
------------------
+=================
 
 TODO: provide overview of what is supported, linking to the relevant quickstarts.
 
@@ -21,7 +21,7 @@ Test Matrix
    "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
 
-For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.0.0/kafka/security.html>`_.
+For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.0.1/kafka/security.html>`_.
 
 Docker Security
 ~~~~~~~~~~~~~~~
@@ -44,8 +44,7 @@ Docker Security
   We followed the guidelines for security for Openshift to build this feature: (https://docs.openshift.org/latest/creating_images/guidelines.html#openshift-origin-specific-guidelines)
 
 
-
-
+**Table of Contents**
 
 .. toctree::
    :maxdepth: 3

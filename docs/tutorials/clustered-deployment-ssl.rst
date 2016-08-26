@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream:docs/operations/clustered-deployment-ssl.rst
-Clustered Deployment using SSL
--------------------------------
-
-
-
-Tutorial: Setting Up a Three Node Kafka Cluster with SSL
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-=======
 .. _clustered_deployment_ssl:
 
 Clustered Deployment Using SSL
@@ -37,44 +28,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
 
-<<<<<<< Updated upstream:docs/operations/clustered-deployment-ssl.rst
-       docker run -d \
-           --net=host \
-           --name=zk-1 \
-           -e ZOOKEEPER_SERVER_ID=1 \
-           -e ZOOKEEPER_CLIENT_PORT=22181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
-
-       docker run -d \
-           --net=host \
-           --name=zk-2 \
-           -e ZOOKEEPER_SERVER_ID=2 \
-           -e ZOOKEEPER_CLIENT_PORT=32181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
-
-       docker run -d \
-           --net=host \
-           --name=zk-3 \
-           -e ZOOKEEPER_SERVER_ID=3 \
-           -e ZOOKEEPER_CLIENT_PORT=42181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-           confluentinc/cp-zookeeper:3.0.0
-
-   Check the logs to see the broker has booted up successfully
-=======
 1. Create and configure the Docker machine.
->>>>>>> Stashed changes:docs/tutorials/clustered-deployment-ssl.rst
 
   .. sourcecode:: bash
 
@@ -86,15 +40,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     eval $(docker-machine env confluent)
 
-2. Clone the git repo
+2. Clone the git repository:
 
-<<<<<<< Updated upstream:docs/operations/clustered-deployment-ssl.rst
-       for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
-       done
-=======
   .. sourcecode:: bash
->>>>>>> Stashed changes:docs/tutorials/clustered-deployment-ssl.rst
 
     git clone https://github.com/confluentinc/cp-docker-images
     cd cp-docker-images
@@ -107,53 +55,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Set the environment variable for secrets directory. We will use this later in our commands.
 
-<<<<<<< Updated upstream:docs/operations/clustered-deployment-ssl.rst
-       docker run -d \
-           --net=host \
-           --name=kafka-ssl-1 \
-           -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:29092 \
-           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
-           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
-           -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
-           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
-           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
-           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-kafka:3.0.0
-
-       docker run -d \
-           --net=host \
-           --name=kafka-ssl-2 \
-           -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:39092 \
-           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
-           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
-           -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
-           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
-           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
-           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-kafka:3.0.0
-
-       docker run -d \
-           --net=host \
-           --name=kafka-ssl-3 \
-           -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-           -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:49092 \
-           -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
-           -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
-           -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
-           -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
-           -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
-           -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-kafka:3.0.0
-
-   Check the logs to see the broker has booted up successfully
-=======
     .. sourcecode:: bash
->>>>>>> Stashed changes:docs/tutorials/clustered-deployment-ssl.rst
 
       export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
 
@@ -308,7 +210,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
   You should see the following output:
@@ -324,7 +226,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:3.0.0 \
+          confluentinc/cp-kafka:3.0.1 \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
   You should see the following message in your terminal window:
@@ -344,7 +246,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
           --net=host \
           --rm \
           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-          confluentinc/cp-kafka:3.0.0 \
+          confluentinc/cp-kafka:3.0.1 \
           bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar -producer.config /etc/kafka/secrets/host.producer.ssl.config && echo 'Produced 42 messages.'"
 
   The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
@@ -361,7 +263,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --net=host \
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-        confluentinc/cp-kafka:3.0.0 \
+        confluentinc/cp-kafka:3.0.1 \
         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42 --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
@@ -436,7 +338,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
   .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:3.0.1 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
   You should see one ``leader`` and two ``follower`` instances:

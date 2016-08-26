@@ -8,7 +8,7 @@ Supported OS
 
 Versions
 --
-Confluent Platform : 3.0.0
+Confluent Platform : 3.0.1
 
 Java : Azul Zulu JRE 
 

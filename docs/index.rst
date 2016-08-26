@@ -16,5 +16,6 @@ Contents:
    security/security
    configuration
    operations/operations
+   tutorials/tutorials
    development
    contributing
