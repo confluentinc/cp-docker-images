@@ -1,4 +1,4 @@
-{% set connect_props = env_to_props('CONNECT_', '', exclude=[]) -%}
+{% set connect_props = env_to_props('CONNECT_', '') -%}
 {% for name, value in connect_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}

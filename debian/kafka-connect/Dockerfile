@@ -34,7 +34,6 @@ COPY include/etc/confluent/docker /etc/confluent/docker
 RUN echo "===> Installing Schema Registry (for Avro jars), JDBC and Hadoop connectors ..." \
     && apt-get -qq update \
     && apt-get install -y \
-        maven \
         confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
