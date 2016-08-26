@@ -20,10 +20,7 @@ set -o nounset \
     -o xtrace
 
 echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$ZOOKEEPER_CONNECT" "${CONTROL_CENTER_CUB_ZK_TIMEOUT:-40}"
+cub zk-ready "$CONTROL_CENTER_ZOOKEEPER_CONNECT" "${CONTROL_CENTER_CUB_ZK_TIMEOUT:-40}"
 
 echo "===> Check if Kafka is healthy ..."
-cub kafka-ready \
-    "${CONTROL_CENTER_REPLICATION_FACTOR}" \
-    "${CONTROL_CENTER_CUB_KAFKA_TIMEOUT:-40}" \
-    -z "$ZOOKEEPER_CONNECT"
+cub kafka-ready "${CONTROL_CENTER_REPLICATION_FACTOR}" "${CONTROL_CENTER_CUB_KAFKA_TIMEOUT:-40}"

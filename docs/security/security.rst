@@ -21,7 +21,7 @@ Test Matrix
    "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
 
-For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.0.0/kafka/security.html>`_.
+For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.0.1/kafka/security.html>`_.
 
 Docker Security
 ~~~~~~~~~~~~~~~
