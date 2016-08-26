@@ -192,7 +192,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker logs schema-registry
 
-  For the next two steps, we're going to use CURL commands to talk to the Schema Registry. For the sake of simplicity, we'll  run a new Schema Registry container on the same host, where we'll be using the ``kafka-avro-console-producer`` utility.
+  For the next two steps, we're going to use CURL commands to talk to the Schema Registry. For the sake of simplicity, we'll run a new Schema Registry container on the same host, where we'll be using the ``kafka-avro-console-producer`` utility.
 
   .. sourcecode:: bash
 
