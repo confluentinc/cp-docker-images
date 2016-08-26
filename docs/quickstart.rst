@@ -299,7 +299,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control the settings.
 
-  Next, we'll create a topic for storing data the data that we're going to be sending to Kafka for this tutorial.
+  Next, we'll create a topic for storing data that we're going to be sending to Kafka for this tutorial.
 
     .. sourcecode:: bash
 
@@ -436,7 +436,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   .. sourcecode:: bash
 
     curl -X POST -H "Content-Type: application/json" \
-        --data '{"name": "quickstart-file-sink-1", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
+        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
         http://$CONNECT_HOST:28082/connectors
 
   You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/output.txt``:
