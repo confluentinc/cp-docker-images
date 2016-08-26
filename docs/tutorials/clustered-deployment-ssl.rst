@@ -1,7 +1,7 @@
+.. _clustered_deployment_ssl:
+
 Clustered Deployment using SSL
 -------------------------------
-
-
 
 Tutorial: Setting Up a Three Node Kafka Cluster with SSL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

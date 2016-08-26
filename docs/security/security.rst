@@ -1,7 +1,7 @@
 .. _security_with_docker :
 
 Security Overview
------------------
+=================
 
 TODO: provide overview of what is supported, linking to the relevant quickstarts.
 
@@ -44,8 +44,7 @@ Docker Security
   We followed the guidelines for security for Openshift to build this feature: (https://docs.openshift.org/latest/creating_images/guidelines.html#openshift-origin-specific-guidelines)
 
 
-
-
+**Table of Contents**
 
 .. toctree::
    :maxdepth: 3
