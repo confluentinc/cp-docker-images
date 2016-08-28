@@ -1,7 +1,11 @@
-package io.confluent.admin.utils;
+package io.confluent.admin.utils.cli;
 
+import io.confluent.admin.utils.ClusterStatus;
 import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.*;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.MutuallyExclusiveGroup;
+import net.sourceforge.argparse4j.inf.Namespace;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.utils.Utils;
 import org.slf4j.Logger;
@@ -13,47 +17,34 @@ import java.util.Map;
 import static net.sourceforge.argparse4j.impl.Arguments.store;
 
 /**
- * Provides two commands:
- * <p/>
- * 1. zk-ready <connectString> <timeout>
- * This command checks if the zookeeper cluster is ready to accept requests.
- * where:
- * <connectString> : Zookeeper connect string
- * <timeout> : timeout in millisecs for all operations .
- * <p>
- *
- * 2. kakfa-ready <minExpectedBrokers> <timeout> (<broker_list>or <zookeeper_connect>) <config> <security_protocol>
  * This command checks if the kafka cluster has the expected number of brokers and is ready to accept
  * requests.
  * where:
- * <config> : path to properties with client config.
- * <minExpectedBrokers> : minimum brokers to wait for.
- * <timeout> : timeout in millisecs for all operations . Operations include waiting for Kafka
- * process to bind to the port, waiting for metadata request to return and waiting for
- * <minExpectedBrokers> to appear in the metadata.
- * (<broker_list>or <zookeeper_connect>) : Either a bootstrap broker list or zookeeper connect string
- * security_protocol : Security protocol to use to connect to the broker.
+ * <config>                 : path to properties with client config.
+ * <min-expected-brokers>   : minimum brokers to wait for.
+ * <timeout>                : timeout in ms for all operations. This includes looking up metadata in Zookeeper
+ *                            or fetching metadata for the brokers.
+ * (<bootstrap-brokers>
+ *     or
+ * <zookeeper-connect>)     : Either a bootstrap broker list or zookeeper connect string
+ * <security-protocol>      : Security protocol to use to connect to the broker.
  */
-public class Main {
+public class KafkaReadyCommand {
 
-    private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static final Logger log = LoggerFactory.getLogger(KafkaReadyCommand.class);
+    public static final String KAFKA_READY = "kafka-ready";
 
     private static ArgumentParser createArgsParser() {
-        ArgumentParser root = ArgumentParsers
-                .newArgumentParser("cub")
+        ArgumentParser kafkaReady = ArgumentParsers
+                .newArgumentParser(KAFKA_READY)
                 .defaultHelp(true)
-                .description("Confluent Platform Utility Belt.");
-
-        Subparser kafkaReady = root.addSubparsers()
-                .dest("name")
-                .addParser("kafka-ready")
                 .description("Check if Kafka is ready.");
 
-        kafkaReady.addArgument("expected-brokers")
+        kafkaReady.addArgument("min-expected-brokers")
                 .action(store())
                 .required(true)
                 .type(Integer.class)
-                .metavar("EXPECTED_BROKERS")
+                .metavar("MIN_EXPECTED_BROKERS")
                 .help("Minimum number of brokers to wait for.");
 
         kafkaReady.addArgument("timeout")
@@ -70,10 +61,10 @@ public class Main {
                 .help("List of bootstrap brokers.");
 
         MutuallyExclusiveGroup kafkaOrZK = kafkaReady.addMutuallyExclusiveGroup();
-        kafkaOrZK.addArgument("--bootstrap-broker-list", "-b")
+        kafkaOrZK.addArgument("--bootstrap-brokers", "-b")
                 .action(store())
                 .type(String.class)
-                .metavar("BOOTSTRAP_BROKER_LIST")
+                .metavar("BOOTSTRAP_BROKERS")
                 .help("List of bootstrap brokers.");
 
         kafkaOrZK.addArgument("--zookeeper-connect", "-z")
@@ -89,31 +80,8 @@ public class Main {
                 .setDefault("PLAINTEXT")
                 .help("Which endpoint to connect to ? ");
 
-        Subparser zkReady = root.addSubparsers()
-                .dest("name")
-                .addParser("zk-ready")
-                .description("Check if ZK is ready.");
 
-        zkReady.addArgument("connect_string")
-                .action(store())
-                .required(true)
-                .type(String.class)
-                .metavar("CONNECT_STRING")
-                .help("Zookeeper connect string.");
-
-        zkReady.addArgument("timeout")
-                .action(store())
-                .required(true)
-                .type(Integer.class)
-                .metavar("TIMEOUT IN MS")
-                .help("Time (in ms) to wait for service to be ready.");
-
-        Subparser doc = root.addSubparsers()
-                .dest("name")
-                .addParser("doc")
-                .description("Print config docs in HTML.");
-
-        return root;
+        return kafkaReady;
     }
 
     public static void main(String[] args) {
@@ -122,35 +90,25 @@ public class Main {
         boolean success = false;
         try {
             Namespace res = parser.parseArgs(args);
-            String command = res.getString("name");
-            log.debug("Args: " + res);
+            log.debug("Arguments {}. ", res);
 
-            if (command.equals("doc")) {
-                KafkaMetadataClient.MetadataClientConfig.main(new String[]{});
-                success = true;
-            } else if (command.equals("zk-ready")) {
-                success = ClusterStatus.isZookeeperReady(
-                        res.getString("connect_string"),
-                        res.getInt("timeout"));
-            } else if (command.equals("kafka-ready")) {
+            Map<String, String> workerProps = new HashMap<>();
 
-                Map<String, String> workerProps = new HashMap<>();
-
-                if (res.getString("config") == null &&
-                        !(res.getString("security_protocol").equals("PLAINTEXT"))) {
-                    throw new IllegalArgumentException("config is required for all protocols except PLAINTEXT");
-                }
-
+            if (res.getString("config") == null &&
+                    !(res.getString("security_protocol").equals("PLAINTEXT"))) {
+                log.error("config is required for all protocols except PLAINTEXT");
+                success = false;
+            } else {
                 if (res.getString("config") != null) {
                     workerProps = Utils.propsToStringMap(Utils.loadProps(res.getString("config")));
                 }
-                if (res.getString("bootstrap_broker_list") != null) {
+                if (res.getString("bootstrap_brokers") != null) {
                     workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-                            res.getString("bootstrap_broker_list"));
+                            res.getString("bootstrap_brokers"));
                 } else {
                     String zkConnectString = res.getString("zookeeper_connect");
                     boolean zkReady = ClusterStatus.isZookeeperReady(zkConnectString, res.getInt("timeout"));
-                    if (! zkReady) {
+                    if (!zkReady) {
                         throw new RuntimeException("Could not reach zookeeper " + zkConnectString);
                     }
                     Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZookeeper(
@@ -162,7 +120,7 @@ public class Main {
 
                 }
                 success = ClusterStatus.isKafkaReady(workerProps,
-                        res.getInt("expected_brokers"),
+                        res.getInt("min_expected_brokers"),
                         res.getInt("timeout"));
             }
 
@@ -175,7 +133,7 @@ public class Main {
                 success = false;
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("Error while running kafka-ready.", e);
             success = false;
         }
 

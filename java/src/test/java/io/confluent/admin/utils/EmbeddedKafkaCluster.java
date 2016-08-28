@@ -145,8 +145,8 @@ public class EmbeddedKafkaCluster {
 
         String zkServerPrincipal = "zookeeper/localhost";
         String zkClientPrincipal = "zkclient/localhost";
-        String kakfaServerPrincipal = "kafka/localhost";
-        String kakfaClientPrincipal = "client/localhost";
+        String kafkaServerPrincipal = "kafka/localhost";
+        String kafkaClientPrincipal = "client/localhost";
 
         if (jaasFilePath == null) {
             jaasFilePath = new File(Files.createTempDirectory("sasl").toFile(), "jaas.conf");
@@ -195,10 +195,10 @@ public class EmbeddedKafkaCluster {
                 .replace("$ZK_SERVER_PRINCIPAL$", zkServerPrincipal)
                 .replace("$ZK_CLIENT_KEYTAB$", createKeytab(zkClientPrincipal))
                 .replace("$ZK_CLIENT_PRINCIPAL$", zkClientPrincipal)
-                .replace("$KAFKA_SERVER_KEYTAB$", createKeytab(kakfaServerPrincipal))
-                .replace("$KAFKA_SERVER_PRINCIPAL$", kakfaServerPrincipal)
-                .replace("$KAFKA_CLIENT_KEYTAB$", createKeytab(kakfaClientPrincipal))
-                .replace("$KAFKA_CLIENT_PRINCIPAL$", kakfaClientPrincipal);
+                .replace("$KAFKA_SERVER_KEYTAB$", createKeytab(kafkaServerPrincipal))
+                .replace("$KAFKA_SERVER_PRINCIPAL$", kafkaServerPrincipal)
+                .replace("$KAFKA_CLIENT_KEYTAB$", createKeytab(kafkaClientPrincipal))
+                .replace("$KAFKA_CLIENT_PRINCIPAL$", kafkaClientPrincipal);
 
         log.debug("JAAS Config: " + output);
 
