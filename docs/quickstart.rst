@@ -192,7 +192,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker logs schema-registry
 
-  Next, let's ``exec`` into the Schema Registry container, where we'll be using the ``kafka-avro-console-producer`` utility is located.
+  For the next two steps, we're going to use CURL commands to talk to the Schema Registry. For the sake of simplicity, we'll run a new Schema Registry container on the same host, where we'll be using the ``kafka-avro-console-producer`` utility.
 
   .. sourcecode:: bash
 
@@ -234,7 +234,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       confluentinc/cp-kafka-rest:3.0.1
 
-  For the next two steps, we're going to use CURL commands to talk to the REST Proxy.  You should be able to run these from your local machine, but that will require you to know the IP address of your Docker image.  For the sake of simplicity, we'll just exec into the Schema Registry again to run them from the host network by pointing to http://localhost:8082.  
+  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. For the sake of simplicity, we'll run a new Schema Registry container on the same host to run them from the host network by pointing to http://localhost:8082.  
 
   .. sourcecode:: bash
 
@@ -299,7 +299,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control the settings.
 
-  Next, we'll create a topic for storing data the data that we're going to be sending to Kafka for this tutorial.
+  Next, we'll create a topic for storing data that we're going to be sending to Kafka for this tutorial.
 
     .. sourcecode:: bash
 
@@ -436,7 +436,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   .. sourcecode:: bash
 
     curl -X POST -H "Content-Type: application/json" \
-        --data '{"name": "quickstart-file-sink-1", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
+        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
         http://$CONNECT_HOST:28082/connectors
 
   You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/output.txt``:
