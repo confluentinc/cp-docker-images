@@ -19,7 +19,8 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-. /etc/confluent/docker/apply-mesos-overrides
+#Ignoring Mesos override errors
+. /etc/confluent/docker/apply-mesos-overrides || true
 
 echo "===> ENV Variables ..."
 env | sort

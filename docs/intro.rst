@@ -3,8 +3,7 @@
 Introduction
 ============
 
-This section provides an overview of Confluent's Docker images for the Confluent Platform.  It includes an overview image design, quickstart tutorials, and developer instructions for extending the images.  
-
+This section provides an overview of Confluent's Docker images for the Confluent Platform.  We've included an overview of image design, a quickstart guide, advanced tutorials, and developer instructions for extending the images.  
 The images are currently available on `DockerHub <https://hub.docker.com/u/confluentinc/>`_.  Alternatively, the source files for the images are `available on Github <https://github.com/confluentinc/cp-docker-images>`_ if you would prefer to extend and/or rebuild the images and upload them to your own DockerHub repository.
 
 The images are currently only available for Confluent Platform 3.0.1.
