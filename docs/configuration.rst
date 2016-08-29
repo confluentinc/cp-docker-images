@@ -219,11 +219,49 @@ The image will then convert these environment variables to corresponding Connect
 Confluent Control Center
 ---------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example,
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in it's ZooKeeper, Kafka, and Connect configuration parameters.
 
-TODO: Sumit add example
+.. sourcecode:: bash
+
+  docker run -d \
+    --net=host \
+    --name=control-center \
+    --ulimit nofile=16384:16384 \
+    -e CONTROL_CENTER_ZOOKEEPER_CONNECT=localhost:32181 \
+    -e CONTROL_CENTER_BOOTSTRAP_SERVERS=localhost:29092 \
+    -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
+    -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
+    -v /mnt/control-center/data:/var/lib/confluent-control-center \
+    confluentinc/cp-control-center:3.0.1
+
+Docker Options
+""""""""""""""
+
+* File descriptor limit:  Control Center may require many open files so we recommend setting the file descriptor limit to at least 16384
+
+* Data persistence: the Control Center image stores it's data in the /var/lib/confluent-control-center directory. We recommend that you bind this to a volume on the host machine so that data is persisted across runs.
 
 Required Settings
 """""""""""""""""
+The following settings must be passed to run the Confluent Control Center image.
 
-TODO: Sumit add this
+``CONTROL_CENTER_ZOOKEEPER_CONNECT``
+
+  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
+
+  The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
+
+``CONTROL_CENTER_BOOTSTRAP_SERVERS``
+
+  A list of host/port pairs to use for establishing the initial connection to the Kafka cluster. The client will make use of all servers irrespective of which servers are specified here for bootstrapping; this list only impacts the initial hosts used to discover the full set of servers. This list should be in the form host1:port1,host2:port2,.... Since these servers are just used for the initial connection to discover the full cluster membership (which may change dynamically), this list need not contain the full set of servers (you may want more than one, though, in case a server is down).
+
+``CONTROL_CENTER_REPLICATION_FACTOR``
+
+  Replication factor for Control Center topics.  We recommend setting this to 3 in a production environment.
+
+Optional Settings
+"""""""""""""""""
+
+``CONTROL_CENTER_CONNECT_CLUSTER``
+
+  To enable Control Center to interact with a Kafka Connect cluster, set this parameter to the REST endpoint URL for the Kafka Connect cluster.
