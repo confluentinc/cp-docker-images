@@ -157,7 +157,7 @@ TODO: Sumit add this
 Confluent Control Center
 ---------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example,
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in it's ZooKeeper, Kafka, and Connect configuration parameters.
 
 .. sourcecode:: bash
 
@@ -185,7 +185,7 @@ The following settings must be passed to run the Confluent Control Center image.
 
 ``CONTROL_CENTER_ZOOKEEPER_CONNECT``
 
-  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
+  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
 
   The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
