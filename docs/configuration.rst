@@ -163,7 +163,7 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-kafka-connect:latest
+      confluentinc/cp-kafka-connect:3.0.1
 
 Required Settings
 """""""""""""""""
@@ -175,43 +175,43 @@ The following settings must be passed to run the Kafka Connect Docker image.
 
 ``CONNECT_GROUP_ID``
 
-  The topic to store connector and task configuration data in. This must be the same for all workers with the same ``group.id``
+  A unique string that identifies the Connect cluster group this worker belongs to.
 
 ``CONNECT_CONFIG_STORAGE_TOPIC``
 
-  The topic to store connector and task configuration data in. This must be the same for all workers with the same ``group.id``
+  The name of the topic in which to store connector and task configuration data. This must be the same for all workers with the same ``group.id``
 
 ``CONNECT_OFFSET_STORAGE_TOPIC``
 
-  The topic to store offset data for connectors in. This must be the same for all workers with the same ``group.id``
+  The name of the topic in which to store offset data for connectors. This must be the same for all workers with the same ``group.id``
 
 ``CONNECT_STATUS_STORAGE_TOPIC``
 
-  The topic to store connector offset state in. This must be the same for all workers with the same ``group.id``
+  The name of the topic in which to store state for connectors. This must be the same for all workers with the same ``group.id``
 
 ``CONNECT_KEY_CONVERTER``
 
-  Converter class for key Connect data. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+  Converter class for keys. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
 
 ``CONNECT_VALUE_CONVERTER``
 
-  Converter class for value Connect data. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+  Converter class for values. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
 
 ``CONNECT_INTERNAL_KEY_CONVERTER``
 
-  Converter class for internal key Connect data that implements the ``Converter`` interface.
+  Converter class for internal keys that implements the ``Converter`` interface.
 
 ``CONNECT_INTERNAL_VALUE_CONVERTER``
 
-  Converter class for internal value Connect data that implements the ``Converter`` interface.
+  Converter class for internal values that implements the ``Converter`` interface.
 
 ``CONNECT_REST_ADVERTISED_HOST_NAME``
 
-  Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
+  Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect REST API.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
 
 Optional Settings
 """""""""""""""""
-All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
+All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
 
 The image will then convert these environment variables to corresponding Connect config variables.
 
