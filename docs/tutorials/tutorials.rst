@@ -12,4 +12,5 @@ In this section, we provide more advanced tutorials for using specific Confluent
 
    clustered-deployment
    clustered-deployment-ssl
+   clustered-deployment-sasl
    connect-avro-jdbc
