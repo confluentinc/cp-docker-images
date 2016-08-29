@@ -3,13 +3,13 @@
 Configuration
 =============
 
-The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.  
+The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.
 
-Some configuration variables are required when starting up the Docker images.  We have outlined those variables below for each component along with an example of how to pass them.  For a full list of all available configuration options for each CP component, you should refer to the respective documentation.  
+Some configuration variables are required when starting up the Docker images.  We have outlined those variables below for each component along with an example of how to pass them.  For a full list of all available configuration options for each CP component, you should refer to the respective documentation.
 
 	.. note::
 
-		As you will notice, the configuration variable names have prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.   
+		As you will notice, the configuration variable names have prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.
 
 Zookeeper
 ---------
@@ -17,7 +17,7 @@ Zookeeper
 The Zookeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` you'd run the command below:
 
 	.. sourcecode:: bash
-		
+
 		docker run -d \
       --net=host \
       --name=zookeeper \
@@ -31,7 +31,7 @@ Required Settings
 
 ``ZOOKEEPER_CLIENT_PORT``
 
-  This field is always required.  Tells Zookeeper where to listen for connections by clients such as Kafka. 
+  This field is always required.  Tells Zookeeper where to listen for connections by clients such as Kafka.
 
 ``ZOOKEEPER_TICK_TIME``
 
@@ -66,7 +66,7 @@ The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) s
 
   .. note::
 
-    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host. 
+    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host.
 
 Required Settings
 """""""""""""""""
@@ -77,7 +77,7 @@ Required Settings
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
-  Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.  
+  Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
 
 Schema Registry
 ---------------
@@ -93,7 +93,7 @@ For the Schema Registry image, use variables prefixed with ``SCHEMA_REGISTRY_`` 
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
       -e SCHEMA_REGISTRY_DEBUG=true \
-      confluentinc/cp-schema-registry:3.0.1 
+      confluentinc/cp-schema-registry:3.0.1
 
 Required Settings
 """""""""""""""""
@@ -145,14 +145,76 @@ The following settings must be passed to run the REST Proxy Docker image.
 Kafka Connect
 ---------------
 
-The Kafka Connect image uses variables prefixed with ``KAFKA_CONNECT_`` with an underscore (_) separating each word instead of periods. As an example....
+The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` convertor, you'd run the following command:
 
-TODO: Sumit add example
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=kafka-connect \
+      --net=host \
+      -e CONNECT_BOOTSTRAP_SERVERS=localhost:29092 \
+      -e CONNECT_REST_PORT=28082 \
+      -e CONNECT_GROUP_ID="quickstart" \
+      -e CONNECT_CONFIG_STORAGE_TOPIC="quickstart-config" \
+      -e CONNECT_OFFSET_STORAGE_TOPIC="quickstart-offsets" \
+      -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
+      -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
+      confluentinc/cp-kafka-connect:latest
 
 Required Settings
 """""""""""""""""
+The following settings must be passed to run the Kafka Connect Docker image.
 
-TODO: Sumit add this
+``CONNECT_BOOTSTRAP_SERVERS``
+
+  A unique string that identifies the Connect cluster group this worker belongs to.
+
+``CONNECT_GROUP_ID``
+
+  The topic to store connector and task configuration data in. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_CONFIG_STORAGE_TOPIC``
+
+  The topic to store connector and task configuration data in. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_OFFSET_STORAGE_TOPIC``
+
+  The topic to store offset data for connectors in. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_STATUS_STORAGE_TOPIC``
+
+  The topic to store connector offset state in. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_KEY_CONVERTER``
+
+  Converter class for key Connect data. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+
+``CONNECT_VALUE_CONVERTER``
+
+  Converter class for value Connect data. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+
+``CONNECT_INTERNAL_KEY_CONVERTER``
+
+  Converter class for internal key Connect data that implements the ``Converter`` interface.
+
+``CONNECT_INTERNAL_VALUE_CONVERTER``
+
+  Converter class for internal value Connect data that implements the ``Converter`` interface.
+
+``CONNECT_REST_ADVERTISED_HOST_NAME``
+
+  Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
+
+Optional Settings
+"""""""""""""""""
+All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
+
+The image will then convert these environment variables to corresponding Connect config variables.
+
 
 Confluent Control Center
 ---------------
@@ -165,6 +227,3 @@ Required Settings
 """""""""""""""""
 
 TODO: Sumit add this
-
-
-
