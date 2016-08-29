@@ -4,17 +4,16 @@ Clustered Deployment Using SSL
 -------------------------------
 
 In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
->>>>>>> Stashed changes:docs/tutorials/clustered-deployment-ssl.rst
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+    It is worth noting that we will be configuring Kafka and Zookeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose_ssl>`_.
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater. 
+To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
@@ -26,7 +25,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
 1. Create and configure the Docker machine.
 
@@ -129,7 +128,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.  
+4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
 
  .. sourcecode:: bash
 
