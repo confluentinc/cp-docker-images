@@ -43,7 +43,7 @@ ENV CONFLUENT_DEB_REPO="http://s3-us-west-2.amazonaws.com/staging-confluent-pack
 ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
 
 # This affects how strings in Java class files are interpreted.  We want UTF-8 and this is the only locale in the
-# base image supports it
+# base image that supports it
 ENV LANG="C.UTF-8"
 
 RUN echo "===> Updating debian ....." \
