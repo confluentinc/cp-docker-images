@@ -535,7 +535,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --rm \
       -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.0.1.jar \
       confluentinc/cp-kafka-connect:3.0.1 \
-      bash -xc 'seq 10000 | kafka-console-producer --broker-list localhost:29092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
+      bash -c 'seq 10000 | kafka-console-producer --broker-list localhost:29092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
 
   This command will use the built-in Kafka Console Producer to produce 10000 simple messages to the topic. Upon running it, you should see the following:
 
@@ -552,7 +552,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --rm \
       -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.0.1.jar \
       confluentinc/cp-kafka-connect:3.0.1 \
-      bash -xc 'echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor" > /tmp/consumer.props; exec kafka-console-consumer --new-consumer --bootstrap-server localhost:29092 --topic c3-test --consumer.config /tmp/consumer.props --from-beginning --max-messages=10000'
+      bash -c 'echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor" > /tmp/consumer.props; exec kafka-console-consumer --new-consumer --bootstrap-server localhost:29092 --topic c3-test --consumer.config /tmp/consumer.props --from-beginning --max-messages=10000'
 
   If everything is working as expected, each of the original messages we produced should be written back out:
 
