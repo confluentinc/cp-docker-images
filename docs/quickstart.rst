@@ -198,7 +198,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.1 bash
 
-  Direct the utility at the local Kafka cluster, tell it to write to the topic ``foo``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
+  Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
   .. sourcecode:: bash
 
