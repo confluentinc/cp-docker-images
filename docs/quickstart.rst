@@ -515,7 +515,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Initially, the Stream Monitoring UI will have no data.
 
-  TODO - show screen shot
+  .. figure:: images/c3-quickstart-init.png
+   :scale: 50%
+   :align: center
+
+   Confluent Control Center Initial View
 
   Next, we'll run the console producer and consumer with monitoring interceptors configured and see the data in Control Center.  First we need to create a topic for testing.
 
@@ -565,9 +569,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   After 15 seconds have passed, you should see this activity reflected in the Control Center UI.
 
-  TODO - show screen shot
+  .. figure:: images/c3-quickstart-console-monitoring.png
+   :scale: 50%
+   :align: center
 
-  TODO - run the consumer again and see expected consumption change??
+   Confluent Control Center Stream Monitoring Console Clients
 
   Next we'll see how to monitor Kafka Connect using the monitoring interceptors.  Stop the Kafka Connect container that's already running.
 
@@ -614,7 +620,17 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Check the Control Center UI and should see both the source and sink running in Kafka Connect.
 
-  TODO - screen shot
+  .. figure:: images/c3-quickstart-connect-view-src.png
+   :scale: 50%
+   :align: center
+
+   Confluent Control Center showing a Connect source
+
+  .. figure:: images/c3-quickstart-connect-view-sink.png
+   :scale: 50%
+   :align: center
+
+   Confluent Control Center showing a Connect sink
 
   We will now add more data to the source file so that it gets loaded into Kafka and dumped back out to the output file.  If you are using docker-machine then you will need to SSH into the VM to run this commands by running ``docker-machine ssh <your machine name>`` and run the command as root.
 
@@ -624,7 +640,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   After about 15 seconds, you should start to see stream monitoring data from Kafka Connect in the Control Center UI.
 
-  TODO - screen shot
+  .. figure:: images/c3-quickstart-connect-monitoring.png
+   :scale: 50%
+   :align: center
+
+   Confluent Control Center monitoring Kafka Connect
 
 9. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and Zookeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
 
