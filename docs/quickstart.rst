@@ -636,7 +636,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    seq 10000 > /tmp/quickstart/file/input.txt
+    seq 10000 >> /tmp/quickstart/file/input.txt
 
   After about 15 seconds, you should start to see stream monitoring data from Kafka Connect in the Control Center UI.
 
