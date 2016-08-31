@@ -9,10 +9,10 @@ log4j Log Levels
 To change the default logging levels or add new logging levels:
 
 1. Change the ``{COMPONENT}_LOG4J_ROOT_LOGLEVEL`` to change ``rootLogger`` loglevel.
-2. Add or override default loggers by using ``{COMPONENT}_LOG4J_LOGGERS`` environment variable. This variable accepts the comma seperated values of the logger config. For e.g. to override the log levels of controller and request loggers , use ``KAFKA_LOG4J_LOGGERS="kafka.controller=WARN,kafka.foo.bar=DEBUG"``
+2. Add or override default loggers by using ``{COMPONENT}_LOG4J_LOGGERS`` environment variable. This variable accepts the comma seperated values of the logger config. For example, to override the log levels of controller and request loggers , use ``KAFKA_LOG4J_LOGGERS="kafka.controller=WARN,kafka.foo.bar=DEBUG"``
 3. To change the logging levels for the tools, use the ``{COMPONENT}_LOG4J_TOOLS_ROOT_LOGLEVEL``.
 
-Note: The component names table lists the ``{COMPONENT}`` names for each component.
+Note: The ``Component Names`` table lists the ``{COMPONENT}`` names for each component.
 
 A full example for Kafka is shown below:
 
