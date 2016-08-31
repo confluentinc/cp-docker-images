@@ -35,13 +35,14 @@ ENV CONFLUENT_MINOR_VERSION="0"
 ENV CONFLUENT_PATCH_VERSION="1"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
-#ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
-#TODO - remove this once the packages are released
-ENV CONFLUENT_DEB_REPO="http://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.0.1"
+ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
 
+# This affects how strings in Java class files are interpreted.  We want UTF-8 and this is the only locale in the
+# base image that supports it
+ENV LANG="C.UTF-8"
 
 RUN echo "===> Updating debian ....." \
     && apt-get -qq update \
