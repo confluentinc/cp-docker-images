@@ -17,36 +17,13 @@ services:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SERVERS: abc:111:111
-    labels:
-    - io.confluent.docker.testing=true
-
-  failing-config-init-limit:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SERVERS: abc:111:111
-      ZOOKEEPER_SERVER_ID: 1
-    labels:
-    - io.confluent.docker.testing=true
-
-  failing-config-sync-limit:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SERVERS: abc:111:111
-      ZOOKEEPER_INIT_LIMIT: 20
-      ZOOKEEPER_SERVER_ID: 1
     labels:
     - io.confluent.docker.testing=true
 
   default-config:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     labels:
     - io.confluent.docker.testing=true
