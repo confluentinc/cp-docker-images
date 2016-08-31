@@ -326,7 +326,6 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        docker-compose logs zookeeper-1
 
-
    You should see messages like the following:
 
   .. sourcecode:: bash
