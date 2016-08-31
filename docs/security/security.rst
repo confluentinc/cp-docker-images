@@ -5,8 +5,6 @@ Security Overview
 
 Using security is optional - non-secured clusters are supported, as well as a mix of authenticated, unauthenticated, encrypted and non-encrypted clients.  The following security features are currently supported on the Confluent Platform Docker images:
 
-Test Matrix
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. csv-table::
    :header: "Component", "Tests"
    :widths: 20, 20
