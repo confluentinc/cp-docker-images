@@ -2,11 +2,10 @@
 clientPort={{ env['ZOOKEEPER_CLIENT_PORT'] }}
 dataDir=/var/lib/zookeeper/data
 dataLogDir=/var/lib/zookeeper/log
-tickTime={{ env['ZOOKEEPER_TICK_TIME'] }}
-
 
 {# optional properties #}
 {% set other_props = {
+  'ZOOKEEPER_TICK_TIME': 'tickTime',
   'ZOOKEEPER_GLOBAL_OUTSTANDING_LIMIT' : 'globalOutstandingLimit',
   'ZOOKEEPER_PRE_ALLOC_SIZE': 'preAllocSize',
   'ZOOKEEPER_SNAP_COUNT': 'snapCount',

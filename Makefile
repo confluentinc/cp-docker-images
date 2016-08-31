@@ -72,6 +72,7 @@ push-public: clean build-debian
         echo "\n Pushing cp-$${component}  \n==========================================\n "; \
         docker push confluentinc/cp-$${component}:latest; \
 				docker push confluentinc/cp-$${component}:${VERSION}; \
+				docker push confluentinc/cp-$${component}:${CP_VERSION}; \
   done
 
 clean: clean-containers clean-images
