@@ -5,16 +5,16 @@ Configuration
 
 The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.
 
-Some configuration variables are required when starting up the Docker images.  We have outlined those variables below for each component along with an example of how to pass them.  For a full list of all available configuration options for each CP component, you should refer to the respective documentation.
+Some configuration variables are required when starting up the Docker images.  We have outlined those variables below for each component along with an example of how to pass them.  For a full list of all available configuration options for each Confluent Platform component, you should refer to their respective documentation.
 
 	.. note::
 
-		As you will notice, the configuration variable names have prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.
+		The configuration variable names are prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.
 
-Zookeeper
+ZooKeeper
 ---------
 
-The Zookeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` you'd run the command below:
+The ZooKeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
 
 	.. sourcecode:: bash
 
@@ -31,19 +31,7 @@ Required Settings
 
 ``ZOOKEEPER_CLIENT_PORT``
 
-  This field is always required.  Tells Zookeeper where to listen for connections by clients such as Kafka.
-
-``ZOOKEEPER_TICK_TIME``
-
-  This field is always required.  The length of a single tick, which is the basic time unit used by ZooKeeper, as measured in milliseconds. It is used to regulate heartbeats, and timeouts. For example, the minimum session timeout will be two ticks.
-
-``ZOOKEEPER_SYNC_LIMIT``
-
-  Only required when running in clustered mode.  Amount of time, in ticks (see ``ZOOKEEPER_TICK_TIME``), to allow followers to sync with ZooKeeper. If followers fall too far behind a leader, they will be dropped.
-
-``ZOOKEEPER_INIT_LIMIT``
-
-  Only required when running in clustered mode. Amount of time, in ticks (see ``ZOOKEEPER_TICK_TIME``), to allow followers to connect and sync to a leader. Increased this value as needed, if the amount of data managed by ZooKeeper is large.
+  This field is always required.  Tells ZooKeeper where to listen for connections by clients such as Kafka.
 
 ``ZOOKEEPER_SERVER_ID``
 
@@ -73,7 +61,7 @@ Required Settings
 
 ``KAFKA_ZOOKEEPER_CONNECT``
 
-  Tells Kafka how to get in touch with Zookeeper.
+  Tells Kafka how to get in touch with ZooKeeper.
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
@@ -100,7 +88,7 @@ Required Settings
 
 ``SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL``
 
-  Zookeeper URL for the Kafka cluster.
+  ZooKeeper URL for the Kafka cluster.
 
 ``SCHEMA_REGISTRY_LISTENERS``
 
@@ -145,7 +133,7 @@ The following settings must be passed to run the REST Proxy Docker image.
 Kafka Connect
 ---------------
 
-The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` convertor, you'd run the following command:
+The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
 
   .. sourcecode:: bash
 
@@ -219,7 +207,7 @@ The image will then convert these environment variables to corresponding Connect
 Confluent Control Center
 ---------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in it's ZooKeeper, Kafka, and Connect configuration parameters.
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
 
 .. sourcecode:: bash
 
@@ -239,7 +227,7 @@ Docker Options
 
 * File descriptor limit:  Control Center may require many open files so we recommend setting the file descriptor limit to at least 16384
 
-* Data persistence: the Control Center image stores it's data in the /var/lib/confluent-control-center directory. We recommend that you bind this to a volume on the host machine so that data is persisted across runs.
+* Data persistence: the Control Center image stores its data in the /var/lib/confluent-control-center directory. We recommend that you bind this to a volume on the host machine so that data is persisted across runs.
 
 Required Settings
 """""""""""""""""
