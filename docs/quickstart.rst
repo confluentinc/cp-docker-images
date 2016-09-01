@@ -50,10 +50,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --net=host \
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
-        -e ZOOKEEPER_TICK_TIME=2000 \
         confluentinc/cp-zookeeper:3.0.1
 
-  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.1`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the two required parameters for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT`` and ``ZOOKEEPER_TICK_TIME``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `go to this link that is yet to be created <addlink.com>`_.
+  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.1`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `go to this link that is yet to be created <addlink.com>`_.
 
   Now that we've attempted to start Zookeeper, we'll check the logs to see the server has booted up successfully by running the following command:
 
@@ -145,7 +144,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.0.1 \
-      bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
+      bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
 
   This command will use the built-in Kafka Console Producer to produce 42 simple messages to the topic. Upon running it, you should see the following:
 
@@ -202,7 +201,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    usr/bin/kafka-avro-console-producer \
+    /usr/bin/kafka-avro-console-producer \
       --broker-list localhost:29092 --topic bar \
       --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}]}'
 
@@ -234,13 +233,13 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       confluentinc/cp-kafka-rest:3.0.1
 
-  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. For the sake of simplicity, we'll run a new Schema Registry container on the same host to run them from the host network by pointing to http://localhost:8082.
+  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. For the sake of simplicity, the Schema Registry and REST Proxy containers on same host with the REST Proxy listening at http://localhost:8082.
 
   .. sourcecode:: bash
 
     docker run -it --net=host --rm confluentinc/cp-schema-registry:3.0.1 bash
 
-  Next, we'll need to create a consumer for Avro data, starting at the beginning of the log for our topic, ``bar``.  As you can see in the startup command, we passed the ``KAFKA_REST_LISTENERS`` to ensure that the REST Proxy will be listening on port ``8082``.
+  Next, we'll need to create a consumer for Avro data, starting at the beginning of the log for our topic, ``bar``.
 
   .. sourcecode:: bash
 
@@ -267,9 +266,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     [{"key":null,"value":{"f1":"value1"},"partition":0,"offset":0},{"key":null,"value":{"f1":"value2"},"partition":0,"offset":1},{"key":null,"value":{"f1":"value3"},"partition":0,"offset":2}]
 
-7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and write it back to a file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our tutorial on using a JDBC connector with avro data <connect_quickstart_avro_jdbc.html>`_.
+7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and writing that data to a new file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our tutorial on using a JDBC connector with avro data <connect_quickstart_avro_jdbc.html>`_.
 
-  First, let's start up Kafka Connect.  Connect stores config, status, and offsets of the connectors in Kafka topics. We will create these topics now.  We already have Kafka up and running from the steps above.
+  First, let's start up Kafka Connect.  Connect stores config, status, and internal offsets for connectors in Kafka topics. We will create these topics now.  We already have Kafka up and running from the steps above.
 
   .. sourcecode:: bash
 
@@ -297,7 +296,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control the settings.
+    It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control settings such as replication factor and number of partitions.
 
   Next, we'll create a topic for storing data that we're going to be sending to Kafka for this tutorial.
 
@@ -320,7 +319,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        confluentinc/cp-kafka:3.0.1 \
        kafka-topics --describe --zookeeper localhost:32181
 
-  For this example, we'll create File Connectors and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. You may also need to run the command as root.
+  For this example, we'll create a FileSourceConenctor, a FileSinkConnector and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. You may also need to run the command as root.
 
   First, let's create the directory where we'll store the input and output data files:
 
@@ -539,7 +538,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --rm \
       -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.0.1.jar \
       confluentinc/cp-kafka-connect:3.0.1 \
-      bash -c 'seq 10000 | kafka-console-producer --broker-list localhost:29092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
+      bash -c 'seq 10000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
 
   This command will use the built-in Kafka Console Producer to produce 10000 simple messages to the topic. Upon running it, you should see the following:
 
