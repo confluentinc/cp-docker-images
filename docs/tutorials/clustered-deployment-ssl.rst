@@ -7,7 +7,7 @@ In this section, we provide a tutorial for running a secure three-node Kafka clu
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and Zookeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+    It is worth noting that we will be configuring Kafka and Zookeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -95,7 +95,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
          confluentinc/cp-zookeeper:3.0.1
 
-  Check the logs to see the broker has booted up successfully
+  Check the logs to see the Zookeeper server has booted up successfully
 
   .. sourcecode:: bash
 
@@ -293,14 +293,21 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-ssl
 
-
-2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
+  Set the environment variable for secrets directory. This is used in the compose file.
 
   .. sourcecode:: bash
 
-       docker-compose up
+    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
 
-  In another terminal window, go to the same directory (kafka-cluster).  Before we move on, let's make sure the services are up and running:
+
+2. Start Zookeeper and Kafka
+
+  .. sourcecode:: bash
+
+       docker-compose create
+       docker-compose start
+
+  Before we move on, let's make sure the services are up and running:
 
   .. sourcecode:: bash
 
@@ -323,7 +330,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-      docker-compose log zookeeper-1
+      docker-compose logs zookeeper-1
 
    You should see messages like the following:
 
