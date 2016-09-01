@@ -691,7 +691,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    .. sourcecode:: bash
 
-       docker-compose log zookeeper | grep -i binding
+       docker-compose logs zookeeper | grep -i binding
 
    You should see the following in your terminal window:
 
@@ -703,7 +703,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    .. sourcecode:: bash
 
-       docker-compose log kafka | grep -i started
+       docker-compose logs kafka | grep -i started
 
    You should see message a message that looks like the following:
 
