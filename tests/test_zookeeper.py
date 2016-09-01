@@ -55,10 +55,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_required_config_failure(self):
         self.assertTrue("ZOOKEEPER_CLIENT_PORT is required." in self.cluster.service_logs("failing-config", stopped=True))
-        self.assertTrue("ZOOKEEPER_TICK_TIME is required." in self.cluster.service_logs("failing-config-ticktime", stopped=True))
         self.assertTrue("ZOOKEEPER_SERVER_ID is required." in self.cluster.service_logs("failing-config-server-id", stopped=True))
-        self.assertTrue("ZOOKEEPER_INIT_LIMIT is required." in self.cluster.service_logs("failing-config-init-limit", stopped=True))
-        self.assertTrue("ZOOKEEPER_SYNC_LIMIT is required." in self.cluster.service_logs("failing-config-sync-limit", stopped=True))
 
     def test_default_config(self):
         self.is_zk_healthy_for_service("default-config", 2181)
@@ -67,7 +64,6 @@ class ConfigTest(unittest.TestCase):
         expected = """clientPort=2181
             dataDir=/var/lib/zookeeper/data
             dataLogDir=/var/lib/zookeeper/log
-            tickTime=2000
             """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
@@ -99,14 +95,13 @@ class ConfigTest(unittest.TestCase):
         expected = """clientPort=22181
                 dataDir=/var/lib/zookeeper/data
                 dataLogDir=/var/lib/zookeeper/log
-                tickTime=5555
 
-
-                autopurge.snapRetainCount=4
-                quorumListenOnAllIPs=false
                 initLimit=25
                 autopurge.purgeInterval=2
                 syncLimit=20
+                autopurge.snapRetainCount=4
+                tickTime=5555
+                quorumListenOnAllIPs=false
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
@@ -152,12 +147,11 @@ class ConfigTest(unittest.TestCase):
         expected = """clientPort=22181
                     dataDir=/var/lib/zookeeper/data
                     dataLogDir=/var/lib/zookeeper/log
-                    tickTime=5555
 
-
-                    quorumListenOnAllIPs=false
                     initLimit=25
                     syncLimit=20
+                    tickTime=5555
+                    quorumListenOnAllIPs=false
                     """
         self.assertTrue(zk_props.translate(None, string.whitespace) == expected.translate(None, string.whitespace))
 
