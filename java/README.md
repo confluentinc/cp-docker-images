@@ -17,7 +17,7 @@ This command tries to connect to the cluster and waits for events which signify 
 | Yes  |SyncConnected, SaslAuthenticated  |
 
 **kafka-ready**
-This command sends a metadata query to the broker and verifies that expected no. of brokers are present.
+This command sends a metadata query to the broker and verifies that expected number of brokers are present.
 
 
 ##How to package / run ?

@@ -61,16 +61,16 @@ public class KafkaReadyCommand {
                 .help("List of bootstrap brokers.");
 
         MutuallyExclusiveGroup kafkaOrZK = kafkaReady.addMutuallyExclusiveGroup();
-        kafkaOrZK.addArgument("--bootstrap-brokers", "-b")
+        kafkaOrZK.addArgument("--bootstrap-servers", "-b")
                 .action(store())
                 .type(String.class)
-                .metavar("BOOTSTRAP_BROKERS")
+                .metavar("BOOTSTRAP_SERVERS")
                 .help("List of bootstrap brokers.");
 
         kafkaOrZK.addArgument("--zookeeper-connect", "-z")
                 .action(store())
                 .type(String.class)
-                .metavar("ZOOKEEPER_CONNECT_STRING")
+                .metavar("ZOOKEEPER_CONNECT")
                 .help("Zookeeper connect string.");
 
         kafkaReady.addArgument("--security-protocol", "-s")

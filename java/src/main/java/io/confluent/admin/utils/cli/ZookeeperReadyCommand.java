@@ -13,8 +13,8 @@ import static net.sourceforge.argparse4j.impl.Arguments.store;
 /**
  * This command checks if the zookeeper cluster is ready to accept requests.
  * where:
- * <connect-string> : Zookeeper connect string
- * <timeout>        : timeout in millisecs for all operations.
+ * <zookeeper_connect>  : Zookeeper connect string
+ * <timeout>            : timeout in millisecs for all operations.
  */
 public class ZookeeperReadyCommand {
 
@@ -27,18 +27,18 @@ public class ZookeeperReadyCommand {
                 .defaultHelp(true)
                 .description("Check if ZK is ready.");
 
-        zkReady.addArgument("connect_string")
+        zkReady.addArgument("zookeeper_connect")
                 .action(store())
                 .required(true)
                 .type(String.class)
-                .metavar("CONNECT_STRING")
+                .metavar("ZOOKEEPER_CONNECT")
                 .help("Zookeeper connect string.");
 
         zkReady.addArgument("timeout")
                 .action(store())
                 .required(true)
                 .type(Integer.class)
-                .metavar("TIMEOUT IN MS")
+                .metavar("TIMEOUT_IN_MS")
                 .help("Time (in ms) to wait for service to be ready.");
 
         return zkReady;

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +36,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static org.apache.kafka.common.utils.Utils.sleep;
+
 /**
  * Checks status of Zookeeper / Kafka cluster.
  */
 public class ClusterStatus {
-    private static final Logger log = LoggerFactory.getLogger(ClusterStatus.class);
 
+    private static final Logger log = LoggerFactory.getLogger(ClusterStatus.class);
+    public static final String JAVA_SECURITY_AUTH_LOGIN_CONFIG = "java.security.auth.login.config";
+    public static final String BROKERS_IDS_PATH = "/brokers/ids";
+    public static final int BROKER_METADATA_REQUEST_BACKOFF_MS = 1000;
 
     /**
      * Checks if the zookeeper cluster is ready to accept requests.
@@ -57,10 +63,10 @@ public class ClusterStatus {
             CountDownLatch waitForConnection = new CountDownLatch(1);
 
             boolean isSASLEnabled = false;
-            if (System.getProperty("java.security.auth.login.config", null) != null) {
+            if (System.getProperty(JAVA_SECURITY_AUTH_LOGIN_CONFIG, null) != null) {
                 isSASLEnabled = true;
                 log.info("SASL is enabled. java.security.auth.login.config={}",
-                        System.getProperty("java.security.auth.login.config"));
+                        System.getProperty(JAVA_SECURITY_AUTH_LOGIN_CONFIG));
             }
             ZookeeperConnectionWatcher connectionWatcher =
                     new ZookeeperConnectionWatcher(waitForConnection, isSASLEnabled);
@@ -118,7 +124,7 @@ public class ClusterStatus {
             // returning the brokers. So, wait until expected brokers are present
             // or the time out expires.
             try {
-                brokers = adminClient.findAllBrokers(timeoutMs);
+                brokers = adminClient.findAllBrokers((int) remainingWaitMs);
                 log.debug("Broker list: {}", (brokers != null ? brokers : "[]"));
                 if ((brokers != null) && (brokers.size() >= minBrokerCount)) {
                     return true;
@@ -128,12 +134,7 @@ public class ClusterStatus {
                 // Swallow exceptions because we want to retry until timeoutMs expires.
             }
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                // Swallow exception because we want to retry until timeoutMs expires.
-                Thread.currentThread().interrupt();
-            }
+            sleep(Math.min(BROKER_METADATA_REQUEST_BACKOFF_MS, remainingWaitMs));
 
             log.info("Expected {} brokers but found only {}. Trying to query Kafka for metadata again ...",
                     minBrokerCount,
@@ -142,11 +143,10 @@ public class ClusterStatus {
             remainingWaitMs = timeoutMs - elapsed;
         }
 
-        if (brokers == null || brokers.size() < minBrokerCount)
-            log.error("Expected {} brokers but found only {}. Brokers found {}.",
-                    minBrokerCount,
-                    brokers == null ? 0 : brokers.size(),
-                    brokers != null ? brokers : "[]");
+        log.error("Expected {} brokers but found only {}. Brokers found {}.",
+                minBrokerCount,
+                brokers == null ? 0 : brokers.size(),
+                brokers != null ? brokers : "[]");
 
         return false;
     }
@@ -171,17 +171,17 @@ public class ClusterStatus {
             boolean isBrokerRegisted = isKafkaRegisteredInZookeeper(zookeeper, timeoutMs);
 
             if (!isBrokerRegisted) {
-                return new ArrayList<>();
+                return Collections.emptyList();
             }
             final List<String> brokers = getRawKafkaMetadataFromZK(zookeeper, timeoutMs);
 
             // Get metadata for brokers.
             List<String> brokerMetadata = new ArrayList<>();
             for (String broker : brokers) {
-                brokerMetadata.add(new String(zookeeper.getData("/brokers/ids/" + broker, false, null)));
+                String brokerIdPath = String.format("%s/%s", BROKERS_IDS_PATH, broker);
+                brokerMetadata.add(new String(zookeeper.getData(brokerIdPath, false, null)));
             }
             return brokerMetadata;
-
         } finally {
             if (zookeeper != null) {
                 try {
@@ -212,7 +212,7 @@ public class ClusterStatus {
         // 2. ChildrenCallback gets a callback with children present (this happens when node has
         //    children when the call is made) .
         final List<String> brokers = new CopyOnWriteArrayList<>();
-        zookeeper.getChildren("/brokers/ids",
+        zookeeper.getChildren(BROKERS_IDS_PATH,
                 (event) -> {
                     log.debug("Got event when checking for children of /brokers/ids. type={} path={}",
                             event.getType(), event.getPath());
@@ -243,7 +243,7 @@ public class ClusterStatus {
             // present. In that case, the ChildrenCallback will be called with an empty children list and we will wait
             // for the NodeChildren event to be fired. At this point, this has happened and we can the children
             // safely using a sync call.
-            zookeeper.getChildren("/brokers/ids", false, null).forEach((child) -> brokers.add(child));
+            zookeeper.getChildren(BROKERS_IDS_PATH, false, null).forEach((child) -> brokers.add(child));
         }
         return brokers;
     }
@@ -262,7 +262,7 @@ public class ClusterStatus {
         // 1. node created event is triggered (this happens when /brokers/ids is created after the call is made).
         // 2. StatCallback gets a non-null callback (this happens when /brokers/ids exists when the call is made) .
         CountDownLatch kafkaRegistrationSignal = new CountDownLatch(1);
-        zookeeper.exists("/brokers/ids",
+        zookeeper.exists(BROKERS_IDS_PATH,
                 (event) -> {
                     log.debug("Got event when checking for existence of /brokers/ids. type={} path={}"
                             , event.getType(), event.getPath());
@@ -304,7 +304,7 @@ public class ClusterStatus {
         CountDownLatch waitForConnection = new CountDownLatch(1);
         ZooKeeper zookeeper;
         boolean isSASLEnabled = false;
-        if (System.getProperty("java.security.auth.login.config", null) != null) {
+        if (System.getProperty(JAVA_SECURITY_AUTH_LOGIN_CONFIG, null) != null) {
             isSASLEnabled = true;
         }
         ZookeeperConnectionWatcher connectionWatcher =
