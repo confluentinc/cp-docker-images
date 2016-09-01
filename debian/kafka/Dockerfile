@@ -27,7 +27,7 @@ ENV COMPONENT=kafka
 
 # primary
 EXPOSE 9092
-ENV KAFKA_VERSION="0.10.0.0"
+ENV KAFKA_VERSION="0.10.0.1"
 
 RUN echo "===> installing ${COMPONENT}..." \
     && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \

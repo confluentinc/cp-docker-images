@@ -36,6 +36,7 @@ def pull_image(image_name):
 def run_docker_command(timeout=None, **kwargs):
     pull_image(kwargs["image"])
     client = docker.from_env(assert_hostname=False)
+    kwargs["labels"] = {"io.confluent.docker.testing": "true"}
     container = TestContainer.create(client, **kwargs)
     container.start()
     container.wait(timeout)

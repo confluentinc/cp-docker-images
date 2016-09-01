@@ -9,7 +9,6 @@ services:
     networks:
     - zk
     environment:
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
     - 22181:2181
@@ -22,7 +21,6 @@ services:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 32181
     labels:
     - io.confluent.docker.testing=true
@@ -32,7 +30,6 @@ services:
     networks:
     - zk
     environment:
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 2181
       KAFKA_JMX_PORT: 9999
     ports:
@@ -47,7 +44,6 @@ services:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
-      ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_CLIENT_PORT: 52181
       KAFKA_JMX_PORT: 39999
     labels:
