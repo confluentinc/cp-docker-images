@@ -48,7 +48,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use this ``create-certs.sh`` in ``examples/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use this ``create-certs.sh`` in ``examples/kafka-cluster-ssl/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
   For this example, we will use the credentials available in the examples/secrets directory in cp-docker-images. See "security" section for more details on security.
 
