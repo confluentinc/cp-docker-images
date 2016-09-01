@@ -30,7 +30,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
-1. Create and configure  the Docker Machine.
+1. Create and configure the Docker Machine.
 
   .. sourcecode:: bash
 
@@ -653,7 +653,19 @@ Getting Started with Docker Compose
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services
 
-1. Clone the CP Docker Images Github Repository.
+1. Create and configure the Docker Machine (OS X only).
+
+  .. sourcecode:: bash
+
+    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+
+  Next, configure your terminal window to attach it to your new Docker Machine:
+
+  .. sourcecode:: bash
+
+    eval $(docker-machine env confluent)
+
+2. Clone the CP Docker Images Github Repository.
 
   .. sourcecode:: bash
 
@@ -664,10 +676,12 @@ Before you get started, you will first need to install `Docker <https://docs.doc
   .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-single-node
 
-2. Start Zookeeper and Kafka using Docker Compose ``start`` and ``run`` commands.
+
+3. Start Zookeeper and Kafka using Docker Compose ``start`` and ``run`` commands.
 
    .. sourcecode:: bash
 
+       docker-compose create
        docker-compose start
        docker-compose run
 
@@ -710,4 +724,4 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 
-3. Follow step 4 in "Getting Started with Docker Client" guide above to test the broker.
+4. Follow step 4 in "Getting Started with Docker Client" guide above to test the broker.
