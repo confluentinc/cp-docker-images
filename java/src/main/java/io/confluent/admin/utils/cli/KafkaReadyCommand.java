@@ -102,9 +102,9 @@ public class KafkaReadyCommand {
                 if (res.getString("config") != null) {
                     workerProps = Utils.propsToStringMap(Utils.loadProps(res.getString("config")));
                 }
-                if (res.getString("bootstrap_brokers") != null) {
+                if (res.getString("bootstrap_servers") != null) {
                     workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
-                            res.getString("bootstrap_brokers"));
+                            res.getString("bootstrap_servers"));
                 } else {
                     String zkConnectString = res.getString("zookeeper_connect");
                     boolean zkReady = ClusterStatus.isZookeeperReady(zkConnectString, res.getInt("timeout"));

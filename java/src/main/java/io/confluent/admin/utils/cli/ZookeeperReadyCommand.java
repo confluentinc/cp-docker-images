@@ -53,7 +53,7 @@ public class ZookeeperReadyCommand {
             log.debug("Arguments {}. ", res);
 
             success = ClusterStatus.isZookeeperReady(
-                    res.getString("connect_string"),
+                    res.getString("zookeeper_connect"),
                     res.getInt("timeout"));
 
         } catch (ArgumentParserException e) {
