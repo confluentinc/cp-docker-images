@@ -1,7 +1,7 @@
 DOCKER_VERSION := 1
 CP_VERSION := 3.0.1
 VERSION := ${CP_VERSION}-${DOCKER_VERSION}
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center kafkacat
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
@@ -72,6 +72,7 @@ push-public: clean build-debian
         echo "\n Pushing cp-$${component}  \n==========================================\n "; \
         docker push confluentinc/cp-$${component}:latest; \
 				docker push confluentinc/cp-$${component}:${VERSION}; \
+				docker push confluentinc/cp-$${component}:${CP_VERSION}; \
   done
 
 clean: clean-containers clean-images
