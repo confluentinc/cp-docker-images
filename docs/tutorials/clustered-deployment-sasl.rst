@@ -48,11 +48,18 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use this ``create-certs.sh`` in ``examples/kafka-cluster-sasl/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-cluster-sasl/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
-  For this example, we will use the credentials available in the examples/secrets directory in cp-docker-images. See "security" section for more details on security.
+  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-cluster-sasl/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
-  Set the environment variable for secrets directory. We will use this later in our commands.
+  .. sourcecode:: bash
+
+    cd $(pwd)/examples/kafka-cluster-ssl/secrets
+    ./create-certs.sh
+    (Type yes for all "Trust this certificate? [no]:" prompts.)
+    cd -
+
+  Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-confluent-images`` directory.
 
     .. sourcecode:: bash
 
@@ -386,6 +393,8 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-sasl
+
+  Follow section 3 on generating credentials in the “Docker Client” section above to create the SSL credentials.
 
   Set the environment variable for secrets directory. This is used in the compose file.
 
