@@ -3,7 +3,7 @@
 Clustered Deployment Using SSL
 -------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
@@ -48,7 +48,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
   For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
@@ -107,7 +107,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
          confluentinc/cp-zookeeper:3.0.1
 
-  Check the logs to see the broker has booted up successfully
+  Check the logs to see the ZooKeeper servers have booted up successfully
 
   .. sourcecode:: bash
 
@@ -253,6 +253,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        Topic: bar  Partition: 1    Leader: 1001    Replicas: 1001,1003,1002    Isr: 1001,1003,1002
        Topic: bar  Partition: 2    Leader: 1002    Replicas: 1002,1001,1003    Isr: 1002,1001,1003
 
+ALEX L COMMENT: Why are broker IDs 1001,1002,1003? Why not 1,2,3? Generally we recommend 1,2,3. The docker-compose steps below create broker IDs 1,2,3.
+
   Next, we'll try generating some data to the ``bar`` topic we just created.
 
    .. sourcecode:: bash
@@ -295,6 +297,10 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        41
        Processed a total of 10 messages
 
+ALEX L COMMENT: The message count discrepancy is problematic because you print saying you produced 42 messages yet you only consume 10. Makes me wonder if Kafka is loses messages? Maybe just produce and consume a single message?
+
+ALEX L COMMENT: How do I turn off the cluster I just started? Including the docker machine? Would be good to recommend that here
+
 .. _clustered_quickstart_compose_ssl :
 
 Docker Compose: Setting Up a Three Node CP Cluster with SSL
@@ -317,13 +323,15 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        docker-compose up
 
-  In another terminal window, go to the same directory (kafka-cluster).  Before we move on, let's make sure the services are up and running:
+  In another terminal window, go to the same directory (kafka-cluster-ssl).  Before we move on, let's make sure the services are up and running:
 
   .. sourcecode:: bash
 
        docker-compose ps
 
   You should see the following:
+
+ALEX L COMMENT: This didn't work for me. I never saw `ps` show any output. Needed to run `eval $(docker-machine env confluent)` for it to work. I also added the KAFKA_SSL_SECRETS_DIR env variable which may or may not be required, too. Note to Sumit: or run this in the background like you do in the SASL guide?
 
   .. sourcecode:: bash
 
@@ -340,7 +348,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-      docker-compose log zookeeper-1
+      docker-compose logs zookeeper-1
 
    You should see messages like the following:
 
@@ -402,4 +410,6 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     docker-compose stop kafka-ssl-2
     docker-compose stop kafka-ssl-3
     docker-compose stop
-    docker-compose remove
+    docker-compose rm
+
+ALEX L COMMENT: also include the command to remove the docker machine?
