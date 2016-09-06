@@ -1,7 +1,7 @@
 .. _contributing_guide :
 
 How to Contribute
------------------
+=================
 
 General Guidelines
 ~~~~~~~~~~~~~~
@@ -116,36 +116,3 @@ GitHub Workflow
   .. sourcecode:: bash
 
     $ git push origin --force feature-xxx
-
-FAQ
-~~~
-
-Help! I merged changes from upstream and cannot figure out how to resolve conflicts when rebasing!
-
-Never fear! If you occasionally merged upstream/master, here is another way to squash your changes into a single commit:
-
-1. First, rename your existing branch to something else, e.g. `feature-xxx-unclean`
-
-  .. sourcecode:: bash
-    
-    $ git branch -m feature-xxx-unclean
-
-
-2. Checkout a new branch with the original name `feature-xxx` from upstream. This branch will supercede our old one.
-
-  .. sourcecode:: bash
-
-  $ git checkout -b feature-xxx upstream/master
-
-3. Then merge your changes in your original feature branch `feature-xxx-unclean` and create a single commit.
-
-  .. sourcecode:: bash
-
-    $ git merge --squash feature-xxx-unclean
-    $ git commit
-
-4. You can now submit this new branch and create or replace your existing pull request.
-
-  .. sourcecode:: bash
-    
-    $ git push origin [--force] feature-xxx:feature-xxx

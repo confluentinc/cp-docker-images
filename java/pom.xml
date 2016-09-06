@@ -49,7 +49,7 @@
         <slf4j-api.version>1.7.6</slf4j-api.version>
         <gson.version>2.7</gson.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.101tec</groupId>
@@ -66,12 +66,12 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
         </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-                <scope>compile</scope>
-            </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>net.sourceforge.argparse4j</groupId>
             <artifactId>argparse4j</artifactId>
@@ -95,7 +95,6 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>${bcpkix.version}</version>
             <scope>test</scope>
-
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -190,11 +189,6 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>io.confluent.admin.utils.Main</mainClass>
-                        </manifest>
-                    </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -221,7 +215,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

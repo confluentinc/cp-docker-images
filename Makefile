@@ -1,6 +1,7 @@
-VERSION := 3.0.0
-
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center
+DOCKER_VERSION := 1
+CP_VERSION := 3.0.1
+VERSION := ${CP_VERSION}-${DOCKER_VERSION}
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center kafkacat
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
@@ -30,20 +31,22 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	# We need to build images with confluentinc namespace so that dependent image builds dont fail
 	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
-        echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build --build-arg COMMIT_ID=$${COMMIT_ID} --build-arg BUILD_NUMBER=$${BUILD_NUMBER}  -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
+		echo "\n\nBuilding $${component} \n==========================================\n " ; \
+		docker build --build-arg COMMIT_ID=$${COMMIT_ID} --build-arg BUILD_NUMBER=$${BUILD_NUMBER}  -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
   done
 
 build-test-images:
 	for component in `ls tests/images` ; do \
-        echo "\n\nBuilding $${component} \n==========================================\n " ; \
-				docker build -t confluentinc/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
-				docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
+		echo "\n\nBuilding $${component} \n==========================================\n " ; \
+		docker build -t confluentinc/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
   done
 
 tag-remote:
@@ -69,6 +72,7 @@ push-public: clean build-debian
         echo "\n Pushing cp-$${component}  \n==========================================\n "; \
         docker push confluentinc/cp-$${component}:latest; \
 				docker push confluentinc/cp-$${component}:${VERSION}; \
+				docker push confluentinc/cp-$${component}:${CP_VERSION}; \
   done
 
 clean: clean-containers clean-images

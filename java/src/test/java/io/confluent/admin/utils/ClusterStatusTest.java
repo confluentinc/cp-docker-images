@@ -94,25 +94,8 @@ public class ClusterStatusTest {
             config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:6789");
             assertThat(ClusterStatus.isKafkaReady(config, 3, 10000)).isFalse();
         } catch (Exception e) {
-            e.printStackTrace();
             fail("Unexpected error." + e.getMessage());
         }
     }
-
-    @Test(timeout = 120000)
-    public void checkConnectivity() throws Exception {
-        String broker = this.kafka.getBootstrapBroker(SecurityProtocol.PLAINTEXT);
-        int port = Integer.parseInt(broker.split(":")[1]);
-        assertThat(ClusterStatus.checkConnectivity("localhost", port, 3000)).isTrue();
-    }
-
-    @Test(timeout = 120000)
-    public void checkConnectivityFailure() throws Exception {
-        Time time = new SystemTime();
-        long start = time.milliseconds();
-        assertThat(ClusterStatus.checkConnectivity("localhost", 12345, 3000)).isFalse();
-        assertThat(time.milliseconds() - start).isCloseTo(3000L, Offset.offset(500L));
-    }
-
 
 }

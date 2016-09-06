@@ -1,22 +1,20 @@
 .. _operations_overview :
 
 Operations
------------
+==========
 
-In this section, we provide a closer look at how to run a Confluent Platform cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quickstart guide <quikstart.html>`_.
+In this section, we provide a closer look at how to run a Confluent Platform cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quickstart guide <quickstart.html>`_.
 
 We will cover the following topics:
 
-- Clustered Environments: We'll discuss how to set up and run a CP deployment in a clustered environment.  This is in contrast to the quickstart guide, which only looked at a single-node deployment. 
-- Montoring Your Cluster: We will provide an overview of how to set up monitoring with JMX, as well as recommendations for extending the images to use other monitoring solutions, if required.
-- Logging
-- Networking: We'll discuss bridge and host networking (including caveats for each)
-- Mounting External Volumes: This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
+- Montoring: How to set up monitoring with JMX, as well as recommendations for extending the images to use other monitoring solutions.
+- Logging: Using log4j in a Docker setup.
+- Networking: Bridge and host networking (including caveats for each)
+- Mounting External Volumes: This is important when running Kafka Brokers and ZooKeeper on Docker, as they require a persistent filesystem.
 
 .. toctree::
    :maxdepth: 3
 
-   clustered-deployment
    monitoring
    logging
    external-volumes
