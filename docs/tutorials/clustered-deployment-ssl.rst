@@ -4,17 +4,16 @@ Clustered Deployment Using SSL
 -------------------------------
 
 In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
->>>>>>> Stashed changes:docs/tutorials/clustered-deployment-ssl.rst
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+    It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose_ssl>`_.
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater. 
+To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
@@ -26,7 +25,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
 1. Create and configure the Docker machine.
 
@@ -49,15 +48,23 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use this ``create-certs.sh`` in ``examples/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
-  For this example, we will use the credentials available in the examples/secrets directory in cp-docker-images. See "security" section for more details on security.
+  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
-  Set the environment variable for secrets directory. We will use this later in our commands.
+  .. sourcecode:: bash
 
-    .. sourcecode:: bash
+    cd $(pwd)/examples/kafka-cluster-ssl/secrets
+    ./create-certs.sh
+    (Type yes for all "Trust this certificate? [no]:" prompts.)
+    cd -
 
-      export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+  Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-confluent-images`` directory.
+
+  .. sourcecode:: bash
+
+    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+
 
 4. Start Up a 3-node Zookeeper Ensemble by running the three commands below.
 
@@ -74,6 +81,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
          confluentinc/cp-zookeeper:3.0.1
 
+  .. sourcecode:: bash
+
      docker run -d \
          --net=host \
          --name=zk-2 \
@@ -84,6 +93,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
          confluentinc/cp-zookeeper:3.0.1
+
+  .. sourcecode:: bash
 
      docker run -d \
          --net=host \
@@ -129,51 +140,55 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.  
+4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
 
- .. sourcecode:: bash
+  .. sourcecode:: bash
 
-     docker run -d \
-         --net=host \
-         --name=kafka-ssl-1 \
-         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-         -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:29092 \
-         -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
-         -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
-         -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
-         -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
-         -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
-         -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-         confluentinc/cp-kafka:3.0.1
+    docker run -d \
+       --net=host \
+       --name=kafka-ssl-1 \
+       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:29092 \
+       -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
+       -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
+       -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
+       -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
+       -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
+       -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+       -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+       confluentinc/cp-kafka:3.0.1
 
-     docker run -d \
-         --net=host \
-         --name=kafka-ssl-2 \
-         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-         -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:39092 \
-         -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
-         -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
-         -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
-         -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
-         -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
-         -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-         confluentinc/cp-kafka:3.0.1
+  .. sourcecode:: bash
 
-     docker run -d \
-         --net=host \
-         --name=kafka-ssl-3 \
-         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
-         -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:49092 \
-         -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
-         -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
-         -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
-         -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
-         -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
-         -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
-         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-         confluentinc/cp-kafka:3.0.1
+    docker run -d \
+       --net=host \
+       --name=kafka-ssl-2 \
+       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:39092 \
+       -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
+       -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
+       -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
+       -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
+       -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
+       -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+       -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+       confluentinc/cp-kafka:3.0.1
+
+  .. sourcecode:: bash
+
+    docker run -d \
+       --net=host \
+       --name=kafka-ssl-3 \
+       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:49092 \
+       -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
+       -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
+       -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
+       -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
+       -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
+       -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
+       -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
+       confluentinc/cp-kafka:3.0.1
 
   Check the logs to see the broker has booted up successfully:
 
@@ -264,7 +279,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
         confluentinc/cp-kafka:3.0.1 \
-        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42 --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
+        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 10 --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
@@ -278,7 +293,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        16
        ....
        41
-       Processed a total of 42 messages
+       Processed a total of 10 messages
 
 .. _clustered_quickstart_compose_ssl :
 
@@ -294,6 +309,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-ssl
 
+  Follow section 3 on generating SSL credentials in the “Docker Client” section above to create the SSL credentials.
 
 2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
 
