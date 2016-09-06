@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper-sasl-1:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:3.0.1
     # This is required because Zookeeper can fail if kerberos is still initializing.
     restart: on-failure:3
     environment:
@@ -21,7 +21,7 @@ services:
     network_mode: host
 
   zookeeper-sasl-2:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:3.0.1
     # This is required because Zookeeper can fail if kerberos is still initializing.
     restart: on-failure:3
     environment:
@@ -41,7 +41,7 @@ services:
 
 
   zookeeper-sasl-3:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:3.0.1
     # This is required because Zookeeper can fail if kerberos is still initializing.
     restart: on-failure:3
     environment:
@@ -60,7 +60,7 @@ services:
     network_mode: host
 
   kerberos:
-    image: confluentinc/cp-kerberos
+    image: confluentinc/cp-kerberos:3.0.1
     network_mode: host
     environment:
       BOOTSTRAP: 0
@@ -69,7 +69,7 @@ services:
     - /dev/urandom:/dev/random
 
   kafka-sasl-1:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:3.0.1
     network_mode: host
     # This is required because Kafka can fail if kerberos is still initializing.
     restart: on-failure:3
@@ -94,7 +94,7 @@ services:
     - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
 
   kafka-sasl-2:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:3.0.1
     network_mode: host
     restart: on-failure:3
     environment:
@@ -118,7 +118,7 @@ services:
     - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
 
   kafka-sasl-3:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:3.0.1
     network_mode: host
     restart: on-failure:3
     environment:

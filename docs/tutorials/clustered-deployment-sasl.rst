@@ -3,7 +3,7 @@
 Clustered Deployment Using SASL and SSL
 ----------------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
@@ -54,7 +54,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    cd $(pwd)/examples/kafka-cluster-ssl/secrets
+    cd $(pwd)/examples/kafka-cluster-sasl/secrets
     ./create-certs.sh
     (Type yes for all "Trust this certificate? [no]:" prompts.)
     cd -
@@ -65,11 +65,21 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
         export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
+  To configure SASL, all your nodes will need to have a proper hostname. It is not advisable to use ``localhost`` as the hostname.
+
+  We need to create an entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP. In Linux, run the below commands on the Linux host. If running Docker Machine (eg for Mac or Windows), you will need to SSH into the VM and run the below commands as root. You can SSH into the Docker Machine VM by running ``docker-machine ssh confluent``.
+
+      ::
+
+          export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+
+          echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
+
 2. Build and run the kerberos image
 
     ::
 
-      cd test/images/kerberos
+      cd tests/images/kerberos
       docker build -t confluentinc/cp-kerberos:3.0.1 .
 
       docker run -d \
@@ -81,17 +91,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 
 3. Create the principals and keytabs.
-    i. To configure SASL, all your nodes will need to have a proper hostname . It is not advisable to use ``localhost`` as the hostname.
 
-      We will now create a entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP.
-
-      ::
-
-          export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
-
-          echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
-
-    ii. Now, lets create all the prinicipals and their keytabs on Kerberos.
+    Create all the prinicipals and their keytabs on Kerberos.
 
       ::
 
@@ -336,6 +337,8 @@ Check the logs to see the broker has booted up successfully:
        Topic: bar  Partition: 1    Leader: 1001    Replicas: 1001,1003,1002    Isr: 1001,1003,1002
        Topic: bar  Partition: 2    Leader: 1002    Replicas: 1002,1001,1003    Isr: 1002,1001,1003
 
+ALEX L COMMENT: again, would be good to use broker IDs 1,2,3 if possible.
+
   Next, we'll try generating some data to the ``bar`` topic we just created.
 
    .. sourcecode:: bash
@@ -380,6 +383,10 @@ Check the logs to see the broker has booted up successfully:
        41
        Processed a total of 42 messages
 
+ALEX L COMMENT: Same thing as the SSL tutorial. It's odd that the number of messages produced (according to the echo statement) does not equal the number consumed.
+
+ALEX L COMMENT: Same comment as SSL. Would be good to explain how to turn off the cluster by stopping and removing containers
+
 .. _clustered_quickstart_compose_sasl :
 
 Docker Compose: Setting Up a Three Node CP Cluster with SASL
@@ -400,7 +407,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
 2. Start Kerberos
 
@@ -482,7 +489,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
       docker-compose logs zookeeper-sasl-1
 
-   You should see messages like the following:
+  You should see messages like the following:
 
   .. sourcecode:: bash
 
@@ -543,3 +550,5 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     docker-compose stop kafka-sasl-3
     docker-compose stop
     docker-compose rm
+
+ALEX L COMMENT: May be good to mention how to stop Docker Machine?
