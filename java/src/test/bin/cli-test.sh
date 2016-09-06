@@ -43,12 +43,10 @@ sleep 10
 
 echo "Kafka : $KAFKA_PID"
 
-(java -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar || exit 0)
-
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
-     -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar \
-     zk-ready \
+     -cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar \
+     io.confluent.admin.utils.cli.ZookeeperReadyCommand \
      localhost:11117 \
      30000 &> /tmp/test-zookeeper-ready.log
 
@@ -56,8 +54,8 @@ ZOOKEEPER_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
-     -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar  \
-     kafka-ready \
+     -cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar \
+     io.confluent.admin.utils.cli.KafkaReadyCommand \
      3 \
      30000 \
      -b localhost:49092 \
@@ -67,8 +65,8 @@ KAFKA_BROKER_OPTION_TEST=$([ $? -eq 0 ] && echo "PASS" || echo "FAIL")
 
 java -Djava.security.auth.login.config="$JAAS_CONF" \
      -Djava.security.krb5.conf="$MINI_KDC_DIR/krb5.conf" \
-     -jar target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar  \
-     kafka-ready \
+     -cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar \
+     io.confluent.admin.utils.cli.KafkaReadyCommand \
      3 \
      30000 \
      -z localhost:11117 \

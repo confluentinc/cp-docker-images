@@ -75,7 +75,7 @@ public class ClusterWaitTest {
                         Thread.sleep(1000);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    fail("Unexpected exception ", e);
                 }
             }
         });
@@ -113,7 +113,7 @@ public class ClusterWaitTest {
                         Thread.sleep(1000);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    fail("Unexpected exception ", e);
                 }
             }
         });
