@@ -34,25 +34,16 @@ import java.util.concurrent.atomic.AtomicInteger;
  * https://github.com/apache/kafka/blob/trunk/core/src/main/scala/kafka/admin/AdminClient.scala
  */
 
-public class KafkaMetadataClient {
+public class KafkaAdminClient {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaMetadataClient.class);
-    private static final int defaultConnectionMaxIdleMs = 9 * 60 * 1000;
-    private static final int defaultRequestTimeoutMs = 5000;
-    private static final int defaultMaxInFlightRequestsPerConnection = 100;
-    private static final int defaultReconnectBackoffMs = 50;
-    private static final int defaultSendBufferBytes = 128 * 1024;
-    private static final int defaultReceiveBufferBytes = 32 * 1024;
-    private static final int defaultRetryBackoffMs = 100;
+    private static final Logger log = LoggerFactory.getLogger(KafkaAdminClient.class);
+    private static final AtomicInteger adminClientIdSequence = new AtomicInteger(1);
     private final ConsumerNetworkClient client;
     private final SystemTime time;
     private final List<InetSocketAddress> brokerAddresses;
-    private List<Node> bootStrapBrokers;
+    private final List<Node> bootStrapBrokers;
 
-
-    private AtomicInteger adminClientIdSequence = new AtomicInteger(1);
-
-    public KafkaMetadataClient(Map<String, String> config) {
+    public KafkaAdminClient(Map<String, String> config) {
 
         MetadataClientConfig adminCfg = new MetadataClientConfig(config);
         time = new SystemTime();
@@ -65,7 +56,7 @@ public class KafkaMetadataClient {
         Cluster bootstrapCluster = Cluster.bootstrap(brokerAddresses);
         metadata.update(bootstrapCluster, 0);
 
-        Selector selector = new Selector(defaultConnectionMaxIdleMs,
+        Selector selector = new Selector(MetadataClientConfig.defaultConnectionMaxIdleMs,
                 metrics,
                 time,
                 "admin",
@@ -73,18 +64,18 @@ public class KafkaMetadataClient {
 
         NetworkClient networkClient = new NetworkClient(selector, metadata,
                 "admin-" + adminClientIdSequence.getAndIncrement(),
-                defaultMaxInFlightRequestsPerConnection,
-                defaultReconnectBackoffMs,
-                defaultSendBufferBytes,
-                defaultReceiveBufferBytes,
-                defaultRequestTimeoutMs,
+                MetadataClientConfig.defaultMaxInFlightRequestsPerConnection,
+                MetadataClientConfig.defaultReconnectBackoffMs,
+                MetadataClientConfig.defaultSendBufferBytes,
+                MetadataClientConfig.defaultReceiveBufferBytes,
+                MetadataClientConfig.defaultRequestTimeoutMs,
                 time);
 
         client = new ConsumerNetworkClient(networkClient,
                 metadata,
                 time,
-                defaultRetryBackoffMs,
-                defaultRequestTimeoutMs);
+                MetadataClientConfig.defaultRetryBackoffMs,
+                MetadataClientConfig.defaultRequestTimeoutMs);
 
         this.bootStrapBrokers = bootstrapCluster.nodes();
     }
@@ -101,9 +92,6 @@ public class KafkaMetadataClient {
             return null;
         } else {
             MetadataResponse response = new MetadataResponse(responseBody);
-            Map errors = response.errors();
-            if (!errors.isEmpty())
-                log.debug(String.format("Metadata request contained errors: %s", errors));
             return response.cluster().nodes();
         }
     }
@@ -113,13 +101,10 @@ public class KafkaMetadataClient {
             try {
                 return send(broker, api, request, timeOutInMs);
             } catch (Exception e) {
-                log.error(String.format("Request %s failed against node %s with error %s", api,
-                        broker, e));
+                log.error("Request {} failed against node {}.", api, broker, e);
             }
         }
-        log.error(String.format("Request %s failed on all bootstrap brokers %s", api, this
-                .bootStrapBrokers));
-
+        log.error("Request {} failed on all bootstrap brokers {}.", api, this.bootStrapBrokers);
         return null;
     }
 
@@ -136,6 +121,13 @@ public class KafkaMetadataClient {
 
     public static class MetadataClientConfig extends AbstractConfig {
 
+        private static final int defaultConnectionMaxIdleMs = 9 * 60 * 1000;
+        private static final int defaultRequestTimeoutMs = 5000;
+        private static final int defaultMaxInFlightRequestsPerConnection = 100;
+        private static final int defaultReconnectBackoffMs = 50;
+        private static final int defaultSendBufferBytes = 128 * 1024;
+        private static final int defaultReceiveBufferBytes = 32 * 1024;
+        private static final int defaultRetryBackoffMs = 100;
         private static final ConfigDef CONFIG;
 
         static {
