@@ -12,7 +12,7 @@ When working with Docker, you may sometimes need to persist data in the event of
 
   .. note::
 
-    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <_extending_images>`_.
+    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
 
 Data Volumes for Kafka & Zookeeper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

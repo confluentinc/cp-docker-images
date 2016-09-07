@@ -1,21 +1,18 @@
-.. _quickstart :
+.. _docker_quickstart :
 
 Quickstart
 ==========
 
 In this section, we provide a simple guide for running a Kafka cluster along with all of the other Confluent Platform components.  By the end of this quickstart, you will have successfully installed and run a simple deployment including each component with Docker.
 
-In order to keep things simple, this quickstart guide is limited to a single node Confluent Platform cluster.  For more advanced tutorials, you can refer to the following guides:
+In order to keep things simple, this quickstart guide is limited to a single node Confluent Platform cluster.  For more advanced tutorials, you can refer to the `tutorials section <tutorials.html>`_ of this documentation.
 
-* Securing Your Cluster on Docker
-* Running in a Clustered Environment
-
-It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `bla bla bla <addlink.com>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.
+It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `we have docs for that too <addlink>`_.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`we have docs for that too <quickstart_compose>`.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
@@ -52,7 +49,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         confluentinc/cp-zookeeper:3.0.1
 
-  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.1`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `go to this link that is yet to be created <addlink.com>`_.
+  In this command, we tell Docker to run the ``confluentinc/cp-zookeeper:3.0.1`` container named ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, `please see the configuration reference docs <configuration.html>`_.
 
   Now that we've attempted to start Zookeeper, we'll check the logs to see the server has booted up successfully by running the following command:
 
@@ -266,7 +263,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     [{"key":null,"value":{"f1":"value1"},"partition":0,"offset":0},{"key":null,"value":{"f1":"value2"},"partition":0,"offset":1},{"key":null,"value":{"f1":"value3"},"partition":0,"offset":2}]
 
-7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and writing that data to a new file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our tutorial on using a JDBC connector with avro data <connect_quickstart_avro_jdbc.html>`_.
+7. We will walk you through an end-to-end data transfer pipeline using Kafka Connect. We'll start by reading data from a file and writing that data to a new file.  We will then extend the pipeline to show how to use connect to read from a database.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to `our tutorial on using a JDBC connector with avro data <tutorials/connect-avro-jdbc.html>`_.
 
   First, let's start up Kafka Connect.  Connect stores config, status, and internal offsets for connectors in Kafka topics. We will create these topics now.  We already have Kafka up and running from the steps above.
 
@@ -647,6 +644,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 9. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and Zookeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
 
+.. _quickstart_compose:
 
 Getting Started with Docker Compose
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
