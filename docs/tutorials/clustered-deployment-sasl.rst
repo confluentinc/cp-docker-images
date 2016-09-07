@@ -3,7 +3,7 @@
 Clustered Deployment Using SASL and SSL
 ----------------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
@@ -54,7 +54,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    cd $(pwd)/examples/kafka-cluster-ssl/secrets
+    cd $(pwd)/examples/kafka-cluster-sasl/secrets
     ./create-certs.sh
     (Type yes for all "Trust this certificate? [no]:" prompts.)
     cd -
@@ -65,66 +65,66 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
         export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
+  To configure SASL, all your nodes will need to have a proper hostname. It is not advisable to use ``localhost`` as the hostname.
+
+  We need to create an entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP. In Linux, run the below commands on the Linux host. If running Docker Machine (eg for Mac or Windows), you will need to SSH into the VM and run the below commands as root. You can SSH into the Docker Machine VM by running ``docker-machine ssh confluent``.
+
+  .. sourcecode:: bash
+ 
+    export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+
+    echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
+
 2. Build and run the kerberos image
 
-    ::
+  .. sourcecode:: bash
 
-      cd test/images/kerberos
-      docker build -t confluentinc/cp-kerberos:3.0.1 .
+    cd tests/images/kerberos
+    docker build -t confluentinc/cp-kerberos:3.0.1 .
 
-      docker run -d \
-        --name=kerberos \
-        --net=host \
-        -v ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab \
-        -v /dev/urandom:/dev/random \
-        confluentinc/cp-kerberos:3.0.1
+    docker run -d \
+      --name=kerberos \
+      --net=host \
+      -v ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab \
+      -v /dev/urandom:/dev/random \
+      confluentinc/cp-kerberos:3.0.1
 
 
 3. Create the principals and keytabs.
-    i. To configure SASL, all your nodes will need to have a proper hostname . It is not advisable to use ``localhost`` as the hostname.
 
-      We will now create a entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP.
+  .. sourcecode:: bash
 
-      ::
+    for principal in zookeeper1 zookeeper2 zookeeper3
+    do
+      docker exec -it kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
-          export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+  .. sourcecode:: bash
 
-          echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
+    for principal in zkclient1 zkclient2 zkclient3
+    do
+      docker exec -it kerberos kadmin.local -q "addprinc -randkey zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
-    ii. Now, lets create all the prinicipals and their keytabs on Kerberos.
+  For Kafka brokers, the principal should be called ``kafka``.
+  
+  .. sourcecode:: bash
 
-      ::
+    for principal in broker1 broker2 broker3
+    do
+      docker exec -it kerberos kadmin.local -q "addprinc -randkey kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
-          for principal in zookeeper1 zookeeper2 zookeeper3
-          do
-            docker exec -it kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-            docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-          done
+  .. sourcecode:: bash
 
-      ::
-
-          for principal in zkclient1 zkclient2 zkclient3
-          do
-            docker exec -it kerberos kadmin.local -q "addprinc -randkey zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
-            docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
-          done
-
-      For Kafka brokers, the principal should be called ``kafka``.
-      ::
-
-        for principal in broker1 broker2 broker3
-        do
-          docker exec -it kerberos kadmin.local -q "addprinc -randkey kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
-          docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
-        done
-
-      ::
-
-        for principal in saslproducer saslconsumer
-        do
-          docker exec -it kerberos kadmin.local -q "addprinc -randkey ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
-          docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
-        done
+    for principal in saslproducer saslconsumer
+    do
+      docker exec -it kerberos kadmin.local -q "addprinc -randkey ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
 4. Run a 3-node Zookeeper ensemble with SASL enabled.
 
@@ -364,7 +364,7 @@ Check the logs to see the broker has booted up successfully:
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
         confluentinc/cp-kafka:3.0.1 \
-        kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --new-consumer --from-beginning --max-messages 42 --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
+        kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
@@ -400,7 +400,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
 2. Start Kerberos
 
@@ -415,24 +415,25 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   ii. Now, lets create all the prinicipals and their keytabs on Kerberos.
 
-    ::
+  .. sourcecode:: bash
 
-      for principal in zookeeper1 zookeeper2 zookeeper3
-      do
-        docker-compose exec kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-        docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-      done
+    for principal in zookeeper1 zookeeper2 zookeeper3
+    do
+      docker-compose exec kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
-  ::
+  .. sourcecode:: bash
 
-      for principal in zkclient1 zkclient2 zkclient3
-      do
-        docker-compose exec kerberos kadmin.local -q "addprinc -randkey zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
-        docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
-      done
+    for principal in zkclient1 zkclient2 zkclient3
+    do
+      docker-compose exec kerberos kadmin.local -q "addprinc -randkey zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zkclient/quickstart.confluent.io@TEST.CONFLUENT.IO"
+    done
 
   For Kafka brokers, the principal should be called ``kafka``.
-  ::
+  
+  .. sourcecode:: bash
 
     for principal in broker1 broker2 broker3
     do
@@ -440,7 +441,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-  ::
+  .. sourcecode:: bash
 
     for principal in saslproducer saslconsumer
     do
@@ -482,7 +483,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
       docker-compose logs zookeeper-sasl-1
 
-   You should see messages like the following:
+  You should see messages like the following:
 
   .. sourcecode:: bash
 

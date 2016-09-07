@@ -19,14 +19,14 @@ The following are prerequisites for running the CP Docker images:
 2. An understanding of how Docker host networks and bridge networks work (Highly Recommended)
 3. Docker Version 1.11 or greater.  Previous versions are not currently tested.
 
-Important Caveats
+Important Notes/Caveats
 --------------
 
-1. Mounted Volumes:
+1. Mounted Volumes
 	
 	If you are using Kafka and Zookeeper, you should always `use mounted volumes <operations/external-volumes.html>`_ to persist data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  
 
-2. Bridge Networking vs. Host Networking:
+2. Bridge Networking vs. Host Networking
 
 	Bridge networking is currently only supported on a single host.  For multiple hosts, you will need to use overlay networks which are not currently supported. It order to expose Kafka to clients outside of the bridge network, you need to find the container IP and put it in ``advertised.listeners``.  This can be difficult to achieve depending on how you're using the images.  Furthermore, it can add a network hop and may not be as performant as the host network, which shares the network stack.  In summary, host networking is the recommended option in the following cases:
 
@@ -36,8 +36,15 @@ Important Caveats
 3. Always launch containers with ``Restart=always`` unless you are using a process manager.  
 	 
 4. These images are currently tested and shipped with `Azul Zulu OpenJDK <https://www.azul.com/products/zulu/>`_.  If you want to switch to Oracle Java, please refer to our instructions for extending the images
+
+5. Adding Connectors to the Kafka Connect Image
+
+	There are currently two ways to add new connectors to the Kafka Connect image.  
+
+	* Build a new Docker image that has connector installed. You can follow the examples found in our documentation on `Extending Images <development.html#extending-the-docker-images>`_. You will need to make sure that the connector jars are on the classpath. 
+	* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 	 
-5. Untested Features
+6. Untested Features
 	
 	The following features/conditions are not currently tested:
 
@@ -50,6 +57,3 @@ License
 -------
 
 The Confluent Platform Docker Images are available as open source software under the Apache License v2.0 license.  For more information on the licenses for each of the individual Confluent Platform components packaged in the images, please refer to the `respective Confluent Platform documentation for each component <http://docs.confluent.io/current/platform.html>`_.  
-
-
-

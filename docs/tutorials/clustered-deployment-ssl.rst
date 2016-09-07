@@ -3,7 +3,7 @@
 Clustered Deployment Using SSL
 -------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
@@ -49,7 +49,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate keystore and truststore for brokers and clients. You can use ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
   For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
@@ -108,7 +108,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
          confluentinc/cp-zookeeper:3.0.1
 
-  Check the logs to see the broker has booted up successfully
+  Check the logs to confirm that the ZooKeeper servers have booted up successfully:
 
   .. sourcecode:: bash
 
@@ -280,7 +280,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
         confluentinc/cp-kafka:3.0.1 \
-        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 10 --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
+        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
@@ -294,7 +294,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        16
        ....
        41
-       Processed a total of 10 messages
+       Processed a total of 42 messages
 
 .. _clustered_quickstart_compose_ssl:
 
@@ -316,9 +316,10 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-       docker-compose up
+       docker-compose create
+       docker-compose start
 
-  In another terminal window, go to the same directory (kafka-cluster).  Before we move on, let's make sure the services are up and running:
+  Before we move on, let's make sure the services are up and running:
 
   .. sourcecode:: bash
 
@@ -341,7 +342,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-      docker-compose log zookeeper-1
+      docker-compose logs zookeeper-1
 
    You should see messages like the following:
 

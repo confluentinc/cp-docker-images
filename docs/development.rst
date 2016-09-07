@@ -120,9 +120,7 @@ To get started, you can build all the CP images as follows:
 
     make build-debian
 
-You can run build tests by running ``make test-build``.  Use this when
-you want to test the builds with a clean slate.  This deletes all images
-and starts from scratch.
+You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
 .. _running_tests : 
 
@@ -151,7 +149,7 @@ To run a single test, you can do so with Python.  In the following example, we r
 Make Targets
 ~~~~~~~~~~~~
 
-Deletes all images tagged with ``label=io.confluent.docker.testing=true`` :
+Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
 ``clean-images`` 
 
@@ -184,10 +182,8 @@ config management, use service discovery etc.  This page provides instructions f
 Prerequisites
 ~~~~~~~~~~~~
 
-1. Read the section on :ref:`development <development>` to setup the development
-   environment to build docker images.
-2. Understand how the images are structured by reading the following
-   docs:
+1. Read the section on :ref:`development <development>` to setup the development environment to build docker images.
+2. Understand how the images are structured by reading the following docs:
 
    -  ``image-structure`` describes the structure of the images
    -  ``utility_scripts`` describes the utility scripts used in the
@@ -205,8 +201,6 @@ The following examples show to extend the images.
 1. Download configuration from a URL
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
-
-  For example:
 
   To do this for the Zookeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
@@ -740,7 +734,6 @@ The following properties may be configured when using the ``kafka-ready`` utilit
   * Type: string
   * Default: "PKIX"
   * Importance: low
-
 
 .. _references : 
 
