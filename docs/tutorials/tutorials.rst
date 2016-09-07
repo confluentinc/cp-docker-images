@@ -3,7 +3,7 @@
 More Tutorials
 ==============
 
-In this section, we provide more advanced tutorials for using specific Confluent Platform features on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quickstart guide <quikstart.html>`_.
+In this section, we provide more advanced tutorials for using specific Confluent Platform features on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quickstart guide <../quickstart.html>`_.
 
 **Table of Contents**
 
