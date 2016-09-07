@@ -5,12 +5,6 @@ Docker images for deploying and running the Confluent Platform.  The images are 
 
 Full documentation for using the images can be found [here](http://docs.confluent.io/current/docker/intro.html).
 
-# Development
-
-To build a development version you'll need a recent version of Kafka. You can build
-kafka-connect-hdfs with Maven using the standard lifecycle phases.
-
-
 # Contribute
 
 Start by reading our guidelines on contributing to this project found [here](http://docs.confluent.io/current/docker/contributing.html).
