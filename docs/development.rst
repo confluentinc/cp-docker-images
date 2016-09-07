@@ -191,6 +191,14 @@ Prerequisites
 
 3. If you plan to contribute back to the project, please be sure to review our guide on :ref:`contributing <contributing_guide>`.
 
+Adding Connectors to the Kafka Connect Image
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are currently two ways to add new connectors to the Kafka Connect image.  
+
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+
 .. _examples :
 
 Examples
@@ -249,7 +257,7 @@ The following examples show to extend the images.
            -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
            foo/zookeeper:latest
 
-2. Add more software
+2. Add More Software
 
   This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver.
 
