@@ -120,9 +120,7 @@ To get started, you can build all the CP images as follows:
 
     make build-debian
 
-You can run build tests by running ``make test-build``.  Use this when
-you want to test the builds with a clean slate.  This deletes all images
-and starts from scratch.
+You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
 .. _running_tests : 
 
@@ -151,7 +149,7 @@ To run a single test, you can do so with Python.  In the following example, we r
 Make Targets
 ~~~~~~~~~~~~
 
-Deletes all images tagged with ``label=io.confluent.docker.testing=true`` :
+Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
 ``clean-images`` 
 
@@ -184,16 +182,22 @@ config management, use service discovery etc.  This page provides instructions f
 Prerequisites
 ~~~~~~~~~~~~
 
-1. Read the section on :ref:`development <development>` to setup the development
-   environment to build docker images.
-2. Understand how the images are structured by reading the following
-   docs:
+1. Read the section on :ref:`development <development>` to setup the development environment to build docker images.
+2. Understand how the images are structured by reading the following docs:
 
    -  ``image-structure`` describes the structure of the images
    -  ``utility_scripts`` describes the utility scripts used in the
       images
 
 3. If you plan to contribute back to the project, please be sure to review our guide on :ref:`contributing <contributing_guide>`.
+
+Adding Connectors to the Kafka Connect Image
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are currently two ways to add new connectors to the Kafka Connect image.  
+
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
 
@@ -205,8 +209,6 @@ The following examples show to extend the images.
 1. Download configuration from a URL
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
-
-  For example:
 
   To do this for the Zookeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
@@ -255,7 +257,7 @@ The following examples show to extend the images.
            -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
            foo/zookeeper:latest
 
-2. Add more software
+2. Add More Software
 
   This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver.
 
@@ -740,7 +742,6 @@ The following properties may be configured when using the ``kafka-ready`` utilit
   * Type: string
   * Default: "PKIX"
   * Importance: low
-
 
 .. _references : 
 

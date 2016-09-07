@@ -51,7 +51,7 @@ Environment Variables
 Launching Kafka and Zookeeper with JMX Enabled
 ``````````````````````````````````````````````
 
-The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. sourcecode:: bash
 
