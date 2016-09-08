@@ -3,7 +3,7 @@
 Kafka Connect Tutorial
 ----------------------
 
-In the `quickstart guide  <quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quickstart and already have all the other services running, that's great.  Otherwise, you'll need to first startup up Zookeeper, Kafka and the Schema Registry.
+In the `quickstart guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quickstart and already have all the other services running, that's great.  Otherwise, you'll need to first startup up Zookeeper, Kafka and the Schema Registry.
 
   .. note::
 
@@ -14,7 +14,7 @@ It is worth noting that we will be configuring Kafka and Zookeeper to store data
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose>`_.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.  If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -41,7 +41,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 2. Start up Zookeeper, Kafka, and Schema Registry.
 
-  We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <quickstart.html>`_ for a more detailed walkthrough. 
+  We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <../quickstart.html>`_ for a more detailed walkthrough. 
 
   Start Zookeeper:
 
@@ -71,15 +71,15 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Start the Schema Registry:
 
-    .. sourcecode:: bash
+  .. sourcecode:: bash
 
-  docker run -d \
-    --net=host \
-    --name=schema-registry \
-    -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
-    -e SCHEMA_REGISTRY_HOST_NAME=localhost \
-    -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-    confluentinc/cp-schema-registry:3.0.0 
+    docker run -d \
+      --net=host \
+      --name=schema-registry \
+      -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
+      -e SCHEMA_REGISTRY_HOST_NAME=localhost \
+      -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
+      confluentinc/cp-schema-registry:3.0.0 
 
   You can confirm that each of the services is up by checking the logs using the following command: ``docker logs <container_name>``. For example, if we run ``docker logs kafka``, we should see the following at the end of the log output:
 
