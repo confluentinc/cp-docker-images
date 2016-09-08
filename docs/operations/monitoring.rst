@@ -29,8 +29,8 @@ To set security on JMX, you can follow the SSL and authentication sections in th
 Kafka & Zookeeper
 """""""""""""""""
 
-Environment Variables
-`````````````````````
+Settings
+````````
 
   ``KAFKA_JMX_PORT``
     JMX Port.

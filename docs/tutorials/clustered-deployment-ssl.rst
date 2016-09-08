@@ -317,7 +317,8 @@ Before you get started, you will first need to install `Docker <https://docs.doc
   .. sourcecode:: bash
 
        export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
-       docker-compose up
+       docker-compose create
+       docker-compose start       
 
    In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
