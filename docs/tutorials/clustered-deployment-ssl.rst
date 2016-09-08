@@ -18,7 +18,7 @@ To get started, you'll need to first `install Docker and get it running <https:/
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -51,7 +51,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   You will need to generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
-  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
+  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in the cp-docker-images repo. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
   .. sourcecode:: bash
 
@@ -299,7 +299,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 .. _clustered_quickstart_compose_ssl:
 
 Docker Compose: Setting Up a Three Node CP Cluster with SSL
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
@@ -316,10 +316,11 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
+       export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
        docker-compose create
-       docker-compose start
+       docker-compose start       
 
-  Before we move on, let's make sure the services are up and running:
+   In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
   .. sourcecode:: bash
 
@@ -403,5 +404,4 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     docker-compose stop kafka-ssl-1
     docker-compose stop kafka-ssl-2
     docker-compose stop kafka-ssl-3
-    docker-compose stop
-    docker-compose remove
+    docker-compose down
