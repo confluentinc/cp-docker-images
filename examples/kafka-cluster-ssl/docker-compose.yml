@@ -37,6 +37,10 @@ services:
   kafka-ssl-1:
     image: confluentinc/cp-kafka:latest
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
@@ -53,6 +57,10 @@ services:
   kafka-ssl-2:
     image: confluentinc/cp-kafka:latest
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
@@ -69,6 +77,10 @@ services:
   kafka-ssl-3:
     image: confluentinc/cp-kafka:latest
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
