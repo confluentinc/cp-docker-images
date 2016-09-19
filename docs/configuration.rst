@@ -11,6 +11,7 @@ Some configuration variables are required when starting up the Docker images.  W
 
 		The configuration variable names are prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.
 
+
 ZooKeeper
 ---------
 
@@ -90,11 +91,9 @@ Required Settings
 
   ZooKeeper URL for the Kafka cluster.
 
-``SCHEMA_REGISTRY_LISTENERS``
+``SCHEMA_REGISTRY_HOST_NAME``
 
-  Comma-separated list of listeners that listen for API requests over either HTTP or HTTPS. If a listener uses HTTPS, the appropriate SSL configuration parameters need to be set as well.
-
-  Schema Registry identities are stored in ZooKeeper and are made up of a hostname and port. If multiple listeners are configured, the first listener's port is used for its identity.
+  The host name advertised in Zookeeper. Make sure to set this if running SchemaRegistry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because all writes need to go through the master.  
 
 
 Kafka REST Proxy
@@ -116,13 +115,9 @@ Required Settings
 """""""""""""""""
 The following settings must be passed to run the REST Proxy Docker image.
 
-``KAFKA_REST_LISTENERS``
+``KAFKA_REST_HOST_NAME``
 
-  Comma-separated list of listeners that listen for API requests over either HTTP or HTTPS. If a listener uses HTTPS, the appropriate SSL configuration parameters need to be set as well.
-
-``KAFKA_REST_SCHEMA_REGISTRY_URL``
-
-  The base URL for the schema registry that should be used by the Avro serializer.
+  The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.
 
 ``KAFKA_REST_ZOOKEEPER_CONNECT``
 
