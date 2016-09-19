@@ -93,7 +93,7 @@ Required Settings
 
 ``SCHEMA_REGISTRY_HOST_NAME``
 
-  The host name advertised in Zookeeper. Make sure to set this if running SchemaRegistry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because all writes need to go through the master.  
+  The host name advertised in Zookeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
 
 
 Kafka REST Proxy
@@ -117,7 +117,7 @@ The following settings must be passed to run the REST Proxy Docker image.
 
 ``KAFKA_REST_HOST_NAME``
 
-  The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.
+  The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  For more details, please refer to the Confluent Platform documentation on `REST proxy deployment <http://docs.confluent.io/current/kafka-rest/docs/deployment.html#deployment>`_.
 
 ``KAFKA_REST_ZOOKEEPER_CONNECT``
 
