@@ -28,7 +28,7 @@ Important Notes/Caveats
 	We recommend not using these images with Docker for Mac at this time.  There are a couple of reasons for this:  first, Docker for Mac does not add hostname to ``/etc/hosts``.  Kafka needs the hostname to be resolveable.  Furthermore, the semantics for ``--net=host`` are not clear, so you are likely to encounter issues if using host networking on Docker for Mac.  For more details on these known issues, you can refer to the following links:
 
 	- `Hostname Issue <https://forums.docker.com/t/docker-for-mac-does-not-add-docker-hostname-to-etc-hosts/8620/4>`_
-	- Host networking on Docker for Mac: `link 1 <https://forums.docker.com/t/should-docker-run-net-host-work/14215>`_, `link 2 <https://forums.docker.com/t/net-host-does-not-work/17378/7>`_, ` link 3 <https://forums.docker.com/t/explain-networking-known-limitations-explain-host/15205/4>`_
+	- Host networking on Docker for Mac: `link 1 <https://forums.docker.com/t/should-docker-run-net-host-work/14215>`_, `link 2 <https://forums.docker.com/t/net-host-does-not-work/17378/7>`_, `link 3 <https://forums.docker.com/t/explain-networking-known-limitations-explain-host/15205/4>`_.
 
 2. Mounted Volumes
 	
