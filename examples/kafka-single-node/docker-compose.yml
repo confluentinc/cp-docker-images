@@ -11,6 +11,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:3.0.1
     network_mode: host
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181

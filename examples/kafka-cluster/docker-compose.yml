@@ -37,6 +37,10 @@ services:
   kafka-1:
     image: confluentinc/cp-kafka:3.0.1
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
@@ -45,6 +49,10 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka:3.0.1
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
@@ -53,6 +61,10 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka:3.0.1
     network_mode: host
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
