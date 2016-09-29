@@ -28,8 +28,8 @@ dub path /etc/kafka/ writable
 if [[ -n "${ZOOKEEPER_SERVERS-}" ]]
 then
   dub ensure ZOOKEEPER_SERVER_ID
-  export ZOOKEEPER_INIT_LIMIT=${ZOOKEEPER_INIT_LIMIT:-"10")}
-  export ZOOKEEPER_SYNC_LIMIT=${ZOOKEEPER_SYNC_LIMIT:-"5")}
+  export ZOOKEEPER_INIT_LIMIT=${ZOOKEEPER_INIT_LIMIT:-"10"}
+  export ZOOKEEPER_SYNC_LIMIT=${ZOOKEEPER_SYNC_LIMIT:-"5"}
 fi
 
 if [[ -n "${ZOOKEEPER_SERVER_ID-}" ]]
