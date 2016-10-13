@@ -31,14 +31,18 @@ ENV PYTHON_PIP_VERSION="8.1.2"
 # Confluent
 ENV SCALA_VERSION="2.11"
 ENV CONFLUENT_MAJOR_VERSION="3"
-ENV CONFLUENT_MINOR_VERSION="0"
-ENV CONFLUENT_PATCH_VERSION="1"
+ENV CONFLUENT_MINOR_VERSION="1"
+# REMOVE SNAPSHOT
+ENV CONFLUENT_PATCH_VERSION="0~SNAPSHOT"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
-ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
+ENV CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.1.x/9"
+
+# REMOVE SNAPSHOT
+ENV KAFKA_VERSION="0.10.1.0~SNAPSHOT"
 
 # Zulu
-ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
+ENV ZULU_OPENJDK_VERSION="8=8.17.0.3"
 
 # This affects how strings in Java class files are interpreted.  We want UTF-8 and this is the only locale in the
 # base image that supports it
@@ -53,6 +57,8 @@ RUN echo "===> Updating debian ....." \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
+    # REMOVE LATER : Only for nightlies
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https  \
     && echo "===> Installing python packages ..."  \
     && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
@@ -66,7 +72,8 @@ RUN echo "===> Updating debian ....." \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
     && echo "===> Adding confluent repository...${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    # UNCOMMENT LATER : Commented for nightly package
+    # && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
     && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub

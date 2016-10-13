@@ -31,6 +31,11 @@ JDBC_SOURCE_CONNECTOR_CREATE = """
     http://%s:%s/connectors
 """
 
+JDBC_SINK_CONNECTOR_CREATE = """
+    curl -X POST -H "Content-Type: application/json" --data '{ "name": "%s", "config": { "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector", "tasks.max": 1, "connection.url": "%s", "topics": "%s", "auto.create": "true"}}' \
+    http://%s:%s/connectors
+"""
+
 CONNECTOR_STATUS = "curl -s -X GET http://{host}:{port}/connectors/{name}/status"
 
 
@@ -198,6 +203,10 @@ class SingleNodeDistributedTest(unittest.TestCase):
         local_sql_dir = os.path.join(FIXTURES_DIR, "sql")
         cls.machine.scp_to_machine(local_sql_dir, "/tmp/kafka-connect-single-node-test")
 
+        cls.machine.ssh("mkdir -p /tmp/kafka-connect-single-node-test/scripts")
+        local_scripts_dir = os.path.join(FIXTURES_DIR, "scripts")
+        cls.machine.scp_to_machine(local_scripts_dir, "/tmp/kafka-connect-single-node-test")
+
         cls.cluster = utils.TestCluster("distributed-single-node", FIXTURES_DIR, "distributed-single-node.yml")
         cls.cluster.start()
         # assert "PASS" in cls.cluster.run_command_on_service("zookeeper-bridge", ZK_READY.format(servers="localhost:2181"))
@@ -206,10 +215,10 @@ class SingleNodeDistributedTest(unittest.TestCase):
         assert "PASS" in cls.cluster.run_command_on_service("kafka-host", KAFKA_READY.format(brokers=1))
         assert "PASS" in cls.cluster.run_command_on_service("schema-registry-host", SR_READY.format(host="localhost", port="8081"))
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.machine.ssh("sudo rm -rf /tmp/kafka-connect-single-node-test")
-        cls.cluster.shutdown()
+    # @classmethod
+    # def tearDownClass(cls):
+        # cls.machine.ssh("sudo rm -rf /tmp/kafka-connect-single-node-test")
+        # cls.cluster.shutdown()
 
     @classmethod
     def is_connect_healthy_for_service(cls, service, port):
@@ -363,6 +372,86 @@ class SingleNodeDistributedTest(unittest.TestCase):
         record_count = 10
         sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
         self.assertEquals(sink_op, 10)
+
+    def test_jdbc_sink_connector_on_host_network(self):
+        topic = "test_jdbc_sink"
+        file_source_input_file = "source.test.txt"
+        source_connector_name = "one-node-jdbc-sink-test-file-source"
+        sink_connector_name = "one-node-jdbc-sink-test"
+        worker_host = "localhost"
+        worker_port = 28082
+
+        # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
+        self.create_topics("kafka-host", "default", topic)
+        # Test from within the container
+        self.is_connect_healthy_for_service("connect-host-json", 28082)
+
+        # Create a file
+        # record_count = 10000
+        # create_file_source_test_data("/tmp/kafka-connect-single-node-test", file_source_input_file, record_count)
+        # file_source_create_cmd = FILE_SOURCE_CONNECTOR_CREATE % (source_connector_name, topic, "/tmp/test/%s" % file_source_input_file, worker_host, worker_port)
+        # source_status = create_connector(source_connector_name, file_source_create_cmd, worker_host, worker_port)
+        # self.assertEquals(source_status, "RUNNING")
+
+        assert "PASS" in self.cluster.run_command_on_service("connect-host-json", 'bash -c "cat /tmp/test/data/test-jdbc-sink-input.txt | kafka-console-producer --broker-list $CONNECT_BOOTSTRAP_SERVERS --topic test_jdbc_sink && echo PASS || echo FAIL" ')
+
+        jdbc_sink_create_cmd = JDBC_SINK_CONNECTOR_CREATE % (
+            sink_connector_name,
+            "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent",
+            topic,
+            worker_host,
+            worker_port)
+
+        jdbc_sink_status = create_connector(sink_connector_name, jdbc_sink_create_cmd, worker_host, worker_port)
+        self.assertEquals(jdbc_sink_status, "RUNNING")
+
+        assert "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent -e 'show databases;' | grep connect_test && echo PASS || echo FAIL" """)
+        assert "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'show tables;' | grep test && echo PASS || echo FAIL" """)
+        assert "10000" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'select COUNT(*) FROM TEST ;' " """)
+
+    def test_jdbc_sink_connector_on_host_network_with_avro(self):
+
+        topic = "test_jdbc_sink_avro"
+        file_source_input_file = "source.test.txt"
+        source_connector_name = "one-node-jdbc-sink-test-file-source"
+        sink_connector_name = "one-node-jdbc-sink-test"
+        worker_host = "localhost"
+        worker_port = 38082
+
+        # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
+        self.create_topics("kafka-host", "default.avro", topic)
+
+        # Create the database.
+        assert "PASS" in self.cluster.run_command_on_service("mysql-host", "bash -c 'mysql -u root -pconfluent < /tmp/sql/mysql-test.sql && echo PASS'")
+
+        # Test from within the container
+        self.is_connect_healthy_for_service("connect-host-avro", 38082)
+
+        assert "PASS" in self.cluster.run_command_on_service("connect-host-avro", 'bash -c "TOPIC=%s sh /tmp/test/scripts/produce-data-avro-jdbc-sink.sh"' % topic)
+
+        jdbc_sink_create_cmd = JDBC_SINK_CONNECTOR_CREATE % (
+            sink_connector_name,
+            "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent",
+            topic,
+            worker_host,
+            worker_port)
+
+        jdbc_sink_status = create_connector(sink_connector_name, jdbc_sink_create_cmd, worker_host, worker_port)
+        self.assertEquals(jdbc_sink_status, "RUNNING")
+
+        assert "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent -e 'show databases;' | grep connect_test && echo PASS || echo FAIL" """)
+
+        result = "0"
+        for i in xrange(25):
+            if "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'show tables;' | grep %s && echo PASS || echo FAIL" """ % topic):
+                tmp = self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'select COUNT(*) FROM %s ;' " """ % topic)
+                if "10000" in tmp:
+                    result = tmp
+                    break
+
+            time.sleep(0.1)
+
+        assert "10000" in tmp
 
 
 class ClusterHostNetworkTest(unittest.TestCase):
