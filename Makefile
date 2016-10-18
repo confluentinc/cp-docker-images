@@ -1,7 +1,7 @@
 DOCKER_VERSION := 1
 CP_VERSION := 3.1.0-SNAPSHOT
 VERSION := ${CP_VERSION}-${DOCKER_VERSION}
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center kafkacat
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center kafkacat replicator
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 

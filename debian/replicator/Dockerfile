@@ -29,14 +29,12 @@ ENV COMPONENT=kafka-connect
 # Default kafka-connect rest.port
 EXPOSE 8083
 
-RUN echo "===> Installing Schema Registry (for Avro jars), JDBC and Hadoop connectors ..." \
+RUN echo "===> Installing Replicator and Schema Registry (for Avro jars) ..." \
     && apt-get -qq update \
     # REMOVE --force-yes
     && apt-get install -y --force-yes\
-        confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-        confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+        confluent-kafka-connect-replicator=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-        confluent-kafka-connect-elasticsearch=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Installing Controlcenter for monitoring interceptors ..."\
     # REMOVE --force-yes
     && apt-get install -y --force-yes confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
