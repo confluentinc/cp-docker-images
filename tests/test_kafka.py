@@ -158,14 +158,14 @@ class ConfigTest(unittest.TestCase):
             log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
 
 
-            log4j.logger.kafka.authorizer.logger=WARN, stdout
-            log4j.logger.kafka.log.LogCleaner=INFO, stdout
-            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG, stdout
-            log4j.logger.kafka.controller=TRACE, stdout
-            log4j.logger.kafka.network.RequestChannel$=WARN, stdout
-            log4j.logger.kafka.request.logger=WARN, stdout
-            log4j.logger.state.change.logger=TRACE, stdout
-            log4j.logger.kafka=INFO, stdout
+            log4j.logger.kafka.authorizer.logger=WARN
+            log4j.logger.kafka.log.LogCleaner=INFO
+            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG
+            log4j.logger.kafka.controller=TRACE
+            log4j.logger.kafka.network.RequestChannel$=WARN
+            log4j.logger.kafka.request.logger=WARN
+            log4j.logger.state.change.logger=TRACE
+            log4j.logger.kafka=INFO
             """
         self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
 
@@ -202,15 +202,15 @@ class ConfigTest(unittest.TestCase):
             log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
 
 
-            log4j.logger.kafka.authorizer.logger=WARN, stdout
-            log4j.logger.kafka.log.LogCleaner=INFO, stdout
-            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG, stdout
-            log4j.logger.kafka.controller=WARN, stdout
-            log4j.logger.kafka.network.RequestChannel$=WARN, stdout
-            log4j.logger.kafka.request.logger=WARN, stdout
-            log4j.logger.state.change.logger=TRACE, stdout
-            log4j.logger.kafka.foo.bar=DEBUG, stdout
-            log4j.logger.kafka=INFO, stdout
+            log4j.logger.kafka.authorizer.logger=WARN
+            log4j.logger.kafka.log.LogCleaner=INFO
+            log4j.logger.kafka.producer.async.DefaultEventHandler=DEBUG
+            log4j.logger.kafka.controller=WARN
+            log4j.logger.kafka.network.RequestChannel$=WARN
+            log4j.logger.kafka.request.logger=WARN
+            log4j.logger.state.change.logger=TRACE
+            log4j.logger.kafka.foo.bar=DEBUG
+            log4j.logger.kafka=INFO
             """
         self.assertEquals(log4j_props.translate(None, string.whitespace), expected_log4j_props.translate(None, string.whitespace))
 

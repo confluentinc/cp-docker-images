@@ -16,7 +16,9 @@ zookeeper.connect={{env['KAFKA_REST_ZOOKEEPER_CONNECT']}}
 	'KAFKA_REST_CONSUMER_THREADS': 'consumer.threads',
 	'KAFKA_REST_CONSUMER_INSTANCE_TIMEOUT_MS': 'consumer.instance.timeout.ms',
 	'KAFKA_REST_SIMPLE_CONSUMER_MAX_POOL_SIZE': 'simpleconsumer.pool.size.max',
-	'KAFKA_REST_SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms'
+	'KAFKA_REST_SIMPLE_CONSUMER_POOL_TIMEOUT_MS': 'simpleconsumer.pool.timeout.ms',
+	'KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN': 'access.control.allow.origin',
+	'KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS': 'access.control.allow.methods'
  } -%}
 
  {% for k, property in other_props.iteritems() -%}
