@@ -28,8 +28,7 @@ LABEL io.confluent.docker=true
 ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
-    # REMOVE --force-yes
-    && apt-get update && apt-get install -y --force-yes confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \

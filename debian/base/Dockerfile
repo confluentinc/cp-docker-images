@@ -36,7 +36,7 @@ ENV CONFLUENT_MINOR_VERSION="1"
 ENV CONFLUENT_PATCH_VERSION="0~SNAPSHOT"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
-ENV CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.1.x/14"
+ENV CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.1.0-snapshot"
 
 # REMOVE SNAPSHOT
 ENV KAFKA_VERSION="0.10.1.0~SNAPSHOT"
@@ -57,7 +57,7 @@ RUN echo "===> Updating debian ....." \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
-    # REMOVE LATER : Only for nightlies
+    # REMOVE LATER : Only for nightlies / staging
     && DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https  \
     && echo "===> Installing python packages ..."  \
     && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
@@ -72,8 +72,7 @@ RUN echo "===> Updating debian ....." \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
     && echo "===> Adding confluent repository...${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    # UNCOMMENT LATER : Commented for nightly package
-    # && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
     && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub

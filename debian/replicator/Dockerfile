@@ -31,18 +31,23 @@ EXPOSE 8083
 
 RUN echo "===> Installing Replicator and Schema Registry (for Avro jars) ..." \
     && apt-get -qq update \
-    # REMOVE --force-yes
-    && apt-get install -y --force-yes\
-        confluent-kafka-connect-replicator=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && apt-get install -y \
+        # confluent-kafka-connect-replicator=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Installing Controlcenter for monitoring interceptors ..."\
-    # REMOVE --force-yes
-    && apt-get install -y --force-yes confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
     && mkdir -p /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars \
     && chmod -R ag+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars
+
+# REMOVE when replicator packages are available
+ENV CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.1.x/14"
+RUN  echo "===> Adding confluent repository...${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
+     && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list \
+     && apt-get -qq update \
+     && apt-get install -y --force-yes confluent-kafka-connect-replicator=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION}
 
 VOLUME ["/etc/${COMPONENT}/jars", "/etc/${COMPONENT}/secrets"]
 

@@ -31,15 +31,13 @@ EXPOSE 8083
 
 RUN echo "===> Installing Schema Registry (for Avro jars), JDBC and Hadoop connectors ..." \
     && apt-get -qq update \
-    # REMOVE --force-yes
-    && apt-get install -y --force-yes\
+    && apt-get install -y \
         confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
         confluent-kafka-connect-elasticsearch=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Installing Controlcenter for monitoring interceptors ..."\
-    # REMOVE --force-yes
-    && apt-get install -y --force-yes confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
