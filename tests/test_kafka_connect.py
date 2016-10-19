@@ -381,8 +381,6 @@ class SingleNodeDistributedTest(unittest.TestCase):
     def test_jdbc_sink_connector_on_host_network_with_avro(self):
 
         topic = "test_jdbc_sink_avro"
-        file_source_input_file = "source.test.txt"
-        source_connector_name = "one-node-jdbc-sink-test-file-source"
         sink_connector_name = "one-node-jdbc-sink-test"
         worker_host = "localhost"
         worker_port = 38082
