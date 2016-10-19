@@ -1,0 +1,181 @@
+---
+version: '2'
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    labels:
+    - io.confluent.docker.testing=true
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181/defaultconfig
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+    labels:
+    - io.confluent.docker.testing=true
+
+  failing-config:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+
+  failing-config-group-id:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+
+  failing-config-config-topic:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+
+  failing-config-offset-topic:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+
+
+  failing-config-status-topic:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+
+
+  failing-config-key-converter:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+
+  failing-config-value-converter:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+  failing-config-internal-key-converter:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+  failing-config-internal-value-converter:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+  failing-config-rest-adv-host-name:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+  default-config:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "default-config"
+      CONNECT_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+
+  default-config-avro:
+    image: confluentinc/cp-kafka-connect:latest
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_REST_PORT: 8082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "default-config"
+      CONNECT_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"

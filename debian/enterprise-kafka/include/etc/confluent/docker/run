@@ -14,19 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Mesos DC/OS docker deployments will have HOST and PORT0 
-# set for the proxying of the service.
-# 
-# Use those values provide things we know we'll need.
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
 
-[ -n "${HOST:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_HOST_NAME:-}" ] && \
-	export CONNECT_REST_ADVERTISED_HOST_NAME=$HOST || true
+echo "===> ENV Variables ..."
+env | sort
 
-[ -n "${PORT0:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_PORT:-}" ] && \
-	export CONNECT_REST_ADVERTISED_PORT=$PORT0 || true
+echo "===> User"
+id
 
-# And default to 8083, which MUST match the containerPort specification
-# in the Mesos package for this service.
-[ -z "${CONNECT_REST_PORT:-}" ] && \
-	export CONNECT_REST_PORT=8083 || true
+echo "===> Configuring ..."
+/etc/confluent/docker/configure
 
+echo "===> Running preflight checks ... "
+/etc/confluent/docker/ensure
+
+echo "===> Launching ... "
+exec /etc/confluent/docker/launch

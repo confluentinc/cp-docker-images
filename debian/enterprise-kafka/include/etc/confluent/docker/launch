@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # Override this section from the script to include the com.sun.management.jmxremote.rmi.port property.
 if [ -z "$KAFKA_JMX_OPTS" ]; then
   export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "
@@ -35,8 +34,4 @@ if [ "$KAFKA_JMX_PORT" ]; then
 fi
 
 echo "===> Launching ${COMPONENT} ... "
-# Add external jars to the classpath
-# And this also makes sure that the CLASSPATH does not start with ":/etc/..."
-# because this causes the plugin scanner to scan the entire disk.
-export CLASSPATH="/etc/kafka-connect/jars/*"
-exec connect-distributed /etc/"${COMPONENT}"/"${COMPONENT}".properties
+exec "${COMPONENT}"-server-start /etc/"${COMPONENT}"/"${COMPONENT}".properties

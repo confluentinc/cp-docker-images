@@ -6,7 +6,7 @@ import string
 import json
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "replicator")
+FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "enterprise-replicator")
 KAFKA_READY = "bash -c 'cub kafka-ready {brokers} 40 -z $KAFKA_ZOOKEEPER_CONNECT && echo PASS || echo FAIL'"
 CONNECT_HEALTH_CHECK = "bash -c 'dub wait {host} {port} 30 && curl -X GET --fail --silent {host}:{port}/connectors && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
