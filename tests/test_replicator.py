@@ -14,7 +14,16 @@ TOPIC_CREATE = "bash -c ' kafka-topics --create --topic {name} --partitions {par
 
 REPLICATOR_CREATE = """
     curl -X POST -H "Content-Type: application/json" \
-    --data '{"name": "%s", "config": { "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector", "src.zookeeper.connect": "%s", "src.kafka.bootstrap.servers": "%s", "dest.zookeeper.connect": "%s", "topic.whitelist": "%s", "topic.rename.format": "${topic}.replica"}}' \
+    --data '{"name": "%s",
+            "config": {
+            "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
+            "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+            "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+            "src.zookeeper.connect": "%s",
+            "src.kafka.bootstrap.servers": "%s",
+            "dest.zookeeper.connect": "%s",
+            "topic.whitelist": "%s",
+            "topic.rename.format": "${topic}.replica"}}' \
     http://%s:%s/connectors
 """
 
@@ -115,5 +124,12 @@ class ClusterHostNetworkTest(unittest.TestCase):
         src_a_replicator = create_connector("cluster-a", src_a_replicator_cmd, "localhost", "28082")
         self.assertEquals(src_a_replicator, "RUNNING")
 
-        consumer_logs = self.cluster.run_command_on_service("kafka-1-src-a", CONSUME_DATA.format(messages=1000, brokers="localhost:9072", topic="foo.replica"))
-        self.assertTrue("Processed a total of 1000 messages" in consumer_logs)
+        src_b_replicator_cmd = REPLICATOR_CREATE % ("cluster-b", "localhost:32181", "localhost:9082", "localhost:42181", "bar", "localhost", "28082")
+        src_b_replicator = create_connector("cluster-b", src_b_replicator_cmd, "localhost", "28082")
+        self.assertEquals(src_b_replicator, "RUNNING")
+
+        foo_consumer_logs = self.cluster.run_command_on_service("kafka-1-src-a", CONSUME_DATA.format(messages=1000, brokers="localhost:9072", topic="foo.replica"))
+        self.assertTrue("Processed a total of 1000 messages" in foo_consumer_logs)
+
+        bar_consumer_logs = self.cluster.run_command_on_service("kafka-1-src-b", CONSUME_DATA.format(messages=1000, brokers="localhost:9072", topic="bar.replica"))
+        self.assertTrue("Processed a total of 1000 messages" in bar_consumer_logs)
