@@ -15,7 +15,7 @@
 
 # Builds a docker image for Kafka Connect
 
-FROM confluentinc/cp-kafka-connect-base
+FROM confluentinc/cp-kafka
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
@@ -26,11 +26,23 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 ENV COMPONENT=kafka-connect
 
-RUN echo "===> Installing JDBC, Elasticsearch and Hadoop connectors ..." \
+# Default kafka-connect rest.port
+EXPOSE 8083
+
+RUN echo "===> Installing Schema Registry (for Avro jars) ..." \
     && apt-get -qq update \
     && apt-get install -y \
-        confluent-kafka-connect-jdbc=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-        confluent-kafka-connect-hdfs=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-        confluent-kafka-connect-elasticsearch=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+        confluent-schema-registry=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && echo "===> Installing Controlcenter for monitoring interceptors ..."\
+    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
-    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    echo "===> Setting up ${COMPONENT} dirs ..." \
+    && mkdir -p /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars \
+    && chmod -R ag+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars
+
+VOLUME ["/etc/${COMPONENT}/jars", "/etc/${COMPONENT}/secrets"]
+
+COPY include/etc/confluent/docker /etc/confluent/docker
+
+CMD ["/etc/confluent/docker/run"]

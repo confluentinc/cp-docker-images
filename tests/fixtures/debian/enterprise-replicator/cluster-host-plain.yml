@@ -1,0 +1,126 @@
+---
+version: '2'
+services:
+  zookeeper-src-a:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 22181
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-src-b:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  zookeeper-dest:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 42181
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-1-src-a:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-2-src-a:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9095
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-1-src-b:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9082
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-2-src-b:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9085
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-1-dest:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9072
+    labels:
+    - io.confluent.docker.testing=true
+
+  kafka-2-dest:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: localhost:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9075
+    labels:
+    - io.confluent.docker.testing=true
+
+  connect-host-1:
+    image: confluentinc/cp-enterprise-replicator:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    # This is a workaround for the invalid topic exception. If you allow auto-topic creation, sometimes
+    # the worker fails with Invalid topic exception, restarting fixes the issue.
+    restart: on-failure:3
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:9072,localhost:9075
+      CONNECT_REST_PORT: 28082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/replicator-host-cluster-test/:/tmp/test
+
+  connect-host-2:
+    image: confluentinc/cp-enterprise-replicator:latest
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+    restart: on-failure:3
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: localhost:9072,localhost:9075
+      CONNECT_REST_PORT: 38082
+      CONNECT_GROUP_ID: "default"
+      CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "default.offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "default.status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      # CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
+    volumes:
+    - /tmp/replicator-host-cluster-test/:/tmp/test
