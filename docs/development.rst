@@ -32,8 +32,7 @@ Configuration
 
 The ``configure`` script does all the necessary configuration for each image. This includes the following:
 
-- Creating all configuration files and copying them to their proper
-   location
+- Creating all configuration files and copying them to their proper location
 - Ensuring that mandatory configuration properties are present
 - Handling service discovery (if required)
 
@@ -58,8 +57,7 @@ Launching the Process
 The ``launch`` script runs the actual process. The script should ensure
 that :
 
--  The process is run properly. You need to do ``exec`` (Note to self:
-   Why was this needed again?)
+-  The process is run properly. You need to include ``exec``.
 -  Log to stdout
 
 Development Guidelines
@@ -404,7 +402,7 @@ The following examples show to extend the images.
        # Confluent
        ENV SCALA_VERSION="2.11"
        ENV CONFLUENT_MAJOR_VERSION="3.0"
-       ENV CONFLUENT_VERSION="3.0.1"
+       ENV CONFLUENT_VERSION="3.1.0"
        ENV CONFLUENT_DEB_VERSION="1"
 
        # Zulu
