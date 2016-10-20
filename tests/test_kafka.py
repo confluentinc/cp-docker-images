@@ -251,9 +251,14 @@ class ConfigTest(unittest.TestCase):
                 listeners=SSL://0.0.0.0:9092
                 log.dirs=/var/lib/kafka/data
                 security.inter.broker.protocol=SSL
+                ssl.key.credentials=broker1_sslkey_creds
+                ssl.key.password=confluent
+                ssl.keystore.credentials=broker1_keystore_creds
+                ssl.keystore.filename=kafka.broker1.keystore.jks
                 ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
                 ssl.keystore.password=confluent
-                ssl.key.password=confluent
+                ssl.truststore.credentials=broker1_truststore_creds
+                ssl.truststore.filename=kafka.broker1.truststore.jks
                 ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
                 ssl.truststore.password=confluent
                 zookeeper.connect=zookeeper:2181/sslconfig
@@ -265,20 +270,24 @@ class ConfigTest(unittest.TestCase):
         zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
+                broker.id=1
                 listeners=SSL://0.0.0.0:9092,SASL_SSL://0.0.0.0:9094
                 log.dirs=/var/lib/kafka/data
-                zookeeper.connect=zookeeper:2181/sslsaslconfig
-
-                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
-                security.inter.broker.protocol=SASL_SSL
+                sasl.enabled.mechanisms=GSSAPI
                 sasl.kerberos.service.name=kafka
-                ssl.keystore.password=confluent
+                sasl.mechanism.inter.broker.protocol=GSSAPI
+                security.inter.broker.protocol=SASL_SSL
+                ssl.key.credentials=broker1_sslkey_creds
                 ssl.key.password=confluent
+                ssl.keystore.credentials=broker1_keystore_creds
+                ssl.keystore.filename=kafka.broker1.keystore.jks
+                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
+                ssl.keystore.password=confluent
+                ssl.truststore.credentials=broker1_truststore_creds
+                ssl.truststore.filename=kafka.broker1.truststore.jks
                 ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
                 ssl.truststore.password=confluent
-                sasl.enabled.mechanisms=GSSAPI
-                broker.id=1
-                sasl.mechanism.inter.broker.protocol=GSSAPI
+                zookeeper.connect=zookeeper:2181/sslsaslconfig
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
@@ -336,7 +345,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             image="confluentinc/cp-jmxterm",
             command=JMX_CHECK.format(jmx_hostname="localhost", jmx_port="39999"),
             host_config={'NetworkMode': 'host'})
-        self.assertTrue("Version = 0.10.0.1-cp1;" in logs)
+        self.assertTrue("Version = 0.10.1.0-cp1;" in logs)
 
     def test_jmx_bridged_network(self):
 
@@ -345,7 +354,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             image="confluentinc/cp-jmxterm",
             command=JMX_CHECK.format(jmx_hostname="kafka-bridged-jmx", jmx_port="9999"),
             host_config={'NetworkMode': 'standalone-network-test_zk'})
-        self.assertTrue("Version = 0.10.0.1-cp1;" in logs)
+        self.assertTrue("Version = 0.10.1.0-cp1;" in logs)
 
 
 class ClusterBridgedNetworkTest(unittest.TestCase):
