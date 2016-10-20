@@ -4,7 +4,7 @@
                          'KAFKA_OPTS',
                          'KAFKA_JMX_OPTS',
                          'KAFKA_JVM_PERFORMANCE_OPTS',
-                         'KAFKA_GC_LOG_OPTS', 
+                         'KAFKA_GC_LOG_OPTS',
                          'KAFKA_LOG4J_ROOT_LOGLEVEL',
                          'KAFKA_LOG4J_LOGGERS',
                          'KAFKA_TOOLS_LOG4J_LOGLEVEL']
@@ -14,15 +14,7 @@
 {{name}}={{value}}
 {% endfor -%}
 
-{% set confluent_props = {
- 'CONFLUENT_SUPPORT_METRICS_ENABLE' : 'confluent.support.metrics.enable',
- 'CONFLUENT_SUPPORT_CUSTOMER_ID' : 'confluent.support.customer.id',
- 'CONFLUENT_SUPPORT_METRICS_TOPIC' : 'confluent.support.metrics.topic',
- 'CONFLUENT_SUPPORT_METRICS_REPORT_INTERVAL_HOURS' : 'confluent.support.metrics.report.interval.hours'
- } -%}
-
-{% for k, property in confluent_props.iteritems() -%}
-{% if env.get(k) != None -%}
-{{property}}={{env[k]}}
-{% endif -%}
+{% set confluent_support_props = env_to_props('CONFLUENT_SUPPORT_', 'confluent.support.') -%}
+{% for name, value in confluent_support_props.iteritems() -%}
+{{name}}={{value}}
 {% endfor -%}
