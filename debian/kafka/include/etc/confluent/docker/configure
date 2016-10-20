@@ -30,7 +30,14 @@ then
   export KAFKA_LISTENERS
   KAFKA_LISTENERS=$(cub listeners "$KAFKA_ADVERTISED_LISTENERS")
 fi
+
 dub path /etc/kafka/ writable
+
+if [[ -z "${KAFKA_LOG_DIRS-}" ]]
+then
+  export KAFKA_LOG_DIRS
+  KAFKA_LOG_DIRS="/var/lib/kafka/data"
+fi
 
 # advertised.host, advertised.port, host and port are deprecated. Exit if these properties are set.
 if [[ -n "${KAFKA_ADVERTISED_PORT-}" ]]

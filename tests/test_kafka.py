@@ -129,7 +129,7 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_kafka_healthy_for_service("default-config", 9092, 1)
-        props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka/kafka.properties")
+        props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
             advertised.listeners=PLAINTEXT://default-config:9092
             listeners=PLAINTEXT://0.0.0.0:9092
@@ -181,13 +181,13 @@ class ConfigTest(unittest.TestCase):
 
     def test_full_config(self):
         self.is_kafka_healthy_for_service("full-config", 9092, 1)
-        props = self.cluster.run_command_on_service("full-config", "cat /etc/kafka/kafka.properties")
+        props = self.cluster.run_command_on_service("full-config", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
                 advertised.listeners=PLAINTEXT://full-config:9092
+                broker.id=1
                 listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/fullconfig
-                broker.id=1
                 """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
@@ -232,38 +232,37 @@ class ConfigTest(unittest.TestCase):
 
     def test_kitchen_sink(self):
         self.is_kafka_healthy_for_service("kitchen-sink", 9092, 1)
-        zk_props = self.cluster.run_command_on_service("kitchen-sink", "cat /etc/kafka/kafka.properties")
+        zk_props = self.cluster.run_command_on_service("kitchen-sink", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
+                broker.id=1
                 listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
-                broker.id=1
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_ssl_config(self):
         self.is_kafka_healthy_for_service("ssl-config", 9092, 1, "ssl-config", "SSL")
-        zk_props = self.cluster.run_command_on_service("ssl-config", "cat /etc/kafka/kafka.properties")
+        zk_props = self.cluster.run_command_on_service("ssl-config", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
                 advertised.listeners=SSL://ssl-config:9092
+                broker.id=1
                 listeners=SSL://0.0.0.0:9092
                 log.dirs=/var/lib/kafka/data
-                zookeeper.connect=zookeeper:2181/sslconfig
-
-                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
                 security.inter.broker.protocol=SSL
+                ssl.keystore.location=/etc/kafka/secrets/kafka.broker1.keystore.jks
                 ssl.keystore.password=confluent
                 ssl.key.password=confluent
                 ssl.truststore.location=/etc/kafka/secrets/kafka.broker1.truststore.jks
                 ssl.truststore.password=confluent
-                broker.id=1
+                zookeeper.connect=zookeeper:2181/sslconfig
                 """
         self.assertEquals(zk_props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
     def test_sasl_config(self):
         self.is_kafka_healthy_for_service("sasl-ssl-config", 9094, 1, "sasl-ssl-config", "SASL_SSL")
-        zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "cat /etc/kafka/kafka.properties")
+        zk_props = self.cluster.run_command_on_service("sasl-ssl-config", "bash -c 'cat /etc/kafka/kafka.properties | sort'")
         expected = """
                 advertised.listeners=SSL://sasl-ssl-config:9092,SASL_SSL://sasl-ssl-config:9094
                 listeners=SSL://0.0.0.0:9092,SASL_SSL://0.0.0.0:9094
