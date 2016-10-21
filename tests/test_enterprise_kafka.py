@@ -85,7 +85,6 @@ class ClusterHostNetworkTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_adb(self):
-        # Test from within the container
         self.is_kafka_healthy_for_service("kafka-1", 19092, 3)
         topic = "test-adb-metrics"
         topic_output = self.cluster.run_command_on_service("kafka-1", TOPIC_CREATE.format(topic=topic, partitions=10, replicas=3))
