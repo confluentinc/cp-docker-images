@@ -39,7 +39,7 @@ services:
       - zk
     ports:
       - "19021:9021"
-    image: confluentinc/cp-control-center:latest
+    image: confluentinc/cp-enterprise-control-center:latest
     environment:
       CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper-bridge:2181"
       CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka-bridge:19092"

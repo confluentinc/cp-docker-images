@@ -5,6 +5,8 @@ zookeeper.connect={{env['CONTROL_CENTER_ZOOKEEPER_CONNECT']}}
 confluent.controlcenter.data.dir={{env['CONTROL_CENTER_DATA_DIR']}}
 confluent.monitoring.interceptor.topic.replication={{env.get('CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
+confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
+
 
 {# optional properties #}
 {% set other_props = {
@@ -19,28 +21,35 @@ confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_IN
     'CONTROL_CENTER_LICENSE': 'confluent.controlcenter.license',
 } -%}
 
+{% set excludes = other_props.keys() + ['CONTROL_CENTER_COMMAND_TOPIC_REPLICATION'] -%}
+
 {% for k, property in other_props.iteritems() -%}
 {% if env.get(k) != None -%}
 {{property}}={{env[k]}}
 {% endif -%}
 {% endfor -%}
 
-{% set streams_props = env_to_props('CONTROL_CENTER_CONNECT_', 'confluent.controlcenter.connect.', exclude=other_props.keys()) -%}
+{% set command_props = env_to_props('CONTROL_CENTER_COMMAND_', 'confluent.controlcenter.command.', exclude=excludes) -%}
+{% for name, value in command_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
+
+{% set connect_props = env_to_props('CONTROL_CENTER_CONNECT_', 'confluent.controlcenter.connect.', exclude=excludes) -%}
+{% for name, value in connect_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
+
+{% set streams_props = env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=excludes) -%}
 {% for name, value in streams_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
 
-{% set streams_props = env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=other_props.keys()) -%}
-{% for name, value in streams_props.iteritems() -%}
-{{name}}={{value}}
-{% endfor -%}
-
-{% set rest_props = env_to_props('CONTROL_CENTER_REST_', 'confluent.controlcenter.rest.', exclude=other_props.keys()) -%}
+{% set rest_props = env_to_props('CONTROL_CENTER_REST_', 'confluent.controlcenter.rest.', exclude=excludes) -%}
 {% for name, value in rest_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
 
-{% set rest_props = env_to_props('CONTROL_CENTER_MAIL_', 'confluent.controlcenter.mail.', exclude=other_props.keys()) -%}
-{% for name, value in rest_props.iteritems() -%}
+{% set mail_props = env_to_props('CONTROL_CENTER_MAIL_', 'confluent.controlcenter.mail.', exclude=excludes) -%}
+{% for name, value in mail_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
