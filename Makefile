@@ -13,6 +13,8 @@ clean-containers:
         echo "\nRemoving container $${container} \n========================================== " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
+	# Remove dangling volumes
+	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
 	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \

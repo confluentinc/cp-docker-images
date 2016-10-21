@@ -199,6 +199,8 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/kitchensink
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kitchen-sink:9092
+      CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: c0
     volumes:
     - /tmp/kafka-config-kitchen-sink-test/data:/var/lib/kafka/data
     user: '12345'
