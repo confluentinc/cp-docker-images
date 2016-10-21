@@ -72,9 +72,9 @@ class ClusterHostNetworkTest(unittest.TestCase):
         cls.cluster.start()
         assert "PASS" in cls.cluster.run_command_on_service("zookeeper-1", ZK_READY.format(servers="localhost:22181,localhost:32181,localhost:42181"))
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.cluster.shutdown()
+    @classmethod
+    def tearDownClass(cls):
+        cls.cluster.shutdown()
 
     def test_cluster_running(self):
         self.assertTrue(self.cluster.is_running())
