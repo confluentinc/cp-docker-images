@@ -68,6 +68,40 @@ Required Settings
 
   Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
 
+Enterprise Kafka
+------------------
+
+The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
+
+  .. sourcecode:: bash
+
+      docker run -d \
+          --net=host \
+          --name=kafka \
+          -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+          -e KAFKA_BROKER_ID=2 \
+          -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
+          confluentinc/cp-kafka:3.0.1
+
+  .. note::
+
+    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host.
+
+    If you want to enable Proactive support or use Confluent Auto Data Balancing features, please follow the Proactive support and ADB documentation at `Confluent documentation <http://docs.confluent.io/current/>`_.
+
+Required Settings
+"""""""""""""""""
+
+``KAFKA_ZOOKEEPER_CONNECT``
+
+  Tells Kafka how to get in touch with ZooKeeper.
+
+``KAFKA_ADVERTISED_LISTENERS``
+
+  Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
+
+
 Schema Registry
 ---------------
 
