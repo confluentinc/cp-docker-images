@@ -122,7 +122,7 @@ To get started, you can build all the CP images as follows:
 
 You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
-.. _running_tests : 
+.. _running_tests :
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -146,12 +146,30 @@ To run a single test, you can do so with Python.  In the following example, we r
     Deleting All Docker Containers: During the development process, you'll often need to delete and rebuild the Docker images.  You can do so by running ``docker rm -f $(docker ps -a -q)``.
 
 
+.. _configuring_ci :
+
+Configuring CI
+~~~~~~~~~~~~~~
+
+Note: This has been tested on Ubuntu 15.10 only with Docker v1.12.1.
+
+1. Install `Docker<https://docs.docker.com/engine/installation/linux/ubuntulinux>`_. Make sure that the current user can issue `docker` commands by `creating a docker group <https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group>`_.
+
+2. Install prerequisites.
+
+  .. sourcecode:: bash
+
+    sudo apt-get install -yy git python make python-pip virtualenv maven openjdk-8-jdk
+
+3. Run ``make ci`` to build all the images and run all the tests.
+
+
 Make Targets
 ~~~~~~~~~~~~
 
 Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
-``clean-images`` 
+``clean-images``
 
 Delete all containers tagged with ``label=io.confluent.docker`` :
 
@@ -175,7 +193,7 @@ Extending the Docker Images
 --------------------------
 
 You may want to extend the images to add new software, change the
-config management, use service discovery etc.  This page provides instructions for doing so. 
+config management, use service discovery etc.  This page provides instructions for doing so.
 
 .. _prerequisites :
 
@@ -194,9 +212,9 @@ Prerequisites
 Adding Connectors to the Kafka Connect Image
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are currently two ways to add new connectors to the Kafka Connect image.  
+There are currently two ways to add new connectors to the Kafka Connect image.
 
-* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
@@ -743,10 +761,9 @@ The following properties may be configured when using the ``kafka-ready`` utilit
   * Default: "PKIX"
   * Importance: low
 
-.. _references : 
+.. _references :
 
 References
 ----------
 
 - Docker's example for `setting up a Dockerized AWS EC2 instance <https://docs.docker.com/machine/examples/aws/>`_.
-
