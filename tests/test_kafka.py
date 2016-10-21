@@ -236,6 +236,8 @@ class ConfigTest(unittest.TestCase):
         expected = """
                 advertised.listeners=PLAINTEXT://kitchen-sink:9092
                 broker.id=1
+                confluent.support.customer.id=c0
+                confluent.support.metrics.enable=false
                 listeners=PLAINTEXT://0.0.0.0:9092
                 log.dirs=/var/lib/kafka/data
                 zookeeper.connect=zookeeper:2181/kitchensink
