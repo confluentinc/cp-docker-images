@@ -82,7 +82,7 @@ The Enterprise Kafka image includes the packages for Confluent Auto Data Balanci
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
           -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
-          confluentinc/cp-kafka:3.0.1
+          confluentinc/cp-enterprise-kafka:3.1.0
 
   .. note::
 
