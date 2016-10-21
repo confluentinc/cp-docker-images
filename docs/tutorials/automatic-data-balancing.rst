@@ -293,26 +293,26 @@ Lets start by starting the Zookeeper and first rack of brokers using the Docker 
   .. sourcecode:: bash
 
     Topic:adb-test 	PartitionCount:20      	ReplicationFactor:3    	Configs:
-    Topic: adb-test	Partition: 0   	Leader: 2      	Replicas: 2,1,3	Isr: 2,3,1
-    Topic: adb-test	Partition: 1   	Leader: 6      	Replicas: 6,2,1	Isr: 2,1,6
-    Topic: adb-test	Partition: 2   	Leader: 1      	Replicas: 1,3,2	Isr: 1,3,2
-    Topic: adb-test	Partition: 3   	Leader: 2      	Replicas: 2,3,1	Isr: 2,3,1
-    Topic: adb-test	Partition: 4   	Leader: 6      	Replicas: 6,1,2	Isr: 2,1,6
-    Topic: adb-test	Partition: 5   	Leader: 1      	Replicas: 1,2,3	Isr: 1,2,3
-    Topic: adb-test	Partition: 6   	Leader: 2      	Replicas: 2,1,3	Isr: 2,3,1
-    Topic: adb-test	Partition: 7   	Leader: 3      	Replicas: 3,2,1	Isr: 3,2,1
-    Topic: adb-test	Partition: 8   	Leader: 1      	Replicas: 1,3,2	Isr: 1,3,2
-    Topic: adb-test	Partition: 9   	Leader: 2      	Replicas: 2,3,1	Isr: 2,1,3
-    Topic: adb-test	Partition: 10  	Leader: 3      	Replicas: 3,1,2	Isr: 3,2,1
-    Topic: adb-test	Partition: 11  	Leader: 1      	Replicas: 1,2,3	Isr: 1,2,3
-    Topic: adb-test	Partition: 12  	Leader: 2      	Replicas: 2,1,3	Isr: 2,1,3
-    Topic: adb-test	Partition: 13  	Leader: 3      	Replicas: 3,2,1	Isr: 3,2,1
-    Topic: adb-test	Partition: 14  	Leader: 1      	Replicas: 1,3,2	Isr: 1,3,2
-    Topic: adb-test	Partition: 15  	Leader: 2      	Replicas: 2,3,1	Isr: 2,1,3
-    Topic: adb-test	Partition: 16  	Leader: 3      	Replicas: 3,1,2	Isr: 3,2,1
-    Topic: adb-test	Partition: 17  	Leader: 1      	Replicas: 1,2,3	Isr: 1,2,3
-    Topic: adb-test	Partition: 18  	Leader: 2      	Replicas: 2,1,3	Isr: 2,1,3
-    Topic: adb-test	Partition: 19  	Leader: 3      	Replicas: 3,2,1	Isr: 3,2,1
+    Topic: adb-test	Partition: 0   	Leader: 1      	Replicas: 1,5,6	Isr: 5,1,6
+    Topic: adb-test	Partition: 1   	Leader: 3      	Replicas: 3,5,4	Isr: 5,3,4
+    Topic: adb-test	Partition: 2   	Leader: 6      	Replicas: 6,4,1	Isr: 1,6,4
+    Topic: adb-test	Partition: 3   	Leader: 6      	Replicas: 6,5,3	Isr: 5,6,3
+    Topic: adb-test	Partition: 4   	Leader: 1      	Replicas: 1,4,5	Isr: 5,1,4
+    Topic: adb-test	Partition: 5   	Leader: 3      	Replicas: 6,4,3	Isr: 6,3,4
+    Topic: adb-test	Partition: 6   	Leader: 1      	Replicas: 5,1,6	Isr: 5,1,6
+    Topic: adb-test	Partition: 7   	Leader: 3      	Replicas: 3,5,4	Isr: 5,3,4
+    Topic: adb-test	Partition: 8   	Leader: 4      	Replicas: 4,6,1	Isr: 1,6,4
+    Topic: adb-test	Partition: 9   	Leader: 5      	Replicas: 5,6,3	Isr: 5,6,3
+    Topic: adb-test	Partition: 10  	Leader: 2      	Replicas: 2,4,5	Isr: 5,2,4
+    Topic: adb-test	Partition: 11  	Leader: 4      	Replicas: 4,2,6	Isr: 6,2,4
+    Topic: adb-test	Partition: 12  	Leader: 5      	Replicas: 5,2,6	Isr: 5,6,2
+    Topic: adb-test	Partition: 13  	Leader: 2      	Replicas: 2,5,4	Isr: 5,2,4
+    Topic: adb-test	Partition: 14  	Leader: 4      	Replicas: 4,6,2	Isr: 6,2,4
+    Topic: adb-test	Partition: 15  	Leader: 1      	Replicas: 1,3,2	Isr: 1,2,3
+    Topic: adb-test	Partition: 16  	Leader: 2      	Replicas: 3,2,1	Isr: 2,1,3
+    Topic: adb-test	Partition: 17  	Leader: 3      	Replicas: 3,2,1	Isr: 3,2,1
+    Topic: adb-test	Partition: 18  	Leader: 1      	Replicas: 1,2,3	Isr: 1,2,3
+    Topic: adb-test	Partition: 19  	Leader: 2      	Replicas: 2,3,1	Isr: 2,3,1
 
 
 8. Now you can try removing a broker and running the rebalance operation again.
