@@ -248,3 +248,96 @@ Optional Settings
 ``CONTROL_CENTER_CONNECT_CLUSTER``
 
   To enable Control Center to interact with a Kafka Connect cluster, set this parameter to the REST endpoint URL for the Kafka Connect cluster.
+
+
+Confluent Kafka Replicator
+---------------------------
+
+Confluent Kafka Replicator is a Kafka Connector and runs on a Kafka Connect cluster. The image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=cp-enterprise-replicator \
+      --net=host \
+      -e CONNECT_BOOTSTRAP_SERVERS=localhost:29092 \
+      -e CONNECT_REST_PORT=28082 \
+      -e CONNECT_GROUP_ID="quickstart" \
+      -e CONNECT_CONFIG_STORAGE_TOPIC="quickstart-config" \
+      -e CONNECT_OFFSET_STORAGE_TOPIC="quickstart-offsets" \
+      -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
+      -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
+      -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
+      confluentinc/cp-kafka-connect:3.0.1
+
+The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from source Kafka cluster (src) to a destination Kafka cluster (dest).
+
+  .. sourcecode:: bash
+
+    curl -X POST \
+         -H "Content-Type: application/json" \
+         --data '{
+            "name": "confluent-src-to-dest",
+            "config": {
+              "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
+              "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+              "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+              "src.zookeeper.connect": "zookeeper-src:2181",
+              "src.kafka.bootstrap.servers": "kafka-src:9082",
+              "dest.zookeeper.connect": "zookeeper-dest:2181",
+              "topic.whitelist": "confluent",
+              "topic.rename.format": "${topic}.replica"}}'  \
+         http://localhost:28082/connectors
+
+Required Settings
+"""""""""""""""""
+The following settings must be passed to run the Kafka Connect Docker image.
+
+``CONNECT_BOOTSTRAP_SERVERS``
+
+  A unique string that identifies the Connect cluster group this worker belongs to.
+
+``CONNECT_GROUP_ID``
+
+  A unique string that identifies the Connect cluster group this worker belongs to.
+
+``CONNECT_CONFIG_STORAGE_TOPIC``
+
+  The name of the topic in which to store connector and task configuration data. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_OFFSET_STORAGE_TOPIC``
+
+  The name of the topic in which to store offset data for connectors. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_STATUS_STORAGE_TOPIC``
+
+  The name of the topic in which to store state for connectors. This must be the same for all workers with the same ``group.id``
+
+``CONNECT_KEY_CONVERTER``
+
+  Converter class for keys. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+
+``CONNECT_VALUE_CONVERTER``
+
+  Converter class for values. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
+
+``CONNECT_INTERNAL_KEY_CONVERTER``
+
+  Converter class for internal keys that implements the ``Converter`` interface.
+
+``CONNECT_INTERNAL_VALUE_CONVERTER``
+
+  Converter class for internal values that implements the ``Converter`` interface.
+
+``CONNECT_REST_ADVERTISED_HOST_NAME``
+
+  Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect REST API.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
+
+Optional Settings
+"""""""""""""""""
+All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
+
+The image will then convert these environment variables to corresponding Connect config variables.
