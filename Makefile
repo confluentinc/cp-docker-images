@@ -1,7 +1,7 @@
-DOCKER_VERSION := 3
-CP_VERSION := 3.0.1
+DOCKER_VERSION := 1
+CP_VERSION := 3.1.0-SNAPSHOT
 VERSION := ${CP_VERSION}-${DOCKER_VERSION}
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect control-center kafkacat
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
@@ -13,6 +13,8 @@ clean-containers:
         echo "\nRemoving container $${container} \n========================================== " ; \
 				docker rm -f $${container} || exit 1 ; \
   done
+	# Remove dangling volumes
+	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
 	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
@@ -114,6 +116,9 @@ tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VER
 test-kafka-connect: venv clean-containers build-debian build-test-images tests/fixtures/debian/kafka-connect/jars/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_connect.py -v
 
+test-enterprise-replicator: venv clean-containers build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_enterprise_replicator.py -v
+
 test-control-center: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
 
@@ -127,6 +132,7 @@ test-all: \
 	test-zookeeper \
 	test-kafka \
 	test-kafka-connect \
+	test-enterprise-replicator \
 	test-schema-registry \
 	test-kafka-rest \
 	test-control-center

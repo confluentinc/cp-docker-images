@@ -26,7 +26,6 @@ MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
 ENV COMPONENT=zookeeper
-ENV KAFKA_VERSION="0.10.0.1"
 
 RUN echo "===> installing ${COMPONENT}..." \
     && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \

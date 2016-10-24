@@ -18,3 +18,8 @@
 {% for name, value in confluent_support_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
+
+{% set confluent_metric_props = env_to_props('CONFLUENT_METRICS_', 'confluent.metrics.') -%}
+{% for name, value in confluent_metric_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
