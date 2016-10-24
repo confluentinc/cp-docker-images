@@ -5,11 +5,18 @@ import time
 import string
 import json
 
+IMAGE_NAME = 'confluentinc/cp-enterprise-control-center'
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_DIR = os.path.join(CURRENT_DIR, "fixtures", "debian", "control-center")
 KAFKA_READY = "bash -c 'cub kafka-ready {brokers} 40 -z $KAFKA_ZOOKEEPER_CONNECT && echo PASS || echo FAIL'"
 ZK_READY = "bash -c 'cub zk-ready {servers} 40 && echo PASS || echo FAIL'"
 C3_CHECK = "bash -c 'dub wait {host} {port} 240 && curl -fs -X GET -i {host}:{port}/ && echo PASS || echo FAIL'"
+
+
+def props_to_list(props_str):
+    return sorted([
+        p.strip() for p in props_str.split("\n") if len(p.strip()) > 0
+    ])
 
 
 class ConfigTest(unittest.TestCase):
@@ -34,7 +41,7 @@ class ConfigTest(unittest.TestCase):
     def is_c3_healthy_for_service(cls, service):
         output = utils.run_docker_command(
             600,
-            image="confluentinc/cp-control-center",
+            image=IMAGE_NAME,
             command=C3_CHECK.format(host=service, port=9021),
             host_config={'NetworkMode': 'config-test_default'}
         )
@@ -47,33 +54,39 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_c3_healthy_for_service("default-config")
-        props = self.cluster.run_command_on_service("default-config", "cat /etc/confluent-control-center/control-center.properties")
-        expected = """
+        props = props_to_list(self.cluster.run_command_on_service("default-config", "cat /etc/confluent-control-center/control-center.properties"))
+        expected = props_to_list("""
         bootstrap.servers=kafka:9092
         zookeeper.connect=zookeeper:2181/defaultconfig
         confluent.controlcenter.data.dir=/var/lib/confluent-control-center
         confluent.monitoring.interceptor.topic.replication=1
         confluent.controlcenter.internal.topics.replication=1
-        """
-        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+        confluent.controlcenter.command.topic.replication=1
+        """)
+        self.assertEquals(expected, props)
 
     def test_wildcards_config(self):
         output = self.cluster.run_command_on_service("wildcards-config", "bash -c 'while [ ! -f /tmp/config-is-done ]; do echo waiting && sleep 1; done; echo PASS'")
         assert "PASS" in output
 
-        props = self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/control-center.properties")
-        expected = """
+        props = props_to_list(self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/control-center.properties"))
+        expected = props_to_list("""
         bootstrap.servers=kafka:9092
         zookeeper.connect=zookeeper:2181/defaultconfig
         confluent.controlcenter.data.dir=/var/lib/confluent-control-center
         confluent.monitoring.interceptor.topic.replication=1
         confluent.controlcenter.internal.topics.replication=1
+        confluent.controlcenter.command.topic.replication=3
+        confluent.controlcenter.command.topic.retention.ms=1000
+        confluent.controlcenter.connect.timeout=30000
         confluent.controlcenter.rest.listeners=http://0.0.0.0:9021,https://0.0.0.0:443
         confluent.controlcenter.streams.security.protocol=SASL_SS
         confluent.controlcenter.streams.sasl.kerberos.service.name=kafka
         confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
-        """
-        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+        confluent.controlcenter.mail.enabled=true
+        confluent.controlcenter.mail.host.name=foo.com
+        """)
+        self.assertEquals(expected, props)
 
 
 class StandaloneNetworkingTest(unittest.TestCase):
@@ -93,7 +106,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
     def is_c3_healthy_for_service(cls, service, network):
         output = utils.run_docker_command(
             600,
-            image="confluentinc/cp-control-center",
+            image=IMAGE_NAME,
             command=C3_CHECK.format(host=service, port=9021),
             host_config={'NetworkMode': network}
         )
@@ -108,10 +121,8 @@ class StandaloneNetworkingTest(unittest.TestCase):
             export MESSAGES="{messages}" \
             export CHECK_MESSAGES="{check_messages}"
             cub kafka-ready 1 40 -z "$ZOOKEEPER_CONNECT" \
-            && control-center-run-class kafka.admin.TopicCommand --create --topic "$TOPIC" --partitions 1 --replication-factor 1 --zookeeper "$ZOOKEEPER_CONNECT" \
-            && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor" > /tmp/producer.config \
-            && echo "acks=all" >> /tmp/producer.config \
-            && seq "$MESSAGES" | control-center-run-class kafka.tools.ConsoleProducer --broker-list "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --producer.config /tmp/producer.config \
+            && control-center-run-class kafka.admin.TopicCommand --create --topic "$TOPIC" --partitions 1 --replication-factor 1 --zookeeper "$ZOOKEEPER_CONNECT" --if-not-exists \
+            && seq "$MESSAGES" | control-center-run-class kafka.tools.ConsoleProducer --broker-list "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
             && echo PRODUCED "$MESSAGES" messages. \
             && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor" > /tmp/consumer.config \
             && control-center-run-class kafka.tools.ConsoleConsumer --bootstrap-server "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --new-consumer --from-beginning --max-messages "$CHECK_MESSAGES" --consumer.config /tmp/consumer.config'
@@ -121,9 +132,8 @@ class StandaloneNetworkingTest(unittest.TestCase):
         TOPIC = 'test-topic'
         # Run producer and consumer with interceptor to generate monitoring data
         out = utils.run_docker_command(
-            image="confluentinc/cp-control-center",
-            # TODO - check that all messages are read back when this bug is fixed - https://issues.apache.org/jira/browse/KAFKA-3993
-            command=INTERCEPTOR_CLIENTS_CMD.format(topic=TOPIC, messages=MESSAGES, check_messages=MESSAGES // 2),
+            image=IMAGE_NAME,
+            command=INTERCEPTOR_CLIENTS_CMD.format(topic=TOPIC, messages=MESSAGES, check_messages=MESSAGES),
             host_config={'NetworkMode': 'standalone-network-test_zk'},
             environment={'ZOOKEEPER_CONNECT': 'zookeeper-bridge:2181', 'BOOTSTRAP_SERVERS': 'kafka-bridge:19092'}
         )
@@ -135,12 +145,32 @@ class StandaloneNetworkingTest(unittest.TestCase):
         prev_hr_start_unix = now_unix - now_unix % 3600
         next_hr_start_unix = prev_hr_start_unix + 2 * 3600
 
-        FETCH_MONITORING_DATA_CMD = """curl -s -H 'Content-Type: application/json' 'http://{host}:{port}/1.0/monitoring/consumer_groups?startTimeMs={start}&stopTimeMs={stop}&rollup=ONE_HOUR'"""
-        cmd = FETCH_MONITORING_DATA_CMD.format(host="control-center-bridge", port=9021, start=prev_hr_start_unix * 1000, stop=next_hr_start_unix * 1000)
+        # Fetch cluster id
+        FETCH_CLUSTERS_CMD = """curl -s -H 'Content-Type: application/json' 'http://{host}:{port}/2.0/clusters/kafka/display/stream-monitoring'"""
+        fetch_cluster_cmd_args = {
+            'image': IMAGE_NAME,
+            'command': FETCH_CLUSTERS_CMD.format(host="control-center-bridge", port=9021),
+            'host_config': {'NetworkMode': 'standalone-network-test_zk'},
+        }
 
+        attempts = 0
+        while attempts <= 60:
+            attempts += 1
+            out = json.loads(utils.run_docker_command(**fetch_cluster_cmd_args))
+            self.assertTrue('defaultClusterId' in out)
+            if out['defaultClusterId'] is None:
+                time.sleep(5)
+                continue
+            else:
+                self.assertTrue(len(out['clusters']) == 1, "Expected a single cluster in %s" % out)
+                cluster_id = out['defaultClusterId']
+                break
+
+        # Fetch monitoring data
+        FETCH_MONITORING_DATA_CMD = """curl -s -H 'Content-Type: application/json' 'http://{host}:{port}/2.0/monitoring/{cluster_id}/consumer_groups?startTimeMs={start}&stopTimeMs={stop}&rollup=ONE_HOUR'"""
         fetch_cmd_args = {
-            'image': "confluentinc/cp-control-center",
-            'command': cmd,
+            'image': IMAGE_NAME,
+            'command': FETCH_MONITORING_DATA_CMD.format(host="control-center-bridge", port=9021, start=prev_hr_start_unix * 1000, stop=next_hr_start_unix * 1000, cluster_id=cluster_id),
             'host_config': {'NetworkMode': 'standalone-network-test_zk'},
         }
 
@@ -148,11 +178,11 @@ class StandaloneNetworkingTest(unittest.TestCase):
         while attempts <= 60:
             attempts += 1
             out = json.loads(utils.run_docker_command(**fetch_cmd_args))
-            if 'error_code' in out and out['error_code'] == 404:
+            self.assertTrue('sources' in out, 'Unexpected return data %s' % out)
+            if len(out['sources']) == 0:
                 time.sleep(5)
                 continue
             else:
-                self.assertTrue('sources' in out)
                 self.assertEquals(1, len(out['sources']))
                 self.assertEquals(TOPIC, out['sources'][0]['topic'])
                 break
