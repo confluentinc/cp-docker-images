@@ -37,8 +37,8 @@ Required Settings
 
   Only required when running in clustered mode.  Sets the server ID in the ``myid`` file, which consists of a single line containing only the text of that machine's id. So ``myid`` of server 1 would contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
 
-Confluent Kafka (cp-kafka image)
---------------------------------
+Confluent Kafka (cp-kafka)
+--------------------------
 
 The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
 
@@ -67,8 +67,8 @@ Required Settings
 
   Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
 
-Confluent Enterprise Kafka (cp-enterprise-kafka image)
---------------------------------------------
+Confluent Enterprise Kafka (cp-enterprise-kafka)
+------------------------------------------------
 
 The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
 

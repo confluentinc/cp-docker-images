@@ -57,7 +57,7 @@ Launching the Process
 The ``launch`` script runs the actual process. The script should ensure
 that :
 
--  The process is run properly. You need to include ``exec``.
+-  The process is run with process id 1. Your script should use ``exec`` so the program takes over the shell process rather than running as a child process.
 -  Log to stdout
 
 Development Guidelines
