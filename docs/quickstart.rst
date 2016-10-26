@@ -675,13 +675,12 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     cd cp-docker-images/examples/kafka-single-node
 
 
-3. Start Zookeeper and Kafka using Docker Compose ``start`` and ``run`` commands.
+3. Start Zookeeper and Kafka using Docker Compose ``create`` and ``start`` commands.
 
    .. sourcecode:: bash
 
        docker-compose create
        docker-compose start
-       docker-compose run
 
    Before we move on, let's make sure the services are up and running:
 

@@ -143,9 +143,10 @@ class TestCluster():
             return self.get_container(service_name).logs()
 
     def run_command(self, command, container):
+        print "Running %s on %s :" % (command, container)
         eid = container.create_exec(command)
         output = container.start_exec(eid)
-        print "Running %s on %s : %s " % (command, container, output)
+        print "\n%s " % output
         return output
 
     def run_command_on_all(self, command):
