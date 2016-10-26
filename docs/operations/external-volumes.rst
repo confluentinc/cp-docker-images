@@ -15,7 +15,7 @@ When working with Docker, you may sometimes need to persist data in the event of
     In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
 
 Data Volumes for Kafka & Zookeeper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka uses volumes for log data and Zookeeper uses volumes for transaction logs. It is recommended to seperate volumes (on the host) for these services. You will also need to ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
 
@@ -48,7 +48,7 @@ Then start the containers:
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -v /vol1/zk-data:/var/lib/zookeeper/data \
     -v /vol2/zk-txn-logs:/var/lib/zookeeper/log \
-    confluentinc/cp-zookeeper:3.0.1
+    confluentinc/cp-zookeeper:3.1.0
 
   docker run -d \
     --name=kafka-vols \
@@ -58,7 +58,7 @@ Then start the containers:
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -v /vol3/kakfa-data:/var/lib/kafka/data \
-    confluentinc/cp-kafka:3.0.1
+    confluentinc/cp-kafka:3.1.0
 
 The data volumes are mounted using the ``-v`` flag.  
 
