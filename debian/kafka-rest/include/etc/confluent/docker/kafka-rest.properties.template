@@ -1,12 +1,12 @@
 
 {# required properties #}
 zookeeper.connect={{env['KAFKA_REST_ZOOKEEPER_CONNECT']}}
+host.name={{env['KAFKA_REST_HOST_NAME']}}
 
 {# optional properties #}
 {% set other_props = {
 	'KAFKA_REST_LISTENERS': 'listeners',
 	'KAFKA_REST_ID_CONFIG': 'id',
-	'KAFKA_REST_HOST_NAME': 'host.name',
 	'KAFKA_REST_SCHEMA_REGISTRY_URL': 'schema.registry.url',
 	'KAFKA_REST_PRODUCER_THREADS': 'producer.threads',
 	'KAFKA_REST_CONSUMER_ITERATOR_TIMEOUT_MS': 'consumer.iterator.timeout.ms',
