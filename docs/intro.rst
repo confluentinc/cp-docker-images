@@ -6,8 +6,42 @@ Introduction
 This section provides an overview of Confluent's Docker images for the Confluent Platform.  We've included an overview of image design, a quickstart guide, advanced tutorials, and developer instructions for extending the images.  
 The images are currently available on `DockerHub <https://hub.docker.com/u/confluentinc/>`_.  Alternatively, the source files for the images are `available on Github <https://github.com/confluentinc/cp-docker-images>`_ if you would prefer to extend and/or rebuild the images and upload them to your own DockerHub repository.
 
-The images are currently only available for Confluent Platform 3.0.1.
+The images are currently only available for Confluent Platform 3.0.1 and greater.
 
+Choosing the Right Images
+-------------------------
+
+Images are available on DockerHub for each component of the Confluent Platform.  If you are not yet familiar with the Confluent Platform, we suggest starting by reading `our documentation on what it includes <http://docs.confluent.io/current/platform.html>`_.  In addition to an open source version of Apache Kafka, the Platform also contains a variety of other components, some of which are proprietary.  
+
+The table below provides an overview of the available images.  Enterprise images contain both open source and Confluent proprietary components.  As shown below, they follow the following naming convention on DockerHub: ```cp-enterprise-${component_name}```.
+
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Component        | Image Name                   | Type         | Packages Included                       | 
++==================+==============================+==============+=========================================+ 
+| Base Image       | cp-base                      | Open Source  | - zulu-openjdk-8                        | 
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Kafka            | cp-kafka                     | Open Source  | - confluent-kafka-*                     | 
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Enterprise Kafka | cp-enterprise-kafka          | Enterprise   | - confluent-kafka-*                     |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Control Center   | cp-enterprise-control-center | Enterprise   | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
+|                  |                              |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Kafka Connect    | cp-kafka-connect             | Enterprise   | - confluent-kafka-connect-jdbc          |
+|                  |                              |              | - confluent-kafka-connect-hdfs          |
+|                  |                              |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
+|                  |                              |              | - confluent-kafka-connect-elasticsearch |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| Schema Registry  | cp-schema-registry           | Open Source  | - confluent-schema-registry             |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+| REST Proxy       | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
++------------------+------------------------------+--------------+-----------------------------------------+ 
+
+Note: Although the Kafka Connect image primarily contains an open source project, it is labeled as "Enterprise" because it contains the Confluent Control Center package.  This package is required because the interceptors are needed when running Connect with Control Center. 
 
 Requirements
 ------------
@@ -21,7 +55,7 @@ The following are prerequisites for running the CP Docker images:
 3. Docker Version 1.11 or greater.  Previous versions are not currently tested.
 
 Important Notes/Caveats
---------------
+-----------------------
 
 1. Not Supported for Docker for Mac
 	
