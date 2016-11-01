@@ -399,25 +399,17 @@ We will walk you through how to run Confluent Control Center with console produc
 
 Alerts
 ^^^^^^
-Confluent Control Center provides alerting when anomalous events occur in your
-monitoring data. This section assumes you still have your producer and consumer
-running in the background.
+Confluent Control Center provides alerting functionality when anomalous events
+occur in your monitoring data. This section assumes the console producer and
+consumer are still running in the background.
 
-The Overview page shows a history of all alerts. Click on the Overview link
-under the Alerts section on the lefthand sidebar. This is where you will
-see all triggered events. Right now, there is nothing visible as we don't
-have any alerts configured yet.
+The Overview link the lefthand sidebar takes you to a page which displays
+a history of all triggered events. To begin receiving alerts on anomalous
+events in your monitoring data, we'll need to create a trigger.
+Click the "Triggers" navigation item and then select "+ New trigger".
 
-To begin receiving alerts on anomalous events in your monitoring data, let's
-create a trigger based on some criteria. Click the "Triggers" navigation item and
-then select "+ New trigger".
-
-Let's configure a trigger to fire when we the difference between our actual
-consumption and expected consumption is greater
-than 1000 messages over a 5 second interval. This means as we are producing
-10,000 messages every 10 seconds, we should expect our consumers to be able
-to keep up with our producers to within 1000 messages over a 5 second
-interval. Let's fill out our form:
+Let's configure a trigger to fire when the difference between our actual
+consumption and expected consumption is greater than 1000 messages:
 
   .. figure:: images/c3-quickstart-new-trigger-form.png
     :scale: 50%
@@ -425,13 +417,14 @@ interval. Let's fill out our form:
 
     New trigger
 
-Trigger name is what will be displayed on the history page if a triggerable
-event occurs. Events must be triggerable on a particular consumer group. Let's
-use ``qs-consumer`` which we started up earlier.
+Set the trigger name to be "Underconsumption", which is what will be displayed
+on the history page when our trigger fires. We need to assign ``qs-consumer``,
+which we created previously, to our trigger.
 
-Let's set the trigger criteria to be "Consumption difference" where the
-condition is "Greater than" 1000 messages. The buffer in seconds is the
-wall clock time of how long we wait to determine if an event is triggerable.
+Set the trigger metric to be "Consumption difference" where the
+condition is "Greater than" 1000 messages. The buffer time (in seconds) is the
+wall clock time we will wait before firing the trigger to make sure the trigger
+condition is not too transient.
 
 After saving the trigger, Control Center will now prompt us to associate an action that will fire when
 our newly created trigger occurs. For now, the only action is send an email.
