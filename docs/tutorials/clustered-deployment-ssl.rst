@@ -49,9 +49,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 3. Generate Credentials
 
-  You will need to generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-ssl-cluster/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
+  You will need to generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-cluster-ssl/secrets`` to generate them. For production, please use these scripts for generating certificates : https://github.com/confluentinc/confluent-platform-security-tools
 
-  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-ssl-cluster/secrets`` directory in the cp-docker-images repo. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
+  For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-cluster-ssl/secrets`` directory in the cp-docker-images repo. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
   .. sourcecode:: bash
 
@@ -280,7 +280,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
         confluentinc/cp-kafka:3.1.0 \
-        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.config
+        kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.config --max-messages 42
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
@@ -318,7 +318,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
        docker-compose create
-       docker-compose start       
+       docker-compose start
 
    In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
@@ -345,7 +345,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
       docker-compose logs zookeeper-1
 
-   You should see messages like the following:
+  You should see messages like the following:
 
   .. sourcecode:: bash
 

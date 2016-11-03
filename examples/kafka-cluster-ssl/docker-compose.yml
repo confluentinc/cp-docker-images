@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper-1:
-    image: confluentinc/cp-zookeeper:3.0.1
+    image: confluentinc/cp-zookeeper:3.1.0
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 22181
@@ -13,7 +13,7 @@ services:
     network_mode: host
 
   zookeeper-2:
-    image: confluentinc/cp-zookeeper:3.0.1
+    image: confluentinc/cp-zookeeper:3.1.0
     environment:
       ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 32181
@@ -24,7 +24,7 @@ services:
     network_mode: host
 
   zookeeper-3:
-    image: confluentinc/cp-zookeeper:3.0.1
+    image: confluentinc/cp-zookeeper:3.1.0
     environment:
       ZOOKEEPER_SERVER_ID: 3
       ZOOKEEPER_CLIENT_PORT: 42181
