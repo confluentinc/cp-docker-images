@@ -85,6 +85,18 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
         confluent.controlcenter.mail.enabled=true
         confluent.controlcenter.mail.host.name=foo.com
+        confluent.controlcenter.streams.producer.security.protocol=SS
+        confluent.controlcenter.streams.producer.ssl.keystore.location=/path/to/keystore
+        confluent.controlcenter.streams.producer.ssl.keystore.password=password
+        confluent.controlcenter.streams.producer.ssl.key.password=password
+        confluent.controlcenter.streams.producer.ssl.truststore.location=/path/to/truststore
+        confluent.controlcenter.streams.producer.ssl.truststore.password=password
+        confluent.controlcenter.streams.consumer.security.protocol=SS
+        confluent.controlcenter.streams.consumer.ssl.keystore.location=/path/to/keystore
+        confluent.controlcenter.streams.consumer.ssl.keystore.password=password
+        confluent.controlcenter.streams.consumer.ssl.key.password=password
+        confluent.controlcenter.streams.consumer.ssl.truststore.location=/path/to/truststore
+        confluent.controlcenter.streams.consumer.ssl.truststore.password=password
         """)
         self.assertEquals(expected, props)
 
