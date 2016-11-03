@@ -100,6 +100,18 @@ class ConfigTest(unittest.TestCase):
         """)
         self.assertEquals(expected, props)
 
+        admin_props = props_to_list(self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/admin.properties"))
+        admin_expected = props_to_list("""
+        security.protocol=SS
+        ssl.keystore.location=/path/to/keystore
+        ssl.keystore.password=password
+        ssl.key.password=password
+        ssl.truststore.location=/path/to/truststore
+        ssl.truststore.password=password
+        """)
+        self.assertEquals(admin_expected, admin_props)
+
+
 
 class StandaloneNetworkingTest(unittest.TestCase):
 
