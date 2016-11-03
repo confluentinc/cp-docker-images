@@ -85,8 +85,32 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
         confluent.controlcenter.mail.enabled=true
         confluent.controlcenter.mail.host.name=foo.com
+        confluent.controlcenter.streams.producer.security.protocol=SS
+        confluent.controlcenter.streams.producer.ssl.keystore.location=/path/to/keystore
+        confluent.controlcenter.streams.producer.ssl.keystore.password=password
+        confluent.controlcenter.streams.producer.ssl.key.password=password
+        confluent.controlcenter.streams.producer.ssl.truststore.location=/path/to/truststore
+        confluent.controlcenter.streams.producer.ssl.truststore.password=password
+        confluent.controlcenter.streams.consumer.security.protocol=SS
+        confluent.controlcenter.streams.consumer.ssl.keystore.location=/path/to/keystore
+        confluent.controlcenter.streams.consumer.ssl.keystore.password=password
+        confluent.controlcenter.streams.consumer.ssl.key.password=password
+        confluent.controlcenter.streams.consumer.ssl.truststore.location=/path/to/truststore
+        confluent.controlcenter.streams.consumer.ssl.truststore.password=password
         """)
         self.assertEquals(expected, props)
+
+        admin_props = props_to_list(self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/admin.properties"))
+        admin_expected = props_to_list("""
+        security.protocol=SS
+        ssl.keystore.location=/path/to/keystore
+        ssl.keystore.password=password
+        ssl.key.password=password
+        ssl.truststore.location=/path/to/truststore
+        ssl.truststore.password=password
+        """)
+        self.assertEquals(admin_expected, admin_props)
+
 
 
 class StandaloneNetworkingTest(unittest.TestCase):

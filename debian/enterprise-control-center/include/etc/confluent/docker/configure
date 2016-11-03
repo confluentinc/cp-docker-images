@@ -33,3 +33,4 @@ dub path "${CONTROL_CENTER_DATA_DIR}" writable
 
 dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/${COMPONENT}.properties"
 dub template "/etc/confluent/docker/log4j.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/log4j.properties"
+dub template "/etc/confluent/docker/admin.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/admin.properties"

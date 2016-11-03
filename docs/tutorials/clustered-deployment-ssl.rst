@@ -320,7 +320,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
        docker-compose create
        docker-compose start
 
-   In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
+  In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
   .. sourcecode:: bash
 
