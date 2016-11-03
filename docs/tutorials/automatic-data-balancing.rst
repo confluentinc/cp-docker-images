@@ -200,7 +200,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     5052 records sent, 1010.4 records/sec (0.96 MB/sec), 3228.3 ms avg latency, 8508.0 max latency.
     2000000 records sent, 30452.988199 records/sec (29.04 MB/sec), 786.61 ms avg latency, 23005.00 ms max latency, 82 ms 50th, 1535 ms 95th, 22539 ms 99th, 22929 ms 99.9th.
 
-7. Now let run `confluent-rebalancer` to balance the data in the cluster.
+7. Now let's run `confluent-rebalancer` to balance the data in the cluster.
 
   .. sourcecode:: bash
 
@@ -269,7 +269,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     The rebalance has completed and throttling has been disabled
 
-8. ADB makes it easy to add new brokers to the cluster. We will now a entire new rack to our cluster and run the rebalance operation again to balance the data across the cluster.
+8. ADB makes it easy to add new brokers to the cluster. We will now an entire new rack to our cluster and run the rebalance operation again to balance the data across the cluster.
 
   Start the new rack by running the following command:
 

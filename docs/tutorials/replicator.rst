@@ -10,7 +10,7 @@ It is worth noting that we will be configuring Kafka and Zookeeper to store data
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run Docker using the Docker Compose.
+For this tutorial, we'll run Docker using Docker Compose.
 
 To get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
