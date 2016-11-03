@@ -1,0 +1,4 @@
+{% set security_props = env_to_props('CONTROL_CENTER_STREAMS_PRODUCER_', '') -%}
+{% for name, value in security_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
