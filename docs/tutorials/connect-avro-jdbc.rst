@@ -121,17 +121,6 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       confluentinc/cp-kafka:3.1.0 \
       kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
-  Next, we'll create a topic for storing data the data that we're going to be sending to Kafka for this tutorial.
-
-  .. sourcecode:: bash
-
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.1.0 \
-      kafka-topics --create --topic quickstart-avro-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-
   Before moving on, let's verify that the topics are created:
 
   .. sourcecode:: bash
@@ -258,7 +247,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 8. Create our JDBC Source connector using the Connect REST API. (You'll need to have curl installed)
 
-  Set the CONNECT_HOSTNAME.If you are running this on Docker Machine, then the hostname will be ``docker-machine ip <your docker machine name>``
+  Set the CONNECT_HOST.  If you are running this on Docker Machine, then the hostname will be ``docker-machine ip <your docker machine name>``.    
   
   .. sourcecode:: bash
 
@@ -270,8 +259,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
       curl -X POST \
         -H "Content-Type: application/json" \
-        --data '{ "name": "quickstart-jdbc-source-foo", "config": { "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector", "tasks.max": 1, "connection.url": "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent", "mode": "incrementing", "incrementing.column.name": "id", "timestamp.column.name": "modified", "topic.prefix": "quickstart-jdbc-foo", "poll.interval.ms": 1000 } }' \
-        http://$CONNECT_HOST:28082/connectors
+        --data '{ "name": "quickstart-jdbc-source", "config": { "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector", "tasks.max": 1, "connection.url": "jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent", "mode": "incrementing", "incrementing.column.name": "id", "timestamp.column.name": "modified", "topic.prefix": "quickstart-jdbc-", "poll.interval.ms": 1000 } }' \
+        http://$CONNECT_HOST:28083/connectors
 
   The output of this command should be similar to the message shown below:
   
