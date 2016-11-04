@@ -19,6 +19,6 @@
 # 
 # Use those values provide things we know we'll need.
 
-[ -n "${HOST:-}" ] && [ -z "${KAFKA_REST_HOST:-}" ] && \
-	export KAFKA_REST_HOST=$HOST || true # we don't want the setup to fail if not on Mesos
+[ -n "${HOST:-}" ] && [ -z "${KAFKA_REST_HOST_NAME:-}" ] && \
+	export KAFKA_REST_HOST_NAME=$HOST || true # we don't want the setup to fail if not on Mesos
 
