@@ -71,7 +71,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   We need to create an entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP. In Linux, run the below commands on the Linux host. If running Docker Machine (eg for Mac or Windows), you will need to SSH into the VM and run the below commands as root. You can SSH into the Docker Machine VM by running ``docker-machine ssh confluent``.
 
   .. sourcecode:: bash
- 
+
     export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 
     echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
@@ -109,7 +109,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     done
 
   For Kafka brokers, the principal should be called ``kafka``.
-  
+
   .. sourcecode:: bash
 
     for principal in broker1 broker2 broker3
@@ -400,7 +400,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
+    export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
 2. Start Kerberos
 
@@ -432,7 +432,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     done
 
   For Kafka brokers, the principal should be called ``kafka``.
-  
+
   .. sourcecode:: bash
 
     for principal in broker1 broker2 broker3
