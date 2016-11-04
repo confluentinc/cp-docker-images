@@ -18,7 +18,7 @@ To get started, you'll need to first `install Docker and get it running <https:/
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -383,7 +383,7 @@ Check the logs to see the broker has booted up successfully:
 .. _clustered_quickstart_compose_sasl :
 
 Docker Compose: Setting Up a Three Node CP Cluster with SASL
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
@@ -514,7 +514,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       docker-compose logs kafka-sasl-2
       docker-compose logs kafka-sasl-3
 
-  You should see start see bootup messages. For example, ``docker-compose logs kafka-sasl-3 | grep started`` shows the following
+  You should start seeing bootup messages. For example, ``docker-compose logs kafka-sasl-3 | grep started`` shows the following
 
   .. sourcecode:: bash
 
