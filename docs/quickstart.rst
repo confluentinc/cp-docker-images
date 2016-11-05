@@ -1,4 +1,4 @@
-.. _docker_quickstart :
+.. _docker_quickstart:
 
 Quickstart
 ==========

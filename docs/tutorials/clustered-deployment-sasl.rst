@@ -76,7 +76,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
 
-2. Build and run the kerberos image
+4. Build and run the kerberos image
 
   .. sourcecode:: bash
 
@@ -90,7 +90,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -v /dev/urandom:/dev/random \
       confluentinc/cp-kerberos:3.1.0
 
-3. Create the principals and keytabs.
+5. Create the principals and keytabs.
 
   .. sourcecode:: bash
 
@@ -126,7 +126,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-4. Run a 3-node Zookeeper ensemble with SASL enabled.
+6. Run a 3-node Zookeeper ensemble with SASL enabled.
 
    .. sourcecode:: bash
 
@@ -206,7 +206,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
+7. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
 
  .. sourcecode:: bash
 
@@ -295,7 +295,7 @@ Check the logs to see the broker has booted up successfully:
       [2016-07-24 07:29:20,286] INFO [Controller-1001-to-broker-1003-send-thread], Starting  (kafka.controller.RequestSendThread)
       [2016-07-24 07:29:20,287] INFO [Controller-1001-to-broker-1003-send-thread], Controller 1001 connected to localhost:49092 (id: 1003 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-5. Test that the broker is working as expected.
+8. Test that the broker is working as expected.
 
   Now that the brokers are up, we'll test that they're working as expected by creating a topic.
 
@@ -533,7 +533,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
 
-3. Follow section 5 in the "Docker Client" section above to test that your brokers are functioning as expected.
+3. Follow section 8 in the "Docker Client" section above to test that your brokers are functioning as expected.
 
 4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
 
