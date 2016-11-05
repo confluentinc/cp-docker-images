@@ -413,7 +413,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   i. Follow steps 3.1 above to make sure ``quickstart.confluent.io`` is resolvable.
 
-  ii. Now, lets create all the prinicipals and their keytabs on Kerberos.
+  ii. Now, lets create all the principals and their keytabs on Kerberos.
 
   .. sourcecode:: bash
 
