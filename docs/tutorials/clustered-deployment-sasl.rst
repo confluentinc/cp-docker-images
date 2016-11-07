@@ -346,7 +346,7 @@ Check the logs to see the broker has booted up successfully:
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
           confluentinc/cp-kafka:3.1.0 \
-          bash -c "seq 42 | kafka-console-producer --broker-list quickstart.confluent.io:29094 --topic bar -producer.config /etc/kafka/secrets/host.producer.ssl.sasl.config && echo 'Produced 42 messages.'"
+          bash -c "seq 42 | kafka-console-producer --broker-list quickstart.confluent.io:29094 --topic bar --producer.config /etc/kafka/secrets/host.producer.ssl.sasl.config && echo 'Produced 42 messages.'"
 
   The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
 
