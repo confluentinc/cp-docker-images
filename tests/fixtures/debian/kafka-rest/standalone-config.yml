@@ -26,7 +26,9 @@ services:
 
   default-config:
     image: confluentinc/cp-kafka-rest:latest
+    restart: on-failure:3
     environment:
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_REST_HOST_NAME: default-config
     labels:
     - io.confluent.docker.testing=true

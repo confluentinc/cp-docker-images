@@ -55,6 +55,7 @@ services:
     network_mode: host
     environment:
       KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181
+      KAFKA_REST_HOST_NAME: localhost
     labels:
     - io.confluent.docker.testing=true
 
@@ -64,6 +65,7 @@ services:
     - zk
     environment:
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
+      KAFKA_REST_HOST_NAME: kafka-rest-bridge
     ports:
     - 18082:8082
     labels:
@@ -76,6 +78,7 @@ services:
     environment:
       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper-bridge:2181
       KAFKA_REST_JMX_PORT: 9999
+      KAFKA_REST_HOST_NAME: kafka-rest-bridged-jmx
     labels:
     - io.confluent.docker.testing=true
 
@@ -86,5 +89,6 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_REST_JMX_PORT: 39999
       KAFKA_REST_LISTENERS: "http://0.0.0.0:28082"
+      KAFKA_REST_HOST_NAME: localhost
     labels:
     - io.confluent.docker.testing=true
