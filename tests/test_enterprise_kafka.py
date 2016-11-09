@@ -106,7 +106,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
             command=ADB_EXECUTE.format(brokers="localhost:19092", throttle_bps=100000000, remove_broker=removed_broker),
             host_config={'NetworkMode': 'host'})
 
-        assert "Rebalance started, its status can be checked via the status command." in execute_logs
+        assert "Computing the rebalance plan (this may take a while)" in execute_logs
 
         rebalance_status = self.cluster.run_command_on_service("kafka-1", ADB_STATUS)
 
@@ -115,7 +115,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
             rebalance_complete = self.cluster.run_command_on_service("kafka-1", ADB_FINISH)
             if "The rebalance has completed and throttling has been disabled" in rebalance_complete:
                 break
-            sleep(1)
+            time.sleep(1)
 
         assert "The rebalance has completed and throttling has been disabled" in rebalance_complete
 
