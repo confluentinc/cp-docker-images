@@ -36,7 +36,7 @@ ENV CONFLUENT_MINOR_VERSION="1"
 ENV CONFLUENT_PATCH_VERSION="0"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
-ENV CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/staging-confluent-packages-3.1.0"
+ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
 
 ENV KAFKA_VERSION="0.10.1.0"
 
@@ -56,8 +56,6 @@ RUN echo "===> Updating debian ....." \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
-    # REMOVE LATER : Only for nightlies / staging
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https  \
     && echo "===> Installing python packages ..."  \
     && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
