@@ -3,20 +3,20 @@
 Clustered Deployment
 --------------------
 
-In this section, we provide a tutorial for running a three-node Kafka cluster and Zookeeper ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.  
+In this section, we provide a tutorial for running a three-node Kafka cluster and Zookeeper ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
   .. note::
 
     If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.  
+To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
@@ -28,7 +28,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
 1. Create and configure the Docker machine.
 
@@ -112,7 +112,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     Mode: leader
     Mode: follower
 
-3. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.  
+3. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
 
   .. sourcecode:: bash
 
@@ -137,20 +137,20 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:49092 \
          confluentinc/cp-kafka:3.1.0
 
-   Check the logs to see the broker has booted up successfully
+  Check the logs to see the broker has booted up successfully
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
-       docker logs kafka-1
-       docker logs kafka-2
-       docker logs kafka-3
+    docker logs kafka-1
+    docker logs kafka-2
+    docker logs kafka-3
 
-   You should see start see bootup messages. For example, ``docker logs kafka-3 | grep started`` will show the following:
+  You should see start see bootup messages. For example, ``docker logs kafka-3 | grep started`` will show the following:
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
-       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
-       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
+      [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
+      [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
 
   You should see the messages like the following on the broker acting as controller.
 
@@ -253,9 +253,9 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
     git clone https://github.com/confluentinc/cp-docker-images
 
-  We have provided an example Docker Compose file that will start up Zookeeper and Kafka.  Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located:
+  We have provided an example Docker Compose file that will start up Zookeeper and Kafka.  Navigate to ``cp-docker-images/examples/kafka-cluster``, where it is located:
 
-  .. sourcecode:: bash       
+  .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-cluster
 
 2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
@@ -332,12 +332,14 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    .. sourcecode:: bash
 
-       (Tip: `docker-compose log | grep controller` makes it easy to grep through logs for all services.)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+  .. note::
+
+    Tip: ``docker-compose log | grep controller`` makes it easy to grep through logs for all services.
 
 3. Follow section 4 in the "Docker Client" section above to test that your brokers are functioning as expected.
