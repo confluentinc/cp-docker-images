@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper-1:
-    image: confluentinc/cp-zookeeper:3.1.0
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 22181
@@ -13,7 +13,7 @@ services:
     network_mode: host
 
   zookeeper-2:
-    image: confluentinc/cp-zookeeper:3.1.0
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 32181
@@ -24,7 +24,7 @@ services:
     network_mode: host
 
   zookeeper-3:
-    image: confluentinc/cp-zookeeper:3.1.0
+    image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 3
       ZOOKEEPER_CLIENT_PORT: 42181
@@ -35,7 +35,7 @@ services:
     network_mode: host
 
   kafka-1:
-    image: confluentinc/cp-kafka:3.1.0
+    image: confluentinc/cp-kafka:latest
     network_mode: host
     depends_on:
       - zookeeper-1
@@ -47,7 +47,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
 
   kafka-2:
-    image: confluentinc/cp-kafka:3.1.0
+    image: confluentinc/cp-kafka:latest
     network_mode: host
     depends_on:
       - zookeeper-1
@@ -59,7 +59,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
 
   kafka-3:
-    image: confluentinc/cp-kafka:3.1.0
+    image: confluentinc/cp-kafka:latest
     network_mode: host
     depends_on:
       - zookeeper-1
