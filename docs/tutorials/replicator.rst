@@ -166,7 +166,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --create --topic foo --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:22181
 
   You should see the following output in your terminal window:
@@ -181,7 +181,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --describe --topic foo --zookeeper localhost:22181
 
   You should see the following output in your terminal window:
@@ -200,7 +200,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.1.0 \
+      confluentinc/cp-kafka:3.1.1 \
       bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
 
   This command will use the built-in Kafka Console Producer to produce 100 simple messages to the topic. Upon running it, you should see the following:
@@ -273,7 +273,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.1.0 \
+      confluentinc/cp-kafka:3.1.1 \
       kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --new-consumer --from-beginning --max-messages 1000
 
   If everything is working as expected, each of the original messages we produced should be written back out:
@@ -291,7 +291,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --describe --topic foo.replica --zookeeper localhost:42181
 
   You should see that the topic ``foo.replica`` is created with 3 partitions and 2 replicas, same as the original topic ``foo``.
@@ -311,14 +311,14 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:32181
 
   .. sourcecode:: bash
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --describe --topic bar --zookeeper localhost:32181
 
   .. sourcecode:: bash
@@ -326,7 +326,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.1.0 \
+      confluentinc/cp-kafka:3.1.1 \
       bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
 
   Now lets ``exec`` into the Kafka Connect container and run the replicator connector. Enter the following commands on your terminal. You should see output similar to step 6 above.
@@ -378,14 +378,14 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.1.0 \
+      confluentinc/cp-kafka:3.1.1 \
       kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --new-consumer --from-beginning --max-messages 1000
 
   .. sourcecode:: bash
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
 
 10. Feel free to experiment with the replicator connector on your own now. When you are done, use the following commands to shutdown all the components.
