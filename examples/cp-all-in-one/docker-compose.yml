@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:${CP_VERSION}
+    image: confluentinc/cp-zookeeper
     hostname: zookeeper
     ports:
       - "2181:2181"
@@ -11,7 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   broker:
-    image: confluentinc/cp-kafka:${CP_VERSION}
+    image: confluentinc/cp-kafka
     hostname: broker
     depends_on:
       - zookeeper
@@ -23,7 +23,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:9092'
 
   schema_registry:
-    image: confluentinc/cp-schema-registry:${CP_VERSION}
+    image: confluentinc/cp-schema-registry
     hostname: schema_registry
     depends_on:
       - zookeeper
@@ -35,7 +35,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
   connect:
-    image: dbtucker/cp-kafka-connect:3.1.x
+    image: confluentinc/cp-kafka-connect
     hostname: connect
     depends_on:
       - zookeeper
@@ -60,7 +60,7 @@ services:
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:${CP_VERSION}
+    image: confluentinc/cp-enterprise-control-center
     hostname: control-center
     depends_on:
       - zookeeper
