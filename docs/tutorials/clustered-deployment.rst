@@ -3,20 +3,20 @@
 Clustered Deployment
 --------------------
 
-In this section, we provide a tutorial for running a three-node Kafka cluster and Zookeeper ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.  
+In this section, we provide a tutorial for running a three-node Kafka cluster and Zookeeper ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
   .. note::
 
     If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.  
+To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
 
 Docker Client: Setting Up a Three Node Kafka Cluster
@@ -28,7 +28,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
 1. Create and configure the Docker machine.
 
@@ -55,7 +55,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:3.1.0
+       confluentinc/cp-zookeeper:3.1.1
 
     docker run -d \
        --net=host \
@@ -66,7 +66,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:3.1.0
+       confluentinc/cp-zookeeper:3.1.1
 
     docker run -d \
        --net=host \
@@ -77,7 +77,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:3.1.0
+       confluentinc/cp-zookeeper:3.1.1
 
   Before moving on, we'll check the logs to see the broker has booted up successfully by running the following command:
 
@@ -101,7 +101,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   .. sourcecode:: bash
 
     for i in 22181 32181 42181; do
-      docker run --net=host --rm confluentinc/cp-zookeeper:3.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+      docker run --net=host --rm confluentinc/cp-zookeeper:3.1.1 bash -c "echo stat | nc localhost $i | grep Mode"
     done
 
   You should see one ``leader`` and two ``follower`` nodes.  The output should look something like the following:
@@ -112,7 +112,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     Mode: leader
     Mode: follower
 
-3. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.  
+3. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
 
   .. sourcecode:: bash
 
@@ -121,36 +121,36 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --name=kafka-1 \
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
-        confluentinc/cp-kafka:3.1.0
+        confluentinc/cp-kafka:3.1.1
 
     docker run -d \
         --net=host \
         --name=kafka-2 \
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
-        confluentinc/cp-kafka:3.1.0
+        confluentinc/cp-kafka:3.1.1
 
      docker run -d \
          --net=host \
          --name=kafka-3 \
          -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:49092 \
-         confluentinc/cp-kafka:3.1.0
+         confluentinc/cp-kafka:3.1.1
 
-   Check the logs to see the broker has booted up successfully
+  Check the logs to see the broker has booted up successfully
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
-       docker logs kafka-1
-       docker logs kafka-2
-       docker logs kafka-3
+    docker logs kafka-1
+    docker logs kafka-2
+    docker logs kafka-3
 
-   You should see start see bootup messages. For example, ``docker logs kafka-3 | grep started`` will show the following:
+  You should see start see bootup messages. For example, ``docker logs kafka-3 | grep started`` will show the following:
 
-   .. sourcecode:: bash
+  .. sourcecode:: bash
 
-       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
-       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
+      [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
+      [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
 
   You should see the messages like the following on the broker acting as controller.
 
@@ -172,7 +172,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:3.1.0 \
+        confluentinc/cp-kafka:3.1.1 \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
   You should see the following output:
@@ -188,7 +188,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:3.1.0 \
+          confluentinc/cp-kafka:3.1.1 \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
   You should see the following message in your terminal window:
@@ -206,7 +206,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.1.0 \
+      --rm confluentinc/cp-kafka:3.1.1 \
       bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar && echo 'Produced 42 messages.'"
 
   The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
@@ -222,7 +222,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
      --net=host \
      --rm \
-     confluentinc/cp-kafka:3.1.0 \
+     confluentinc/cp-kafka:3.1.1 \
      kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
@@ -253,9 +253,9 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
     git clone https://github.com/confluentinc/cp-docker-images
 
-  We have provided an example Docker Compose file that will start up Zookeeper and Kafka.  Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located:
+  We have provided an example Docker Compose file that will start up Zookeeper and Kafka.  Navigate to ``cp-docker-images/examples/kafka-cluster``, where it is located:
 
-  .. sourcecode:: bash       
+  .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-cluster
 
 2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
@@ -302,7 +302,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:3.1.1 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower``
@@ -332,12 +332,14 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    .. sourcecode:: bash
 
-       (Tip: `docker-compose log | grep controller` makes it easy to grep through logs for all services.)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29092 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
-       kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
+  .. note::
+
+    Tip: ``docker-compose log | grep controller`` makes it easy to grep through logs for all services.
 
 3. Follow section 4 in the "Docker Client" section above to test that your brokers are functioning as expected.

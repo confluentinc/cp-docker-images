@@ -44,9 +44,13 @@ then
   export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=false
 fi
 
-if [[ $CONNECT_KEY_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]] || [[ $CONNECT_VALUE_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]]
+if [[ $CONNECT_KEY_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]]
 then
   dub ensure CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+fi
+
+if [[ $CONNECT_VALUE_CONVERTER == "io.confluent.connect.avro.AvroConverter" ]]
+then
   dub ensure CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
 fi
 

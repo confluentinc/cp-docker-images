@@ -51,8 +51,10 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_kafka_rest_healthy_for_service("default-config")
-        props = self.cluster.run_command_on_service("default-config", "cat /etc/kafka-rest/kafka-rest.properties")
-        expected = """zookeeper.connect=zookeeper:2181/defaultconfig
+        props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka-rest/kafka-rest.properties | sort'")
+        expected = """
+            host.name=default-config
+            zookeeper.connect=zookeeper:2181/defaultconfig
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
