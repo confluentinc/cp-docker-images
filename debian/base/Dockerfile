@@ -72,6 +72,8 @@ RUN echo "===> Updating debian ....." \
     && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
     && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
+ENV JAVA_HOME="/usr/lib/jvm/zulu-8-amd64"
+
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
 COPY include/etc/confluent/docker /etc/confluent/docker
