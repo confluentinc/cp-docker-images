@@ -23,13 +23,16 @@ echo "===> Check if Zookeeper is healthy ..."
 cub zk-ready "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL" "${SCHEMA_REGISTRY_CUB_ZK_TIMEOUT:-40}"
 
 echo "===> Check if Kafka is healthy ..."
-#cub kafka-ready \
-#    "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
-#    "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
-#    -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
 
-cub kafka-ready 1 \
-  "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
-  -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}" \
-  --config /etc/"${COMPONENT}"/admin.properties
-
+if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL="SSL" ]]
+then
+    cub kafka-ready 1 \
+        "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
+        -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}" \
+        --config /etc/"${COMPONENT}"/admin.properties
+else
+    cub kafka-ready \
+        "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
+        "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
+        -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
+fi
