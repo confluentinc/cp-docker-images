@@ -95,7 +95,7 @@ Important Notes/Caveats
 
 7. Untested Features
 
-	The following features/enfironments are not currently tested:
+	The following features/environments are not currently tested:
 
 		* Schema Registry SSL
 		* Kafka Connect with Security Enabled
