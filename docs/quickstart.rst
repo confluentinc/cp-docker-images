@@ -3,7 +3,7 @@
 Quickstart
 ==========
 
-This section provides basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.  
+This section provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.  
 
 In order to keep things simple, we'll start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  We will also be configuring Kafka and Zookeeper to store data locally in their Docker containers.  You should refer to our documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
 
@@ -43,7 +43,7 @@ All of the subsequent commands should be run from that terminal window to ensure
 Zookeeper
 +++++++++++++++++
 
-Start Zookeeper. You'll need to keep this service running throughout, so if used a dedicated terminal window if you plan to launch the image in the foreground.
+Start Zookeeper. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
 
   .. sourcecode:: bash
 
@@ -73,7 +73,7 @@ Start Zookeeper. You'll need to keep this service running throughout, so if used
 
   If the service is not running, the log messages should provide details to help you identify the problem.   Some common errors include:
 
-		* Network port already in use .   In that case, you'll see a message indicating that the Zookeeper service could not bind to the selcted port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
+		* Network port already in use.   In that case, you'll see a message indicating that the Zookeeper service could not bind to the selcted port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
 		* Insufficient resources.   In rare occasions, you may see memory allocation or other low-level failures at startup. This will only happen if you dramatically overload the capacity of your Docker host.
 
 Kafka
@@ -252,7 +252,7 @@ This section describes how to deploy the REST Proxy container and then consume d
       -e KAFKA_REST_HOST_NAME=localhost \
       confluentinc/cp-kafka-rest:3.1.1
 
-  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. Our deployment steps thus far have ensured that both the REST Proxy container and the Schema Registry container are accessible directly through network ports on our local host.  The REST Proxy service is listening at http://localhost:8082  As above, we'll launch a new Docker container from which to execute our commands :
+  For the next two steps, we're going to use CURL commands to talk to the REST Proxy. Our deployment steps thus far have ensured that both the REST Proxy container and the Schema Registry container are accessible directly through network ports on our local host.  The REST Proxy service is listening at http://localhost:8082  As above, we'll launch a new Docker container from which to execute our commands:
 
   .. sourcecode:: bash
 
@@ -457,7 +457,7 @@ wall clock time we will wait before firing the trigger to make sure the trigger
 condition is not too transient.
 
 After saving the trigger, Control Center will now prompt us to associate an action that will execute when
-our newly created trigger fires. For now, the only action is send an email.
+our newly created trigger fires. For now, the only action is to send an email.
 Select our new trigger and choose maximum send rate for your alert email.
 
   .. figure:: images/c3-quickstart-new-action-form.png
