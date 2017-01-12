@@ -19,7 +19,7 @@ Start by reading our guidelines on contributing to this project found [here](htt
 - Source Code: https://github.com/confluentinc/cp-docker-images
 - Issue Tracker: https://github.com/confluentinc/cp-docker-images/issues
 
-See also [development docs](http://docs.confluent.io/current/cp-docker-images/docs/development.html#setup).
+For instructions on how to extend, build, and test these images on your own, please refer to our [development documentation](http://docs.confluent.io/current/cp-docker-images/docs/development.html#setup).
 
 # License
 
