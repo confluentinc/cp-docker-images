@@ -50,9 +50,11 @@ ENV LANG="C.UTF-8"
 RUN echo "===> Updating debian ....." \
     && apt-get -qq update \
     \
-    && echo "===> Installing curl wget netcat python...." \
+    && echo "===> Installing utilities (curl, jq, unzip, wget, netcat, python) ..." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 curl \
+                jq \
+                unzip \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
