@@ -12,13 +12,15 @@ Using security is optional - non-secured clusters are supported, as well as a mi
    "Zookeeper", "SASL"
    "Kafka", "SASL, SSL"
    "Confluent Control Center", "HTTPS"
-   "Schema Registry", "HTTPS"
+   "Schema Registry", "HTTPS",
    "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
 
 For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.1.1/kafka/security.html>`_.
 
-For a tutorial on using SSL in the Confluent Platform please refer to the documented tutorials on `SSL <http://docs.confluent.io/3.1.1/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/3.1.1/kafka/sasl.html>`_.
+For tutorials on enabling security for Docker deployments of the Confluent Platform, please refer to the following tutorials:
+  - `SSL <http://docs.confluent.io/current/cp-docker-images/docs/tutorials/clustered-deployment-ssl.html>`_
+  - `SASL <http://docs.confluent.io/current/cp-docker-images/docs/tutorials/clustered-deployment-sasl.html>`_.
 
 Docker Security
 ~~~~~~~~~~~~~~~
