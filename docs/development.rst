@@ -97,9 +97,12 @@ Setup
          --amazonec2-region us-west-2 \
          --amazonec2-instance-type m4.large \
          --amazonec2-root-size 100 \
-         --amazonec2-ami ami-16b1a077 \
          --amazonec2-tags Name,$INSTANCE_NAME \
          $USER-aws-confluent
+
+  .. note::
+
+    You can also specify the AMI by setting ``amazonec2-ami <ami_version>``.  However, if a specific AMI is not specified, the latest nightly build AMI will be used.
 
 3. Configure your terminal window to attach it to your new Docker Machine:
 
