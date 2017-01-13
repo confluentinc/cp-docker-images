@@ -12,7 +12,7 @@ Using security is optional - non-secured clusters are supported, as well as a mi
    "Zookeeper", "SASL"
    "Kafka", "SASL, SSL"
    "Confluent Control Center", "HTTPS"
-   "Schema Registry", "HTTPS",
+   "Schema Registry", "HTTPS"
    "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
 
