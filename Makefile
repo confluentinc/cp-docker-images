@@ -119,6 +119,9 @@ test-kafka-connect: venv clean-containers build-debian build-test-images tests/f
 test-enterprise-replicator: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_enterprise_replicator.py -v
 
+test-enterprise-kafka: venv clean-containers build-debian build-test-images
+	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_enterprise_kafka.py -v
+
 test-control-center: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
 
