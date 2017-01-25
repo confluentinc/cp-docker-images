@@ -20,9 +20,13 @@ LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
+ARG CONFLUENT_DEB_REPO="http://packages.confluent.io"
+ARG APT_ALLOW_UNAUTHENTICATED=false
+#Set an env var so that it's available in derived images
+ENV APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED}
+
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
-
 
 # Python
 ENV PYTHON_VERSION="2.7.9-1"
@@ -31,14 +35,13 @@ ENV PYTHON_PIP_VERSION="8.1.2"
 # Confluent
 ENV SCALA_VERSION="2.11"
 ENV CONFLUENT_MAJOR_VERSION="3"
-ENV CONFLUENT_MINOR_VERSION="1"
+ENV CONFLUENT_MINOR_VERSION="2"
 
-ENV CONFLUENT_PATCH_VERSION="1"
+ENV CONFLUENT_PATCH_VERSION="0~SNAPSHOT"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
-ENV CONFLUENT_DEB_REPO="http://packages.confluent.io"
 
-ENV KAFKA_VERSION="0.10.1.0"
+ENV KAFKA_VERSION="0.10.2.0~SNAPSHOT"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8=8.17.0.3"
@@ -57,7 +60,7 @@ RUN echo "===> Updating debian ....." \
                 netcat \
                 python=${PYTHON_VERSION} \
     && echo "===> Installing python packages ..."  \
-    && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
+    && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir jinja2 \
                                   requests \
@@ -69,7 +72,7 @@ RUN echo "===> Updating debian ....." \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
     && echo "===> Adding confluent repository...${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    && curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && if [ "x$APT_ALLOW_UNAUTHENTICATED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
     && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub
