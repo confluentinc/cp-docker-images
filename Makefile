@@ -6,7 +6,9 @@ COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 REPOSITORY := confluentinc
-#	REPOSITORY := <your_personal_repo>
+
+# You can override vars like REPOSITORY in a local.make file
+-include local.make
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
