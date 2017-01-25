@@ -55,6 +55,7 @@ RUN echo "===> Updating debian ....." \
     \
     && echo "===> Installing curl wget netcat python...." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+                apt-transport-https \
                 curl \
                 wget \
                 netcat \
