@@ -80,10 +80,10 @@ endif
 
 push-public: clean build-debian
 	for component in ${COMPONENTS} ; do \
-        echo "\n Pushing cp-$${component}  \n==========================================\n "; \
-        docker push confluentinc/cp-$${component}:latest; \
-				docker push confluentinc/cp-$${component}:${VERSION}; \
-				docker push confluentinc/cp-$${component}:${CP_VERSION}; \
+		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
+		docker push confluentinc/cp-$${component}:latest || exit 1;; \
+		docker push confluentinc/cp-$${component}:${VERSION} || exit 1;; \
+		docker push confluentinc/cp-$${component}:${CP_VERSION} || exit 1;; \
   done
 
 clean: clean-containers clean-images
