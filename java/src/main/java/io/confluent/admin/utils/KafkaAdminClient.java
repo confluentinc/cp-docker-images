@@ -49,7 +49,7 @@ public class KafkaAdminClient {
         time = new SystemTime();
         Metrics metrics = new Metrics(time);
         Metadata metadata = new Metadata();
-        ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg.values());
+        ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg);
 
         List<String> brokerUrls = adminCfg.getList(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
         brokerAddresses = ClientUtils.parseAndValidateAddresses(brokerUrls);
@@ -158,5 +158,3 @@ public class KafkaAdminClient {
     }
 
 }
-
-
