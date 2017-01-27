@@ -37,7 +37,7 @@
         <java.version>1.8</java.version>
         <zookeeper.version>3.4.6</zookeeper.version>
         <zkclient.version>0.8</zkclient.version>
-        <kafka.version>0.10.0.0-cp1</kafka.version>
+        <kafka.version>0.10.3.0-SNAPSHOT</kafka.version>
         <kafka.scala.version>2.11</kafka.scala.version>
         <assertj.version>2.2.0</assertj.version>
         <junit.version>4.12</junit.version>
