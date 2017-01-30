@@ -31,7 +31,7 @@ services:
     - io.confluent.docker.testing=true
 
   mysql-host:
-    image: mysql
+    image: mysql:5.7
     network_mode: host
     labels:
     - io.confluent.docker.testing=true
