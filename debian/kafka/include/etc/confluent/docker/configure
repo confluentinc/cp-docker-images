@@ -97,7 +97,7 @@ then
 
 fi
 
-# Set if KAFKA_ADVERTISED_LISTENERS has SSL:// or SASL_SSL:// endpoints.
+# Set if KAFKA_ADVERTISED_LISTENERS has SASL_PLAINTEXT:// or SASL_SSL:// endpoints.
 if [[ $KAFKA_ADVERTISED_LISTENERS =~ .*SASL_.*://.* ]]
 then
   echo "SASL" is enabled.
