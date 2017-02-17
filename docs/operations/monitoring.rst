@@ -62,7 +62,7 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
-    confluentinc/cp-zookeeper:3.1.2
+    confluentinc/cp-zookeeper:3.2.0
 
   docker run -d \
     --name=kafka-jmx \
@@ -72,6 +72,6 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_JMX_PORT=49999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`    
-    confluentinc/cp-kafka:3.1.2
+    confluentinc/cp-kafka:3.2.0
 
 Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a docker machine named "Confluent".  You should substitute with your docker machine name where appropriate.
