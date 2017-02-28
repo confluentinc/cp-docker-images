@@ -86,7 +86,7 @@ def check_zookeeper_ready(connect_string, timeout):
     """
     cmd_template = """
              java {jvm_opts} \
-                 -cp /etc/confluent/docker/docker-utils.jar  \
+                 -cp {du_jar}  \
                  io.confluent.admin.utils.cli.ZookeeperReadyCommand \
                  {connect_string} \
                  {timeout_in_ms}"""
@@ -103,6 +103,7 @@ def check_zookeeper_ready(connect_string, timeout):
 
     cmd = cmd_template.format(
         jvm_opts=jvm_opts or "",
+        du_jar=os.environ.get("DOCKER_UTILS_JAR") or "/etc/confluent/docker/docker-utils.jar",
         connect_string=connect_string,
         timeout_in_ms=timeout * 1000)
 
@@ -135,13 +136,15 @@ def check_kafka_ready(expected_brokers, timeout, config, bootstrap_broker_list=N
     """
     cmd_template = """
              java {jvm_opts} \
-                 -cp /etc/confluent/docker/docker-utils.jar  \
+                 -cp {du_jar}  \
                  io.confluent.admin.utils.cli.KafkaReadyCommand \
                  {expected_brokers} \
                  {timeout_in_ms}"""
 
+
     cmd = cmd_template.format(
         jvm_opts=os.environ.get("KAFKA_OPTS") or "",
+        du_jar=os.environ.get("DOCKER_UTILS_JAR") or "/etc/confluent/docker/docker-utils.jar",
         bootstrap_broker_list=bootstrap_broker_list,
         expected_brokers=expected_brokers,
         timeout_in_ms=timeout * 1000)
