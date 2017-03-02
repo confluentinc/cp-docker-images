@@ -142,7 +142,7 @@ class SchemaRegistryImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
     def test_schema_registry_commands(self):
-        expected = "ERROR Properties file is required to start the schema registry REST instance (io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain:38)"
+        expected = "USAGE: /usr/bin/schema-registry-start [-daemon] schema-registry.properties"
         self.assertTrue(expected in utils.run_docker_command(image=self.image, command="schema-registry-start"))
 
 
