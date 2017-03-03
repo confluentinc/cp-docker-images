@@ -124,7 +124,7 @@ public class ClusterStatus {
             // returning the brokers. So, wait until expected brokers are present
             // or the time out expires.
             try {
-                brokers = adminClient.findAllBrokers((int) remainingWaitMs);
+                brokers = adminClient.findAllBrokers(remainingWaitMs);
                 log.debug("Broker list: {}", (brokers != null ? brokers : "[]"));
                 if ((brokers != null) && (brokers.size() >= minBrokerCount)) {
                     return true;

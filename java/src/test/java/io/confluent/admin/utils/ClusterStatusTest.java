@@ -17,9 +17,6 @@ package io.confluent.admin.utils;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.protocol.SecurityProtocol;
-import org.apache.kafka.common.utils.SystemTime;
-import org.apache.kafka.common.utils.Time;
-import org.assertj.core.data.Offset;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

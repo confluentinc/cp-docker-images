@@ -14,9 +14,8 @@ import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.metrics.Metrics;
 import org.apache.kafka.common.network.ChannelBuilder;
 import org.apache.kafka.common.network.Selector;
-import org.apache.kafka.common.protocol.ApiKeys;
-import org.apache.kafka.common.protocol.types.Struct;
 import org.apache.kafka.common.requests.AbstractRequest;
+import org.apache.kafka.common.requests.AbstractResponse;
 import org.apache.kafka.common.requests.MetadataRequest;
 import org.apache.kafka.common.requests.MetadataResponse;
 import org.apache.kafka.common.utils.SystemTime;
@@ -24,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,6 +41,8 @@ public class KafkaAdminClient {
     private final SystemTime time;
     private final List<InetSocketAddress> brokerAddresses;
     private final List<Node> bootStrapBrokers;
+    private final Long maxPollTimeoutMs;
+
 
     public KafkaAdminClient(Map<String, String> config) {
 
@@ -49,7 +50,7 @@ public class KafkaAdminClient {
         time = new SystemTime();
         Metrics metrics = new Metrics(time);
         Metadata metadata = new Metadata();
-        ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg);
+        ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg.values());
 
         List<String> brokerUrls = adminCfg.getList(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
         brokerAddresses = ClientUtils.parseAndValidateAddresses(brokerUrls);
@@ -63,13 +64,14 @@ public class KafkaAdminClient {
                 channelBuilder);
 
         NetworkClient networkClient = new NetworkClient(selector, metadata,
-                "admin-" + adminClientIdSequence.getAndIncrement(),
-                MetadataClientConfig.defaultMaxInFlightRequestsPerConnection,
-                MetadataClientConfig.defaultReconnectBackoffMs,
-                MetadataClientConfig.defaultSendBufferBytes,
-                MetadataClientConfig.defaultReceiveBufferBytes,
-                MetadataClientConfig.defaultRequestTimeoutMs,
-                time);
+            "admin-" + adminClientIdSequence.getAndIncrement(),
+            MetadataClientConfig.defaultMaxInFlightRequestsPerConnection,
+            MetadataClientConfig.defaultReconnectBackoffMs,
+            MetadataClientConfig.defaultSendBufferBytes,
+            MetadataClientConfig.defaultReceiveBufferBytes,
+            MetadataClientConfig.defaultRequestTimeoutMs,
+            time,
+            true);
 
         client = new ConsumerNetworkClient(networkClient,
                 metadata,
@@ -78,48 +80,65 @@ public class KafkaAdminClient {
                 MetadataClientConfig.defaultRequestTimeoutMs);
 
         this.bootStrapBrokers = bootstrapCluster.nodes();
+        this.maxPollTimeoutMs = adminCfg.getLong(MetadataClientConfig.MAX_POLL_TIMEOUT_MS_CONFIG);
+
     }
 
     public List<InetSocketAddress> getBrokerAddresses() {
         return brokerAddresses;
     }
 
-    public List<Node> findAllBrokers(int timeOutInMs) {
-        MetadataRequest request = new MetadataRequest(new ArrayList<String>());
-        Struct responseBody = sendAnyNode(ApiKeys.METADATA, request, timeOutInMs);
+    public List<Node> findAllBrokers(long timeoutMs) {
+        MetadataResponse response = getMetadataResponse(timeoutMs);
 
-        if (responseBody == null) {
-            return null;
-        } else {
-            MetadataResponse response = new MetadataResponse(responseBody);
-            return response.cluster().nodes();
+        if (response == null) {
+          return null;
         }
+
+        return response.cluster().nodes();
     }
 
-    private Struct sendAnyNode(ApiKeys api, AbstractRequest request, int timeOutInMs) {
+    private MetadataResponse getMetadataResponse(long timeoutMs) {
+        MetadataRequest.Builder request = new MetadataRequest.Builder(Collections.emptyList());
+        return (MetadataResponse) sendAnyNode(request, timeoutMs);
+    }
+
+
+    private AbstractResponse sendAnyNode(AbstractRequest.Builder request, long timeoutMs) {
         for (Node broker : this.bootStrapBrokers) {
             try {
-                return send(broker, api, request, timeOutInMs);
+                return send(broker, request, timeoutMs);
             } catch (Exception e) {
-                log.error("Request {} failed against node {}.", api, broker, e);
+                log.error("Request {} failed against node {}.", request, broker, e);
             }
         }
-        log.error("Request {} failed on all bootstrap brokers {}.", api, this.bootStrapBrokers);
+        log.error("Request {} failed on all bootstrap brokers {}.", request, this.bootStrapBrokers);
         return null;
     }
 
-    private Struct send(Node target, ApiKeys api, AbstractRequest request, int timeOutInMs) {
-        RequestFuture<ClientResponse> future = client.send(target, api, request);
-        client.poll(future, timeOutInMs);
+    private AbstractResponse send(Node target, AbstractRequest.Builder request) {
+      return send(target, request, this.maxPollTimeoutMs);
+    }
+
+    private AbstractResponse send(Node target, AbstractRequest.Builder request, long timeoutMs) {
+        log.trace("Sending request (" + request.toString() + ") to node " + target.toString());
+        RequestFuture<ClientResponse> future = client.send(target, request);
+        client.poll(future, timeoutMs );
 
         if (future.succeeded()) {
+            log.trace("Received response (" + future.value().responseBody() + ")");
             return future.value().responseBody();
         } else {
+            log.trace("Future failed with exception: " + future.exception().getMessage());
             throw future.exception();
         }
     }
 
     public static class MetadataClientConfig extends AbstractConfig {
+
+        public static final String MAX_POLL_TIMEOUT_MS_CONFIG = "max.poll.timeout.ms";
+        public static final String MAX_POLL_TIMEOUT_MS_DOC = "The maximum time to wait for a request";
+        public static final long defaultMaxPollTimeoutMs = 5000L;
 
         private static final int defaultConnectionMaxIdleMs = 9 * 60 * 1000;
         private static final int defaultRequestTimeoutMs = 5000;
@@ -132,6 +151,12 @@ public class KafkaAdminClient {
 
         static {
             CONFIG = new ConfigDef()
+                .define(
+                    MAX_POLL_TIMEOUT_MS_CONFIG,
+                    ConfigDef.Type.LONG,
+                    defaultMaxPollTimeoutMs,
+                    ConfigDef.Importance.MEDIUM,
+                    MAX_POLL_TIMEOUT_MS_DOC)
                     .define(
                             CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
                             ConfigDef.Type.LIST,

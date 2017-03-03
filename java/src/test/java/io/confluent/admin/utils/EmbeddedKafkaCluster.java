@@ -38,7 +38,7 @@ import kafka.security.minikdc.MiniKdc;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import kafka.utils.CoreUtils;
-import kafka.utils.SystemTime$;
+import kafka.utils.MockTime;
 import kafka.utils.TestUtils;
 import scala.Option;
 import scala.Option$;
@@ -330,8 +330,7 @@ public class EmbeddedKafkaCluster {
                         SASL_SSL_PORT_BASE + brokerId,
                         Option.<String>empty());
 
-        KafkaServer broker = TestUtils.createServer(KafkaConfig.fromProps(props), SystemTime$
-                .MODULE$);
+        KafkaServer broker = TestUtils.createServer(KafkaConfig.fromProps(props), new MockTime());
         brokersById.put(brokerId, broker);
     }
 

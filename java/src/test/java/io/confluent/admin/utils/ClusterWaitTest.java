@@ -91,6 +91,7 @@ public class ClusterWaitTest {
             assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
                     .isTrue();
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Unexpected error." + e.getMessage());
         } finally {
             kafkaWait.shutdown();
