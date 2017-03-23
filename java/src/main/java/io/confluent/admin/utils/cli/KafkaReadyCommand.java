@@ -115,8 +115,12 @@ public class KafkaReadyCommand {
                             zkConnectString,
                             res.getInt("timeout"));
 
-                    String bootstrap_broker = endpoints.get(res.getString("security_protocol"));
-                    workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
+                    String bootstrapBroker = endpoints.get(res.getString("security_protocol"));
+                    if(bootstrapBroker == null){
+                        throw new RuntimeException("No endpoints found for security protocol [" +
+                            res.getString("security_protocol") + "]. Endpoints found in ZK [" + endpoints + "]");
+                    }
+                    workerProps.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapBroker);
 
                 }
                 success = ClusterStatus.isKafkaReady(workerProps,
