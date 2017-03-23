@@ -1,4 +1,4 @@
-BUILD_NUMBER := 2
+BUILD_NUMBER := 3
 CP_VERSION := 3.2.0
 VERSION := ${CP_VERSION}-${BUILD_NUMBER}
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
