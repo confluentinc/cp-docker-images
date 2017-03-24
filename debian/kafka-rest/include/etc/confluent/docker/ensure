@@ -27,7 +27,7 @@ echo "===> Check if Kafka is healthy ..."
 if [[ -n "${KAFKA_REST_CLIENT_SECURITY_PROTOCOL-}" ]] && [[ $KAFKA_REST_CLIENT_SECURITY_PROTOCOL = "SSL" ]]
 then
     cub kafka-ready \
-        "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
+        "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
         "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
         -b "${KAFKA_REST_BOOTSTRAP_SERVERS}" \
         --config /etc/"${COMPONENT}"/admin.properties
