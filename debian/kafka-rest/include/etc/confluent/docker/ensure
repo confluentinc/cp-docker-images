@@ -23,12 +23,16 @@ echo "===> Check if Zookeeper is healthy ..."
 cub zk-ready "$KAFKA_REST_ZOOKEEPER_CONNECT" "${KAFKA_REST_CUB_ZK_TIMEOUT:-40}"
 
 echo "===> Check if Kafka is healthy ..."
-if [[ -n "${KAFKA_REST_SECURITY_PROTOCOL-}" ]] && [[ $KAFKA_REST_SECURITY_PROTOCOL="SSL" ]]
+
+cat /etc/"${COMPONENT}"/admin.properties
+
+if [[ -n "${KAFKA_REST_CLIENT_SECURITY_PROTOCOL-}" ]] && [[ $KAFKA_REST_CLIENT_SECURITY_PROTOCOL = "SSL" ]]
 then
-    cub kafka-ready 1 \
+    cub kafka-ready \
+        "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
         "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
         -b "${KAFKA_REST_BOOTSTRAP_SERVERS}" \
-        --config /etc/"${COMPONENT}"/kafka-rest.properties
+        --config /etc/"${COMPONENT}"/admin.properties
 else
     cub kafka-ready \
         "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
