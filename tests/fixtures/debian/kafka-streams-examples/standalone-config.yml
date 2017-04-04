@@ -1,0 +1,51 @@
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:3.2.0
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:3.2.0
+    labels:
+    - io.confluent.docker.testing=true
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181/defaultconfig
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:3.2.0
+    labels:
+    - io.confluent.docker.testing=true
+    ports:
+      - '8081'
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181/defaultconfig
+
+  # Used to verify that an invalid configuration (e.g. missing required
+  # environment variables) results in a failure.
+  failing-config:
+    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    labels:
+    - io.confluent.docker.testing=true
+
+  # Used to verify that a valid configuration works successfully.
+  default-config:
+    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    labels:
+    - io.confluent.docker.testing=true
+    restart: on-failure:3
+    ports:
+      - '7070'
+    environment:
+      STREAMS_BOOTSTRAP_SERVERS: kafka:9092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
+      STREAMS_SCHEMA_REGISTRY_PORT: 8081
+      KAFKA_MUSIC_APP_REST_HOST: localhost
+      KAFKA_MUSIC_APP_REST_PORT: 7070

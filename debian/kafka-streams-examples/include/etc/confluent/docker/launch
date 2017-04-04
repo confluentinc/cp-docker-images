@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Copyright 2017 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+declare -r STREAMS_SCHEMA_REGISTRY_URL="http://$STREAMS_SCHEMA_REGISTRY_HOST:$STREAMS_SCHEMA_REGISTRY_PORT"
+declare -r KAFKA_MUSIC_APP_REST_ENDPOINT="http://$KAFKA_MUSIC_APP_REST_HOST:$KAFKA_MUSIC_APP_REST_PORT"
+
+echo "===> Launching ${COMPONENT}:"
+echo "       Running Kafka Music application with REST endpoint at ${KAFKA_MUSIC_APP_REST_ENDPOINT},"
+echo "       connecting to Kafka cluster at ${STREAMS_BOOTSTRAP_SERVERS} and"
+echo "       Confluent schema registry at ${STREAMS_SCHEMA_REGISTRY_URL}"
+echo "       (from fat jar at $STREAMS_EXAMPLES_FATJAR_DEPLOYED)"
+exec java -cp $STREAMS_EXAMPLES_FATJAR_DEPLOYED \
+          -Dmetadata.max.age.ms=1000 \
+          $KAFKA_MUSIC_APP_CLASS \
+          $KAFKA_MUSIC_APP_REST_PORT $STREAMS_BOOTSTRAP_SERVERS $STREAMS_SCHEMA_REGISTRY_URL $KAFKA_MUSIC_APP_REST_HOST

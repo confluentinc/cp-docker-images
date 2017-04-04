@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+# Copyright 2017 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure STREAMS_BOOTSTRAP_SERVERS
+dub ensure STREAMS_SCHEMA_REGISTRY_HOST
+dub ensure STREAMS_SCHEMA_REGISTRY_PORT
+dub ensure KAFKA_MUSIC_APP_REST_HOST
+dub ensure KAFKA_MUSIC_APP_REST_PORT
+
+dub ensure STREAMS_EXAMPLES_FATJAR_DEPLOYED
+dub path "${STREAMS_EXAMPLES_FATJAR_DEPLOYED}" readable
+dub ensure KAFKA_MUSIC_APP_CLASS
+
+# TODO: Do we need to use an "advertised host name" setup to ensure that the service is resolvable by all containers?
+
+dub path /etc/"${COMPONENT}"/ writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
