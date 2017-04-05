@@ -128,8 +128,8 @@ def wait_for_service(host, port, timeout):
             return False
 
 
-def check_url_ready(url, timeout):
-    """Waits for a URL to be retrievable.
+def check_http_ready(url, timeout):
+    """Waits for an HTTP/HTTPS URL to be retrievable.
 
     Useful to wait for a REST API service, for example.
 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
     check_env.add_argument('port', help='Port.', type=int)
     check_env.add_argument('timeout', help='timeout in secs.', type=float)
 
-    check_env = actions.add_parser('url-ready', description='Wait for a URL to be retrievable.')
+    check_env = actions.add_parser('http-ready', description='Wait for an HTTP/HTTPS URL to be retrievable.')
     check_env.add_argument('url', help='URL to retrieve. Expected HTTP status code: 2xx.')
     check_env.add_argument('timeout', help='Time in secs to wait for the URL to be retrievable.', type=float)
 
@@ -279,8 +279,8 @@ if __name__ == '__main__':
         success = exit_if_absent(args.name)
     elif args.action == "wait":
         success = wait_for_service(args.host, int(args.port), float(args.timeout))
-    elif args.action == "url-ready":
-        success = check_url_ready(args.url, float(args.timeout))
+    elif args.action == "http-ready":
+        success = check_http_ready(args.url, float(args.timeout))
     elif args.action == "path":
         success = check_path_for_permissions(args.path, args.mode)
 
