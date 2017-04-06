@@ -16,7 +16,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+      # IP_ACCESSIBLE_FROM_DOCKER_HOST: see `.env` file in this directory for explanations
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${IP_ACCESSIBLE_FROM_DOCKER_HOST}:29092
 
   schema-registry:
     image: confluentinc/cp-schema-registry:3.2.0
