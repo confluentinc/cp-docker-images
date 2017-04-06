@@ -54,39 +54,9 @@ The Kafka Music application is started automatically by its container.
 $ docker-compose up -d
 ```
 
-Create the input topics of the Kafka Music application:
-
-```bash
-# Create the input topic "play-events"
-$ docker-compose exec kafka kafka-topics \
-    --create --topic play-events \
-    --zookeeper localhost:32181 --partitions 4 --replication-factor 1
-
-# Create the input topic "song-feed"
-$ docker-compose exec kafka kafka-topics \
-    --create --topic song-feed \
-    --zookeeper localhost:32181 --partitions 4 --replication-factor 1
-```
-
-**Workaround until [PR#2815](https://github.com/apache/kafka/pull/2815) is available:**
-Restart the Kafka Music application to make it aware of the newly created topics.
-
-```bash
-$ docker-compose restart kafka-streams-examples
-```
-
-At this point the application is up and running.  Let's start `KafkaMusicExampleDriver`, which continuously generates
-some input data for the application to process:
-
-```bash
-# Write some input data to the application's input topics.
-# This command will continue to run and generate input data
-# until it is terminated with `Ctrl-C`.  Keep it running for now!
-$ docker-compose exec kafka-streams-examples \
-    java -cp /app/streams-examples-3.2.0-standalone.jar \
-    io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExampleDriver \
-    localhost:29092 http://localhost:8081
-```
+After a few seconds the application is up and running.  In parallel, one of the started containers is continuously
+generating input data for the application by writing into its input topics.  This allows us to look at data that
+is being processed "live".
 
 Now we can use our web browser or a CLI tool such as `curl` to interactively query the latest processing results of the
 Kafka Music application.
@@ -151,13 +121,9 @@ contains supports further operations.  See the
 [top-level instructions in its source code](https://github.com/confluentinc/examples/blob/3.2.x/kafka-streams/src/main/java/io/confluent/examples/streams/interactivequeries/kafkamusic/KafkaMusicExample.java)
 for further information.
 
-Once you're done playing around you can stop this example:
+Once you're done playing around you can stop all the services and containers with `docker-compose down`.
 
-1. Stop the `docker-compose exec` command for `KafkaMusicExampleDriver` (via `Ctrl-C`) that is generating the input
-   data.
-2. Stop all the services and containers with `docker-compose down`.
-
-That's it.  We hope you enjoyed this demo!
+We hope you enjoyed this demo!
 
 
 <a name="running-further-demo-applications"></a>
@@ -175,6 +141,8 @@ $ docker-compose exec kafka-streams-examples \
         io.confluent.examples.streams.WordCountLambdaExample \
         localhost:29092
 ```
+
+(Of course you can also modify [docker-compose.yml](docker-compose.yml) for repeatable deployments.)
 
 Note that you must follow the full instructions of each demo application (see its respective source code at
 https://github.com/confluentinc/examples).  These instructions include, for example, the creation of the application's
