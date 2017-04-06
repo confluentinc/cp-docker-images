@@ -49,3 +49,42 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
       KAFKA_MUSIC_APP_REST_HOST: localhost
       KAFKA_MUSIC_APP_REST_PORT: 7070
+
+  secure-config:
+    image: confluentinc/cp-kafka-streams-examples:latest
+    labels:
+    - io.confluent.docker.testing=true
+    command: "bash -c '/etc/confluent/docker/configure && touch /tmp/config-is-done && sleep infinity'"
+    environment:
+      STREAMS_BOOTSTRAP_SERVERS: kafka:9092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
+      STREAMS_SCHEMA_REGISTRY_PORT: 8081
+      KAFKA_MUSIC_APP_REST_HOST: localhost
+      KAFKA_MUSIC_APP_REST_PORT: 7070
+      # Environment variables prefixed with `STREAMS_SECURITY_` are "converted" to Kafka parameters
+      # and stored into /etc/kafka-streams-examples/admin.properties in the container.
+      #
+      # Details at:
+      # debian/kafka-streams-examples/include/etc/confluent/docker/{admin.properties.template, configure}
+      #
+      # Note: Below we provide different settings for the producer and the consumer used by Kafka Streams,
+      #       which we do primarily for testing purposes.  Because these settings happen to be identical
+      #       across the producer and consumer, we could alternatively collapse "paired" variables into one;
+      #       for example, we could collapse
+      #       STREAMS_SECURITY_PRODUCER_SSL_TRUSTSTORE_LOCATION and STREAMS_SECURITY_CONSUMER_SSL_TRUSTSTORE_LOCATION
+      #       into a single STREAMS_SECURITY_SSL_TRUSTSTORE_LOCATION variable.
+      #
+      STREAMS_SECURITY_PRODUCER_SECURITY_PROTOCOL: SSL
+      STREAMS_SECURITY_PRODUCER_SSL_TRUSTSTORE_LOCATION: /path/to/producer-truststore
+      STREAMS_SECURITY_PRODUCER_SSL_TRUSTSTORE_PASSWORD: producer-password
+      STREAMS_SECURITY_PRODUCER_SSL_KEYSTORE_LOCATION: /path/to/producer-keystore
+      STREAMS_SECURITY_PRODUCER_SSL_KEYSTORE_PASSWORD: producer-password
+      STREAMS_SECURITY_PRODUCER_SSL_KEY_PASSWORD: producer-password
+      STREAMS_SECURITY_CONSUMER_SECURITY_PROTOCOL: SSL
+      STREAMS_SECURITY_CONSUMER_SSL_TRUSTSTORE_LOCATION: /path/to/consumer-truststore
+      STREAMS_SECURITY_CONSUMER_SSL_TRUSTSTORE_PASSWORD: consumer-password
+      STREAMS_SECURITY_CONSUMER_SSL_KEYSTORE_LOCATION: /path/to/consumer-keystore
+      STREAMS_SECURITY_CONSUMER_SSL_KEYSTORE_PASSWORD: consumer-password
+      STREAMS_SECURITY_CONSUMER_SSL_KEY_PASSWORD: consumer-password
+    labels:
+      - io.confluent.docker.testing=true

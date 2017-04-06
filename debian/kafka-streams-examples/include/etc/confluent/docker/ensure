@@ -21,21 +21,11 @@ set -o nounset \
 
 echo "===> Verify that Kafka is healthy ..."
 
-if [[ -n "${STREAMS_SECURITY_PROTOCOL-}" ]] && [[ $STREAMS_SECURITY_PROTOCOL="SSL" ]]
-then
-
-    cub kafka-ready \
-        "${STREAMS_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${STREAMS_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "$STREAMS_BOOTSTRAP_SERVERS" \
-        --config /etc/"${COMPONENT}"/kafka-streams-examples.properties
-else
-
-    cub kafka-ready \
-        "${STREAMS_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${STREAMS_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "$STREAMS_BOOTSTRAP_SERVERS"
-fi
+cub kafka-ready \
+    "${STREAMS_CUB_KAFKA_MIN_BROKERS:-1}" \
+    "${STREAMS_CUB_KAFKA_TIMEOUT:-40}" \
+    -b "$STREAMS_BOOTSTRAP_SERVERS" \
+    --config /etc/"${COMPONENT}"/admin.properties
 
 echo "===> Verify that Confluent Schema Registry is healthy ..."
 

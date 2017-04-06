@@ -29,8 +29,6 @@ dub ensure STREAMS_EXAMPLES_FATJAR_DEPLOYED
 dub path "${STREAMS_EXAMPLES_FATJAR_DEPLOYED}" readable
 dub ensure KAFKA_MUSIC_APP_CLASS
 
-# TODO: Do we need to use an "advertised host name" setup to ensure that the service is resolvable by all containers?
-
 dub path /etc/"${COMPONENT}"/ writable
 
-dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/admin.properties.template" "/etc/"${COMPONENT}"/admin.properties"

@@ -12,6 +12,10 @@ KAFKA_READY = "bash -c 'cub kafka-ready {num_brokers} 40 -z $KAFKA_ZOOKEEPER_CON
 SR_READY = "bash -c 'cub sr-ready {host} {port} 20 && echo PASS || echo FAIL'"
 KAFKA_MUSIC_APP_HEALTH_CHECK = "bash -c 'dub http-ready {url} 20 && echo PASS || echo FAIL'"
 
+def props_to_list(props_str):
+    return sorted([
+        p.strip() for p in props_str.split("\n") if len(p.strip()) > 0
+    ])
 
 class ConfigTest(unittest.TestCase):
 
@@ -39,8 +43,33 @@ class ConfigTest(unittest.TestCase):
 
     def test_default_config(self):
         self.is_kafka_music_app_healthy_for_service("default-config")
+        # The default config fixture does not contain any security-related settings.
+        admin_props = props_to_list(self.cluster.run_command_on_service("default-config", "cat /etc/kafka-streams-examples/admin.properties"))
+        expected_admin_props = []
+        self.assertEquals(expected_admin_props, admin_props)
         # TODO: Once https://github.com/apache/kafka/pull/2815 is available for use,
         #       we should also validate some REST API responses (see `test_kafka_rest.py`)?
+
+    def test_secure_config(self):
+        output = self.cluster.run_command_on_service("secure-config", "bash -c 'while [ ! -f /tmp/config-is-done ]; do echo waiting && sleep 1; done; echo PASS'")
+        assert "PASS" in output
+
+        admin_props = props_to_list(self.cluster.run_command_on_service("secure-config", "cat /etc/kafka-streams-examples/admin.properties"))
+        expected_admin_props = props_to_list("""
+        producer.security.protocol=SSL
+        producer.ssl.truststore.location=/path/to/producer-truststore
+        producer.ssl.truststore.password=producer-password
+        producer.ssl.keystore.location=/path/to/producer-keystore
+        producer.ssl.keystore.password=producer-password
+        producer.ssl.key.password=producer-password
+        consumer.security.protocol=SSL
+        consumer.ssl.truststore.location=/path/to/consumer-truststore
+        consumer.ssl.truststore.password=consumer-password
+        consumer.ssl.keystore.location=/path/to/consumer-keystore
+        consumer.ssl.keystore.password=consumer-password
+        consumer.ssl.key.password=consumer-password
+        """)
+        self.assertEquals(expected_admin_props, admin_props)
 
 
 class StandaloneNetworkingTest(unittest.TestCase):
