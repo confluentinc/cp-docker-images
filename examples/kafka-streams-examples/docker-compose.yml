@@ -18,6 +18,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       # IP_ACCESSIBLE_FROM_DOCKER_HOST: see `.env` file in this directory for explanations
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${IP_ACCESSIBLE_FROM_DOCKER_HOST}:29092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
   schema-registry:
     image: confluentinc/cp-schema-registry:3.2.0
