@@ -17,7 +17,7 @@ services:
   ### - Container port = 1<usual_port> (example: 19092 for a Kafka broker that runs at port 9092)
 
   zookeeper-bridge:
-    image: confluentinc/cp-zookeeper:3.2.0
+    image: confluentinc/cp-zookeeper:latest
     labels:
     - io.confluent.docker.testing=true
     networks:
@@ -29,7 +29,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka-bridge:
-    image: confluentinc/cp-kafka:3.2.0
+    image: confluentinc/cp-kafka:latest
     labels:
     - io.confluent.docker.testing=true
     networks:
@@ -42,7 +42,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-bridge:19092
 
   schema-registry-bridge:
-    image: confluentinc/cp-schema-registry:3.2.0
+    image: confluentinc/cp-schema-registry:latest
     labels:
     - io.confluent.docker.testing=true
     networks:
@@ -55,7 +55,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper-bridge:12181
 
   kafka-streams-examples-bridge:
-    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    image: confluentinc/cp-kafka-streams-examples:latest
     labels:
     - io.confluent.docker.testing=true
     networks:
@@ -76,7 +76,7 @@ services:
   ### - Container port = 3<usual_port> (example: 39092 for a Kafka broker that runs at port 9092)
 
   zookeeper-host:
-    image: confluentinc/cp-zookeeper:3.2.0
+    image: confluentinc/cp-zookeeper:latest
     labels:
     - io.confluent.docker.testing=true
     network_mode: host
@@ -85,7 +85,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka-host:
-    image: confluentinc/cp-kafka:3.2.0
+    image: confluentinc/cp-kafka:latest
     labels:
     - io.confluent.docker.testing=true
     network_mode: host
@@ -95,7 +95,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39092
 
   schema-registry-host:
-    image: confluentinc/cp-schema-registry:3.2.0
+    image: confluentinc/cp-schema-registry:latest
     labels:
     - io.confluent.docker.testing=true
     network_mode: host
@@ -105,7 +105,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
 
   kafka-streams-examples-host:
-    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    image: confluentinc/cp-kafka-streams-examples:latest
     labels:
     - io.confluent.docker.testing=true
     network_mode: host

@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:3.2.0
+    image: confluentinc/cp-zookeeper:latest
     labels:
     - io.confluent.docker.testing=true
     environment:
@@ -10,7 +10,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:3.2.0
+    image: confluentinc/cp-kafka:latest
     labels:
     - io.confluent.docker.testing=true
     environment:
@@ -19,7 +19,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:3.2.0
+    image: confluentinc/cp-schema-registry:latest
     labels:
     - io.confluent.docker.testing=true
     ports:
@@ -31,13 +31,13 @@ services:
   # Used to verify that an invalid configuration (e.g. missing required
   # environment variables) results in a failure.
   failing-config:
-    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    image: confluentinc/cp-kafka-streams-examples:latest
     labels:
     - io.confluent.docker.testing=true
 
   # Used to verify that a valid configuration works successfully.
   default-config:
-    image: confluentinc/cp-kafka-streams-examples:3.2.0
+    image: confluentinc/cp-kafka-streams-examples:latest
     labels:
     - io.confluent.docker.testing=true
     restart: on-failure:3
