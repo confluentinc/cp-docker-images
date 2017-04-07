@@ -31,8 +31,8 @@ This docker-compose project launches:
 If you just want to sit back and see what we will be doing in the subsequent sections, take a look at the following
 recording:
 
-<a href="https://asciinema.org/a/2ucvl5azwi289s1wxwjlf3c5b">
-  <img src="https://asciinema.org/a/2ucvl5azwi289s1wxwjlf3c5b.png" width="400" alt="Running Confluent's Kafka Music demo application (Kafka Streams API)."/>
+<a href="https://asciinema.org/a/111755">
+  <img src="https://asciinema.org/a/111755.png" width="400" alt="Running Confluent's Kafka Music demo application (Kafka Streams API)."/>
 </a><br />
 <strong>Screencast: Running Confluent's Kafka Music demo application (Kafka Streams API).</strong><br />
 <br />
