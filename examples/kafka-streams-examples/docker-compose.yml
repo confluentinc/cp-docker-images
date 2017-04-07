@@ -68,8 +68,6 @@ services:
                        cub kafka-ready -b localhost:29092 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready localhost 8081 20 && \
-                       echo Waiting a few seconds for topic creation to finish... && \
-                       sleep 2 && \
                        java -cp /app/streams-examples-3.2.0-standalone.jar \
                        io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExampleDriver \
                        localhost:29092 http://localhost:8081'"
