@@ -81,7 +81,7 @@ services:
       KAFKA_MUSIC_APP_REST_PORT: ignored
 
   # Runs the Kafka Music application.
-  kafka-streams-examples:
+  kafka-music-application:
     image: confluentinc/cp-kafka-streams-examples:3.2.0
     network_mode: host
     depends_on:
