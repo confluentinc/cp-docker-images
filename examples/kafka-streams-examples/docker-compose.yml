@@ -93,6 +93,9 @@ services:
     # for Kafka and Confluent Schema Registry, but that's ok because they complete fast.
     # The reason we check for readiness here is that we can insert a sleep time
     # for topic creation before we start the application.
+    #
+    # TODO: Once https://issues.apache.org/jira/browse/KAFKA-5037 is resolved,
+    #       we can remove this `command` and use the image as-is.
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b localhost:29092 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
