@@ -16,8 +16,23 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
-      # IP_ACCESSIBLE_FROM_DOCKER_HOST: see `.env` file in this directory for explanations
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${IP_ACCESSIBLE_FROM_DOCKER_HOST}:29092
+      # If you want to interact with the Kafka broker *from your host*, then on
+      # operating systems that require the use of Docker Machine (Mac OS and Windows OS)
+      # you must first override the environment variable KAFKA_ADVERTISED_IP to the
+      # IP address of the Docker Machine VM before starting the services via
+      # `docker-compose up -d`.
+      #
+      # You do not need to override the environment variable for interacting with the
+      # Kafka Music application, ZooKeeper, or Confluent Schema Registry.
+      #
+      # For example, if the Docker Machine is named "confluent":
+      #
+      #    $ KAFKA_ADVERTISED_IP=`docker-machine ip confluent 2>/dev/null || echo localhost` docker-compose up -d
+      #
+      # The default value is set in the `.env` file in this directory because
+      # in the Docker Compose v2.0 file format, the `${VARIABLE:-defaultValue}`
+      # syntax is not supported yet.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_ADVERTISED_IP}:29092
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
   schema-registry:

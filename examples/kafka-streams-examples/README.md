@@ -157,6 +157,18 @@ Available endpoints **from within the containers** of this docker-compose projec
 | Confluent Schema Registry | `schema.registry.url` | `http://localhost:8081` |
 | ZooKeeper ensemble        | `zookeeper.connect`   | `localhost:32181`       |
 
+Lastly, if you want to interact with the Kafka broker *from your host*, then on operating systems that require the use
+of Docker Machine (Mac OS and Windows OS) you must first override the environment variable `KAFKA_ADVERTISED_IP` to the
+IP address of the Docker Machine VM before starting the services via `docker-compose up -d`:
+
+```bash
+# Set `KAFKA_ADVERTISED_IP` to the IP address of the Docker Machine if the latter is actually available.
+$ KAFKA_ADVERTISED_IP=`docker-machine ip confluent 2>/dev/null || echo localhost` docker-compose up -d
+```
+
+You do not need to override the environment variable for interacting with other services such as ZooKeeper or Confluent
+Schema Registry.  See [docker-compose.yml](docker-compose.yml) for further information.
+
 
 <a name="appendix"></a>
 # Appendix
