@@ -16,3 +16,4 @@ In this section, we provide more advanced tutorials for using specific Confluent
    connect-avro-jdbc
    automatic-data-balancing
    replicator
+   kafka-streams-examples
