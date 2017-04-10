@@ -180,6 +180,10 @@ Available endpoints **from within the containers**:
 | ZooKeeper ensemble        | ``zookeeper.connect``   | ``localhost:32181``       |
 +---------------------------+-------------------------+---------------------------+
 
+The ZooKeeper endpoint is not required by Kafka Streams applications, but you need it to e.g.
+:ref:`manually create new Kafka topics <docker-tutorial_kafka-streams-examples_topics-create>` or to
+:ref:`list available Kafka topics <docker-tutorial_kafka-streams-examples_topics-list>`.
+
 Lastly, if you want to interact with the Kafka broker *from your host*, then on operating systems that require the use
 of Docker Machine (Mac OS and Windows OS) you must first override the environment variable ``KAFKA_ADVERTISED_IP`` to
 the IP address of the Docker Machine VM before starting the services via ``docker-compose up -d``:
@@ -245,3 +249,38 @@ Inspect the "song-feed" input topic, which contains messages in Avro format:
     {"id":2,"album":"We Are the League","artist":"Anti-Nowhere League","name":"Animal","genre":"Punk"}
     {"id":3,"album":"Live In A Dive","artist":"Subhumans","name":"All Gone Dead","genre":"Punk"}
     {"id":4,"album":"PSI","artist":"Wheres The Pope?","name":"Fear Of God","genre":"Punk"}
+
+
+.. _docker-tutorial_kafka-streams-examples_topics-create:
+
+Creating new topics
+"""""""""""""""""""
+
+You can create topics manually with the ``kafka-topics`` CLI tool, which is available on the ``kafka`` container.
+
+.. sourcecode:: bash
+
+   # Create a new topic named "my-new-topic", using the `kafka` container
+   $ docker-compose exec kafka kafka-topics \
+       --zookeeper localhost:32181 \
+       --create --topic my-new-topic --partitions 2 --replication-factor 1
+
+  # You should see a line similar to:
+  Created topic "my-new-topic".
+
+
+.. _docker-tutorial_kafka-streams-examples_topics-list:
+
+Listing available topics
+""""""""""""""""""""""""
+
+You can list all available topics with the ``kafka-topics`` CLI tool, which is available on the ``kafka`` container.
+
+.. sourcecode:: bash
+
+   # Create a new topic named "my-new-topic", using the `kafka` container
+   $ docker-compose exec kafka kafka-topics \
+       --zookeeper localhost:32181 \
+       --list
+
+Additional topic information is displayed by running ``--describe`` instead of ``-list``.
