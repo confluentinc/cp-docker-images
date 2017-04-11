@@ -36,6 +36,23 @@ This tutorial uses `Docker Compose <https://docs.docker.com/compose/>`__.
 Running the Kafka Music demo application
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+If you want to see an appetizer of what we will do in this section, take a look at the following screencast:
+
+.. raw:: html
+
+  <p>
+  <a href="https://asciinema.org/a/111755">
+    <img src="https://asciinema.org/a/111755.png" width="400" />
+  </a>
+  </p>
+  <p>
+    <a href="https://asciinema.org/a/111755">
+      <strong>Screencast: Running Confluent's Kafka Music demo application (3 mins)</strong>
+    </a>
+  </p>
+
+Ready now?  Let's start!
+
 .. note::
 
     **Mac users only:** Create and configure the Docker Machine
