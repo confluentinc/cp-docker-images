@@ -22,4 +22,4 @@ More specifically, we will run the following services:
 * Confluent Schema Registry
 
 You can find detailed documentation at
-http://docs.confluent.io/3.2.0/cp-docker-images/docs/tutorials/kafka-streams-examples.html.
+http://docs.confluent.io/current/cp-docker-images/docs/tutorials/kafka-streams-examples.html.

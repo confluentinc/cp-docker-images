@@ -16,9 +16,9 @@ Using security is optional - non-secured clusters are supported, as well as a mi
    "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
 
-For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/3.2.0/kafka/security.html>`_.
+For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/current/kafka/security.html>`_.
 
-For a tutorial on using SSL in the Confluent Platform please refer to the documented tutorials on `SSL <http://docs.confluent.io/3.2.0/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/3.2.0/kafka/sasl.html>`_.
+For a tutorial on using SSL in the Confluent Platform please refer to the documented tutorials on `SSL <http://docs.confluent.io/current/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/current/kafka/sasl.html>`_.
 
 Docker Security
 ~~~~~~~~~~~~~~~
