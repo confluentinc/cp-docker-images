@@ -387,7 +387,7 @@ Docker Compose: Setting Up a Three Node CP Cluster with SASL
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
-1. Follow sections 1, 2 and 3 on generating credentials in the “Docker Client” section above to create the SSL credentials.
+1. Follow sections 1, 2 and 3 in the “Docker Client” section above to create a docker-machine and generate the SSL credentials.
 
   Set the environment variable for secrets directory. This is used in the compose file.
 
