@@ -404,7 +404,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 3. Start Kerberos
 
-  Make sure you are in the cp-docker-images directory.
+  Make sure you are in the ``cp-docker-images`` directory.
   
   .. sourcecode:: bash
 
