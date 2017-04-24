@@ -1,5 +1,5 @@
 BUILD_NUMBER := 4
-CP_VERSION := 3.2.0
+CP_VERSION := 3.3.0-SNAPSHOT
 VERSION := ${CP_VERSION}-${BUILD_NUMBER}
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
