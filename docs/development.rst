@@ -380,76 +380,38 @@ The following examples show to extend the images.
 
   The images ship with Azul Zulu OpenJDK.  Due to licensing restrictions, we cannot bundle Oracle JDK, but we are testing on Zulu OpenJDK and do suggest it as a viable alternative.  In the event that you really need to use Oracle's version, you can follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
 
-  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK.  First, you'll need to update the base image ``Dockerfile``:
+  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK by updating ``debian/base/Dockerfile``.
 
     .. sourcecode:: bash
 
-       FROM debian:jessie
+       # In debian/base/Dockerfile
 
-       ARG COMMIT_ID=unknown
-       LABEL io.confluent.docker.git.id=$COMMIT_ID
-       ARG BUILD_NUMBER=-1
-       LABEL io.confluent.docker.build.number=$BUILD_NUMBER
-
-       MAINTAINER partner-support@confluent.io
-       LABEL io.confluent.docker=true
-
-
-       # Python
-       ENV PYTHON_VERSION="2.7.9-1"
-       ENV PYTHON_PIP_VERSION="8.1.2"
-
-       # Confluent
-       ENV SCALA_VERSION="2.11"
-       ENV CONFLUENT_MAJOR_VERSION="3.3"
-       ENV CONFLUENT_VERSION="3.3.0-SNAPSHOT"
-       ENV CONFLUENT_DEB_VERSION="1"
-
-       # Zulu
-       ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
-
-
-       RUN echo "===> update debian ....." \
+       # Replace the following lines for Zulu OpenJDK...
+       #
+       && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
+       && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
+       && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
        && apt-get -qq update \
-       \
-       && echo "===> install curl wget netcat python...." \
-       && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-                   curl \
-                   wget \
-                   netcat \
-                   python=${PYTHON_VERSION} \
-       && echo "===> install python packages ..."  \
-       && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
-       && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-       && pip install --no-cache-dir jinja2 \
-                                     requests \
-       \
-       && echo "===> add webupd8 repository ..."  \
+       && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
+       && rm -rf /var/lib/apt/lists/* \
+
+       # ...with the following lines for Oracle JDK
+       #
+       && echo "===> Adding webupd8 repository for Oracle JDK..."  \
        && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
        && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
        && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
        && apt-get update \
        \
-       && echo "===> install Oracle Java 8 ..."   \
+       && echo "===> Installing Oracle JDK 8 ..."   \
        && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
        && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
        && DEBIAN_FRONTEND=noninteractive  apt-get install -y --force-yes \
                        oracle-java8-installer \
                        oracle-java8-set-default  \
                        ca-certificates \
-       \
-       && echo "===> clean up ..."  \
        && rm -rf /var/cache/oracle-jdk8-installer \
        && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
-       \
-       \
-       && echo "===> add confluent repository..." \
-       && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-       && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list
-
-       COPY include/dub /usr/local/bin/dub
-       COPY include/cub /usr/local/bin/cub
-       COPY include/etc/confluent/docker /etc/confluent/docker
 
   2. Next, rebuild all the images:
 
