@@ -1,7 +1,7 @@
 .. _development :
 
 Developer Guide
-===========
+===============
 
 **Table of Contents**
 
@@ -16,7 +16,7 @@ Image Design Overview
 In this section we assume some prior knowledge of Docker and of how to write Dockerfiles.  If you'd like to first  on best practices for writing Dockerfiles, we recommend reviewing `Docker's best practices guide <https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#best-practices-for-writing-dockerfiles>`_.
 
 The Bootup Process
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Upon startup, the entrypoint ``/etc/confluent/docker/run`` runs three executable scripts found in
 the ``/etc/confluent/docker``.  They are run in the following sequence:
@@ -61,7 +61,7 @@ that :
 -  Log to stdout
 
 Development Guidelines
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 We adhered to the following guidelines when developing these Docker bootup scripts:
 
@@ -120,7 +120,7 @@ To get started, you can build all the CP images as follows:
 
 You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
-.. _running_tests : 
+.. _running_tests :
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -149,7 +149,7 @@ Make Targets
 
 Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
-``clean-images`` 
+``clean-images``
 
 Delete all containers tagged with ``label=io.confluent.docker`` :
 
@@ -170,15 +170,15 @@ Push to the Docker hub:
 .. _extending_images :
 
 Extending the Docker Images
---------------------------
+---------------------------
 
 You may want to extend the images to add new software, change the
-config management, use service discovery etc.  This page provides instructions for doing so. 
+config management, use service discovery etc.  This page provides instructions for doing so.
 
 .. _prerequisites :
 
 Prerequisites
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 1. Read the section on :ref:`development <development>` to setup the development environment to build docker images.
 2. Understand how the images are structured by reading the following docs:
@@ -192,9 +192,9 @@ Prerequisites
 Adding Connectors to the Kafka Connect Image
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are currently two ways to add new connectors to the Kafka Connect image.  
+There are currently two ways to add new connectors to the Kafka Connect image.
 
-* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
@@ -422,12 +422,12 @@ The following examples show to extend the images.
 .. _utility_scripts :
 
 Utility Scripts
-----------------
+---------------
 
 Given the dependencies between the various CP components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
 
 Docker Utility Belt (dub)
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Template
 
@@ -479,7 +479,7 @@ Docker Utility Belt (dub)
 
 
 Confluent Platform Utility Belt (cub)
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. zk-ready
 
@@ -554,7 +554,7 @@ Confluent Platform Utility Belt (cub)
 
 
 Client Properties
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 The following properties may be configured when using the ``kafka-ready`` utility described above.
 
