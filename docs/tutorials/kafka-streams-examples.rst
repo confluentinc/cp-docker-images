@@ -77,8 +77,8 @@ Clone the Confluent Docker Images repository:
     # Change into the directory for this tutorial
     $ cd cp-docker-images/examples/kafka-streams-examples
 
-    # Switch to the `3.2.x` branch
-    $ git checkout 3.2.x
+    # Switch to the `master` branch
+    $ git checkout master
 
 Now we can launch the Kafka Music demo application including the services it depends on such as Kafka.
 
@@ -167,8 +167,8 @@ Running further Confluent demo applications for the Kafka Streams API
 
 The container named ``kafka-music-application``, which runs the Kafka Music demo application, actually contains all of
 Confluent's `Kafka Streams demo applications <https://github.com/confluentinc/examples>`__.  The demo applications are
-packaged in the fat jar at ``/app/streams-examples-3.3.0-SNAPSHOT-standalone.jar`` inside this container.  This means you can
-easily run any of these applications from inside the container via a command similar to:
+packaged in the fat jar at ``/app/streams-examples-3.3.0-SNAPSHOT-standalone.jar`` inside this container.
+This means you can easily run any of these applications from inside the container via a command similar to:
 
 .. sourcecode:: bash
 
