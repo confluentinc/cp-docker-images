@@ -1,7 +1,7 @@
 .. _development :
 
 Developer Guide
-===========
+===============
 
 **Table of Contents**
 
@@ -16,7 +16,7 @@ Image Design Overview
 In this section we assume some prior knowledge of Docker and of how to write Dockerfiles.  If you'd like to first  on best practices for writing Dockerfiles, we recommend reviewing `Docker's best practices guide <https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#best-practices-for-writing-dockerfiles>`_.
 
 The Bootup Process
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Upon startup, the entrypoint ``/etc/confluent/docker/run`` runs three executable scripts found in
 the ``/etc/confluent/docker``.  They are run in the following sequence:
@@ -61,7 +61,7 @@ that :
 -  Log to stdout
 
 Development Guidelines
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 We adhered to the following guidelines when developing these Docker bootup scripts:
 
@@ -120,7 +120,7 @@ To get started, you can build all the CP images as follows:
 
 You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
-.. _running_tests : 
+.. _running_tests :
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -149,7 +149,7 @@ Make Targets
 
 Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
-``clean-images`` 
+``clean-images``
 
 Delete all containers tagged with ``label=io.confluent.docker`` :
 
@@ -170,15 +170,15 @@ Push to the Docker hub:
 .. _extending_images :
 
 Extending the Docker Images
---------------------------
+---------------------------
 
 You may want to extend the images to add new software, change the
-config management, use service discovery etc.  This page provides instructions for doing so. 
+config management, use service discovery etc.  This page provides instructions for doing so.
 
 .. _prerequisites :
 
 Prerequisites
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 1. Read the section on :ref:`development <development>` to setup the development environment to build docker images.
 2. Understand how the images are structured by reading the following docs:
@@ -192,9 +192,9 @@ Prerequisites
 Adding Connectors to the Kafka Connect Image
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are currently two ways to add new connectors to the Kafka Connect image.  
+There are currently two ways to add new connectors to the Kafka Connect image.
 
-* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
@@ -380,76 +380,38 @@ The following examples show to extend the images.
 
   The images ship with Azul Zulu OpenJDK.  Due to licensing restrictions, we cannot bundle Oracle JDK, but we are testing on Zulu OpenJDK and do suggest it as a viable alternative.  In the event that you really need to use Oracle's version, you can follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
 
-  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK.  First, you'll need to update the base image ``Dockerfile``:
+  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK by updating ``debian/base/Dockerfile``.
 
     .. sourcecode:: bash
 
-       FROM debian:jessie
+       # In debian/base/Dockerfile
 
-       ARG COMMIT_ID=unknown
-       LABEL io.confluent.docker.git.id=$COMMIT_ID
-       ARG BUILD_NUMBER=-1
-       LABEL io.confluent.docker.build.number=$BUILD_NUMBER
-
-       MAINTAINER partner-support@confluent.io
-       LABEL io.confluent.docker=true
-
-
-       # Python
-       ENV PYTHON_VERSION="2.7.9-1"
-       ENV PYTHON_PIP_VERSION="8.1.2"
-
-       # Confluent
-       ENV SCALA_VERSION="2.11"
-       ENV CONFLUENT_MAJOR_VERSION="3.3"
-       ENV CONFLUENT_VERSION="3.3.0-SNAPSHOT"
-       ENV CONFLUENT_DEB_VERSION="1"
-
-       # Zulu
-       ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
-
-
-       RUN echo "===> update debian ....." \
+       # Replace the following lines for Zulu OpenJDK...
+       #
+       && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
+       && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
+       && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
        && apt-get -qq update \
-       \
-       && echo "===> install curl wget netcat python...." \
-       && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-                   curl \
-                   wget \
-                   netcat \
-                   python=${PYTHON_VERSION} \
-       && echo "===> install python packages ..."  \
-       && curl -fSL 'https://bootstrap.pypa.io/get-pip.py' | python \
-       && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-       && pip install --no-cache-dir jinja2 \
-                                     requests \
-       \
-       && echo "===> add webupd8 repository ..."  \
+       && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
+       && rm -rf /var/lib/apt/lists/* \
+
+       # ...with the following lines for Oracle JDK
+       #
+       && echo "===> Adding webupd8 repository for Oracle JDK..."  \
        && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
        && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
        && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
        && apt-get update \
        \
-       && echo "===> install Oracle Java 8 ..."   \
+       && echo "===> Installing Oracle JDK 8 ..."   \
        && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
        && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
        && DEBIAN_FRONTEND=noninteractive  apt-get install -y --force-yes \
                        oracle-java8-installer \
                        oracle-java8-set-default  \
                        ca-certificates \
-       \
-       && echo "===> clean up ..."  \
        && rm -rf /var/cache/oracle-jdk8-installer \
        && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
-       \
-       \
-       && echo "===> add confluent repository..." \
-       && curl -SL http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION}/archive.key | apt-key add - \
-       && echo "deb [arch=amd64] http://packages.confluent.io/deb/${CONFLUENT_MAJOR_VERSION} stable main" >> /etc/apt/sources.list
-
-       COPY include/dub /usr/local/bin/dub
-       COPY include/cub /usr/local/bin/cub
-       COPY include/etc/confluent/docker /etc/confluent/docker
 
   2. Next, rebuild all the images:
 
@@ -460,12 +422,12 @@ The following examples show to extend the images.
 .. _utility_scripts :
 
 Utility Scripts
-----------------
+---------------
 
 Given the dependencies between the various CP components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
 
 Docker Utility Belt (dub)
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Template
 
@@ -517,7 +479,7 @@ Docker Utility Belt (dub)
 
 
 Confluent Platform Utility Belt (cub)
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. zk-ready
 
@@ -592,7 +554,7 @@ Confluent Platform Utility Belt (cub)
 
 
 Client Properties
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 The following properties may be configured when using the ``kafka-ready`` utility described above.
 
