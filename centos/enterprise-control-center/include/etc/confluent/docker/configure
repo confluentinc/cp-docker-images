@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Copyright 2016 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
+
+dub ensure CONTROL_CENTER_BOOTSTRAP_SERVERS
+dub ensure CONTROL_CENTER_ZOOKEEPER_CONNECT
+dub ensure CONTROL_CENTER_DATA_DIR
+dub ensure CONTROL_CENTER_REPLICATION_FACTOR
+dub ensure CONTROL_CENTER_CONFIG_DIR
+
+echo "===> Check if ${CONTROL_CENTER_CONFIG_DIR} is writable ..."
+dub path "${CONTROL_CENTER_CONFIG_DIR}" writable
+
+echo "===> Check if ${CONTROL_CENTER_DATA_DIR} is writable ..."
+dub path "${CONTROL_CENTER_DATA_DIR}" writable
+
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/log4j.properties"
+dub template "/etc/confluent/docker/admin.properties.template" "${CONTROL_CENTER_CONFIG_DIR}/admin.properties"
