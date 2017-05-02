@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +56,7 @@ public class KafkaAdminClient {
         List<String> brokerUrls = adminCfg.getList(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
         brokerAddresses = ClientUtils.parseAndValidateAddresses(brokerUrls);
         Cluster bootstrapCluster = Cluster.bootstrap(brokerAddresses);
-        metadata.update(bootstrapCluster, 0);
+        metadata.update(bootstrapCluster, new HashSet<>(), 0);
 
         Selector selector = new Selector(MetadataClientConfig.defaultConnectionMaxIdleMs,
                 metrics,
