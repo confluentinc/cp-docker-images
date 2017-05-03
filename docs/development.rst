@@ -384,7 +384,29 @@ The following examples show to extend the images.
 
     .. sourcecode:: bash
 
-       # In debian/base/Dockerfile
+       FROM debian:jessie
+
+       ARG COMMIT_ID=unknown
+       LABEL io.confluent.docker.git.id=$COMMIT_ID
+       ARG BUILD_NUMBER=-1
+       LABEL io.confluent.docker.build.number=$BUILD_NUMBER
+
+       MAINTAINER partner-support@confluent.io
+       LABEL io.confluent.docker=true
+
+
+       # Python
+       ENV PYTHON_VERSION="2.7.9-1"
+       ENV PYTHON_PIP_VERSION="8.1.2"
+
+       # Confluent
+       ENV SCALA_VERSION="2.11"
+       ENV CONFLUENT_MAJOR_VERSION="3.3"
+       ENV CONFLUENT_VERSION="3.3.0"
+       ENV CONFLUENT_DEB_VERSION="1"
+
+       # Zulu
+       ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
 
        # Replace the following lines for Zulu OpenJDK...
        #
