@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 FROM centos:centos7
 
 ARG COMMIT_ID=unknown
@@ -29,10 +28,10 @@ ARG CONFLUENT_RPM_REPO="http://packages.confluent.io"
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
-# Python
-# TODO: get this version
-# ENV PYTHON_VERSION="2.7.9-1"
-ENV PYTHON_PIP_VERSION="8.1.2"
+# # Python
+# # TODO: get this version
+# # ENV PYTHON_VERSION="2.7.9-1"
+ENV PYTHON_PIP_VERSION="9.0.1"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
