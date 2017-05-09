@@ -8,6 +8,9 @@ confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_IN
 confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 
+confluent.metrics.topic.partitions={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS', env['CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS'])}}
+confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
+
 
 {# optional properties #}
 {% set other_props = {
