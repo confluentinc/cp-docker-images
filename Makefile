@@ -21,7 +21,7 @@ clean-containers:
 	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
-	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
+	for image in `docker images -q -f label=io.confluent.docker.build.number | uniq` ; do \
         echo "Removing image $${image} \n==========================================\n " ; \
 				docker rmi -f $${image} || exit 1 ; \
   done
@@ -64,7 +64,7 @@ tag-remote:
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
         echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
@@ -73,7 +73,7 @@ push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
         echo "\n Pushing $${image}"; \
         docker push $${image}; \
   done
