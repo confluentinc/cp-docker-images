@@ -7,10 +7,6 @@ confluent.monitoring.interceptor.topic.replication={{env.get('CONTROL_CENTER_MON
 confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 
-confluent.metrics.topic.partitions={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS', env['CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS'])}}
-confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
-
-
 {# optional properties #}
 {% set other_props = {
     'CONTROL_CENTER_ID': 'confluent.controlcenter.id',
@@ -22,6 +18,8 @@ confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPL
     'CONTROL_CENTER_INTERNAL_TOPICS_RETENTION_MS': 'confluent.controlcenter.internal.topics.retention.ms',
     'CONTROL_CENTER_INTERNAL_TOPICS_CHANGELOG_SEGEMENT_BYTES': 'confluent.controlcenter.internal.topics.changelog.segment.bytes',
     'CONTROL_CENTER_LICENSE': 'confluent.controlcenter.license',
+    'CONFLUENT_METRICS_TOPIC_PARTITION': 'confluent.metrics.topic.partitions',
+    'CONFLUENT_METRICS_TOPIC_REPLICATION': 'confluent.metrics.topic.replication',
 } -%}
 
 {% set excludes = other_props.keys() + ['CONTROL_CENTER_COMMAND_TOPIC_REPLICATION'] -%}
