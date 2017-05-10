@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.confluent.admin.utils;
 
 import org.apache.zookeeper.WatchedEvent;
@@ -29,52 +30,53 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ZookeeperConnectionWatcher implements Watcher {
 
-    private CountDownLatch connectSignal;
-    private boolean isSuccessful = true;
-    private String failureMessage = null;
-    private boolean isSASLEnabled = false;
+  private CountDownLatch connectSignal;
+  private boolean isSuccessful = true;
+  private String failureMessage = null;
+  private boolean isSASLEnabled = false;
 
-    public ZookeeperConnectionWatcher(CountDownLatch connectSignal, boolean isSASLEnabled) {
-        this.connectSignal = connectSignal;
-        this.isSASLEnabled = isSASLEnabled;
-    }
+  public ZookeeperConnectionWatcher(CountDownLatch connectSignal, boolean isSASLEnabled) {
+    this.connectSignal = connectSignal;
+    this.isSASLEnabled = isSASLEnabled;
+  }
 
-    public boolean isSuccessful() {
-        return isSuccessful;
-    }
+  public boolean isSuccessful() {
+    return isSuccessful;
+  }
 
-    public String getFailureMessage() {
-        return failureMessage;
-    }
+  public String getFailureMessage() {
+    return failureMessage;
+  }
 
-    @Override public void process(WatchedEvent event) {
-        if (event.getType() == Event.EventType.None) {
-            switch (event.getState()) {
-                case SyncConnected:
-                    // If SASL is enabled, we want to wait for the SaslAuthenticated event.
-                    if (!isSASLEnabled) {
-                        connectSignal.countDown();
-                    }
-                    break;
-                case Expired:
-                    failureMessage = "Session expired.";
-                    isSuccessful = false;
-                    connectSignal.countDown();
-                    break;
-                case Disconnected:
-                    failureMessage = "Disconnected from the server.";
-                    isSuccessful = false;
-                    connectSignal.countDown();
-                    break;
-                case AuthFailed:
-                    failureMessage = "Authentication failed.";
-                    isSuccessful = false;
-                    connectSignal.countDown();
-                    break;
-                case SaslAuthenticated:
-                    connectSignal.countDown();
-                    break;
-            }
-        }
+  @Override
+  public void process(WatchedEvent event) {
+    if (event.getType() == Event.EventType.None) {
+      switch (event.getState()) {
+        case SyncConnected:
+          // If SASL is enabled, we want to wait for the SaslAuthenticated event.
+          if (!isSASLEnabled) {
+            connectSignal.countDown();
+          }
+          break;
+        case Expired:
+          failureMessage = "Session expired.";
+          isSuccessful = false;
+          connectSignal.countDown();
+          break;
+        case Disconnected:
+          failureMessage = "Disconnected from the server.";
+          isSuccessful = false;
+          connectSignal.countDown();
+          break;
+        case AuthFailed:
+          failureMessage = "Authentication failed.";
+          isSuccessful = false;
+          connectSignal.countDown();
+          break;
+        case SaslAuthenticated:
+          connectSignal.countDown();
+          break;
+      }
     }
+  }
 }
