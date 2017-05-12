@@ -35,6 +35,7 @@ confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPL
 {{name}}={{value}}
 {% endfor -%}
 
+{# NOTE: the env var prefix is CONTROL_CENTER_METRICS_ but the property prefix is confluent.metrics. #}
 {% set metrics_props = env_to_props('CONTROL_CENTER_METRICS_', 'confluent.metrics.', exclude=excludes) -%}
 {% for name, value in metrics_props.iteritems() -%}
 {{name}}={{value}}
