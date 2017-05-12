@@ -6,7 +6,7 @@ confluent.controlcenter.data.dir={{env['CONTROL_CENTER_DATA_DIR']}}
 confluent.monitoring.interceptor.topic.replication={{env.get('CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
-confluent.controlcenter.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
+confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 
 
 {# optional properties #}
@@ -35,7 +35,7 @@ confluent.controlcenter.metrics.topic.replication={{env.get('CONTROL_CENTER_METR
 {{name}}={{value}}
 {% endfor -%}
 
-{% set metrics_props = env_to_props('CONTROL_CENTER_METRICS_', 'confluent.controlcenter.metrics.', exclude=excludes) -%}
+{% set metrics_props = env_to_props('CONTROL_CENTER_METRICS_', 'confluent.metrics.', exclude=excludes) -%}
 {% for name, value in metrics_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
