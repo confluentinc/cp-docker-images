@@ -34,8 +34,8 @@ confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMM
 {{name}}={{value}}
 {% endfor -%}
 
-{% set command_props = env_to_props('CONTROL_CENTER_METRICS_', 'confluent.controlcenter.metmrics.', exclude=excludes) -%}
-{% for name, value in command_props.iteritems() -%}
+{% set metrics_props = env_to_props('CONTROL_CENTER_METRICS_', 'confluent.controlcenter.metmrics.', exclude=excludes) -%}
+{% for name, value in metrics_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
 
