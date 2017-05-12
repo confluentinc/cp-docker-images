@@ -6,6 +6,7 @@ confluent.controlcenter.data.dir={{env['CONTROL_CENTER_DATA_DIR']}}
 confluent.monitoring.interceptor.topic.replication={{env.get('CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.internal.topics.replication={{env.get('CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
+confluent.controlcenter.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPLICATION', env['CONTROL_CENTER_REPLICATION_FACTOR'])}}
 
 
 {# optional properties #}
@@ -21,7 +22,7 @@ confluent.controlcenter.command.topic.replication={{env.get('CONTROL_CENTER_COMM
     'CONTROL_CENTER_LICENSE': 'confluent.controlcenter.license',
 } -%}
 
-{% set excludes = other_props.keys() + ['CONTROL_CENTER_COMMAND_TOPIC_REPLICATION'] -%}
+{% set excludes = other_props.keys() + ['CONTROL_CENTER_COMMAND_TOPIC_REPLICATION', 'CONTROL_CENTER_METRICS_TOPIC_REPLICATION'] -%}
 
 {% for k, property in other_props.iteritems() -%}
 {% if env.get(k) != None -%}
