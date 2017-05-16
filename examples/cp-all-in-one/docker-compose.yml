@@ -27,7 +27,6 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-      CONFLUENT_METRICS_REPORTER_PUBLISH_MS: 1000
 
   schema_registry:
     image: confluentinc/cp-schema-registry
