@@ -53,20 +53,6 @@ If you want to see an appetizer of what we will do in this section, take a look 
 
 Ready now?  Let's start!
 
-.. note::
-
-    **Mac users only:** Create and configure the Docker Machine
-
-    .. sourcecode:: bash
-
-      # If you haven't done so, create a VM with 6GB of memory
-      # as your Docker Machine and name it `confluent`.
-      $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
-
-      # Next, configure your terminal window to attach it to your new Docker Machine.
-      $ eval $(docker-machine env confluent)
-
-
 Clone the Confluent Docker Images repository:
 
   .. sourcecode:: bash
@@ -97,10 +83,6 @@ the Kafka Music application by accessing its REST API.
 
 .. sourcecode:: bash
 
-    # Mac users
-    $ curl -sXGET http://`docker-machine ip confluent`:7070/kafka-music/instances
-
-    # Linux users
     $ curl -sXGET http://localhost:7070/kafka-music/instances
 
     # You should see output similar to following, though here
@@ -122,10 +104,6 @@ the Kafka Music application by accessing its REST API.
 
 .. sourcecode:: bash
 
-    # Mac and Windows users
-    $ curl -sXGET http://`docker-machine ip confluent`:7070/kafka-music/charts/top-five
-
-    # Linux users
     $ curl -sXGET http://localhost:7070/kafka-music/charts/top-five
 
     # You should see output similar to following, though here
@@ -176,7 +154,7 @@ easily run any of these applications from inside the container via a command sim
     $ docker-compose exec kafka-music-application \
             java -cp /app/streams-examples-3.2.1-standalone.jar \
             io.confluent.examples.streams.WordCountLambdaExample \
-            localhost:29092
+            kafka:29092
 
 Of course you can also modify the tutorial's ``docker-compose.yml`` for repeatable deployments.
 
@@ -185,33 +163,21 @@ https://github.com/confluentinc/examples).  These instructions include, for exam
 input and output topics.  Also, each demo application supports CLI arguments.  Typically, the first CLI argument is
 the ``bootstrap.servers`` parameter and the second argument, if any, is the ``schema.registry.url`` setting.
 
-Available endpoints **from within the containers**:
+Available endpoints **from within the containers** as well as **on your host machine**:
 
-+---------------------------+-------------------------+---------------------------+
-| Endpoint                  | Parameter               | Value                     |
-+===========================+=========================+===========================+
-| Kafka Cluster             | ``bootstrap.servers``   | ``localhost:29092``       |
-+---------------------------+-------------------------+---------------------------+
-| Confluent Schema Registry | ``schema.registry.url`` | ``http://localhost:8081`` |
-+---------------------------+-------------------------+---------------------------+
-| ZooKeeper ensemble        | ``zookeeper.connect``   | ``localhost:32181``       |
-+---------------------------+-------------------------+---------------------------+
++---------------------------+-------------------------+---------------------------------+--------------------------------+
+| Endpoint                  | Parameter               | Value (from within containers)  | Value (from your host machine) |
++===========================+=========================+=================================+================================+
+| Kafka Cluster             | ``bootstrap.servers``   | ``kafka:29092``                 | ``localhost:29092``            |
++---------------------------+-------------------------+---------------------------------+--------------------------------+
+| Confluent Schema Registry | ``schema.registry.url`` | ``http://schema-registry:8081`` | ``http://localhost:8081``      |
++---------------------------+-------------------------+---------------------------------+--------------------------------+
+| ZooKeeper ensemble        | ``zookeeper.connect``   | ``zookeeper:32181``             | ``localhost:32181``            |
++---------------------------+-------------------------+---------------------------------+--------------------------------+
 
 The ZooKeeper endpoint is not required by Kafka Streams applications, but you need it to e.g.
 :ref:`manually create new Kafka topics <docker-tutorial_kafka-streams-examples_topics-create>` or to
 :ref:`list available Kafka topics <docker-tutorial_kafka-streams-examples_topics-list>`.
-
-Lastly, if you want to interact with the Kafka broker *from your host*, then on operating systems that require the use
-of Docker Machine (Mac OS and Windows OS) you must first override the environment variable ``KAFKA_ADVERTISED_IP`` to
-the IP address of the Docker Machine VM before starting the services via ``docker-compose up -d``:
-
-.. sourcecode:: bash
-
-    # Set `KAFKA_ADVERTISED_IP` to the IP address of the Docker Machine if the latter is actually available.
-    $ KAFKA_ADVERTISED_IP=`docker-machine ip confluent 2>/dev/null || echo localhost` docker-compose up -d
-
-You do not need to override the environment variable for interacting with other services such as ZooKeeper or Confluent
-Schema Registry.  See the tutorial's ``docker-compose.yml`` for further information.
 
 
 .. _docker-tutorial_kafka-streams-examples_appendix:
@@ -225,14 +191,6 @@ Appendix
 Inspecting the input topics of the Kafka Music application
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. note::
-
-    **Mac users only:** Configure your terminal to attach to the ``confluent`` Docker Machine.
-
-    .. sourcecode:: bash
-
-      $ eval $(docker-machine env confluent)
-
 Inspect the "play-events" input topic, which contains messages in Avro format:
 
 .. sourcecode:: bash
@@ -240,7 +198,7 @@ Inspect the "play-events" input topic, which contains messages in Avro format:
     # Use the kafka-avro-console-consumer to read the "play-events" topic
     $ docker-compose exec schema-registry \
         kafka-avro-console-consumer \
-            --zookeeper localhost:32181 \
+            --bootstrap-server kafka:29092 \
             --topic play-events --from-beginning
 
     # You should see output similar to:
@@ -258,7 +216,7 @@ Inspect the "song-feed" input topic, which contains messages in Avro format:
     # Use the kafka-avro-console-consumer to read the "song-feed" topic
     $ docker-compose exec schema-registry \
         kafka-avro-console-consumer \
-            --zookeeper localhost:32181 \
+            --bootstrap-server kafka:29092 \
             --topic song-feed --from-beginning
 
     # You should see output similar to:
@@ -279,7 +237,7 @@ You can create topics manually with the ``kafka-topics`` CLI tool, which is avai
 
    # Create a new topic named "my-new-topic", using the `kafka` container
    $ docker-compose exec kafka kafka-topics \
-       --zookeeper localhost:32181 \
+       --zookeeper zookeeper:32181 \
        --create --topic my-new-topic --partitions 2 --replication-factor 1
 
   # You should see a line similar to:
@@ -295,9 +253,9 @@ You can list all available topics with the ``kafka-topics`` CLI tool, which is a
 
 .. sourcecode:: bash
 
-   # Create a new topic named "my-new-topic", using the `kafka` container
+   # List available topics, using the `kafka` container
    $ docker-compose exec kafka kafka-topics \
-       --zookeeper localhost:32181 \
+       --zookeeper zookeeper:32181 \
        --list
 
 Additional topic information is displayed by running ``--describe`` instead of ``-list``.

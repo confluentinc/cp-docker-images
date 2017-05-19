@@ -3,7 +3,9 @@ version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:3.2.1
-    network_mode: host
+    hostname: zookeeper
+    ports:
+      - '32181:32181'
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
@@ -11,45 +13,37 @@ services:
       - "moby:127.0.0.1"
 
   kafka:
-    image: confluentinc/cp-kafka:3.2.1
-    network_mode: host
+    image: confluentinc/cp-enterprise-kafka:3.2.1
+    hostname: kafka
+    ports:
+      - '29092:29092'
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: localhost:32181
-      # If you want to interact with the Kafka broker *from your host*, then on
-      # operating systems that require the use of Docker Machine (Mac OS and Windows OS)
-      # you must first override the environment variable KAFKA_ADVERTISED_IP to the
-      # IP address of the Docker Machine VM before starting the services via
-      # `docker-compose up -d`.
-      #
-      # You do not need to override the environment variable for interacting with the
-      # Kafka Music application, ZooKeeper, or Confluent Schema Registry.
-      #
-      # For example, if the Docker Machine is named "confluent":
-      #
-      #    $ KAFKA_ADVERTISED_IP=`docker-machine ip confluent 2>/dev/null || echo localhost` docker-compose up -d
-      #
-      # The default value is set in the `.env` file in this directory because
-      # in the Docker Compose v2.0 file format, the `${VARIABLE:-defaultValue}`
-      # syntax is not supported yet.
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_ADVERTISED_IP}:29092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:32181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
     extra_hosts:
       - "moby:127.0.0.1"
 
   schema-registry:
     image: confluentinc/cp-schema-registry:3.2.1
-    network_mode: host
+    hostname: schema-registry
     depends_on:
       - zookeeper
       - kafka
     ports:
-      - '8081'
+      - '8081:8081'
     environment:
-      SCHEMA_REGISTRY_HOST_NAME: localhost
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:32181
     extra_hosts:
       - "moby:127.0.0.1"
 
@@ -59,16 +53,16 @@ services:
     image: confluentinc/cp-kafka:3.2.1
     depends_on:
       - kafka
-    network_mode: host
+    hostname: kafka-create-topics
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
     # dependencies to be "ready" before starting the "kafka-create-topics"
     # container;  it waits only until the dependencies have started.  Hence we
     # must control startup order more explicitly.
     # See https://docs.docker.com/compose/startup-order/
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b localhost:29092 1 20 && \
-                       kafka-topics --create --topic play-events --if-not-exists --zookeeper localhost:32181 --partitions 4 --replication-factor 1 && \
-                       kafka-topics --create --topic song-feed --if-not-exists --zookeeper localhost:32181 --partitions 4 --replication-factor 1 && \
+                       cub kafka-ready -b kafka:29092 1 20 && \
+                       kafka-topics --create --topic play-events --if-not-exists --zookeeper zookeeper:32181 --partitions 4 --replication-factor 1 && \
+                       kafka-topics --create --topic song-feed --if-not-exists --zookeeper zookeeper:32181 --partitions 4 --replication-factor 1 && \
                        sleep infinity'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
@@ -81,19 +75,19 @@ services:
   # Continuously generates input data for the Kafka Music application.
   kafka-music-data-generator:
     image: confluentinc/cp-kafka-streams-examples:3.2.1
-    network_mode: host
+    hostname: kafka-music-data-generator
     depends_on:
       - kafka
       - schema-registry
       - kafka-create-topics
     # Control startup order similarly to the "kafka-create-topics" container above.
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b localhost:29092 1 20 && \
+                       cub kafka-ready -b kafka:29092 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready localhost 8081 20 && \
+                       cub sr-ready schema-registry 8081 20 && \
                        java -cp /app/streams-examples-3.2.1-standalone.jar \
                        io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExampleDriver \
-                       localhost:29092 http://localhost:8081'"
+                       kafka:29092 http://schema-registry:8081'"
     environment:
       STREAMS_BOOTSTRAP_SERVERS: ignored
       STREAMS_SCHEMA_REGISTRY_HOST: ignored
@@ -106,7 +100,7 @@ services:
   # Runs the Kafka Music application.
   kafka-music-application:
     image: confluentinc/cp-kafka-streams-examples:3.2.1
-    network_mode: host
+    hostname: kafka-music-application
     depends_on:
       - kafka
       - schema-registry
@@ -120,17 +114,17 @@ services:
     # TODO: Once https://issues.apache.org/jira/browse/KAFKA-5037 is resolved,
     #       we can remove this `command` and use the image as-is.
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b localhost:29092 1 20 && \
+                       cub kafka-ready -b kafka:29092 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready localhost 8081 20 && \
+                       cub sr-ready schema-registry 8081 20 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 2 && \
                        /etc/confluent/docker/run'"
     ports:
-      - '7070'
+      - '7070:7070'
     environment:
-      STREAMS_BOOTSTRAP_SERVERS: localhost:29092
-      STREAMS_SCHEMA_REGISTRY_HOST: localhost
+      STREAMS_BOOTSTRAP_SERVERS: kafka:29092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
       KAFKA_MUSIC_APP_REST_HOST: localhost
       KAFKA_MUSIC_APP_REST_PORT: 7070
