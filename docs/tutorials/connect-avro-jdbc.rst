@@ -7,9 +7,9 @@ In the `quickstart guide  <../quickstart.html>`_, we showed you how to get up an
 
   .. note::
 
-    Schema Registry is a dependency for Connect in this tutorial because we will need it for the avro serializer functionality. 
+    Schema Registry is a dependency for Connect in this tutorial because we will need it for the avro serializer functionality.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,7 +25,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``. 
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
 
 1. Create and configure the Docker machine.
 
@@ -41,7 +41,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 2. Start up Zookeeper, Kafka, and Schema Registry.
 
-  We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <../quickstart.html>`_ for a more detailed walkthrough. 
+  We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <../quickstart.html>`_ for a more detailed walkthrough.
 
   Start Zookeeper:
 
@@ -67,7 +67,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host. 
+    You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.
 
   Start the Schema Registry:
 
@@ -79,7 +79,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-      confluentinc/cp-schema-registry:3.3.0-SNAPSHOT 
+      confluentinc/cp-schema-registry:3.3.0-SNAPSHOT
 
   You can confirm that each of the services is up by checking the logs using the following command: ``docker logs <container_name>``. For example, if we run ``docker logs kafka``, we should see the following at the end of the log output:
 
@@ -95,7 +95,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     [2016-07-15 23:31:00,350] INFO [Controller-1-to-broker-1-send-thread], Starting  (kafka.controller.RequestSendThread)
     ...
 
-3. Now let's start up Kafka Connect.  Connect stores config, status, and offsets of the connectors in Kafka topics. We will create these topics now using the Kafka broker we created above.  
+3. Now let's start up Kafka Connect.  Connect stores config, status, and offsets of the connectors in Kafka topics. We will create these topics now using the Kafka broker we created above.
 
   .. sourcecode:: bash
 
@@ -188,7 +188,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 7. Launch a MYSQL database.
 
   First, launch the database container
-  
+
   .. sourcecode:: bash
 
     docker run -d \
@@ -203,7 +203,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   Next, Create databases and tables.  You'll need to exec into the docker container to create the databases.
 
   .. sourcecode:: bash
-      
+
     docker exec -it quickstart-mysql bash
 
   On the bash prompt, create a MySQL shell
@@ -247,14 +247,14 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 8. Create our JDBC Source connector using the Connect REST API. (You'll need to have curl installed)
 
-  Set the CONNECT_HOST.  If you are running this on Docker Machine, then the hostname will be ``docker-machine ip <your docker machine name>``.    
-  
+  Set the CONNECT_HOST.  If you are running this on Docker Machine, then the hostname will be ``docker-machine ip <your docker machine name>``.
+
   .. sourcecode:: bash
 
     export CONNECT_HOST=localhost
 
   Create the JDBC Source connector.
-  
+
   .. sourcecode:: bash
 
       curl -X POST \
@@ -263,7 +263,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         http://$CONNECT_HOST:28083/connectors
 
   The output of this command should be similar to the message shown below:
-  
+
   .. sourcecode:: bash
 
       {"name":"quickstart-jdbc-source","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector","tasks.max":"1","connection.url":"jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent","mode":"incrementing","incrementing.column.name":"id","timestamp.column.name":"modified","topic.prefix":"quickstart-jdbc-","poll.interval.ms":"1000","name":"quickstart-jdbc-source"},"tasks":[]}
@@ -320,7 +320,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         http://$CONNECT_HOST:28083/connectors
 
   You should see the following in the output.
-  
+
   .. sourcecode:: bash
 
       {"name":"quickstart-avro-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-jdbc-test","file":"/tmp/quickstart/jdbc-output.txt","name":"quickstart-avro-file-sink"},"tasks":[]}

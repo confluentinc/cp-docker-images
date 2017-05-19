@@ -37,7 +37,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 3. We have provided an example Docker Compose file that will start the services.  Navigate to ``cp-docker-images/examples/enterprise-kafka``, where it is located:
 
   .. sourcecode:: bash
-    
+
     cd cp-docker-images/examples/enterprise-kafka
 
 

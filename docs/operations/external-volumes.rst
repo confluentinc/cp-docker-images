@@ -5,7 +5,7 @@ Mounting External Volumes
 
 When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of Confluent Platform, we'll need to use external volumes for several main use cases:
 
-1. Data Storage: Kafka and Zookeeper will need externally mounted volumes to persist data in the event that a container stops running or is restarted. 
+1. Data Storage: Kafka and Zookeeper will need externally mounted volumes to persist data in the event that a container stops running or is restarted.
 2. Security: When security is configured, the secrets are stored on the the host and made available to the containers using mapped volumes.
 3. Configuring Kafka Connect with External Jars: Kafka connect can be configured to use third-party jars by storing them on a volume on the host.
 
@@ -60,7 +60,7 @@ Then start the containers:
     -v /vol3/kakfa-data:/var/lib/kafka/data \
     confluentinc/cp-kafka:3.3.0-SNAPSHOT
 
-The data volumes are mounted using the ``-v`` flag.  
+The data volumes are mounted using the ``-v`` flag.
 
 Security: Data Volumes for Configuring Secrets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,7 +68,7 @@ Security: Data Volumes for Configuring Secrets
 When security is enabled, the secrets are made available to the containers using volumes.  For example, if the host has the secrets (credentials, keytab, certificates, kerberos config, JAAS config) in ``/vol007/kafka-node-1-secrets``, we can configure Kafka as follows to use the secrets:
 
 .. sourcecode:: bash
-  
+
   docker run -d \
     --name=kafka-sasl-ssl-1 \
     --net=host \
@@ -101,7 +101,7 @@ Kafka connect can be configured to use third-party jars by storing them on a vol
 
 At the host (e.g. Virtualbox VM), download the MySQL driver:
 
-.. sourcecode:: bash  
+.. sourcecode:: bash
 
   # Create a dir for jars and download the mysql jdbc driver into the directories
   mkdir -p /vol42/kafka-connect/jars
@@ -111,7 +111,7 @@ At the host (e.g. Virtualbox VM), download the MySQL driver:
 
 Then start Kafka connect mounting the download directory as ``/etc/kafka-connect/jars``:
 
-.. sourcecode:: bash  
+.. sourcecode:: bash
 
   docker run -d \
     --name=connect-host-json \
