@@ -120,7 +120,7 @@ To get started, you can build all the CP images as follows:
 
 You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
-.. _running_tests : 
+.. _running_tests :
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -149,9 +149,9 @@ Make Targets
 
 Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
-``clean-images`` 
+``clean-images``
 
-Delete all containers tagged with ``label=io.confluent.docker`` :
+Delete all containers tagged with ``label=io.confluent.docker.build.number`` :
 
 ``clean-containers``
 
@@ -173,7 +173,7 @@ Extending the Docker Images
 --------------------------
 
 You may want to extend the images to add new software, change the
-config management, use service discovery etc.  This page provides instructions for doing so. 
+config management, use service discovery etc.  This page provides instructions for doing so.
 
 .. _prerequisites :
 
@@ -192,9 +192,9 @@ Prerequisites
 Adding Connectors to the Kafka Connect Image
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are currently two ways to add new connectors to the Kafka Connect image.  
+There are currently two ways to add new connectors to the Kafka Connect image.
 
-* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
+* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
@@ -741,7 +741,7 @@ The following properties may be configured when using the ``kafka-ready`` utilit
   * Default: "PKIX"
   * Importance: low
 
-.. _references : 
+.. _references :
 
 References
 ----------

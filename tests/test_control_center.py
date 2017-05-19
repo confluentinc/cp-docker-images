@@ -62,6 +62,7 @@ class ConfigTest(unittest.TestCase):
         confluent.monitoring.interceptor.topic.replication=1
         confluent.controlcenter.internal.topics.replication=1
         confluent.controlcenter.command.topic.replication=1
+        confluent.metrics.topic.replication=1
         """)
         self.assertEquals(expected, props)
 
@@ -76,6 +77,7 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.data.dir=/var/lib/confluent-control-center
         confluent.monitoring.interceptor.topic.replication=1
         confluent.controlcenter.internal.topics.replication=1
+        confluent.metrics.topic.replication=1
         confluent.controlcenter.command.topic.replication=3
         confluent.controlcenter.command.topic.retention.ms=1000
         confluent.controlcenter.connect.timeout=30000

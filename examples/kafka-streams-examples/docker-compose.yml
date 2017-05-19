@@ -7,6 +7,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka:
     image: confluentinc/cp-kafka:3.2.2-SNAPSHOT
@@ -34,6 +36,8 @@ services:
       # syntax is not supported yet.
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_ADVERTISED_IP}:29092
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   schema-registry:
     image: confluentinc/cp-schema-registry:3.2.2-SNAPSHOT
@@ -46,6 +50,8 @@ services:
     environment:
       SCHEMA_REGISTRY_HOST_NAME: localhost
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: localhost:32181
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   # This "container" is a workaround to pre-create topics for the Kafka Music application
   # until we have a more elegant way to do that.
@@ -69,6 +75,8 @@ services:
       # We override the image's `command` anyways, hence this container will not start a broker.
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   # Continuously generates input data for the Kafka Music application.
   kafka-music-data-generator:
@@ -92,6 +100,8 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: ignored
       KAFKA_MUSIC_APP_REST_HOST: ignored
       KAFKA_MUSIC_APP_REST_PORT: ignored
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   # Runs the Kafka Music application.
   kafka-music-application:
@@ -124,3 +134,5 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
       KAFKA_MUSIC_APP_REST_HOST: localhost
       KAFKA_MUSIC_APP_REST_PORT: 7070
+    extra_hosts:
+      - "moby:127.0.0.1"

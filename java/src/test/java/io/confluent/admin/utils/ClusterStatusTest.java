@@ -30,69 +30,69 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class ClusterStatusTest {
 
-    private static EmbeddedKafkaCluster kafka;
-    private static int numBrokers = 3;
-    private static int numZookeeperPeers = 3;
+  private static EmbeddedKafkaCluster kafka;
+  private static int numBrokers = 3;
+  private static int numZookeeperPeers = 3;
 
-    @BeforeClass
-    public static void setup() throws IOException {
+  @BeforeClass
+  public static void setup() throws IOException {
 
-        kafka = new EmbeddedKafkaCluster(numBrokers, numZookeeperPeers);
-        kafka.start();
+    kafka = new EmbeddedKafkaCluster(numBrokers, numZookeeperPeers);
+    kafka.start();
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    kafka.shutdown();
+  }
+
+  @Test(timeout = 120000)
+  public void zookeeperReady() throws Exception {
+    assertThat(
+        ClusterStatus.isZookeeperReady(this.kafka.getZookeeperConnectString(), 10000))
+        .isTrue();
+  }
+
+  @Test(timeout = 120000)
+  public void zookeeperReadyWithBadConnectString() throws Exception {
+    assertThat(
+        ClusterStatus.isZookeeperReady("localhost:3245", 10000))
+        .isFalse();
+  }
+
+  @Test(timeout = 120000)
+  public void isKafkaReady() throws Exception {
+
+    Map<String, String> config = new HashMap<>();
+    config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapBroker
+        (SecurityProtocol.PLAINTEXT));
+    assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
+        .isTrue();
+  }
+
+  @Test(timeout = 120000)
+  public void isKafkaReadyFailWithLessBrokers() throws Exception {
+    try {
+      Map<String, String> config = new HashMap<>();
+      config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapBroker
+          (SecurityProtocol.PLAINTEXT));
+      assertThat(ClusterStatus.isKafkaReady(config, 5, 10000))
+          .isFalse();
+    } catch (Exception e) {
+      fail("Unexpected error. " + e.getMessage());
     }
 
-    @AfterClass
-    public static void tearDown() {
-        kafka.shutdown();
+  }
+
+  @Test(timeout = 120000)
+  public void isKafkaReadyWaitFailureWithNoBroker() throws Exception {
+    try {
+      Map<String, String> config = new HashMap<>();
+      config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:6789");
+      assertThat(ClusterStatus.isKafkaReady(config, 3, 10000)).isFalse();
+    } catch (Exception e) {
+      fail("Unexpected error." + e.getMessage());
     }
-
-    @Test(timeout = 120000)
-    public void zookeeperReady() throws Exception {
-        assertThat(
-                ClusterStatus.isZookeeperReady(this.kafka.getZookeeperConnectString(), 10000))
-                .isTrue();
-    }
-
-    @Test(timeout = 120000)
-    public void zookeeperReadyWithBadConnectString() throws Exception {
-        assertThat(
-                ClusterStatus.isZookeeperReady("localhost:3245", 10000))
-                .isFalse();
-    }
-
-    @Test(timeout = 120000)
-    public void isKafkaReady() throws Exception {
-
-        Map<String, String> config = new HashMap<>();
-        config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapBroker
-                (SecurityProtocol.PLAINTEXT));
-        assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
-                .isTrue();
-    }
-
-    @Test(timeout = 120000)
-    public void isKafkaReadyFailWithLessBrokers() throws Exception {
-        try {
-            Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapBroker
-                    (SecurityProtocol.PLAINTEXT));
-            assertThat(ClusterStatus.isKafkaReady(config, 5, 10000))
-                    .isFalse();
-        } catch (Exception e) {
-            fail("Unexpected error. " + e.getMessage());
-        }
-
-    }
-
-    @Test(timeout = 120000)
-    public void isKafkaReadyWaitFailureWithNoBroker() throws Exception {
-        try {
-            Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:6789");
-            assertThat(ClusterStatus.isKafkaReady(config, 3, 10000)).isFalse();
-        } catch (Exception e) {
-            fail("Unexpected error." + e.getMessage());
-        }
-    }
+  }
 
 }

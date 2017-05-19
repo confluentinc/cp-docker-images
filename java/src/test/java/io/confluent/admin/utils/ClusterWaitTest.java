@@ -28,122 +28,124 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class ClusterWaitTest {
 
-    @Test(timeout = 180000)
-    public void isZookeeperReadyWait() throws IOException, InterruptedException {
-        final EmbeddedZookeeperEnsemble zookeeperWait = new EmbeddedZookeeperEnsemble(3, 22222);
-        Thread zkClusterThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(20000);
-                    zookeeperWait.start();
-                    while (zookeeperWait.isRunning()) {
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-                    // Just fail.
-                    fail("Unexpected error." + e.getMessage());
-                }
-            }
-        });
-
-        zkClusterThread.start();
-
+  @Test(timeout = 180000)
+  public void isZookeeperReadyWait() throws IOException, InterruptedException {
+    final EmbeddedZookeeperEnsemble zookeeperWait = new EmbeddedZookeeperEnsemble(3, 22222);
+    Thread zkClusterThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
         try {
-            assertThat(ClusterStatus.isZookeeperReady(zookeeperWait.connectString(), 30000))
-                    .isTrue();
-
+          Thread.sleep(20000);
+          zookeeperWait.start();
+          while (zookeeperWait.isRunning()) {
+            Thread.sleep(1000);
+          }
         } catch (Exception e) {
-            fail("Unexpected error." + e.getMessage());
-        } finally {
-            zookeeperWait.shutdown();
+          // Just fail.
+          fail("Unexpected error." + e.getMessage());
         }
-        zkClusterThread.join(60000);
+      }
+    });
+
+    zkClusterThread.start();
+
+    try {
+      assertThat(ClusterStatus.isZookeeperReady(zookeeperWait.connectString(), 30000))
+          .isTrue();
+
+    } catch (Exception e) {
+      fail("Unexpected error." + e.getMessage());
+    } finally {
+      zookeeperWait.shutdown();
     }
+    zkClusterThread.join(60000);
+  }
 
-    @Test(timeout = 180000)
-    public void isKafkaReadyWait() throws Exception {
-        final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
+  @Test(timeout = 180000)
+  public void isKafkaReadyWait() throws Exception {
+    final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
 
-        Thread kafkaClusterThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    kafkaWait.start();
-                    while (kafkaWait.isRunning()) {
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-                    fail("Unexpected exception ", e);
-                }
-            }
-        });
-
-        kafkaClusterThread.start();
-
+    Thread kafkaClusterThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
         try {
-            Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafkaWait.getBootstrapBroker
-                    (SecurityProtocol.PLAINTEXT));
-
-
-            assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
-                    .isTrue();
+          Thread.sleep(1000);
+          kafkaWait.start();
+          while (kafkaWait.isRunning()) {
+            Thread.sleep(1000);
+          }
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Unexpected error." + e.getMessage());
-        } finally {
-            kafkaWait.shutdown();
+          fail("Unexpected exception ", e);
         }
-        kafkaClusterThread.join(60000);
+      }
+    });
+
+    kafkaClusterThread.start();
+
+    try {
+      Map<String, String> config = new HashMap<>();
+      config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, kafkaWait.getBootstrapBroker
+          (SecurityProtocol.PLAINTEXT));
+
+      assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
+          .isTrue();
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail("Unexpected error." + e.getMessage());
+    } finally {
+      kafkaWait.shutdown();
     }
+    kafkaClusterThread.join(60000);
+  }
 
 
-    @Test(timeout = 180000)
-    public void isKafkaReadyWaitUsingZooKeeper() throws Exception {
-        final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
+  @Test(timeout = 180000)
+  public void isKafkaReadyWaitUsingZooKeeper() throws Exception {
+    final EmbeddedKafkaCluster kafkaWait = new EmbeddedKafkaCluster(3, 3);
 
-        Thread kafkaClusterThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    kafkaWait.start();
-                    while (kafkaWait.isRunning()) {
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-                    fail("Unexpected exception ", e);
-                }
-            }
-        });
-
-        kafkaClusterThread.start();
+    Thread kafkaClusterThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
         try {
-
-            boolean zkReady = ClusterStatus.isZookeeperReady(kafkaWait.getZookeeperConnectString(), 30000);
-
-            if (! zkReady) {
-                fail("Could not reach zookeeper " + kafkaWait.getZookeeperConnectString());
-            }
-
-            Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZookeeper(
-                    kafkaWait.getZookeeperConnectString(),
-                    30000);
-
-            String bootstrap_broker = endpoints.get("PLAINTEXT");
-            Map<String, String> config = new HashMap<>();
-            config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
-
-
-            assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
-                    .isTrue();
+          Thread.sleep(1000);
+          kafkaWait.start();
+          while (kafkaWait.isRunning()) {
+            Thread.sleep(1000);
+          }
         } catch (Exception e) {
-            fail("Unexpected error." + e.getMessage());
-        } finally {
-            kafkaWait.shutdown();
+          fail("Unexpected exception ", e);
         }
-        kafkaClusterThread.join(60000);
+      }
+    });
+
+    kafkaClusterThread.start();
+    try {
+
+      boolean zkReady = ClusterStatus.isZookeeperReady(
+          kafkaWait.getZookeeperConnectString(),
+          30000
+      );
+
+      if (!zkReady) {
+        fail("Could not reach zookeeper " + kafkaWait.getZookeeperConnectString());
+      }
+
+      Map<String, String> endpoints = ClusterStatus.getKafkaEndpointFromZookeeper(
+          kafkaWait.getZookeeperConnectString(),
+          30000
+      );
+
+      String bootstrap_broker = endpoints.get("PLAINTEXT");
+      Map<String, String> config = new HashMap<>();
+      config.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrap_broker);
+
+      assertThat(ClusterStatus.isKafkaReady(config, 3, 10000))
+          .isTrue();
+    } catch (Exception e) {
+      fail("Unexpected error." + e.getMessage());
+    } finally {
+      kafkaWait.shutdown();
     }
+    kafkaClusterThread.join(60000);
+  }
 }

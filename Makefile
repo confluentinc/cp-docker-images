@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 BUILD_NUMBER := 5
 CP_VERSION := 3.2.2-SNAPSHOT
+=======
+BUILD_NUMBER := 6
+CP_VERSION := 3.2.1
+>>>>>>> origin/v3.2.1
 VERSION := ${CP_VERSION}-${BUILD_NUMBER}
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
@@ -21,7 +26,7 @@ clean-containers:
 	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
-	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
+	for image in `docker images -q -f label=io.confluent.docker.build.number | uniq` ; do \
         echo "Removing image $${image} \n==========================================\n " ; \
 				docker rmi -f $${image} || exit 1 ; \
   done
@@ -30,7 +35,7 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
@@ -64,7 +69,7 @@ tag-remote:
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
         echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
@@ -73,7 +78,7 @@ push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
         echo "\n Pushing $${image}"; \
         docker push $${image}; \
   done

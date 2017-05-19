@@ -11,6 +11,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
@@ -22,6 +24,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
@@ -33,6 +37,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-ssl-1:
     image: confluentinc/cp-kafka:latest
@@ -52,7 +58,9 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
-    - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-ssl-2:
     image: confluentinc/cp-kafka:latest
@@ -72,7 +80,9 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker2_truststore_creds
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
-    - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-ssl-3:
     image: confluentinc/cp-kafka:latest
@@ -92,4 +102,6 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker3_truststore_creds
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
-    - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
