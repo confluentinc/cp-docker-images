@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-base
+# Builds a docker image for the Confluent Control Center.
 
-EXPOSE 2181 2888 3888
+FROM confluentinc/cp-rpm-base
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
@@ -25,19 +25,23 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
-ENV COMPONENT=zookeeper
+ENV COMPONENT=control-center
+ENV CONTROL_CENTER_DATA_DIR=/var/lib/confluent-${COMPONENT}
+ENV CONTROL_CENTER_CONFIG_DIR=/etc/confluent-${COMPONENT}
 
-RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
+# Default listener
+EXPOSE 9021
+
+RUN echo "===> Installing ${COMPONENT}..." \
+    && yum -q -y update \
+    && yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION} \
     \
-    && echo "===> clean up ..."  \
-    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    && echo "===> Cleaning up ..."  \
+    && rm -rf /tmp/*  \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
-    && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets \
-    && chmod -R ag+w /etc/kafka /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets
-
-VOLUME ["/var/lib/${COMPONENT}/data", "/var/lib/${COMPONENT}/log", "/etc/${COMPONENT}/secrets"]
+    && mkdir -p "${CONTROL_CENTER_DATA_DIR}" \
+    && chmod -R ag+w "${CONTROL_CENTER_CONFIG_DIR}" "${CONTROL_CENTER_DATA_DIR}"
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
