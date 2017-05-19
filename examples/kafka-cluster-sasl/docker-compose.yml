@@ -19,6 +19,8 @@ services:
     volumes:
     - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   zookeeper-sasl-2:
     image: confluentinc/cp-zookeeper:latest
@@ -38,6 +40,8 @@ services:
     volumes:
     - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
 
   zookeeper-sasl-3:
@@ -58,6 +62,8 @@ services:
     volumes:
     - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kerberos:
     image: confluentinc/cp-kerberos:latest
@@ -65,8 +71,10 @@ services:
     environment:
       BOOTSTRAP: 0
     volumes:
-    - ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab
-    - /dev/urandom:/dev/random
+      - ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab
+      - /dev/urandom:/dev/random
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-sasl-1:
     image: confluentinc/cp-kafka:latest
@@ -91,7 +99,9 @@ services:
         -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf
         -Dsun.security.krb5.debug=true
     volumes:
-    - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-sasl-2:
     image: confluentinc/cp-kafka:latest
@@ -115,7 +125,9 @@ services:
         -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf
         -Dsun.security.krb5.debug=true
     volumes:
-    - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-sasl-3:
     image: confluentinc/cp-kafka:latest
@@ -139,4 +151,6 @@ services:
         -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf
         -Dsun.security.krb5.debug=true
     volumes:
-    - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+      - ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"

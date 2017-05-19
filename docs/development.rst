@@ -151,7 +151,7 @@ Delete all images tagged with ``label=io.confluent.docker.testing=true`` :
 
 ``clean-images``
 
-Delete all containers tagged with ``label=io.confluent.docker`` :
+Delete all containers tagged with ``label=io.confluent.docker.build.number`` :
 
 ``clean-containers``
 
@@ -725,7 +725,7 @@ The following properties may be configured when using the ``kafka-ready`` utilit
   * Default: "PKIX"
   * Importance: low
 
-.. _references : 
+.. _references :
 
 References
 ----------
