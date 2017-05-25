@@ -28,7 +28,7 @@ A full example for Kafka is shown below:
       -e KAFKA_LOG4J_LOGGERS="kafka.controller=WARN,kafka.foo.bar=DEBUG" \
       -e KAFKA_LOG4J_ROOT_LOGLEVEL=WARN \
       -e KAFKA_TOOLS_LOG4J_LOGLEVEL=ERROR \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT
+      confluentinc/cp-kafka:3.4.0-SNAPSHOT
 
 
 Component Names
