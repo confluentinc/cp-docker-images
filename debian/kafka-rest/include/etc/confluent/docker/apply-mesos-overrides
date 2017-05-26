@@ -14,11 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Mesos DC/OS docker deployments will have HOST and PORT0 
-# set for the proxying of the service.
+# Mesos DC/OS docker deployments will have several env variables
+# (eg HOST and PORT0) that can be used to initialize our properties.
 # 
-# Use those values provide things we know we'll need.
+# Use those values provide things we know we'll need if the core
+# KAFKA_REST variables are not otherwise set.
+#
+# NOTE: always include "|| true" at the end of the "export" to
+#       avoid returning an error that will abort the container launch.
 
 [ -n "${HOST:-}" ] && [ -z "${KAFKA_REST_HOST_NAME:-}" ] && \
-	export KAFKA_REST_HOST_NAME=$HOST || true # we don't want the setup to fail if not on Mesos
+	export KAFKA_REST_HOST_NAME=$HOST || true 
 
+[ -n "${MESOS_TASK_ID:-}" ] && [ -z "${KAFKA_REST_ID:-}" ] && \
+	MESOS_SERVICE=${MESOS_TASK_ID%.*} && MESOS_UUID=${MESOS_TASK_ID##*.} && \
+	export KAFKA_REST_ID="${MESOS_SERVICE}.${MESOS_UUID%%-*}" || true 
