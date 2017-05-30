@@ -168,7 +168,7 @@ Available endpoints **from within the containers** as well as **on your host mac
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
 | Endpoint                  | Parameter               | Value (from within containers)  | Value (from your host machine) |
 +===========================+=========================+=================================+================================+
-| Kafka Cluster             | ``bootstrap.servers``   | ``kafka:29092``                 | ``localhost:29092``            |
+| Kafka Cluster             | ``bootstrap.servers``   | ``kafka:29092``                 | ``localhost:9092``             |
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
 | Confluent Schema Registry | ``schema.registry.url`` | ``http://schema-registry:8081`` | ``http://localhost:8081``      |
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
