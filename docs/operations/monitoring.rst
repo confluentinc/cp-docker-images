@@ -45,7 +45,7 @@ Settings
     The default setting is as follows:
 
     .. sourcecode:: bash
-    
+
       -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
 Launching Kafka and Zookeeper with JMX Enabled
@@ -62,7 +62,7 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
-    confluentinc/cp-zookeeper:3.2.1
+    confluentinc/cp-zookeeper:3.5.0-SNAPSHOT
 
   docker run -d \
     --name=kafka-jmx \
@@ -71,7 +71,7 @@ The steps for launching Kafka and Zookeeper with JMX enabled are the same as we 
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181/jmx \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_JMX_PORT=49999 \
-    -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`    
-    confluentinc/cp-kafka:3.2.1
+    -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
+    confluentinc/cp-kafka:3.5.0-SNAPSHOT
 
 Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a docker machine named "Confluent".  You should substitute with your docker machine name where appropriate.

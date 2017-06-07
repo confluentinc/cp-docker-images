@@ -24,7 +24,7 @@ The ZooKeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variabl
 		-e ZOOKEEPER_CLIENT_PORT=32181 \
 		-e ZOOKEEPER_TICK_TIME=2000 \
 		-e ZOOKEEPER_SYNC_LIMIT=2
-		confluentinc/cp-zookeeper:3.2.1
+		confluentinc/cp-zookeeper:3.5.0-SNAPSHOT
 
 Required Settings
 """""""""""""""""
@@ -50,7 +50,7 @@ The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) s
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
-          confluentinc/cp-kafka:3.2.1
+          confluentinc/cp-kafka:3.5.0-SNAPSHOT
 
   .. note::
 
@@ -81,7 +81,7 @@ The Enterprise Kafka image includes the packages for Confluent Auto Data Balanci
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
           -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
-          confluentinc/cp-enterprise-kafka:3.2.1
+          confluentinc/cp-enterprise-kafka:3.5.0-SNAPSHOT
 
   .. note::
 
@@ -115,7 +115,7 @@ For the Schema Registry image, use variables prefixed with ``SCHEMA_REGISTRY_`` 
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
       -e SCHEMA_REGISTRY_DEBUG=true \
-      confluentinc/cp-schema-registry:3.2.1
+      confluentinc/cp-schema-registry:3.5.0-SNAPSHOT
 
 Required Settings
 """""""""""""""""
@@ -142,7 +142,7 @@ For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with 
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
-      confluentinc/cp-kafka-rest:3.2.1
+      confluentinc/cp-kafka-rest:3.5.0-SNAPSHOT
 
 Required Settings
 """""""""""""""""
@@ -179,7 +179,7 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-kafka-connect:3.2.1
+      confluentinc/cp-kafka-connect:3.5.0-SNAPSHOT
 
 Required Settings
 """""""""""""""""
@@ -248,7 +248,7 @@ The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER
     -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
     -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
     -v /mnt/control-center/data:/var/lib/confluent-control-center \
-    confluentinc/cp-control-center:3.2.1
+    confluentinc/cp-control-center:3.5.0-SNAPSHOT
 
 Docker Options
 """"""""""""""
@@ -303,7 +303,7 @@ Confluent Kafka Replicator is a Kafka connector and runs on a Kafka Connect clus
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-kafka-connect:3.2.1
+      confluentinc/cp-kafka-connect:3.5.0-SNAPSHOT
 
 The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from source Kafka cluster (src) to a destination Kafka cluster (dest).
 

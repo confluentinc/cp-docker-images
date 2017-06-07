@@ -1,7 +1,7 @@
 Configuring logging
 -------------
 
-All logs are sent to ``stdout`` by default. You can change this by `extending the images <development.html/_extending_images>`_. 
+All logs are sent to ``stdout`` by default. You can change this by `extending the images <development.html/_extending_images>`_.
 
 log4j Log Levels
 ~~~~~~~~~~~~~~~~
@@ -28,7 +28,7 @@ A full example for Kafka is shown below:
       -e KAFKA_LOG4J_LOGGERS="kafka.controller=WARN,kafka.foo.bar=DEBUG" \
       -e KAFKA_LOG4J_ROOT_LOGLEVEL=WARN \
       -e KAFKA_TOOLS_LOG4J_LOGLEVEL=ERROR \
-      confluentinc/cp-kafka:3.2.1
+      confluentinc/cp-kafka:3.5.0-SNAPSHOT
 
 
 Component Names
