@@ -20,4 +20,4 @@ local.make
 java/.classpath
 java/.project
 java/.settings/
-
+.vscode/*
