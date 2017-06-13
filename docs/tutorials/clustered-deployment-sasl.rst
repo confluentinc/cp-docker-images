@@ -60,7 +60,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     (Type yes for all "Trust this certificate? [no]:" prompts.)
     cd -
 
-  Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-confluent-images`` directory.
+  Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-docker-images`` directory.
 
     .. sourcecode:: bash
 
@@ -387,29 +387,31 @@ Docker Compose: Setting Up a Three Node CP Cluster with SASL
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
-1. Clone the CP Docker Images Github Repository.
-
-  .. sourcecode:: bash
-
-      git clone https://github.com/confluentinc/cp-docker-images
-      cd cp-docker-images/examples/kafka-cluster-sasl
-
-  Follow section 3 on generating credentials in the “Docker Client” section above to create the SSL credentials.
+1. Follow sections 1, 2 and 3 in the “Docker Client” section above to create a docker-machine and generate the SSL credentials.
 
   Set the environment variable for secrets directory. This is used in the compose file.
 
   .. sourcecode:: bash
 
     export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
+    
+2. Build the kerberos image
 
-2. Start Kerberos
+  .. sourcecode:: bash
 
+    cd tests/images/kerberos
+    docker build -t confluentinc/cp-kerberos:latest .
+
+3. Start Kerberos
+
+  Make sure you are in the ``cp-docker-images`` directory.
+  
   .. sourcecode:: bash
 
        docker-compose create kerberos
        docker-compose start kerberos
 
-3. Create keytabs and principals.
+4. Create keytabs and principals.
 
   i. Follow steps 3.1 above to make sure ``quickstart.confluent.io`` is resolvable.
 
@@ -450,7 +452,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     done
 
 
-2. Start Zookeeper and Kafka
+5. Start Zookeeper and Kafka
 
   .. sourcecode:: bash
 
@@ -533,9 +535,9 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
 
-3. Follow section 8 in the "Docker Client" section above to test that your brokers are functioning as expected.
+6. Follow section 8 in the "Docker Client" section above to test that your brokers are functioning as expected.
 
-4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
+7. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
 
   .. sourcecode:: bash
 
