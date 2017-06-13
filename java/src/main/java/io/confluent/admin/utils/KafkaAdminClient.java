@@ -16,6 +16,7 @@
 
 package io.confluent.admin.utils;
 
+import org.apache.kafka.clients.ApiVersions;
 import org.apache.kafka.clients.ClientResponse;
 import org.apache.kafka.clients.ClientUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -66,8 +68,12 @@ public class KafkaAdminClient {
     MetadataClientConfig adminCfg = new MetadataClientConfig(config);
     time = new SystemTime();
     Metrics metrics = new Metrics(time);
-    Metadata metadata = new Metadata();
-    ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg.values());
+    Metadata metadata = new Metadata(
+        MetadataClientConfig.defaultRequestTimeoutMs,
+        MetadataClientConfig.defaultRequestTimeoutMs,
+        false
+    );
+    ChannelBuilder channelBuilder = ClientUtils.createChannelBuilder(adminCfg);
 
     List<String> brokerUrls = adminCfg.getList(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
     brokerAddresses = ClientUtils.parseAndValidateAddresses(brokerUrls);
@@ -91,8 +97,10 @@ public class KafkaAdminClient {
         MetadataClientConfig.defaultSendBufferBytes,
         MetadataClientConfig.defaultReceiveBufferBytes,
         MetadataClientConfig.defaultRequestTimeoutMs,
+        (int) TimeUnit.HOURS.toMillis(1),
         time,
-        true
+        true,
+        new ApiVersions()
     );
 
     client = new ConsumerNetworkClient(
@@ -123,7 +131,7 @@ public class KafkaAdminClient {
   }
 
   private MetadataResponse getMetadataResponse(long timeoutMs) {
-    MetadataRequest.Builder request = new MetadataRequest.Builder(Collections.<String>emptyList());
+    MetadataRequest.Builder request = new MetadataRequest.Builder(Collections.<String>emptyList(), false);
     return (MetadataResponse) sendAnyNode(request, timeoutMs);
   }
 
@@ -186,7 +194,7 @@ public class KafkaAdminClient {
               CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
               ConfigDef.Type.LIST,
               ConfigDef.Importance.HIGH,
-              CommonClientConfigs.BOOSTRAP_SERVERS_DOC
+              CommonClientConfigs.BOOTSTRAP_SERVERS_DOC
           )
           .define(
               CommonClientConfigs.SECURITY_PROTOCOL_CONFIG,
