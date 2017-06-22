@@ -55,7 +55,7 @@ public class KafkaAdminClient {
         List<String> brokerUrls = adminCfg.getList(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG);
         brokerAddresses = ClientUtils.parseAndValidateAddresses(brokerUrls);
         Cluster bootstrapCluster = Cluster.bootstrap(brokerAddresses);
-        metadata.update(bootstrapCluster, 0);
+        metadata.update(bootstrapCluster, Collections.<String>emptySet(), 0);
 
         Selector selector = new Selector(MetadataClientConfig.defaultConnectionMaxIdleMs,
                 metrics,
