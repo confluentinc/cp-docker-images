@@ -19,8 +19,7 @@ RUN echo "Building kafkacat ....." \
     && ./bootstrap.sh \
     && make install \
     && cd .. && rm -rf kafkacat-debian-$VERSION \
-    && AUTO_ADDED_PACKAGES=`apt-mark showauto`  \
-    && apt-get remove --purge -y $BUILD_PACKAGES $AUTO_ADDED_PACKAGES \
+    && apt-get remove --purge -y $BUILD_PACKAGES \
     \
     && echo "Installing runtime dependencies for SSL and SASL support ...." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
