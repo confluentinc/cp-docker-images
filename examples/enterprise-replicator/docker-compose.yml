@@ -6,18 +6,24 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 22181
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   zookeeper-src-b:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   zookeeper-dest:
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_CLIENT_PORT: 42181
     network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-1-src-a:
     image: confluentinc/cp-kafka:latest
@@ -25,6 +31,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-2-src-a:
     image: confluentinc/cp-kafka:latest
@@ -32,6 +40,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:22181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9095
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-1-src-b:
     image: confluentinc/cp-kafka:latest
@@ -39,6 +49,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9082
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-2-src-b:
     image: confluentinc/cp-kafka:latest
@@ -46,6 +58,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9085
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-1-dest:
     image: confluentinc/cp-kafka:latest
@@ -53,6 +67,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:42181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9072
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka-2-dest:
     image: confluentinc/cp-kafka:latest
@@ -60,6 +76,8 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: localhost:42181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9075
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   connect-host-1:
     image: confluentinc/cp-enterprise-replicator:latest
@@ -81,7 +99,9 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
       CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
     volumes:
-    - /tmp/replicator-host-cluster-test/:/tmp/test
+      - /tmp/replicator-host-cluster-test/:/tmp/test
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   connect-host-2:
     image: confluentinc/cp-enterprise-replicator:latest
@@ -101,4 +121,6 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
       CONNECT_LOG4J_ROOT_LOGLEVEL: DEBUG
     volumes:
-    - /tmp/replicator-host-cluster-test/:/tmp/test
+      - /tmp/replicator-host-cluster-test/:/tmp/test
+    extra_hosts:
+      - "moby:127.0.0.1"

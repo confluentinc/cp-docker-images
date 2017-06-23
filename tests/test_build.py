@@ -142,8 +142,15 @@ class SchemaRegistryImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
     def test_schema_registry_commands(self):
-        expected = "ERROR Properties file is required to start the schema registry REST instance (io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain:38)"
-        self.assertTrue(expected in utils.run_docker_command(image=self.image, command="schema-registry-start"))
+        expected = "USAGE: /usr/bin/schema-registry-start [-daemon] schema-registry.properties"
+        self.assertTrue(expected in utils.run_docker_command(
+            image=self.image,
+            command="schema-registry-start",
+            environment={
+                "SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL": "who cares",
+                "SCHEMA_REGISTRY_HOST_NAME": "just anything really"
+            }
+        ))
 
 
 class KafkaRestImageTest(unittest.TestCase):
@@ -171,8 +178,15 @@ class KafkaRestImageTest(unittest.TestCase):
         self.assertTrue(utils.executable_exists_in_image(self.image, "/etc/confluent/docker/run"))
 
     def test_kafka_rest_commands(self):
-        expected = "ERROR Server died unexpectedly: org.I0Itec.zkclient.exception.ZkTimeoutException: Unable to connect to zookeeper server within timeout"
-        self.assertTrue(expected in utils.run_docker_command(image=self.image, command="kafka-rest-start"))
+        expected = "org.I0Itec.zkclient.exception.ZkTimeoutException: Unable to connect to zookeeper server 'localhost:2181' with timeout of 30000 ms"
+        self.assertTrue(expected in utils.run_docker_command(
+            image=self.image,
+            command="kafka-rest-start",
+            environment={
+                "KAFKA_REST_ZOOKEEPER_CONNECT": "nothing",
+                "KAFKA_REST_HOST_NAME": "yolo"
+            }
+        ))
 
 
 class ConnectImageTest(unittest.TestCase):

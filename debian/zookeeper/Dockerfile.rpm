@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-base
+FROM confluentinc/cp-rpm-base
 
 EXPOSE 2181 2888 3888
 
@@ -28,10 +28,11 @@ LABEL io.confluent.docker=true
 ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && yum -q -y update \
+    && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION} \
     \
     && echo "===> clean up ..."  \
-    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    && rm -rf /tmp/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets \

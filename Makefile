@@ -1,16 +1,18 @@
 BUILD_NUMBER := 1
 CP_VERSION := 3.2.2
-VERSION := ${CP_VERSION}-${BUILD_NUMBER}
+
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 CONFLUENT_DEB_REPO := http://packages.confluent.io
+CONFLUENT_RPM_REPO := http://packages.confluent.io
 APT_ALLOW_UNAUTHENTICATED := false
 REPOSITORY := confluentinc
 
 # You can override vars like REPOSITORY in a local.make file
 -include local.make
+VERSION := ${CP_VERSION}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
@@ -21,7 +23,7 @@ clean-containers:
 	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
-	for image in `docker images -q -f label=io.confluent.docker | uniq` ; do \
+	for image in `docker images -q -f label=io.confluent.docker.build.number | uniq` ; do \
         echo "Removing image $${image} \n==========================================\n " ; \
 				docker rmi -f $${image} || exit 1 ; \
   done
@@ -30,12 +32,10 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-3.2.2-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
-	# We need to build images with confluentinc namespace so that dependent image builds dont fail
-	# and then tag the images with REPOSITORY namespace
 	for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
@@ -43,28 +43,38 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 		else \
 			BUILD_ARGS=""; \
 		fi; \
-		docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t confluentinc/cp-$${component}:latest debian/$${component} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
+		for type in "" rpm; do \
+			DOCKER_FILE="debian/$${component}/Dockerfile"; \
+			COMPONENT_NAME=$${component}; \
+			if [ "$${type}" = "rpm" ]; then \
+				COMPONENT_NAME="rpm-$${component}"; \
+				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
+			fi; \
+			if [ -a "$${DOCKER_FILE}" ]; then \
+				docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CP_VERSION} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
+			fi; \
+		done \
 	done
 
 build-test-images:
 	for component in `ls tests/images` ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
-		docker build -t confluentinc/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
-		docker tag confluentinc/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
+		docker build -t ${REPOSITORY}/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
 	done
 
 tag-remote:
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
         echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
@@ -73,7 +83,7 @@ push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
-	for image in `docker images -f label=io.confluent.docker -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
+	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
         echo "\n Pushing $${image}"; \
         docker push $${image}; \
   done
@@ -81,9 +91,9 @@ endif
 push-public: clean build-debian
 	for component in ${COMPONENTS} ; do \
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
-		docker push confluentinc/cp-$${component}:latest || exit 1; \
-		docker push confluentinc/cp-$${component}:${VERSION} || exit 1; \
-		docker push confluentinc/cp-$${component}:${CP_VERSION} || exit 1; \
+		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \
+		docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
+		docker push ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
   done
 
 clean: clean-containers clean-images

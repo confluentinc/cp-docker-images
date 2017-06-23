@@ -16,5 +16,8 @@ docs/README.md
 target
 .idea
 *.iml
-java/src/main/java/*.java
 local.make
+java/.classpath
+java/.project
+java/.settings/
+.vscode/*
