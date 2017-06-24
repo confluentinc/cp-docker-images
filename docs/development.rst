@@ -403,7 +403,7 @@ The following examples show to extend the images.
        ENV SCALA_VERSION="2.11"
        ENV CONFLUENT_MAJOR_VERSION="3.2"
        ENV CONFLUENT_VERSION="3.2.2"
-       ENV CONFLUENT_DEB_VERSION="1"
+       ENV CONFLUENT_DEB_VERSION="2"
 
        # Zulu
        ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
