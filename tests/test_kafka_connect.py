@@ -415,7 +415,7 @@ class SingleNodeDistributedTest(unittest.TestCase):
                 if "10000" in tmp:
                     break
 
-            time.sleep(0.1)
+            time.sleep(1.0)
 
         assert "10000" in tmp
 
@@ -452,7 +452,7 @@ class SingleNodeDistributedTest(unittest.TestCase):
                 if "10000" in tmp:
                     break
 
-            time.sleep(0.1)
+            time.sleep(1.0)
 
         assert "10000" in tmp
 
