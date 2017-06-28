@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:3.3.0-SNAPSHOT
+    image: confluentinc/cp-zookeeper:3.3.0
     hostname: zookeeper
     ports:
       - '32181:32181'
@@ -13,7 +13,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka:
-    image: confluentinc/cp-kafka:3.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka:3.3.0
     hostname: kafka
     ports:
       - '9092:9092'
@@ -37,7 +37,7 @@ services:
       - "moby:127.0.0.1"
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:3.3.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:3.3.0
     hostname: schema-registry
     depends_on:
       - zookeeper
@@ -53,7 +53,7 @@ services:
   # This "container" is a workaround to pre-create topics for the Kafka Music application
   # until we have a more elegant way to do that.
   kafka-create-topics:
-    image: confluentinc/cp-kafka:3.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka:3.3.0
     depends_on:
       - kafka
     hostname: kafka-create-topics
@@ -77,7 +77,7 @@ services:
 
   # Continuously generates input data for the Kafka Music application.
   kafka-music-data-generator:
-    image: confluentinc/cp-kafka-streams-examples:3.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka-streams-examples:3.3.0
     hostname: kafka-music-data-generator
     depends_on:
       - kafka
@@ -88,7 +88,7 @@ services:
                        cub kafka-ready -b kafka:29092 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry 8081 20 && \
-                       java -cp /app/streams-examples-3.3.0-SNAPSHOT-standalone.jar \
+                       java -cp /app/streams-examples-3.3.0-standalone.jar \
                        io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExampleDriver \
                        kafka:29092 http://schema-registry:8081'"
     environment:
@@ -102,7 +102,7 @@ services:
 
   # Runs the Kafka Music application.
   kafka-music-application:
-    image: confluentinc/cp-kafka-streams-examples:3.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka-streams-examples:3.3.0
     hostname: kafka-music-application
     depends_on:
       - kafka
