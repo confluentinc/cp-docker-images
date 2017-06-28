@@ -110,7 +110,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-3.3.0-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images
