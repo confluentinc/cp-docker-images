@@ -30,7 +30,7 @@ EXPOSE 9092
 
 RUN echo "===> installing confluent-support-metrics ..." \
     && yum -q -y update \
-    && yum install -y \
+    && yum install -y --nogpgcheck \
           confluent-support-metrics-${CONFLUENT_VERSION} \
           confluent-rebalancer-${CONFLUENT_VERSION} \
     \

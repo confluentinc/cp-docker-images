@@ -29,7 +29,7 @@
     <repositories>
         <repository>
             <id>confluent</id>
-            <url>http://packages.confluent.io/maven/</url>
+            <url>https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35</url>
         </repository>
     </repositories>
 
