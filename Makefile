@@ -1,13 +1,21 @@
+# Bump this on subsequent build, reset on new version or public release.
 BUILD_NUMBER := 35
+
 CP_VERSION := 3.3.0-SNAPSHOT
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
+# CONFLUENT_DEB_REPO := http://packages.confluent.io
 CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35
+
+# CONFLUENT_RPM_REPO := http://packages.confluent.io
 CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35
+
+# Set to false for public releases
 APT_ALLOW_UNAUTHENTICATED := true
+
 REPOSITORY := confluentinc
 
 # You can override vars like REPOSITORY in a local.make file

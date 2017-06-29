@@ -20,7 +20,10 @@ LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
+# ARG CONFLUENT_DEB_REPO="http://packages.confluent.io"
 ARG CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35"
+
+# Set this to false for public releases
 ARG APT_ALLOW_UNAUTHENTICATED=true
 #Set an env var so that it's available in derived images
 ENV APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED}
@@ -41,6 +44,7 @@ ENV CONFLUENT_PATCH_VERSION="0~SNAPSHOT"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
 
+# Add ~SNAPSHOT (with tilde) for internal releases
 ENV KAFKA_VERSION="0.11.0.0~SNAPSHOT"
 
 # Zulu
