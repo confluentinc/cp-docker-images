@@ -21,7 +21,7 @@ ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 # ARG CONFLUENT_DEB_REPO="http://packages.confluent.io"
-ARG CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35"
+ARG CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/37"
 
 # Set this to false for public releases
 ARG APT_ALLOW_UNAUTHENTICATED=true

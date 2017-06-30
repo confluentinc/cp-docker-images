@@ -1,5 +1,5 @@
 # Bump this on subsequent build, reset on new version or public release.
-BUILD_NUMBER := 35
+BUILD_NUMBER := 37
 
 CP_VERSION := 3.3.0-SNAPSHOT
 
@@ -8,10 +8,10 @@ COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 # CONFLUENT_DEB_REPO := http://packages.confluent.io
-CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35
+CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/37
 
 # CONFLUENT_RPM_REPO := http://packages.confluent.io
-CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/35
+CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/37
 
 # Set to false for public releases
 APT_ALLOW_UNAUTHENTICATED := true
@@ -104,7 +104,7 @@ push-public: clean build-debian
 		docker push ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
   done
 
-push-nexus:
+push-nexus: clean build-debian
 	for component in ${COMPONENTS} ; do \
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:latest || exit 1; \
