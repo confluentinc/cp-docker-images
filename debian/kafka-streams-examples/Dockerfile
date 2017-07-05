@@ -36,8 +36,8 @@ ENV CONFLUENT_VERSION="${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${C
 ENV STREAMS_USER="streams"
 ENV STREAMS_GROUP=$STREAMS_USER
 
-ENV STREAMS_EXAMPLES_BRANCH="${CONFLUENT_VERSION}-post"
-ENV STREAMS_EXAMPLES_FATJAR="streams-examples-${CONFLUENT_VERSION}-standalone.jar"
+ENV STREAMS_EXAMPLES_BRANCH="${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.x"
+ENV STREAMS_EXAMPLES_FATJAR="streams-examples-${CONFLUENT_VERSION}-SNAPSHOT-standalone.jar"
 ENV STREAMS_APP_DIRECTORY="/app"
 ENV STREAMS_EXAMPLES_FATJAR_DEPLOYED="$STREAMS_APP_DIRECTORY/$STREAMS_EXAMPLES_FATJAR"
 ENV KAFKA_MUSIC_APP_CLASS="io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExample"
@@ -49,6 +49,8 @@ EXPOSE $KAFKA_MUSIC_APP_REST_PORT
 # This affects how strings in Java class files are interpreted.  We want UTF-8, and this is the only locale in the
 # base image that supports it
 ENV LANG="C.UTF-8"
+
+COPY settings.xml /root/.m2/settings.xml
 
 ENV BUILD_PACKAGES="git maven"
 RUN echo "===> Installing packages to build Confluent demo applications" \
@@ -67,7 +69,8 @@ RUN echo "===> Installing packages to build Confluent demo applications" \
     && chmod ag+w /etc/"${COMPONENT}" \
     && echo "===> Cleaning up ..."  \
     && apt-get remove --purge -y $BUILD_PACKAGES \
-    && apt-get clean && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
+    && rm /root/.m2/settings.xml
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 

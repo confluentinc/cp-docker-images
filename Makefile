@@ -1,13 +1,21 @@
-BUILD_NUMBER := 1
+# Bump this on subsequent build, reset on new version or public release.
+BUILD_NUMBER := 42
+
 CP_VERSION := 3.3.0-SNAPSHOT
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
-CONFLUENT_DEB_REPO := http://packages.confluent.io
-CONFLUENT_RPM_REPO := http://packages.confluent.io
-APT_ALLOW_UNAUTHENTICATED := false
+# CONFLUENT_DEB_REPO := http://packages.confluent.io
+CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/42
+
+# CONFLUENT_RPM_REPO := http://packages.confluent.io
+CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/42
+
+# Set to false for public releases
+APT_ALLOW_UNAUTHENTICATED := true
+
 REPOSITORY := confluentinc
 
 # You can override vars like REPOSITORY in a local.make file
@@ -96,6 +104,17 @@ push-public: clean build-debian
 		docker push ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
   done
 
+push-nexus: clean build-debian
+	for component in ${COMPONENTS} ; do \
+		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:latest || exit 1; \
+		docker tag ${REPOSITORY}/cp-$${component}:${VERSION} docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
+		docker tag ${REPOSITORY}/cp-$${component}:${CP_VERSION} docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
+		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:latest || exit 1; \
+		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
+		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
+	done
+
 clean: clean-containers clean-images
 	rm -rf debian/base/include/etc/confluent/docker/docker-utils.jar
 
@@ -110,7 +129,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images
