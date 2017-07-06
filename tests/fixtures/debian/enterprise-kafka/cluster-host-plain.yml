@@ -50,7 +50,6 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:19092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
     labels:
     - io.confluent.docker.testing=true
 
@@ -64,7 +63,6 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:29092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
     labels:
     - io.confluent.docker.testing=true
 
@@ -78,7 +76,6 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:39092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
     labels:
     - io.confluent.docker.testing=true
 
@@ -92,6 +89,5 @@ services:
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:49092
       CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 2
     labels:
     - io.confluent.docker.testing=true
