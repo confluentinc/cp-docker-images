@@ -17,33 +17,33 @@
 include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit $BUILD_NUMBER on Jenkins.
-BUILD_NUMBER := 1
+BUILD_NUMBER ?= 1
 
-CONFLUENT_MAJOR_VERSION := "3"
-CONFLUENT_MINOR_VERSION := "3"
-CONFLUENT_PATCH_VERSION := "0"
+CONFLUENT_MAJOR_VERSION ?= 3
+CONFLUENT_MINOR_VERSION ?= 3
+CONFLUENT_PATCH_VERSION ?= 0
 
-CONFLUENT_VERSION := ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
+CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION := "0.11.0.0"
+KAFKA_VERSION ?= 0.11.0.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 # Set this variable externally to point at a different repo, such as when building SNAPSHOT images.
-CONFLUENT_PACKAGES_REPO := http://packages.confluent.io
+CONFLUENT_PACKAGES_REPO ?= http://packages.confluent.io
 
 # Set to false for public releases
-APT_ALLOW_UNAUTHENTICATED := false
+APT_ALLOW_UNAUTHENTICATED ?= false
 
-REPOSITORY := confluentinc
+REPOSITORY ?= confluentinc
 
-VERSION := ${CONFLUENT_VERSION}-${BUILD_NUMBER}
+VERSION ?= ${CONFLUENT_VERSION}-${BUILD_NUMBER}
 
 # Packaging semver labels for deb and rpm snapshot packaging, if needed.
-CONFLUENT_DEB_LABEL := ""
-CONFLUENT_RPM_LABEL := ""
+CONFLUENT_DEB_LABEL ?=
+CONFLUENT_RPM_LABEL ?=
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
