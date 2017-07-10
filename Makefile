@@ -1,18 +1,3 @@
-# There are several version strategies to keep straight when building these images.
-# 
-# - Maven versions
-#   - Examples are built inline as part of this repo, so versions and deps (such as those in java/pom.xml) must be pinned as needed.
-#   - If pinning to SNAPSHOT releases: These dependencies must be available to the build, so a custom .m2/settings.xml must be provided somehow.
-#
-# - Debian package versions
-#   - Debian package versions are appended with a debian revision number.
-#   - If pinning to a final stable release, this should match the debian revision number which packaging ran with. If in doubt, check the settings in the corresponding packaging branch.
-#   - If pinning to a SNAPSHOT release, this is currently kept at "1". This is because each nightly SNAPSHOT run is deployed to a new repo.
-#
-# - RPM package versions
-#
-# - Docker versions and tags
-
 # You can override vars like REPOSITORY in a local.make file
 include local.make
 
