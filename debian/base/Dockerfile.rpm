@@ -92,8 +92,8 @@ gpgcheck=1 \n\
 gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 " > /etc/yum.repos.d/confluent.repo \
     else \
-        echo "===> GPG signatures are disabled for SNAPSHOT builds..."
-        printf "[Confluent.dist] \n\
+        echo "===> GPG signatures are disabled for SNAPSHOT builds..." \
+        && printf "[Confluent.dist] \n\
 name=Confluent repository (dist) \n\
 baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
 enabled=1 \n\
