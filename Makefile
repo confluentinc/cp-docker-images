@@ -20,7 +20,7 @@ CONFLUENT_MAJOR_VERSION := "3"
 CONFLUENT_MINOR_VERSION := "3"
 CONFLUENT_PATCH_VERSION := "0"
 
-CONFLUENT_VERSION := ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}-SNAPSHOT 
+CONFLUENT_VERSION := ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
 KAFKA_VERSION := "0.11.0.0"
 
@@ -32,13 +32,18 @@ MYSQL_DRIVER_VERSION := 5.1.39
 CONFLUENT_PACKAGES_REPO := http://packages.confluent.io
 
 # Set to false for public releases
-APT_ALLOW_UNAUTHENTICATED := true
+APT_ALLOW_UNAUTHENTICATED := false
 
 REPOSITORY := confluentinc
 
+VERSION := ${CONFLUENT_VERSION}-${BUILD_NUMBER}
+
+# Packaging semver labels for deb and rpm snapshot packaging, if needed.
+CONFLUENT_DEB_LABEL := ""
+CONFLUENT_RPM_LABEL := ""
+
 # You can override vars like REPOSITORY in a local.make file
 -include local.make
-VERSION := ${CONFLUENT_VERSION}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \

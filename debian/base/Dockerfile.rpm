@@ -43,7 +43,7 @@ ENV CONFLUENT_PATCH_VERSION=$CONFLUENT_PATCH_VERSION
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 
 # Add -0.1.SNAPSHOT for internal releases.
-ENV KAFKA_VERSION="$KAFKA_VERSION-0.1.SNAPSHOT"
+ENV KAFKA_VERSION="$KAFKA_VERSION$CONFLUENT_RPM_LABEL"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8-8.17.0.3"
@@ -74,25 +74,35 @@ RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && yum -q -y update \
     && yum -q -y install zulu-${ZULU_OPENJDK_VERSION}
 
-# Comment this out for unsigned SNAPSHOT releases
-# RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-#    && rpm --import ${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key
-
-RUN printf "[Confluent.dist] \n\
+RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" && \
+    if ["${APT_ALLOW_UNAUTHENTICATED}" = "true"]; then \
+        echo "===> Using Confluent's archive.key..." \
+        && rpm --import ${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \
+        && printf "[Confluent.dist] \n\
 name=Confluent repository (dist) \n\
 baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-# Comment gpg settings out for unsigned SNAPSHOT releases
-# gpgcheck=1 \n\
-# gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
+gpgcheck=1 \n\
+gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 \n\
- \n\
+\n\
 [Confluent] \n\
 name=Confluent repository \n\
 baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-# Comment gpg settings out for unsigned SNAPSHOT releases
-# gpgcheck=1 \n\
-# gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
-enabled=1 " > /etc/yum.repos.d/confluent.repo
+gpgcheck=1 \n\
+gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
+enabled=1 " > /etc/yum.repos.d/confluent.repo \
+    else \
+        echo "===> GPG signatures are disabled for SNAPSHOT builds..."
+        printf "[Confluent.dist] \n\
+name=Confluent repository (dist) \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+enabled=1 \n\
+\n\
+[Confluent] \n\
+name=Confluent repository \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+enabled=1 " > /etc/yum.repos.d/confluent.repo \
+    fi
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
