@@ -13,6 +13,9 @@
 #
 # - Docker versions and tags
 
+# You can override vars like REPOSITORY in a local.make file
+-include local.make
+
 # Bump this on subsequent build, reset on new version or public release. Inherit $BUILD_NUMBER on Jenkins.
 BUILD_NUMBER := 1
 
@@ -41,9 +44,6 @@ VERSION := ${CONFLUENT_VERSION}-${BUILD_NUMBER}
 # Packaging semver labels for deb and rpm snapshot packaging, if needed.
 CONFLUENT_DEB_LABEL := ""
 CONFLUENT_RPM_LABEL := ""
-
-# You can override vars like REPOSITORY in a local.make file
--include local.make
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
@@ -126,24 +126,6 @@ push-public: clean build-debian
 		docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
 		docker push ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
   done
-
-push-snapshot: clean build-debian
-ifndef BUILD_NUMBER
-	$(error BUILD_NUMBER must be defined.)
-endif
-ifndef DOCKER_REGISTRY
-	$(error DOCKER_REGISTRY must be defined.)
-endif
-
-	for component in ${COMPONENTS} ; do \
-		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
-		docker tag ${REPOSITORY}/cp-$${component}:latest ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:latest || exit 1; \
-		docker tag ${REPOSITORY}/cp-$${component}:${VERSION} ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker tag ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
-		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:latest || exit 1; \
-		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
-	done
 
 clean: clean-containers clean-images
 	rm -rf debian/base/include/etc/confluent/docker/docker-utils.jar
