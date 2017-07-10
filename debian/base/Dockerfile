@@ -20,13 +20,11 @@ LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
-# ARG CONFLUENT_DEB_REPO="http://packages.confluent.io"
-ARG CONFLUENT_DEB_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43"
+ARG CONFLUENT_PACKAGES_REPO=$CONFLUENT_PACKAGES_REPO
 
-# Set this to false for public releases
-ARG APT_ALLOW_UNAUTHENTICATED=true
+ARG APT_ALLOW_UNAUTHENTICATED=false
 #Set an env var so that it's available in derived images
-ENV APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED}
+ENV APT_ALLOW_UNAUTHENTICATED=$APT_ALLOW_UNAUTHENTICATED
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
@@ -37,15 +35,16 @@ ENV PYTHON_PIP_VERSION="8.1.2"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
-ENV CONFLUENT_MAJOR_VERSION="3"
-ENV CONFLUENT_MINOR_VERSION="3"
+ENV CONFLUENT_MAJOR_VERSION=$CONFLUENT_MAJOR_VERSION
+ENV CONFLUENT_MINOR_VERSION=$CONFLUENT_MINOR_VERSION
 
-ENV CONFLUENT_PATCH_VERSION="0~SNAPSHOT"
+ENV CONFLUENT_PATCH_VERSION="$CONFLUENT_PATCH_VERSION~SNAPSHOT"
+
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 ENV CONFLUENT_DEB_VERSION="1"
 
 # Add ~SNAPSHOT (with tilde) for internal releases
-ENV KAFKA_VERSION="0.11.0.0~SNAPSHOT"
+ENV KAFKA_VERSION="$KAFKA_VERSION~SNAPSHOT"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8=8.17.0.3"
@@ -76,9 +75,9 @@ RUN echo "===> Updating debian ....." \
     && apt-get -qq update \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
-    && echo "===> Adding confluent repository...${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    && if [ "x$APT_ALLOW_UNAUTHENTICATED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
-    && echo "deb [arch=amd64] ${CONFLUENT_DEB_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
+    && if [ "x$APT_ALLOW_UNAUTHENTICATED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
+    && echo "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub

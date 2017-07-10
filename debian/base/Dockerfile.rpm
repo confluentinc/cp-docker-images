@@ -19,8 +19,7 @@ LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
-# ARG CONFLUENT_RPM_REPO="http://packages.confluent.io"
-ARG CONFLUENT_RPM_REPO="https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43"
+ARG CONFLUENT_PACKAGES_REPO=$CONFLUENT_PACKAGES_REPO
 
 # Set to false for public releases. TODO: see about enabling this for rpms
 ARG APT_ALLOW_UNAUTHENTICATED=true
@@ -37,14 +36,14 @@ ENV PYTHON_PIP_VERSION="9.0.1"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
-ENV CONFLUENT_MAJOR_VERSION="3"
-ENV CONFLUENT_MINOR_VERSION="3"
+ENV CONFLUENT_MAJOR_VERSION=$CONFLUENT_MAJOR_VERSION
+ENV CONFLUENT_MINOR_VERSION=$CONFLUENT_MINOR_VERSION
+ENV CONFLUENT_PATCH_VERSION=$CONFLUENT_PATCH_VERSION
 
-ENV CONFLUENT_PATCH_VERSION="0"
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 
 # Add -0.1.SNAPSHOT for internal releases.
-ENV KAFKA_VERSION="0.11.0.0-0.1.SNAPSHOT"
+ENV KAFKA_VERSION="$KAFKA_VERSION-0.1.SNAPSHOT"
 
 # Zulu
 ENV ZULU_OPENJDK_VERSION="8-8.17.0.3"
@@ -76,23 +75,23 @@ RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && yum -q -y install zulu-${ZULU_OPENJDK_VERSION}
 
 # Comment this out for unsigned SNAPSHOT releases
-# RUN echo "===> Adding confluent repository...${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-#    && rpm --import ${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key
+# RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
+#    && rpm --import ${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key
 
 RUN printf "[Confluent.dist] \n\
 name=Confluent repository (dist) \n\
-baseurl=${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
 # Comment gpg settings out for unsigned SNAPSHOT releases
 # gpgcheck=1 \n\
-# gpgkey=${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
+# gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 \n\
  \n\
 [Confluent] \n\
 name=Confluent repository \n\
-baseurl=${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
 # Comment gpg settings out for unsigned SNAPSHOT releases
 # gpgcheck=1 \n\
-# gpgkey=${CONFLUENT_RPM_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
+# gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 " > /etc/yum.repos.d/confluent.repo
 
 COPY include/dub /usr/local/bin/dub

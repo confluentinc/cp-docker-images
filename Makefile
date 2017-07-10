@@ -1,17 +1,35 @@
-# Bump this on subsequent build, reset on new version or public release.
-BUILD_NUMBER := 43
+# There are several version strategies to keep straight when building these images.
+# 
+# - Maven versions
+#   - Examples are built inline as part of this repo, so versions and deps (such as those in java/pom.xml) must be pinned as needed.
+#   - If pinning to SNAPSHOT releases: These dependencies must be available to the build, so a custom .m2/settings.xml must be provided somehow.
+#
+# - Debian package versions
+#   - Debian package versions are appended with a debian revision number.
+#   - If pinning to a final stable release, this should match the debian revision number which packaging ran with. If in doubt, check the settings in the corresponding packaging branch.
+#   - If pinning to a SNAPSHOT release, this is currently kept at "1". This is because each nightly SNAPSHOT run is deployed to a new repo.
+#
+# - RPM package versions
+#
+# - Docker versions and tags
 
-CP_VERSION := 3.3.0-SNAPSHOT
+# Bump this on subsequent build, reset on new version or public release. Inherit $BUILD_NUMBER on Jenkins.
+BUILD_NUMBER := 1
+
+CONFLUENT_MAJOR_VERSION := "3"
+CONFLUENT_MINOR_VERSION := "3"
+CONFLUENT_PATCH_VERSION := "0"
+
+CONFLUENT_VERSION := ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}-SNAPSHOT 
+
+KAFKA_VERSION := "0.11.0.0"
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
-# CONFLUENT_DEB_REPO := http://packages.confluent.io
-CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43
-
-# CONFLUENT_RPM_REPO := http://packages.confluent.io
-CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43
+# Set this variable externally to point at a different repo, such as when building SNAPSHOT images.
+CONFLUENT_PACKAGES_REPO := http://packages.confluent.io
 
 # Set to false for public releases
 APT_ALLOW_UNAUTHENTICATED := true
@@ -20,7 +38,7 @@ REPOSITORY := confluentinc
 
 # You can override vars like REPOSITORY in a local.make file
 -include local.make
-VERSION := ${CP_VERSION}-${BUILD_NUMBER}
+VERSION := ${CONFLUENT_VERSION}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
@@ -40,14 +58,14 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
-			BUILD_ARGS="--build-arg APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED} --build-arg CONFLUENT_DEB_REPO=${CONFLUENT_DEB_REPO}" ; \
+			BUILD_ARGS="--build-arg APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}" ; \
 		else \
 			BUILD_ARGS=""; \
 		fi; \
@@ -61,7 +79,7 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 			if [ -a "$${DOCKER_FILE}" ]; then \
 				docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CP_VERSION} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
 			fi; \
@@ -73,7 +91,7 @@ build-test-images:
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		docker build -t ${REPOSITORY}/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
-		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
 	done
@@ -101,18 +119,25 @@ push-public: clean build-debian
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
 		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \
 		docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker push ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
+		docker push ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
   done
 
-push-nexus: clean build-debian
+push-snapshot: clean build-debian
+ifndef BUILD_NUMBER
+	$(error BUILD_NUMBER must be defined.)
+endif
+ifndef DOCKER_REGISTRY
+	$(error DOCKER_REGISTRY must be defined.)
+endif
+
 	for component in ${COMPONENTS} ; do \
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
-		docker tag ${REPOSITORY}/cp-$${component}:latest docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:latest || exit 1; \
-		docker tag ${REPOSITORY}/cp-$${component}:${VERSION} docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker tag ${REPOSITORY}/cp-$${component}:${CP_VERSION} docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
-		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:latest || exit 1; \
-		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker push docker.confluent.io:5000/${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:latest || exit 1; \
+		docker tag ${REPOSITORY}/cp-$${component}:${VERSION} ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
+		docker tag ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
+		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:latest || exit 1; \
+		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
+		docker push ${DOCKER_REGISTRY}/${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
 	done
 
 clean: clean-containers clean-images
@@ -129,7 +154,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images
