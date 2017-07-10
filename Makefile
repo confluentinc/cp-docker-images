@@ -1,5 +1,5 @@
 # Bump this on subsequent build, reset on new version or public release.
-BUILD_NUMBER := 43
+BUILD_NUMBER := 49
 
 CP_VERSION := 3.3.0-SNAPSHOT
 
@@ -8,10 +8,10 @@ COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 # CONFLUENT_DEB_REPO := http://packages.confluent.io
-CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43
+CONFLUENT_DEB_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/49
 
 # CONFLUENT_RPM_REPO := http://packages.confluent.io
-CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/43
+CONFLUENT_RPM_REPO := https://s3-us-west-2.amazonaws.com/jenkins-confluent-packages/packaging-3.3.x/49
 
 # Set to false for public releases
 APT_ALLOW_UNAUTHENTICATED := true
