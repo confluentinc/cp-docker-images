@@ -22,9 +22,9 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 ARG CONFLUENT_PACKAGES_REPO=$CONFLUENT_PACKAGES_REPO
 
-ARG APT_ALLOW_UNAUTHENTICATED=false
+ARG ALLOW_UNSIGNED=false
 #Set an env var so that it's available in derived images
-ENV APT_ALLOW_UNAUTHENTICATED=$APT_ALLOW_UNAUTHENTICATED
+ENV ALLOW_UNSIGNED=$ALLOW_UNSIGNED
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
@@ -83,7 +83,7 @@ RUN echo "===> Updating debian ....." \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
     && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    && if [ "x$APT_ALLOW_UNAUTHENTICATED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
+    && if [ "x$ALLOW_UNSIGNED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
     && echo "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
 COPY include/dub /usr/local/bin/dub

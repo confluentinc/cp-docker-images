@@ -20,7 +20,7 @@ MYSQL_DRIVER_VERSION := 5.1.39
 CONFLUENT_PACKAGES_REPO ?= http://packages.confluent.io
 
 # Set to false for public releases
-APT_ALLOW_UNAUTHENTICATED ?= false
+ALLOW_UNSIGNED ?= false
 
 REPOSITORY ?= confluentinc
 
@@ -55,7 +55,7 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
-			BUILD_ARGS="--build-arg APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}" ; \
+			BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}" ; \
 		else \
 			BUILD_ARGS=""; \
 		fi; \
