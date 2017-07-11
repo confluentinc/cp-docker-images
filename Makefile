@@ -1,5 +1,5 @@
 # You can override vars like REPOSITORY in a local.make file
-include local.make
+-include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit $BUILD_NUMBER on Jenkins.
 BUILD_NUMBER ?= 1
