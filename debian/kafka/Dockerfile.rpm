@@ -30,8 +30,11 @@ EXPOSE 9092
 
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
-    && yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION} \
-    \
+    && if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
+        yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}; \
+    else \
+        yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}; \
+    fi \
     && echo "===> clean up ..."  \
     && rm -rf /tmp/* \
     \
