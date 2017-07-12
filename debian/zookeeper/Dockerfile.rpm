@@ -30,9 +30,9 @@ ENV COMPONENT=zookeeper
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
     && if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
-        yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}; \
+        yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${SEMVER_LABEL}; \
     else \
-        yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}; \
+        yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${SEMVER_LABEL}; \
     fi \
     \
     && echo "===> clean up ..."  \
