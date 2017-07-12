@@ -65,9 +65,9 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 			if [ "$${type}" = "rpm" ]; then \
 				COMPONENT_NAME="rpm-$${component}"; \
 				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
-				SEMVER_LABEL=${CONFLUENT_RPM_LABEL}; \
+				SEMVER_LABEL="$${CONFLUENT_RPM_LABEL}"; \
 			else \
-				SEMVER_LABEL=${CONFLUENT_DEB_LABEL}; \
+				SEMVER_LABEL="$${CONFLUENT_DEB_LABEL}"; \
 			fi; \
 			if [ -a "$${DOCKER_FILE}" ]; then \
 				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg SEMVER_LABEL=${SEMVER_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
