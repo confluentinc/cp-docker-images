@@ -145,16 +145,16 @@ def check_http_ready(url, timeout):
     if not parsed.netloc:
         print("URL %s is malformed." % (url,), file=sys.stderr)
         sys.exit(1)
-    splitted = parsed.netloc.split(":", 1)
-    host = "localhost"
-    if len(splitted) > 0:
-      host = parsed.netloc.split(":", 1)[0]
+
     port = 80
-    if len(splitted) > 1:
-      port = parsed.netloc.split(":", 1)[1]
+    host = "localhost"
+    if parsed.port:
+        port = parsed.port
+        host = parsed.netloc[:parsed.netloc.rfind(":")]
     else:
-      if parsed.scheme == "https":
-        port = 443
+        host = parsed.netloc
+        if parsed.scheme == "https":
+            port = 443
 
     # Check if you can connect to the endpoint
     status = wait_for_service(host, port, timeout)
