@@ -24,13 +24,13 @@ ALLOW_UNSIGNED ?= false
 
 REPOSITORY ?= confluentinc
 
-# This is used only for the "version" (tag) of images on Docker Hub
-VERSION ?= ${CONFLUENT_VERSION}-${BUILD_NUMBER}
-
 # Labels for platform-specific snapshot packaging, if needed
 CONFLUENT_MVN_LABEL ?=
 CONFLUENT_DEB_LABEL ?=
 CONFLUENT_RPM_LABEL ?=
+
+# This is used only for the "version" (tag) of images on Docker Hub
+VERSION ?= ${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
@@ -76,7 +76,7 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 			if [ -a "$${DOCKER_FILE}" ]; then \
 				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=$${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
 			fi; \
@@ -88,7 +88,7 @@ build-test-images:
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		docker build -t ${REPOSITORY}/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
-		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
 	done
