@@ -35,9 +35,9 @@ EXPOSE 9021
 RUN echo "===> Installing ${COMPONENT}..." \
     && yum -q -y update \
     && if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
-        yum install -y --nogpgcheck confluent-${COMPONENT}-${CONFLUENT_VERSION}; \
+        yum install -y --nogpgcheck confluent-${COMPONENT}-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     else \
-        yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION}; \
+        yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     fi \
     && echo "===> Cleaning up ..."  \
     && rm -rf /tmp/*  \

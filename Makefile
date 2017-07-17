@@ -1,7 +1,7 @@
 # You can override vars like REPOSITORY in a local.make file
 -include local.make
 
-# Bump this on subsequent build, reset on new version or public release. Inherit $BUILD_NUMBER on Jenkins.
+# Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
 BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 3
@@ -16,7 +16,7 @@ COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
-# Set this variable externally to point at a different repo, such as when building SNAPSHOT images.
+# Set this variable externally to point at a different repo, such as when building SNAPSHOT images
 CONFLUENT_PACKAGES_REPO ?= http://packages.confluent.io
 
 # Set to false for public releases
@@ -24,9 +24,11 @@ ALLOW_UNSIGNED ?= false
 
 REPOSITORY ?= confluentinc
 
+# This is used only for the "version" (tag) of images on Docker Hub
 VERSION ?= ${CONFLUENT_VERSION}-${BUILD_NUMBER}
 
-# Packaging semver labels for deb and rpm snapshot packaging, if needed.
+# Labels for platform-specific snapshot packaging, if needed
+CONFLUENT_MVN_LABEL ?=
 CONFLUENT_DEB_LABEL ?=
 CONFLUENT_RPM_LABEL ?=
 
@@ -48,7 +50,7 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-${CONFLUENT_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
@@ -65,12 +67,12 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 			if [ "$${type}" = "rpm" ]; then \
 				COMPONENT_NAME="rpm-$${component}"; \
 				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
-				SEMVER_LABEL=${CONFLUENT_RPM_LABEL}; \
+				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_RPM_LABEL}; \
 			else \
-				SEMVER_LABEL=${CONFLUENT_DEB_LABEL}; \
+				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_DEB_LABEL}; \
 			fi; \
 			if [ -a "$${DOCKER_FILE}" ]; then \
-				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION}$${SEMVER_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION}$${SEMVER_LABEL} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
+				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=$${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
@@ -129,7 +131,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-${CONFLUENT_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images

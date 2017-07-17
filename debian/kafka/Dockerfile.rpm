@@ -31,9 +31,9 @@ EXPOSE 9092
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
     && if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
-        yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${SEMVER_LABEL}; \
+        yum install -y --nogpgcheck confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     else \
-        yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${SEMVER_LABEL}; \
+        yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     fi \
     && echo "===> clean up ..."  \
     && rm -rf /tmp/* \

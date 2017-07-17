@@ -32,9 +32,9 @@ EXPOSE 8083
 RUN echo "===> Installing Schema Registry (for Avro jars) ..." \
     && apt-get -qq update \
     && apt-get install -y \
-        confluent-schema-registry=${CONFLUENT_VERSION}${SEMVER_LABEL}-${CONFLUENT_DEB_VERSION} \
+        confluent-schema-registry=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Installing Controlcenter for monitoring interceptors ..."\
-    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}${SEMVER_LABEL}-${CONFLUENT_DEB_VERSION} \
+    && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
