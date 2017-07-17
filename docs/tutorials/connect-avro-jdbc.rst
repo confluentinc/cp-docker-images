@@ -63,11 +63,15 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --name=kafka \
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+        -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
         confluentinc/cp-kafka:3.5.0-SNAPSHOT
 
   .. note::
 
     You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.
+
+    We are also overriding offsets.topic.replication.factor to 1 at runtime, since there is only one active broker in this example.
+
 
   Start the Schema Registry:
 
