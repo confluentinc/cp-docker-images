@@ -45,7 +45,8 @@ EXPOSE $KAFKA_MUSIC_APP_REST_PORT
 # base image that supports it
 ENV LANG="C.UTF-8"
 
-COPY settings.xml /root/.m2/settings.xml
+# Uncomment for CI snapshots (bring your own settings)
+# COPY settings.xml /root/.m2/settings.xml
 
 ENV BUILD_PACKAGES="git maven"
 RUN echo "===> Installing packages to build Confluent demo applications" \
@@ -65,7 +66,7 @@ RUN echo "===> Installing packages to build Confluent demo applications" \
     && echo "===> Cleaning up ..."  \
     && apt-get remove --purge -y $BUILD_PACKAGES \
     && apt-get clean && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/* \
-    && rm /root/.m2/settings.xml
+    && rm -f /root/.m2/settings.xml
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
