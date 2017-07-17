@@ -57,7 +57,9 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
-			BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}" ; \
+			BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
+		elif [ "$${component}" = "kafka-streams-examples" ]; then \
+			BUILD_ARGS="--build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
 		else \
 			BUILD_ARGS=""; \
 		fi; \

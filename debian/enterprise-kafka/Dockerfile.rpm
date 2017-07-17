@@ -31,9 +31,9 @@ EXPOSE 9092
 RUN echo "===> installing confluent-support-metrics ..." \
     && yum -q -y update \
     && if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
-        yum install -y --nogpgcheck confluent-support-metrics-${CONFLUENT_VERSION} confluent-rebalancer-${CONFLUENT_VERSION}; \
+        yum install -y --nogpgcheck confluent-support-metrics-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL} confluent-rebalancer-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     else \
-        yum install -y confluent-support-metrics-${CONFLUENT_VERSION} confluent-rebalancer-${CONFLUENT_VERSION}; \
+        yum install -y confluent-support-metrics-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL} confluent-rebalancer-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}; \
     fi \
     && echo "===> clean up ..."  \
     && rm -rf /tmp/* \
