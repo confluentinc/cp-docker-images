@@ -1,7 +1,7 @@
 Configuring logging
 -------------
 
-All logs are sent to ``stdout`` by default. You can change this by `extending the images <development.html/_extending_images>`_.
+All logs are sent to ``stdout`` by default. You can change this by :ref:`extending the images <extending_images>`.
 
 log4j Log Levels
 ~~~~~~~~~~~~~~~~
