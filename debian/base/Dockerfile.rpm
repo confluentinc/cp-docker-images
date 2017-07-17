@@ -21,7 +21,7 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 ARG CONFLUENT_PACKAGES_REPO=$CONFLUENT_PACKAGES_REPO
 
-ARG ALLOW_UNSIGNED=true
+ARG ALLOW_UNSIGNED=false
 #Set an env var so that it's available in derived images
 ENV ALLOW_UNSIGNED=${ALLOW_UNSIGNED}
 
