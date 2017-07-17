@@ -57,6 +57,7 @@ Then start the containers:
     -e KAFKA_BROKER_ID=1 \
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
+    -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -v /vol3/kakfa-data:/var/lib/kafka/data \
     confluentinc/cp-kafka:3.4.0-SNAPSHOT
 
@@ -84,6 +85,7 @@ When security is enabled, the secrets are made available to the containers using
     -e KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=GSSAPI \
     -e KAFKA_SASL_ENABLED_MECHANISMS=GSSAPI \
     -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
+    -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -e KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf \
     -v /vol007/kafka-node-1-secrets:/etc/kafka/secrets \
     confluentinc/cp-kafka:latest
@@ -127,5 +129,6 @@ Then start Kafka connect mounting the download directory as ``/etc/kafka-connect
     -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
     -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
     -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
+    -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -v /vol42/kafka-connect/jars:/etc/kafka-connect/jars \
     confluentinc/cp-kafka-connect:latest
