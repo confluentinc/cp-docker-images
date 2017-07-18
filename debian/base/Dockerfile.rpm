@@ -89,11 +89,13 @@ RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CO
         && printf "[Confluent.dist] \n\
 name=Confluent repository (dist) \n\
 baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+gpgcheck=0 \n\
 enabled=1 \n\
 \n\
 [Confluent] \n\
 name=Confluent repository \n\
 baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
+gpgcheck=0 \n\
 enabled=1 " > /etc/yum.repos.d/confluent.repo; \
     else \
         echo "===> Using Confluent's archive.key..." \
