@@ -29,8 +29,7 @@ ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
-    && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION} \
-    \
+    && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
     && rm -rf /tmp/* \
     \
