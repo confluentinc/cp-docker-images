@@ -1,18 +1,36 @@
-BUILD_NUMBER := 1
-CP_VERSION := 3.5.0-SNAPSHOT
+# You can override vars like REPOSITORY in a local.make file
+-include local.make
+
+# Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
+BUILD_NUMBER ?= 1
+
+CONFLUENT_MAJOR_VERSION ?= 3
+CONFLUENT_MINOR_VERSION ?= 5
+CONFLUENT_PATCH_VERSION ?= 0
+
+CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
+
+KAFKA_VERSION ?= 0.11.1.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
-CONFLUENT_DEB_REPO := http://packages.confluent.io
-CONFLUENT_RPM_REPO := http://packages.confluent.io
-APT_ALLOW_UNAUTHENTICATED := false
-REPOSITORY := confluentinc
+# Set this variable externally to point at a different repo, such as when building SNAPSHOT images
+CONFLUENT_PACKAGES_REPO ?= http://packages.confluent.io
 
-# You can override vars like REPOSITORY in a local.make file
--include local.make
-VERSION := ${CP_VERSION}-${BUILD_NUMBER}
+# Set to false for public releases
+ALLOW_UNSIGNED ?= false
+
+REPOSITORY ?= confluentinc
+
+# Platform-specific version labels for SNAPSHOT packaging. Not necessary when building from public releases.
+CONFLUENT_MVN_LABEL ?=
+CONFLUENT_DEB_LABEL ?=
+CONFLUENT_RPM_LABEL ?=
+
+# This is used only for the "version" (tag) of images on Docker Hub
+VERSION ?= ${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
@@ -32,14 +50,16 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
-			BUILD_ARGS="--build-arg APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED} --build-arg CONFLUENT_DEB_REPO=${CONFLUENT_DEB_REPO}" ; \
+			BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
+		elif [ "$${component}" = "kafka-streams-examples" ]; then \
+			BUILD_ARGS="--build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
 		else \
 			BUILD_ARGS=""; \
 		fi; \
@@ -49,11 +69,14 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 			if [ "$${type}" = "rpm" ]; then \
 				COMPONENT_NAME="rpm-$${component}"; \
 				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
+				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_RPM_LABEL}; \
+			else \
+				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_DEB_LABEL}; \
 			fi; \
 			if [ -a "$${DOCKER_FILE}" ]; then \
-				docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
+				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=$${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CP_VERSION} || exit 1 ; \
+				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
 				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
 			fi; \
@@ -65,7 +88,7 @@ build-test-images:
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		docker build -t ${REPOSITORY}/cp-$${component}:latest tests/images/$${component} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest || exit 1 ; \
-		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
 		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
 	done
@@ -93,7 +116,7 @@ push-public: clean build-debian
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
 		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \
 		docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
-		docker push ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1; \
+		docker push ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
   done
 
 clean: clean-containers clean-images
@@ -110,7 +133,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-1.0.0-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images
