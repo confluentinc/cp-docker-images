@@ -15,7 +15,7 @@
 # limitations under the License.
 
 set -o nounset \
-		-o errexit \
+    -o errexit \
     -o verbose \
     -o xtrace
 
