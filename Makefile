@@ -56,6 +56,7 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	COMPONENTS="${COMPONENTS}" \
 	ALLOW_UNSIGNED=${ALLOW_UNSIGNED} \
+	CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} \
     KAFKA_VERSION=${KAFKA_VERSION} \
 	CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL} \
 	CONFLUENT_DEB_LABEL=${CONFLUENT_DEB_LABEL} \
