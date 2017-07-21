@@ -54,34 +54,21 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
-	for component in ${COMPONENTS} ; do \
-		echo "\n\nBuilding $${component} \n==========================================\n " ; \
-		if [ "$${component}" = "base" ]; then \
-			BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
-		elif [ "$${component}" = "kafka-streams-examples" ]; then \
-			BUILD_ARGS="--build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"; \
-		else \
-			BUILD_ARGS=""; \
-		fi; \
-		for type in "" rpm; do \
-			DOCKER_FILE="debian/$${component}/Dockerfile"; \
-			COMPONENT_NAME=$${component}; \
-			if [ "$${type}" = "rpm" ]; then \
-				COMPONENT_NAME="rpm-$${component}"; \
-				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
-				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_RPM_LABEL}; \
-			else \
-				CONFLUENT_PLATFORM_LABEL=${CONFLUENT_DEB_LABEL}; \
-			fi; \
-			if [ -a "$${DOCKER_FILE}" ]; then \
-				docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=$${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
-			fi; \
-		done \
-	done
+	COMPONENTS="${COMPONENTS}" \
+	ALLOW_UNSIGNED=${ALLOW_UNSIGNED} \
+    KAFKA_VERSION=${KAFKA_VERSION} \
+	CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL} \
+	CONFLUENT_DEB_LABEL=${CONFLUENT_DEB_LABEL} \
+	CONFLUENT_RPM_LABEL=${CONFLUENT_RPM_LABEL} \
+	CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} \
+	CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} \
+	CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} \
+	CONFLUENT_VERSION=${CONFLUENT_VERSION} \
+	VERSION=${VERSION} \
+	COMMIT_ID=${COMMIT_ID} \
+	BUILD_NUMBER=${BUILD_NUMBER} \
+	REPOSITORY=${REPOSITORY} \
+	bin/build-debian
 
 build-test-images:
 	for component in `ls tests/images` ; do \
