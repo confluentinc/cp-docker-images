@@ -14,7 +14,7 @@ We recommend not using these images with Docker for Mac at this time.  There are
 
 # Contribute
 
-Start by reading our guidelines on contributing to this project found [here](http://docs.confluent.io/current/docker/contributing.html).
+Start by reading our guidelines on contributing to this project found [here](http://docs.confluent.io/current/cp-docker-images/docs/contributing.html).
 
 - Source Code: https://github.com/confluentinc/cp-docker-images
 - Issue Tracker: https://github.com/confluentinc/cp-docker-images/issues
