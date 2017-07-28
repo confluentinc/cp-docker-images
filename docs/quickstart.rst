@@ -88,11 +88,14 @@ Start Kafka.
           --name=kafka \
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+          -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           confluentinc/cp-kafka:3.3.0
 
   .. note::
 
     You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  We also passed in the zookeeper port we used when launching that container a moment ago.   Because we are using ``--net=host``, the hostname for the zookeeper service can be left at ``localhost``.
+
+    Also notice that we set ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
 
   Let's check the logs to see the broker has booted up successfully:
 

@@ -88,7 +88,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
         Name                        Command            State    Ports
       ------------------------------------------------------------------------
-      enterprisekafka_kafka-1_1     /etc/confluent/docker/run   Exit 1
+      enterprisekafka_kafka-1_1     /etc/confluent/docker/run   Up
       enterprisekafka_kafka-2_1     /etc/confluent/docker/run   Up
       enterprisekafka_kafka-3_1     /etc/confluent/docker/run   Up
       enterprisekafka_kafka-4_1     /etc/confluent/docker/run   Exit 0

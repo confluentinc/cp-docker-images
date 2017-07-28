@@ -30,8 +30,8 @@ EXPOSE 9092
 
 RUN echo "===> installing confluent-support-metrics ..." \
     && apt-get update && apt-get install -y \
-          confluent-support-metrics=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
-          confluent-rebalancer=${CONFLUENT_VERSION}-${CONFLUENT_DEB_VERSION} \
+          confluent-support-metrics=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
+          confluent-rebalancer=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \

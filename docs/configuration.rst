@@ -40,7 +40,7 @@ Required Settings
 Confluent Kafka (cp-kafka)
 --------------------------
 
-The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
+The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, and ``offsets.topic.replication.factor``, you'd run the following command:
 
   .. sourcecode:: bash
 
@@ -50,11 +50,14 @@ The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) s
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
+          -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           confluentinc/cp-kafka:3.3.0
 
   .. note::
 
     You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host.
+
+    Also notice that we set ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
 
 Required Settings
 """""""""""""""""
@@ -70,7 +73,7 @@ Required Settings
 Confluent Enterprise Kafka (cp-enterprise-kafka)
 ------------------------------------------------
 
-The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
+The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``offsets.topic.replication.factor``, and ``confluent.support.customer.id`` you'd run the following command:
 
   .. sourcecode:: bash
 
@@ -80,6 +83,7 @@ The Enterprise Kafka image includes the packages for Confluent Auto Data Balanci
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
+          -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
           confluentinc/cp-enterprise-kafka:3.3.0
 
@@ -88,6 +92,9 @@ The Enterprise Kafka image includes the packages for Confluent Auto Data Balanci
     You'll notice that we set the ``KAFKA_ADVERTISED_LISTENERS`` variable to ``localhost:29092``.  This is an important setting, as it will make Kafka accessible from outside the container by advertising it's location on the Docker host.
 
     If you want to enable Proactive support or use Confluent Auto Data Balancing features, please follow the Proactive support and ADB documentation at `Confluent documentation <http://docs.confluent.io/current/>`_.
+
+    Also notice that we set ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
+
 
 Required Settings
 """""""""""""""""

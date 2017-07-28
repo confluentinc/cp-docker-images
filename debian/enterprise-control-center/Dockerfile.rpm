@@ -34,8 +34,7 @@ EXPOSE 9021
 
 RUN echo "===> Installing ${COMPONENT}..." \
     && yum -q -y update \
-    && yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION} \
-    \
+    && yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> Cleaning up ..."  \
     && rm -rf /tmp/*  \
     \
