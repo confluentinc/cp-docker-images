@@ -19,8 +19,10 @@ package io.confluent.admin.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.kafka.common.Node;
 import org.apache.kafka.common.errors.TimeoutException;
+import org.apache.kafka.common.Node;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.DescribeClusterOptions;
 import org.apache.zookeeper.AsyncCallback.ChildrenCallback;
 import org.apache.zookeeper.AsyncCallback.StatCallback;
 import org.apache.zookeeper.KeeperException;
@@ -34,15 +36,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import static org.apache.kafka.common.utils.Utils.sleep;
 
 /**
  * Checks status of Zookeeper / Kafka cluster.
@@ -131,18 +133,20 @@ public class ClusterStatus {
   ) {
 
     log.debug("Check if Kafka is ready: {}", config);
-    KafkaAdminClient adminClient = new KafkaAdminClient(config);
+
+    // Need to copy because `config` is Map<String, String> and `create` expects Map<String, Object>
+    AdminClient adminClient = AdminClient.create(new HashMap<String, Object>(config));
 
     long begin = System.currentTimeMillis();
     long remainingWaitMs = timeoutMs;
-    List<Node> brokers = new ArrayList<>();
+    Collection<Node> brokers = new ArrayList<>();
     while (remainingWaitMs > 0) {
 
-      // The metadata query doesnot wait for all brokers to be ready before
-      // returning the brokers. So, wait until expected brokers are present
-      // or the time out expires.
+      // describeCluster does not wait for all brokers to be ready before returning the brokers. So, wait until
+      // expected brokers are present or the time out expires.
       try {
-        brokers = adminClient.findAllBrokers(remainingWaitMs);
+        brokers = adminClient.describeCluster(new DescribeClusterOptions().timeoutMs(
+                (int) Math.min(Integer.MAX_VALUE, remainingWaitMs))).nodes().get();
         log.debug("Broker list: {}", (brokers != null ? brokers : "[]"));
         if ((brokers != null) && (brokers.size() >= minBrokerCount)) {
           return true;
@@ -390,6 +394,15 @@ public class ClusterStatus {
       throw new RuntimeException(message);
     }
     return zookeeper;
+  }
+
+  private static void sleep(long ms) {
+    try {
+      Thread.sleep(ms);
+    } catch (InterruptedException e) {
+      // this is okay, we just wake up early
+      Thread.currentThread().interrupt();
+    }
   }
 
   /**
