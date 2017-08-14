@@ -30,13 +30,13 @@ Create and configure the Docker Machine.   This example creates a VirtualBox VM 
 
   .. sourcecode:: bash
 
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+    $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
 Next, configure your terminal window to attach it to your new Docker Machine:
 
   .. sourcecode:: bash
 
-    eval $(docker-machine env confluent)
+    $ eval $(docker-machine env confluent)
 
 All of the subsequent commands should be run from that terminal window to ensure proper access to the running Docker host.  To execute Docker commands from a new terminal window, simply execute the ``eval $(docker-machine env confluent)`` first.
 
@@ -47,7 +47,7 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
         --net=host \
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
@@ -59,7 +59,7 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
 
   .. sourcecode:: bash
 
-    docker logs zookeeper
+    $ docker logs zookeeper
 
   With this command, we're referencing the container name we want to see the logs for.  To list all containers (running or failed), you can always run ``docker ps -a``.  This is especially useful when running in detached mode.
 
@@ -83,7 +83,7 @@ Start Kafka.
 
   .. sourcecode:: bash
 
-      docker run -d \
+      $ docker run -d \
           --net=host \
           --name=kafka \
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
@@ -101,7 +101,7 @@ Start Kafka.
 
   .. sourcecode:: bash
 
-    docker logs kafka
+    $ docker logs kafka
 
   You should see the following at the end of the log output:
 
@@ -123,7 +123,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.3.0-SNAPSHOT \
       kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
@@ -138,7 +138,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -155,7 +155,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -171,7 +171,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -195,7 +195,7 @@ Now that we have Kafka and Zookeeper up and running, we can deploy some of the o
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --net=host \
       --name=schema-registry \
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
@@ -207,19 +207,19 @@ Now that we have Kafka and Zookeeper up and running, we can deploy some of the o
 
   .. sourcecode:: bash
 
-    docker logs schema-registry
+    $ docker logs schema-registry
 
   For the next step, we'll publish data to a new topic that will leverage the Schema Registry. For the sake of simplicity, we'll launch a second Schema Registry container in interactive mode, and then execute our ``kafka-avro-console-producer`` utility from there.
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
   .. sourcecode:: bash
 
-    /usr/bin/kafka-avro-console-producer \
+    # /usr/bin/kafka-avro-console-producer \
       --broker-list localhost:29092 --topic bar \
       --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}]}'
 
@@ -246,7 +246,7 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --net=host \
       --name=kafka-rest \
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
@@ -259,13 +259,13 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
 
   The first step in consuming data via the REST Proxy is to create a consumer instance.
 
   .. sourcecode:: bash
 
-    curl -X POST -H "Content-Type: application/vnd.kafka.v1+json" \
+    # curl -X POST -H "Content-Type: application/vnd.kafka.v1+json" \
       --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "smallest"}' \
       http://localhost:8082/consumers/my_avro_consumer
 
@@ -279,7 +279,7 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: bash
 
-    curl -X GET -H "Accept: application/vnd.kafka.avro.v1+json" \
+    # curl -X GET -H "Accept: application/vnd.kafka.avro.v1+json" \
       http://localhost:8082/consumers/my_avro_consumer/instances/my_consumer_instance/topics/bar
 
   You should see the following output:
@@ -302,7 +302,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
+    $ docker-machine ssh confluent
 
     docker@confluent:~$ mkdir -p /tmp/control-center/data
     docker@confluent:~$ exit
@@ -312,7 +312,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --name=control-center \
       --net=host \
       --ulimit nofile=16384:16384 \
@@ -333,7 +333,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker logs control-center | grep Started
+    $ docker logs control-center | grep Started
 
   You should see the following
 
@@ -356,7 +356,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.3.0-SNAPSHOT \
       kafka-topics --create --topic c3-test --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
@@ -365,7 +365,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    while true;
+    $ while true;
     do
       docker run \
         --net=host \
@@ -388,8 +388,8 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    OFFSET=0
-    while true;
+    $ OFFSET=0
+    $ while true;
     do
       docker run \
         --net=host \
@@ -493,7 +493,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -501,7 +501,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -509,7 +509,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -523,7 +523,7 @@ Next, we'll create a topic for storing data that we're going to be sending to Ka
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -534,7 +534,7 @@ Now you should verify that the topics are created before moving on:
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
        --net=host \
        --rm \
        confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -552,7 +552,7 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
 
   .. sourcecode:: bash
 
-      docker run -d \
+      $ docker run -d \
         --name=kafka-connect \
         --net=host \
         -e CONNECT_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
@@ -580,7 +580,7 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
 
   .. sourcecode:: bash
 
-    docker logs kafka-connect | grep started
+    $ docker logs kafka-connect | grep started
 
   You should see the following
 
@@ -697,12 +697,6 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
     ...
     1000
 
-  As we're done with the Docker Host session for now, you can exit it with the following command
-
-  .. sourcecode:: bash
-
-    docker@confluent:~$ exit
-
 Monitoring in Control Center
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -747,38 +741,38 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
   .. sourcecode:: bash
 
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+    $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
   Next, configure your terminal window to attach it to your new Docker Machine:
 
   .. sourcecode:: bash
 
-    eval $(docker-machine env confluent)
+    $ eval $(docker-machine env confluent)
 
 2. Clone the CP Docker Images Github Repository.
 
   .. sourcecode:: bash
 
-    git clone https://github.com/confluentinc/cp-docker-images
+    $ git clone https://github.com/confluentinc/cp-docker-images
 
   We have provided an example Docker Compose file that will start up Zookeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml
 
   .. sourcecode:: bash
-    cd cp-docker-images/examples/kafka-single-node
+    $ cd cp-docker-images/examples/kafka-single-node
 
 
 3. Start Zookeeper and Kafka using Docker Compose ``create`` and ``start`` commands.  You'll run these commands from the directory containing the docker-compose.yml file.
 
    .. sourcecode:: bash
 
-       docker-compose create
-       docker-compose start
+       $ docker-compose create
+       $ docker-compose start
 
    Before we move on, let's make sure the services are up and running:
 
    .. sourcecode:: bash
 
-       docker-compose ps
+       $ docker-compose ps
 
    You should see the following:
 
@@ -793,7 +787,7 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
    .. sourcecode:: bash
 
-       docker-compose logs zookeeper | grep -i binding
+       $ docker-compose logs zookeeper | grep -i binding
 
    You should see the following in your terminal window:
 
@@ -805,7 +799,7 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
    .. sourcecode:: bash
 
-       docker-compose logs kafka | grep -i started
+       $ docker-compose logs kafka | grep -i started
 
    You should see message a message that looks like the following:
 
