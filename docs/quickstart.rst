@@ -540,16 +540,13 @@ Now you should verify that the topics are created before moving on:
        confluentinc/cp-kafka:3.3.0-SNAPSHOT \
        kafka-topics --describe --zookeeper localhost:32181
 
-For this example, we'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``.
+For this example, we'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files.
 
-  First, let's create the directory where we'll store the input and output data files.  Remember, we must do this within the Docker Host.
+  First, let's create the directory where we'll store the input and output data files.
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
-
-    docker@confluent:~$ mkdir -p /tmp/quickstart/file
-    docker@confluent:~$ exit
+    $ docker exec kafka-connect mkdir -p /tmp/quickstart/file
 
   Next, start a Connect worker in distributed mode:
 
@@ -566,12 +563,16 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
         -e CONNECT_CONFIG_STORAGE_TOPIC="quickstart-config" \
         -e CONNECT_OFFSET_STORAGE_TOPIC="quickstart-offsets" \
         -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
+        -e CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1 \
         -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
+        -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
         -v /tmp/quickstart/file:/tmp/quickstart \
         confluentinc/cp-kafka-connect:3.3.0-SNAPSHOT
 
@@ -588,13 +589,11 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
     [2016-08-25 18:25:19,665] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
     [2016-08-25 18:25:19,676] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
 
-  We will now create our first connector for reading a file from disk.  To do this, let's start by creating a file with some data. Again, if you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. (You may also need to run the command as root).
+  We will now create our first connector for reading a file from disk. To do this, let's start by creating a file with some data:
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
-
-    docker@confluent:~$ seq 1000 > /tmp/quickstart/file/input.txt
+    $ docker exec kafka-connect sh -c 'sec 1000 > /tmp/quickstart/file/input.txt'
 
 Now create the connector using the Kafka Connect REST API. (Note: Make sure you have ``curl`` installed!)
 
@@ -602,29 +601,29 @@ Now create the connector using the Kafka Connect REST API. (Note: Make sure you 
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ export CONNECT_HOST=localhost
+    $ export CONNECT_HOST=localhost
 
   The next step is to create the File Source connector.
 
   .. sourcecode:: bash
 
-    docker@confluent:~$: curl -X POST \
+    $ docker exec kafka-connect curl -s -X POST \
       -H "Content-Type: application/json" \
-      --data '{"name": "quickstart-file-source", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector", "tasks.max":"1", "topic":"quickstart-data", "file": "/tmp/quickstart/input.txt"}}' \
+      --data '{"name": "quickstart-file-source", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector", "tasks.max":"1", "topic":"quickstart-data", "file": "/tmp/quickstart/file/input.txt"}}' \
       http://$CONNECT_HOST:28082/connectors
 
   Upon running the command, you should see the following output in your terminal window:
 
   .. sourcecode:: bash
 
-    {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/input.txt","name":"quickstart-file-source"},"tasks":[]}
+    {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/file/input.txt","name":"quickstart-file-source"},"tasks":[]}
 
 
   Before moving on, let's check the status of the connector using curl as shown below:
 
   .. sourcecode:: bash
 
-    docker@confluent:~$: curl -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-source/status
+    $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-source/status
 
   You should see the following output including the ``state`` of the connector as ``RUNNING``:
 
@@ -636,7 +635,7 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
      --net=host \
      --rm \
      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
@@ -662,21 +661,21 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ curl -X POST -H "Content-Type: application/json" \
-        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
+    $ docker exec kafka-connect curl -X POST -H "Content-Type: application/json" \
+        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/file/output.txt"}}' \
         http://$CONNECT_HOST:28082/connectors
 
-  You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/output.txt``:
+  You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/file/output.txt``:
 
   .. sourcecode:: bash
 
-    {"name":"quickstart-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-data","file":"/tmp/quickstart/output.txt","name":"quickstart-file-sink"},"tasks":[]}
+    {"name":"quickstart-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-data","file":"/tmp/quickstart/file/output.txt","name":"quickstart-file-sink"},"tasks":[]}
 
   As we did before, let's check the status of the connector:
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-sink/status
+    $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-sink/status
 
   You should see the following message in your terminal window:
 
@@ -684,11 +683,11 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
     {"name":"quickstart-file-sink","connector":{"state":"RUNNING","worker_id":"localhost:28082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28082"}]}
 
-  Finally, let's check the file to see if the data is present. Once again, you will need to SSH into the VM if you are running Docker Machine.
+  Finally, let's check the file to see if the data is present.
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ cat /tmp/quickstart/file/output.txt
+    $ docker exec kafka-connect cat /tmp/quickstart/file/output.txt
 
   If everything worked as planned, you should see all of the data we originally wrote to the input file:
 
