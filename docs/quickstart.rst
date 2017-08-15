@@ -26,17 +26,21 @@ After installing Docker as described in the previous section, we can create a Do
 
     The following steps show each Docker container being launched in detached mode.  We'll be sure to show you how access the logs for those detached containers.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` ("detached") flag with ``--it`` ("interactive"). Containers launched in interactive mode will stream the log messages for the Confluent service directly to the terminal window.  For that reason, you'll need a separate terminal for each Docker image launched in interactive mode.
 
-Create and configure the Docker Machine.   This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
+Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
 
   .. sourcecode:: bash
 
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+    $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+
+  .. note::
+
+    If you want to reuse a Docker Machine you've already created under the name "confluent" run: ``docker-machine start confluent`` instead.
 
 Next, configure your terminal window to attach it to your new Docker Machine:
 
   .. sourcecode:: bash
 
-    eval $(docker-machine env confluent)
+    $ eval $(docker-machine env confluent)
 
 All of the subsequent commands should be run from that terminal window to ensure proper access to the running Docker host.  To execute Docker commands from a new terminal window, simply execute the ``eval $(docker-machine env confluent)`` first.
 
@@ -47,19 +51,19 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
         --net=host \
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
-        confluentinc/cp-zookeeper:3.3.0-SNAPSHOT
+        confluentinc/cp-zookeeper:3.3.0
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.3.0-SNAPSHOT`` container and name it ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.3.0`` container and name it ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
   We'll check the Docker logs to confirm that the container has booted up successfully and started the Zookeeper service.  The command to do that is:
 
   .. sourcecode:: bash
 
-    docker logs zookeeper
+    $ docker logs zookeeper
 
   With this command, we're referencing the container name we want to see the logs for.  To list all containers (running or failed), you can always run ``docker ps -a``.  This is especially useful when running in detached mode.
 
@@ -83,13 +87,13 @@ Start Kafka.
 
   .. sourcecode:: bash
 
-      docker run -d \
+      $ docker run -d \
           --net=host \
           --name=kafka \
           -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-          confluentinc/cp-kafka:3.3.0-SNAPSHOT
+          confluentinc/cp-kafka:3.3.0
 
   .. note::
 
@@ -101,7 +105,7 @@ Start Kafka.
 
   .. sourcecode:: bash
 
-    docker logs kafka
+    $ docker logs kafka
 
   You should see the following at the end of the log output:
 
@@ -123,9 +127,9 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      --rm confluentinc/cp-kafka:3.3.0 \
       kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   You should see the following output in your terminal window:
@@ -138,10 +142,10 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      confluentinc/cp-kafka:3.3.0 \
       kafka-topics --describe --topic foo --zookeeper localhost:32181
 
   The response should be:
@@ -155,10 +159,10 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      confluentinc/cp-kafka:3.3.0 \
       bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
 
   This command will use the built-in Kafka Console Producer to produce 42 simple messages to the topic. Upon running it, you should see the following:
@@ -171,10 +175,10 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      confluentinc/cp-kafka:3.3.0 \
       kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --new-consumer --from-beginning --max-messages 42
 
   If everything is working as expected, each of the original messages we produced should be written back out:
@@ -195,31 +199,31 @@ Now that we have Kafka and Zookeeper up and running, we can deploy some of the o
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --net=host \
       --name=schema-registry \
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-      confluentinc/cp-schema-registry:3.3.0-SNAPSHOT
+      confluentinc/cp-schema-registry:3.3.0
 
   As we did before, we can check that it started correctly by viewing the logs.
 
   .. sourcecode:: bash
 
-    docker logs schema-registry
+    $ docker logs schema-registry
 
   For the next step, we'll publish data to a new topic that will leverage the Schema Registry. For the sake of simplicity, we'll launch a second Schema Registry container in interactive mode, and then execute our ``kafka-avro-console-producer`` utility from there.
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0 bash
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
   .. sourcecode:: bash
 
-    /usr/bin/kafka-avro-console-producer \
+    # /usr/bin/kafka-avro-console-producer \
       --broker-list localhost:29092 --topic bar \
       --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}]}'
 
@@ -246,26 +250,26 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --net=host \
       --name=kafka-rest \
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       -e KAFKA_REST_HOST_NAME=localhost \
-      confluentinc/cp-kafka-rest:3.3.0-SNAPSHOT
+      confluentinc/cp-kafka-rest:3.3.0
 
   For the next two steps, we're going to use CURL commands to talk to the REST Proxy. Our deployment steps thus far have ensured that both the REST Proxy container and the Schema Registry container are accessible directly through network ports on our local host.  The REST Proxy service is listening at http://localhost:8082  As above, we'll launch a new Docker container from which to execute our commands:
 
   .. sourcecode:: bash
 
-    docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0-SNAPSHOT bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0 bash
 
   The first step in consuming data via the REST Proxy is to create a consumer instance.
 
   .. sourcecode:: bash
 
-    curl -X POST -H "Content-Type: application/vnd.kafka.v1+json" \
+    # curl -X POST -H "Content-Type: application/vnd.kafka.v1+json" \
       --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "smallest"}' \
       http://localhost:8082/consumers/my_avro_consumer
 
@@ -279,7 +283,7 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: bash
 
-    curl -X GET -H "Accept: application/vnd.kafka.avro.v1+json" \
+    # curl -X GET -H "Accept: application/vnd.kafka.avro.v1+json" \
       http://localhost:8082/consumers/my_avro_consumer/instances/my_consumer_instance/topics/bar
 
   You should see the following output:
@@ -302,7 +306,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
+    $ docker-machine ssh confluent
 
     docker@confluent:~$ mkdir -p /tmp/control-center/data
     docker@confluent:~$ exit
@@ -312,7 +316,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker run -d \
+    $ docker run -d \
       --name=control-center \
       --net=host \
       --ulimit nofile=16384:16384 \
@@ -325,7 +329,7 @@ First, let's walk through how to use Confluent Control Center with console produ
       -e CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS=1 \
       -e CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS=2 \
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
-      confluentinc/cp-enterprise-control-center:3.3.0-SNAPSHOT
+      confluentinc/cp-enterprise-control-center:3.3.0
 
   Alert readers will notice that we have specified a URL for the Kafka Connect cluster that does not yet exist.   Not to worry, we'll work on that in the next section.
 
@@ -333,7 +337,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker logs control-center | grep Started
+    $ docker logs control-center | grep Started
 
   You should see the following
 
@@ -356,22 +360,22 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      --rm confluentinc/cp-kafka:3.3.0 \
       kafka-topics --create --topic c3-test --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
   Now use the console producer with the monitoring interceptor enabled to send data
 
   .. sourcecode:: bash
 
-    while true;
+    $ while true;
     do
       docker run \
         --net=host \
         --rm \
-        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.3.0-SNAPSHOT.jar \
-        confluentinc/cp-kafka-connect:3.3.0-SNAPSHOT \
+        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.3.0.jar \
+        confluentinc/cp-kafka-connect:3.3.0 \
         bash -c 'seq 10000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
         sleep 10;
     done
@@ -388,14 +392,14 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   .. sourcecode:: bash
 
-    OFFSET=0
-    while true;
+    $ OFFSET=0
+    $ while true;
     do
       docker run \
         --net=host \
         --rm \
-        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.3.0-SNAPSHOT.jar \
-        confluentinc/cp-kafka-connect:3.3.0-SNAPSHOT \
+        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-3.3.0.jar \
+        confluentinc/cp-kafka-connect:3.3.0 \
         bash -c 'kafka-console-consumer --consumer-property group.id=qs-consumer --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor --new-consumer --bootstrap-server localhost:29092 --topic c3-test --offset '$OFFSET' --partition 0 --max-messages=1000'
       sleep 1;
       let OFFSET=OFFSET+1000
@@ -489,44 +493,14 @@ Getting Started
 
 In this section, we'll create a simple data pipeline using Kafka Connect. We'll start by reading data from a file and writing that data to a new file.  We will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to our tutorial on `Using a JDBC Connector with avro data <tutorials/connect-avro-jdbc.html>`_.
 
-First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. We will create these topics now in the Kafka cluster we have running from the steps above.
+We'll begin by creating a topic for storing the data that we'll be sending to Kafka for this tutorial.
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. sourcecode:: bash
-
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. sourcecode:: bash
-
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. note::
-
-    It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control settings such as replication factor and number of partitions.
-
-Next, we'll create a topic for storing data that we're going to be sending to Kafka for this tutorial.
-
-  .. sourcecode:: bash
-
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+      confluentinc/cp-kafka:3.3.0 \
       kafka-topics --create --topic quickstart-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
 
@@ -534,28 +508,25 @@ Now you should verify that the topics are created before moving on:
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+       confluentinc/cp-kafka:3.3.0 \
        kafka-topics --describe --zookeeper localhost:32181
 
-For this example, we'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``.
+For this example, we'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files.
 
-  First, let's create the directory where we'll store the input and output data files.  Remember, we must do this within the Docker Host.
+  First, let's create the directory where we'll store the input and output data files.
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
-
-    docker@confluent:~$ mkdir -p /tmp/quickstart/file
-    docker@confluent:~$ exit
+    $ docker exec kafka-connect mkdir -p /tmp/quickstart/file
 
   Next, start a Connect worker in distributed mode:
 
   .. sourcecode:: bash
 
-      docker run -d \
+      $ docker run -d \
         --name=kafka-connect \
         --net=host \
         -e CONNECT_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
@@ -566,20 +537,25 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
         -e CONNECT_CONFIG_STORAGE_TOPIC="quickstart-config" \
         -e CONNECT_OFFSET_STORAGE_TOPIC="quickstart-offsets" \
         -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
+        -e CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1 \
         -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
+        -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
         -v /tmp/quickstart/file:/tmp/quickstart \
-        confluentinc/cp-kafka-connect:3.3.0-SNAPSHOT
+        confluentinc/cp-kafka-connect:3.3.0
 
-  As you can see in the above command, we tell Connect to refer to the three topics we create in the first step of this Connect tutorial. Let's check to make sure that the Connect worker is up by running the following command to search the logs:
+  As you can see in the above command, we tell Connect to use three topics to store configuration, offsets, and status, and it will create these correctly if they don't yet exist. We're only running one broker, so we do need to specify a replication factor of 1 for these topics.
+  Let's check to make sure that the Connect worker is up by running the following command to search the logs:
 
   .. sourcecode:: bash
 
-    docker logs kafka-connect | grep started
+    $ docker logs kafka-connect | grep started
 
   You should see the following
 
@@ -588,13 +564,11 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
     [2016-08-25 18:25:19,665] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
     [2016-08-25 18:25:19,676] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
 
-  We will now create our first connector for reading a file from disk.  To do this, let's start by creating a file with some data. Again, if you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. (You may also need to run the command as root).
+  We will now create our first connector for reading a file in the container. To do this, let's start by having the container create a file with some data:
 
   .. sourcecode:: bash
 
-    docker-machine ssh confluent
-
-    docker@confluent:~$ seq 1000 > /tmp/quickstart/file/input.txt
+    $ docker exec kafka-connect sh -c 'sec 1000 > /tmp/quickstart/file/input.txt'
 
 Now create the connector using the Kafka Connect REST API. (Note: Make sure you have ``curl`` installed!)
 
@@ -602,29 +576,29 @@ Now create the connector using the Kafka Connect REST API. (Note: Make sure you 
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ export CONNECT_HOST=localhost
+    $ export CONNECT_HOST=localhost
 
   The next step is to create the File Source connector.
 
   .. sourcecode:: bash
 
-    docker@confluent:~$: curl -X POST \
+    $ docker exec kafka-connect curl -s -X POST \
       -H "Content-Type: application/json" \
-      --data '{"name": "quickstart-file-source", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector", "tasks.max":"1", "topic":"quickstart-data", "file": "/tmp/quickstart/input.txt"}}' \
+      --data '{"name": "quickstart-file-source", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector", "tasks.max":"1", "topic":"quickstart-data", "file": "/tmp/quickstart/file/input.txt"}}' \
       http://$CONNECT_HOST:28082/connectors
 
   Upon running the command, you should see the following output in your terminal window:
 
   .. sourcecode:: bash
 
-    {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/input.txt","name":"quickstart-file-source"},"tasks":[]}
+    {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/file/input.txt","name":"quickstart-file-source"},"tasks":[]}
 
 
   Before moving on, let's check the status of the connector using curl as shown below:
 
   .. sourcecode:: bash
 
-    docker@confluent:~$: curl -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-source/status
+    $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-source/status
 
   You should see the following output including the ``state`` of the connector as ``RUNNING``:
 
@@ -636,10 +610,10 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   .. sourcecode:: bash
 
-    docker run \
+    $ docker run \
      --net=host \
      --rm \
-     confluentinc/cp-kafka:3.3.0-SNAPSHOT \
+     confluentinc/cp-kafka:3.3.0 \
      kafka-console-consumer --bootstrap-server localhost:29092 --topic quickstart-data --new-consumer --from-beginning --max-messages 10
 
   You should see the following:
@@ -662,21 +636,21 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ curl -X POST -H "Content-Type: application/json" \
-        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/output.txt"}}' \
+    $ docker exec kafka-connect curl -X POST -H "Content-Type: application/json" \
+        --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/file/output.txt"}}' \
         http://$CONNECT_HOST:28082/connectors
 
-  You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/output.txt``:
+  You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/file/output.txt``:
 
   .. sourcecode:: bash
 
-    {"name":"quickstart-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-data","file":"/tmp/quickstart/output.txt","name":"quickstart-file-sink"},"tasks":[]}
+    {"name":"quickstart-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-data","file":"/tmp/quickstart/file/output.txt","name":"quickstart-file-sink"},"tasks":[]}
 
   As we did before, let's check the status of the connector:
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-sink/status
+    $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-sink/status
 
   You should see the following message in your terminal window:
 
@@ -684,11 +658,11 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
     {"name":"quickstart-file-sink","connector":{"state":"RUNNING","worker_id":"localhost:28082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28082"}]}
 
-  Finally, let's check the file to see if the data is present. Once again, you will need to SSH into the VM if you are running Docker Machine.
+  Finally, let's check the file to see if the data is present.
 
   .. sourcecode:: bash
 
-    docker@confluent:~$ cat /tmp/quickstart/file/output.txt
+    $ docker exec kafka-connect cat /tmp/quickstart/file/output.txt
 
   If everything worked as planned, you should see all of the data we originally wrote to the input file:
 
@@ -697,12 +671,6 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
     1
     ...
     1000
-
-  As we're done with the Docker Host session for now, you can exit it with the following command
-
-  .. sourcecode:: bash
-
-    docker@confluent:~$ exit
 
 Monitoring in Control Center
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -748,38 +716,38 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
   .. sourcecode:: bash
 
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+    $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
   Next, configure your terminal window to attach it to your new Docker Machine:
 
   .. sourcecode:: bash
 
-    eval $(docker-machine env confluent)
+    $ eval $(docker-machine env confluent)
 
 2. Clone the CP Docker Images Github Repository.
 
   .. sourcecode:: bash
 
-    git clone https://github.com/confluentinc/cp-docker-images
+    $ git clone https://github.com/confluentinc/cp-docker-images
 
   We have provided an example Docker Compose file that will start up Zookeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml
 
   .. sourcecode:: bash
-    cd cp-docker-images/examples/kafka-single-node
+    $ cd cp-docker-images/examples/kafka-single-node
 
 
 3. Start Zookeeper and Kafka using Docker Compose ``create`` and ``start`` commands.  You'll run these commands from the directory containing the docker-compose.yml file.
 
    .. sourcecode:: bash
 
-       docker-compose create
-       docker-compose start
+       $ docker-compose create
+       $ docker-compose start
 
    Before we move on, let's make sure the services are up and running:
 
    .. sourcecode:: bash
 
-       docker-compose ps
+       $ docker-compose ps
 
    You should see the following:
 
@@ -794,7 +762,7 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
    .. sourcecode:: bash
 
-       docker-compose logs zookeeper | grep -i binding
+       $ docker-compose logs zookeeper | grep -i binding
 
    You should see the following in your terminal window:
 
@@ -806,7 +774,7 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
    .. sourcecode:: bash
 
-       docker-compose logs kafka | grep -i started
+       $ docker-compose logs kafka | grep -i started
 
    You should see message a message that looks like the following:
 
