@@ -26,11 +26,15 @@ After installing Docker as described in the previous section, we can create a Do
 
     The following steps show each Docker container being launched in detached mode.  We'll be sure to show you how access the logs for those detached containers.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` ("detached") flag with ``--it`` ("interactive"). Containers launched in interactive mode will stream the log messages for the Confluent service directly to the terminal window.  For that reason, you'll need a separate terminal for each Docker image launched in interactive mode.
 
-Create and configure the Docker Machine.   This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
+Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
 
   .. sourcecode:: bash
 
     $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+
+  .. note::
+
+    If you want to reuse a Docker Machine you've already created under the name "confluent" run: ``docker-machine start confluent`` instead.
 
 Next, configure your terminal window to attach it to your new Docker Machine:
 
