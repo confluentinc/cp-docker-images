@@ -493,37 +493,7 @@ Getting Started
 
 In this section, we'll create a simple data pipeline using Kafka Connect. We'll start by reading data from a file and writing that data to a new file.  We will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this introductory tutorial.  If you'd like a more in-depth example, please refer to our tutorial on `Using a JDBC Connector with avro data <tutorials/connect-avro-jdbc.html>`_.
 
-First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. We will create these topics now in the Kafka cluster we have running from the steps above.
-
-  .. sourcecode:: bash
-
-    $ docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. sourcecode:: bash
-
-    $ docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. sourcecode:: bash
-
-    $ docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:3.3.0-SNAPSHOT \
-      kafka-topics --create --topic quickstart-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
-
-  .. note::
-
-    It is possible to allow connect to auto-create these topics by enabling the autocreation setting.  However, we recommend doing it manually, as these topics are important for connect to function and you'll likely want to control settings such as replication factor and number of partitions.
-
-Next, we'll create a topic for storing data that we're going to be sending to Kafka for this tutorial.
+We'll begin by creating a topic for storing the data that we'll be sending to Kafka for this tutorial.
 
   .. sourcecode:: bash
 
@@ -580,7 +550,8 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
         -v /tmp/quickstart/file:/tmp/quickstart \
         confluentinc/cp-kafka-connect:3.3.0-SNAPSHOT
 
-  As you can see in the above command, we tell Connect to refer to the three topics we create in the first step of this Connect tutorial. Let's check to make sure that the Connect worker is up by running the following command to search the logs:
+  As you can see in the above command, we tell Connect to use three topics to store configuration, offsets, and status, and it will create these correctly if they don't yet exist. We're only running one broker, so we do need to specify a replication factor of 1 for these topics.
+  Let's check to make sure that the Connect worker is up by running the following command to search the logs:
 
   .. sourcecode:: bash
 
@@ -593,7 +564,7 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
     [2016-08-25 18:25:19,665] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
     [2016-08-25 18:25:19,676] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
 
-  We will now create our first connector for reading a file from disk. To do this, let's start by creating a file with some data:
+  We will now create our first connector for reading a file in the container. To do this, let's start by having the container create a file with some data:
 
   .. sourcecode:: bash
 
