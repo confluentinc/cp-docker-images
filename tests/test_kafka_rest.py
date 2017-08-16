@@ -47,7 +47,7 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("KAFKA_REST_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("one of (KAFKA_REST_ZOOKEEPER_CONNECT,KAFKA_REST_BOOTSTRAP_SERVERS) is required." in self.cluster.service_logs("failing-config", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_rest_healthy_for_service("default-config")

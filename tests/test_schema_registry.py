@@ -45,7 +45,7 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("one of (SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL,SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS) is required." in self.cluster.service_logs("failing-config", stopped=True))
         self.assertTrue("SCHEMA_REGISTRY_HOST_NAME is required." in self.cluster.service_logs("failing-config-host-name", stopped=True))
 
     def test_default_config(self):

@@ -18,9 +18,11 @@ set -o nounset \
     -o errexit \
     -o verbose \
     -o xtrace
-
-echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL" "${SCHEMA_REGISTRY_CUB_ZK_TIMEOUT:-40}"
+if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]]
+then
+    echo "===> Check if Zookeeper is healthy ..."
+    cub zk-ready "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL" "${SCHEMA_REGISTRY_CUB_ZK_TIMEOUT:-40}"
+fi
 
 echo "===> Check if Kafka is healthy ..."
 
@@ -32,8 +34,18 @@ then
         -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}" \
         --config /etc/"${COMPONENT}"/admin.properties
 else
-    cub kafka-ready \
-        "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
-        -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
+    if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]]
+    then
+        cub kafka-ready \
+            "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
+            -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
+    fi
+    if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
+    then
+        cub kafka-ready \
+            "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+            -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}"
+    fi
 fi
