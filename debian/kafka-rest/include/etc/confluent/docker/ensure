@@ -41,8 +41,7 @@ else
             "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
             "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
             -z "$KAFKA_REST_ZOOKEEPER_CONNECT"
-    fi
-    if [[ -n "${KAFKA_REST_BOOTSTRAP_SERVERS-}" ]]
+    elif [[ -n "${KAFKA_REST_BOOTSTRAP_SERVERS-}" ]]
     then
         cub kafka-ready \
             "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \

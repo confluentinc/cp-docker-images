@@ -33,3 +33,10 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: default-config
     labels:
     - io.confluent.docker.testing=true
+  default-config-kafka:
+    image: confluentinc/cp-schema-registry:latest
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      SCHEMA_REGISTRY_HOST_NAME: default-config
+    labels:
+    - io.confluent.docker.testing=true

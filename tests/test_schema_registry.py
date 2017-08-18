@@ -56,6 +56,14 @@ class ConfigTest(unittest.TestCase):
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
+    def test_default_config_kafka(self):
+        self.is_schema_registry_healthy_for_service("default-config-kafka")
+        props = self.cluster.run_command_on_service("default-config", "cat /etc/schema-registry/schema-registry.properties")
+        expected = """kafkastore.bootstrap.servers=PLAINTEXT://kafka:9092
+                host.name=default-config
+            """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
     def test_default_logging_config(self):
         self.is_schema_registry_healthy_for_service("default-config")
 

@@ -40,8 +40,7 @@ else
             "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
             "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
             -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
-    fi
-    if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
+    elif [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
     then
         cub kafka-ready \
             "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \

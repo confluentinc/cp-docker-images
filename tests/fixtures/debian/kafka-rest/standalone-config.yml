@@ -32,3 +32,12 @@ services:
       KAFKA_REST_HOST_NAME: default-config
     labels:
     - io.confluent.docker.testing=true
+
+  default-config-kafka:
+    image: confluentinc/cp-kafka-rest:latest
+    restart: on-failure:3
+    environment:
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      KAFKA_REST_HOST_NAME: default-config
+    labels:
+    - io.confluent.docker.testing=true

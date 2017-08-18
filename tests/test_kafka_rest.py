@@ -58,6 +58,15 @@ class ConfigTest(unittest.TestCase):
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
+    def test_default_config_kafka(self):
+        self.is_kafka_rest_healthy_for_service("default-config-kafka")
+        props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka-rest/kafka-rest.properties | sort'")
+        expected = """
+            bootstrap.servers=PLAINTEXT://kafka:9092
+            host.name=default-config    
+            """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
     def test_default_logging_config(self):
         self.is_kafka_rest_healthy_for_service("default-config")
 
