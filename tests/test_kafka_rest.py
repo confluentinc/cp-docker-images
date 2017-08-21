@@ -47,7 +47,7 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("KAFKA_REST_ZOOKEEPER_CONNECT is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("one of (KAFKA_REST_ZOOKEEPER_CONNECT,KAFKA_REST_BOOTSTRAP_SERVERS) is required." in self.cluster.service_logs("failing-config", stopped=True))
 
     def test_default_config(self):
         self.is_kafka_rest_healthy_for_service("default-config")
@@ -55,6 +55,15 @@ class ConfigTest(unittest.TestCase):
         expected = """
             host.name=default-config
             zookeeper.connect=zookeeper:2181/defaultconfig
+            """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+    def test_default_config_kafka(self):
+        self.is_kafka_rest_healthy_for_service("default-config-kafka")
+        props = self.cluster.run_command_on_service("default-config", "bash -c 'cat /etc/kafka-rest/kafka-rest.properties | sort'")
+        expected = """
+            bootstrap.servers=PLAINTEXT://kafka:9092
+            host.name=default-config    
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
 
