@@ -28,7 +28,7 @@ After installing Docker as described in the previous section, we can create a Do
 
 Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
@@ -38,7 +38,7 @@ Create and configure the Docker Machine. This example creates a VirtualBox VM wi
 
 Next, configure your terminal window to attach it to your new Docker Machine:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ eval $(docker-machine env confluent)
 
@@ -49,7 +49,7 @@ Zookeeper
 
 Start Zookeeper. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -d \
         --net=host \
@@ -61,7 +61,7 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
 
   We'll check the Docker logs to confirm that the container has booted up successfully and started the Zookeeper service.  The command to do that is:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker logs zookeeper
 
@@ -85,7 +85,7 @@ Kafka
 
 Start Kafka.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
       $ docker run -d \
           --net=host \
@@ -103,7 +103,7 @@ Start Kafka.
 
   Let's check the logs to see the broker has booted up successfully:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker logs kafka
 
@@ -125,7 +125,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   First, we'll create a topic.  We'll name it ``foo`` and keep things simple by just giving it one partition and only one replica.  Production environments with more broker nodes would obviously use higher values for both partitions and replicas for scalability and resiliency.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -140,7 +140,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   Before moving on, verify that the topic was created successfully:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -157,7 +157,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   Next, we'll publish some data to our new topic:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -173,7 +173,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 
   To complete the story, let's read back the message using the built-in Console consumer:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -197,7 +197,7 @@ Now that we have Kafka and Zookeeper up and running, we can deploy some of the o
 
   First, let's fire up the Schema Registry container:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -d \
       --net=host \
@@ -209,19 +209,19 @@ Now that we have Kafka and Zookeeper up and running, we can deploy some of the o
 
   As we did before, we can check that it started correctly by viewing the logs.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker logs schema-registry
 
   For the next step, we'll publish data to a new topic that will leverage the Schema Registry. For the sake of simplicity, we'll launch a second Schema Registry container in interactive mode, and then execute our ``kafka-avro-console-producer`` utility from there.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.5.0-SNAPSHOT bash
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     # /usr/bin/kafka-avro-console-producer \
       --broker-list localhost:29092 --topic bar \
@@ -248,7 +248,7 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   First, start up the REST Proxy:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -d \
       --net=host \
@@ -261,13 +261,13 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   For the next two steps, we're going to use CURL commands to talk to the REST Proxy. Our deployment steps thus far have ensured that both the REST Proxy container and the Schema Registry container are accessible directly through network ports on our local host.  The REST Proxy service is listening at http://localhost:8082  As above, we'll launch a new Docker container from which to execute our commands:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.5.0-SNAPSHOT bash
 
   The first step in consuming data via the REST Proxy is to create a consumer instance.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     # curl -X POST -H "Content-Type: application/vnd.kafka.v1+json" \
       --data '{"name": "my_consumer_instance", "format": "avro", "auto.offset.reset": "smallest"}' \
@@ -275,20 +275,20 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   You should see the following in your terminal window:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"instance_id":"my_consumer_instance","base_uri":"http://localhost:8082/consumers/my_avro_consumer/instances/my_consumer_instance"}
 
   Our next ``curl`` command will retrieve data from a topic in our cluster (``bar`` in this case).  The messages will be decoded, translated to JSON, and included in the response. The schema used for deserialization is retrieved automatically from the Schema Registry service, which we told the REST Proxy how to find by setting the ``KAFKA_REST_SCHEMA_REGISTRY_URL`` variable on startup.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     # curl -X GET -H "Accept: application/vnd.kafka.avro.v1+json" \
       http://localhost:8082/consumers/my_avro_consumer/instances/my_consumer_instance/topics/bar
 
   You should see the following output:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     [{"key":null,"value":{"f1":"value1"},"partition":0,"offset":0},{"key":null,"value":{"f1":"value2"},"partition":0,"offset":1},{"key":null,"value":{"f1":"value3"},"partition":0,"offset":2}]
 
@@ -304,7 +304,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   We'll launch the Confluent Control Center image the same as we've done for earlier containers, connecting to the ZooKeeper and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes, so we'll first create a directory on the Docker Machine host for Control Center data.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker-machine ssh confluent
 
@@ -314,7 +314,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   Now we start Control Center, binding its data directory to the directory we just created and its HTTP interface to port 9021.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run -d \
       --name=control-center \
@@ -335,13 +335,13 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker logs control-center | grep Started
 
   You should see the following
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     [2016-08-26 18:47:26,809] INFO Started NetworkTrafficServerConnector@26d96e5{HTTP/1.1}{0.0.0.0:9021} (org.eclipse.jetty.server.NetworkTrafficServerConnector)
     [2016-08-26 18:47:26,811] INFO Started @5211ms (org.eclipse.jetty.server.Server)
@@ -358,7 +358,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   Next, we'll run the console producer and consumer with monitoring interceptors configured and see the data in Control Center.  First we need to create a topic for testing.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -367,7 +367,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   Now use the console producer with the monitoring interceptor enabled to send data
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ while true;
     do
@@ -390,7 +390,7 @@ First, let's walk through how to use Confluent Control Center with console produ
 
   We'll use the console consumer with the monitoring interceptor enabled to read the data.  We'll want to run this command in a separate terminal window (prepared with the ``eval $(docker-machine env confluent)`` as we described earlier).
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ OFFSET=0
     $ while true;
@@ -495,7 +495,7 @@ In this section, we'll create a simple data pipeline using Kafka Connect. We'll 
 
 We'll begin by creating a topic for storing the data that we'll be sending to Kafka for this tutorial.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
       --net=host \
@@ -506,7 +506,7 @@ We'll begin by creating a topic for storing the data that we'll be sending to Ka
 
 Now you should verify that the topics are created before moving on:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
        --net=host \
@@ -518,13 +518,13 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
 
   First, let's create the directory where we'll store the input and output data files.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect mkdir -p /tmp/quickstart/file
 
   Next, start a Connect worker in distributed mode:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
       $ docker run -d \
         --name=kafka-connect \
@@ -553,20 +553,20 @@ For this example, we'll create a FileSourceConnector, a FileSinkConnector and di
   As you can see in the above command, we tell Connect to use three topics to store configuration, offsets, and status, and it will create these correctly if they don't yet exist. We're only running one broker, so we do need to specify a replication factor of 1 for these topics.
   Let's check to make sure that the Connect worker is up by running the following command to search the logs:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker logs kafka-connect | grep started
 
   You should see the following
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     [2016-08-25 18:25:19,665] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
     [2016-08-25 18:25:19,676] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
 
   We will now create our first connector for reading a file in the container. To do this, let's start by having the container create a file with some data:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect sh -c 'sec 1000 > /tmp/quickstart/file/input.txt'
 
@@ -574,13 +574,13 @@ Now create the connector using the Kafka Connect REST API. (Note: Make sure you 
 
   Set the ``CONNECT_HOST`` environment variable.  If you are running this on Docker Machine, then the hostname will need to be ``docker-machine ip <your docker machine name>``. If you are running on a cloud provider like AWS, you will either need to have port ``28082`` open or you can SSH into the VM and run the following command:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ export CONNECT_HOST=localhost
 
   The next step is to create the File Source connector.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect curl -s -X POST \
       -H "Content-Type: application/json" \
@@ -589,26 +589,26 @@ Now create the connector using the Kafka Connect REST API. (Note: Make sure you 
 
   Upon running the command, you should see the following output in your terminal window:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/file/input.txt","name":"quickstart-file-source"},"tasks":[]}
 
 
   Before moving on, let's check the status of the connector using curl as shown below:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-source/status
 
   You should see the following output including the ``state`` of the connector as ``RUNNING``:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"name":"quickstart-file-source","connector":{"state":"RUNNING","worker_id":"localhost:28082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28082"}]}
 
 Now that the connector is up and running, let's try reading a sample of 10 records from the ``quickstart-data`` topic to check if the connector is uploading data to Kafka, as expected.   You'll want to do this in a separate terminal window, retaining the ssh session to the Docker Host for later commands.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker run \
      --net=host \
@@ -618,7 +618,7 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   You should see the following:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"schema":{"type":"string","optional":false},"payload":"1"}
     {"schema":{"type":"string","optional":false},"payload":"2"}
@@ -634,7 +634,7 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   Success!  We now have a functioning source connector!  Now let's bring balance to the universe by launching a File Sink to read from this topic and write to an output file.  You can do so using the following command from the Docker Host session started earlier:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect curl -X POST -H "Content-Type: application/json" \
         --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/file/output.txt"}}' \
@@ -642,31 +642,31 @@ Now that the connector is up and running, let's try reading a sample of 10 recor
 
   You should see the output below in your terminal window, confirming that the ``quickstart-file-sink`` connector has been created and will write to ``/tmp/quickstart/file/output.txt``:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"name":"quickstart-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-data","file":"/tmp/quickstart/file/output.txt","name":"quickstart-file-sink"},"tasks":[]}
 
   As we did before, let's check the status of the connector:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect curl -s -X GET http://$CONNECT_HOST:28082/connectors/quickstart-file-sink/status
 
   You should see the following message in your terminal window:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     {"name":"quickstart-file-sink","connector":{"state":"RUNNING","worker_id":"localhost:28082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28082"}]}
 
   Finally, let's check the file to see if the data is present.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker exec kafka-connect cat /tmp/quickstart/file/output.txt
 
   If everything worked as planned, you should see all of the data we originally wrote to the input file:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     1
     ...
@@ -714,44 +714,44 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
 1. Create and configure the Docker Machine {if you don't want to reuse your Docker Host from the Quickstart above} (OS X only).
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
   Next, configure your terminal window to attach it to your new Docker Machine:
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ eval $(docker-machine env confluent)
 
 2. Clone the CP Docker Images Github Repository.
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
 
     $ git clone https://github.com/confluentinc/cp-docker-images
 
   We have provided an example Docker Compose file that will start up Zookeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml
 
-  .. sourcecode:: bash
+  .. sourcecode:: console
     $ cd cp-docker-images/examples/kafka-single-node
 
 
 3. Start Zookeeper and Kafka using Docker Compose ``create`` and ``start`` commands.  You'll run these commands from the directory containing the docker-compose.yml file.
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        $ docker-compose create
        $ docker-compose start
 
    Before we move on, let's make sure the services are up and running:
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        $ docker-compose ps
 
    You should see the following:
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
                   Name                        Command            State   Ports
        -----------------------------------------------------------------------
@@ -760,25 +760,25 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
    Now check the Zookeeper logs to verify that Zookeeper is healthy.
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        $ docker-compose logs zookeeper | grep -i binding
 
    You should see the following in your terminal window:
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        zookeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 
    Next, check the Kafka logs to verify that broker is healthy.
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        $ docker-compose logs kafka | grep -i started
 
    You should see message a message that looks like the following:
 
-   .. sourcecode:: bash
+   .. sourcecode:: console
 
        kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 
