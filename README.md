@@ -7,7 +7,10 @@ Full documentation for using the images can be found [here](http://docs.confluen
 
 # Important Caveat - Images Not Tested for Docker for Mac or Windows
 	
-These images are not tested on Docker for Mac or Docker for Windows. These images will be updated in the near future to support these platforms. 
+These images are not tested on Docker for Mac or Docker for Windows. These images will be updated in the near future to support these platforms. For more details on these known issues, you can refer to the following links:
+
+* [Hostname Issue](https://forums.docker.com/t/docker-for-mac-does-not-add-docker-hostname-to-etc-hosts/8620/4)
+* Host networking on Docker for Mac: [link 1](https://forums.docker.com/t/should-docker-run-net-host-work/14215), [link 2](https://forums.docker.com/t/net-host-does-not-work/17378/7), [link 3](https://forums.docker.com/t/explain-networking-known-limitations-explain-host/15205/4)
 
 # Contribute
 
