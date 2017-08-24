@@ -17,9 +17,7 @@ To get started, you'll need to first `install Docker and get it running <https:/
 Running Confluent Platform on Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  .. Important::
-    
-    These instructions are not tested on Docker for Mac or Docker for Windows. These instructions will be updated in the near future to support these platforms.
+If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
 After installing Docker as described in the previous section, we can create a Docker machine and begin starting up Confluent Platform.
 
