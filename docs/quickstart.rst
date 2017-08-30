@@ -93,9 +93,9 @@ Docker Compose is a powerful tool that enables you to launch multiple docker ima
 
        kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 
-4. Follow step 4 in "Running Confluent Platform in Docker" guide above to test the broker.
+4. Test the broker by :ref:`following these instructions from Docker Client <test_drive>`.
 
-The confluentinc/cp-docker-images github repository has several other interesting examples of docker-compose.yml files that you can use.
+The confluentinc/cp-docker-images GitHub repository has several other interesting examples of docker-compose.yml files that you can use.
 
 .. _quickstart_engine:
 
@@ -202,6 +202,8 @@ Start Kafka.
     [2016-07-15 23:31:00,349] INFO [Controller 1]: New broker startup callback for 1 (kafka.controller.KafkaController)
     [2016-07-15 23:31:00,350] INFO [Controller-1-to-broker-1-send-thread], Starting  (kafka.controller.RequestSendThread)
     ...
+
+.. _test_drive:
 
 Now you can take this very basic deployment for a test drive.  You'll verify that the broker is functioning normally by creating a topic and producing data to it.  You'll use the client tools directly from another Docker container.
 
