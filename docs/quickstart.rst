@@ -5,17 +5,106 @@ Quickstart
 
 This section provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.  
 
-In order to keep things simple, we'll start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  We will also be configuring Kafka and Zookeeper to store data locally in their Docker containers.  You should refer to our documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
+To keep things simple, we'll start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  We will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to our documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`we have docs for that too <quickstart_compose>`.
+For this tutorial, you can run Docker using the Docker client or Docker Compose:
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
+    * :ref:`Getting Started with Docker Client <quickstart_engine>`
+    * :ref:`Getting Started with Docker Compose <quickstart_compose>`
+
+
+.. _quickstart_compose:
+
+Getting Started with Docker Compose
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Docker Compose is a powerful tool that enables you to launch multiple docker images in a coordinated fashion.  It is ideal for platforms like Confluent.  Before you get started, you will need to install both the core `Docker Engine <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
+
+1. Create and configure the Docker Machine {if you don't want to reuse your Docker Host from the Quickstart above} (OS X only).
+
+  .. sourcecode:: bash
+
+    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+
+  Next, configure your terminal window to attach it to your new Docker Machine:
+
+  .. sourcecode:: bash
+
+    eval $(docker-machine env confluent)
+
+2. Clone the CP Docker Images Github Repository.
+
+  .. sourcecode:: bash
+
+    git clone https://github.com/confluentinc/cp-docker-images
+
+  We have provided an example Docker Compose file that will start up ZooKeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml 
+
+  .. sourcecode:: bash
+    cd cp-docker-images/examples/kafka-single-node
+
+
+3. Start ZooKeeper and Kafka using Docker Compose ``create`` and ``start`` commands.  You'll run these commands from the directory containing the docker-compose.yml file.
+
+   .. sourcecode:: bash
+
+       docker-compose create
+       docker-compose start
+
+   Before we move on, let's make sure the services are up and running:
+
+   .. sourcecode:: bash
+
+       docker-compose ps
+
+   You should see the following:
+
+   .. sourcecode:: bash
+
+                  Name                        Command            State   Ports
+       -----------------------------------------------------------------------
+       kafkasinglenode_kafka_1       /etc/confluent/docker/run   Up
+       kafkasinglenode_zookeeper_1   /etc/confluent/docker/run   Up
+
+   Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
+
+   .. sourcecode:: bash
+
+       docker-compose logs zookeeper | grep -i binding
+
+   You should see the following in your terminal window:
+
+   .. sourcecode:: bash
+
+       zookeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+
+   Next, check the Kafka logs to verify that broker is healthy.
+
+   .. sourcecode:: bash
+
+       docker-compose logs kafka | grep -i started
+
+   You should see message a message that looks like the following:
+
+   .. sourcecode:: bash
+
+       kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
+
+4. Follow step 4 in "Running Confluent Platform in Docker" guide above to test the broker.
+
+The confluentinc/cp-docker-images github repository has several other interesting examples of docker-compose.yml files that you can use.
+
+.. _quickstart_engine:
 
 Running Confluent Platform on Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  .. Prerequisite::
+
+    To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
 
 If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -40,10 +129,10 @@ Next, configure your terminal window to attach it to your new Docker Machine:
 
 All of the subsequent commands should be run from that terminal window to ensure proper access to the running Docker host.  To execute Docker commands from a new terminal window, simply execute the ``eval $(docker-machine env confluent)`` first.
 
-Zookeeper
+ZooKeeper
 +++++++++++++++++
 
-Start Zookeeper. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
+Start ZooKeeper. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
 
   .. sourcecode:: bash
 
@@ -53,9 +142,9 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         confluentinc/cp-zookeeper:3.2.1
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.2.1`` container and name it ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.2.1`` container and name it ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
-  We'll check the Docker logs to confirm that the container has booted up successfully and started the Zookeeper service.  The command to do that is:
+  We'll check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service.  The command to do that is:
 
   .. sourcecode:: bash
 
@@ -63,17 +152,17 @@ Start Zookeeper. You'll need to keep this service running throughout, so use a d
 
   With this command, we're referencing the container name we want to see the logs for.  To list all containers (running or failed), you can always run ``docker ps -a``.  This is especially useful when running in detached mode.
 
-  When you output the logs for Zookeeper, you should see the following message at the end of the log output:
+  When you output the logs for ZooKeeper, you should see the following message at the end of the log output:
 
   ::
 
     [2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 
-  Note that the message shows the Zookeeper service listening at the port we passed in as ``ZOOKEEPER_CLIENT_PORT`` above.
+  Note that the message shows the ZooKeeper service listening at the port we passed in as ``ZOOKEEPER_CLIENT_PORT`` above.
 
   If the service is not running, the log messages should provide details to help you identify the problem.   Some common errors include:
 
-		* Network port already in use.   In that case, you'll see a message indicating that the Zookeeper service could not bind to the selcted port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
+		* Network port already in use.   In that case, you'll see a message indicating that the ZooKeeper service could not bind to the selcted port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
 		* Insufficient resources.   In rare occasions, you may see memory allocation or other low-level failures at startup. This will only happen if you dramatically overload the capacity of your Docker host.
 
 Kafka
@@ -186,7 +275,7 @@ Now we can take this very basic deployment for a test drive.  We'll verify that 
 Schema Registry
 +++++++++++++++
 
-Now that we have Kafka and Zookeeper up and running, we can deploy some of the other components included in Confluent Platform. We'll start by using the Schema Registry to create a new schema and send some Avro data to a Kafka topic. Although you would normally do this from one of your applications, we'll use a utility provided with Schema Registry to send the data without having to write any code.
+Now that we have Kafka and ZooKeeper up and running, we can deploy some of the other components included in Confluent Platform. We'll start by using the Schema Registry to create a new schema and send some Avro data to a Kafka topic. Although you would normally do this from one of your applications, we'll use a utility provided with Schema Registry to send the data without having to write any code.
 
   First, let's fire up the Schema Registry container:
 
@@ -732,85 +821,4 @@ Next we'll see how to monitor the Kafka Connect connectors in Control Center.  B
 Cleanup
 +++++++
 
-Once you're done, cleaning up is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above for your target Docker Host.  Because we allowed Kafka and Zookeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
-
-.. _quickstart_compose:
-
-Getting Started with Docker Compose
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Docker Compose is a powerful tool that enables you to launch multiple docker images in a coordinated fashion.  It is ideal for platforms like Confluent.  Before you get started, you will need to install both the core `Docker Engine <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
-
-1. Create and configure the Docker Machine {if you don't want to reuse your Docker Host from the Quickstart above} (OS X only).
-
-  .. sourcecode:: bash
-
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
-
-  Next, configure your terminal window to attach it to your new Docker Machine:
-
-  .. sourcecode:: bash
-
-    eval $(docker-machine env confluent)
-
-2. Clone the CP Docker Images Github Repository.
-
-  .. sourcecode:: bash
-
-    git clone https://github.com/confluentinc/cp-docker-images
-
-  We have provided an example Docker Compose file that will start up Zookeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml 
-
-  .. sourcecode:: bash
-    cd cp-docker-images/examples/kafka-single-node
-
-
-3. Start Zookeeper and Kafka using Docker Compose ``create`` and ``start`` commands.  You'll run these commands from the directory containing the docker-compose.yml file.
-
-   .. sourcecode:: bash
-
-       docker-compose create
-       docker-compose start
-
-   Before we move on, let's make sure the services are up and running:
-
-   .. sourcecode:: bash
-
-       docker-compose ps
-
-   You should see the following:
-
-   .. sourcecode:: bash
-
-                  Name                        Command            State   Ports
-       -----------------------------------------------------------------------
-       kafkasinglenode_kafka_1       /etc/confluent/docker/run   Up
-       kafkasinglenode_zookeeper_1   /etc/confluent/docker/run   Up
-
-   Now check the Zookeeper logs to verify that Zookeeper is healthy.
-
-   .. sourcecode:: bash
-
-       docker-compose logs zookeeper | grep -i binding
-
-   You should see the following in your terminal window:
-
-   .. sourcecode:: bash
-
-       zookeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
-
-   Next, check the Kafka logs to verify that broker is healthy.
-
-   .. sourcecode:: bash
-
-       docker-compose logs kafka | grep -i started
-
-   You should see message a message that looks like the following:
-
-   .. sourcecode:: bash
-
-       kafka_1      | [2016-07-25 03:26:06,007] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
-
-4. Follow step 4 in "Running Confluent Platform in Docker" guide above to test the broker.
-
-The confluentinc/cp-docker-images github repository has several other interesting examples of docker-compose.yml files that you can use.   
+Once you're done, cleaning up is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above for your target Docker Host.  Because we allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.   
