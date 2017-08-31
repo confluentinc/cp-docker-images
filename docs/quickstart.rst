@@ -98,6 +98,8 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
        kafkasinglenode_kafka_1       /etc/confluent/docker/run   Up
        kafkasinglenode_zookeeper_1   /etc/confluent/docker/run   Up
 
+   If the state is not `Up`, rerun the ``docker-compose up -d`` command.
+
    Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
 
    .. sourcecode:: bash
@@ -261,7 +263,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
       confluentinc/cp-kafka:3.2.1 \
       kafka-topics --describe --topic foo --zookeeper localhost:32181
 
-  The response should be:
+  You should see the following:
 
   ::
 
