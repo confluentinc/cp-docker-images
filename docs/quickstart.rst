@@ -32,7 +32,9 @@ Getting Started with Docker Compose
 
 Docker Compose is a powerful tool that enables you to launch multiple Docker images in a coordinated fashion.  It is ideal for platforms like Confluent.  Before you get started, you will need to install both the core `Docker Engine <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
-#. **For non-macOS users:** Create and configure the Docker Machine.
+#. Create and configure the Docker Machine.
+
+   **Important:** If you are using Docker for Mac or Docker for Windows, you can skip this step.
 
    .. sourcecode:: bash
 
