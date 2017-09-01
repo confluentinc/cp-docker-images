@@ -32,31 +32,31 @@ Getting Started with Docker Compose
 
 Docker Compose is a powerful tool that enables you to launch multiple Docker images in a coordinated fashion.  It is ideal for platforms like Confluent.  Before you get started, you will need to install both the core `Docker Engine <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
-1. Create and configure the Docker Machine.
+#. **For non-macOS users:** Create and configure the Docker Machine.
 
-  .. sourcecode:: bash
+   .. sourcecode:: bash
 
-    docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
+     docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
-  Next, configure your terminal window to attach it to your new Docker Machine:
+   Next, configure your terminal window to attach it to your new Docker Machine:
 
-  .. sourcecode:: bash
+   .. sourcecode:: bash
 
-    eval $(docker-machine env confluent)
+     eval $(docker-machine env confluent)
 
-2. Clone the CP Docker Images Github Repository.
+#. Clone the CP Docker Images Github Repository.
 
-  .. sourcecode:: bash
+   .. sourcecode:: bash
 
-    git clone https://github.com/confluentinc/cp-docker-images
+     git clone https://github.com/confluentinc/cp-docker-images
 
-  An example Docker Compose file is included that will start up ZooKeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from `GitHub <https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml>`_.
+   An example Docker Compose file is included that will start up ZooKeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from `GitHub <https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml>`_.
 
-  .. sourcecode:: bash
+   .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-single-node
 
 
-3. Start the ZooKeeper and Kafka containers in detached mode (``-d``).  Run this command from the directory that contains the ``docker-compose.yml`` file. For example, use this path to launch a single node environment:
+#. Start the ZooKeeper and Kafka containers in detached mode (``-d``).  Run this command from the directory that contains the ``docker-compose.yml`` file. For example, use this path to launch a single node environment:
 
    .. sourcecode:: bash
 
@@ -127,15 +127,73 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
        kafka_1      | [2017-08-31 00:31:40,436] INFO [Partition state machine on Controller 1]: Started partition state machine with initial state -> Map() (kafka.controller.PartitionStateMachine)
        kafka_1      | [2017-08-31 00:31:40,540] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
 
-4. Test the broker by :ref:`following these instructions from Docker Client <test_drive>`.
+#. Test the broker by following these instructions.
 
-   The confluentinc/cp-docker-images GitHub repository has several other interesting examples of docker-compose.yml files that you can use.
+   Now you can take this basic deployment for a test drive.  You'll verify that the broker is functioning normally by creating a topic and producing data to it.  You'll use the client tools directly from another Docker container.
 
-1. You must explicitly shut down Docker Compose. For more information, see the [docker-compose down](https://docs.docker.com/compose/reference/down/) documentation. This will delete all of the containers that you created in this quickstart.
+   #. Create a topic named ``foo`` and keep things simple by just giving it one partition and one replica.  For a production environment you would have many more broker nodes, partitions, and replicas for scalability and resiliency. 
+
+      .. sourcecode:: bash
+
+        docker-compose exec kafka  \
+        kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+
+      You should see the following:
+
+      ::
+
+        Created topic "foo".  
+
+   #. Verify that the topic was created successfully:
+
+      .. sourcecode:: bash
+
+        docker-compose exec kafka  \
+          kafka-topics --describe --topic foo --zookeeper localhost:32181
+
+      You should see the following:
+
+      ::
+
+        Topic:foo   PartitionCount:1    ReplicationFactor:1 Configs:
+        Topic: foo  Partition: 0    Leader: 1001    Replicas: 1001  Isr: 1001
+
+   #. Publish some data to your new topic. This command uses the built-in Kafka Console Producer to produce 42 simple messages to the topic.
+
+      .. sourcecode:: bash
+
+        docker-compose exec kafka  \
+          bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
+
+      After running the command, you should see the following:
+
+      ::
+
+        Produced 42 messages.
+
+   #. Read back the message using the built-in Console consumer:
+
+      .. sourcecode:: bash
+
+        docker-compose exec kafka  \
+          kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --new-consumer --from-beginning --max-messages 42
+
+      If everything is working as expected, each of the original messages you produced should be written back out:
+
+      ::
+
+        1
+        ....
+        42
+        Processed a total of 42 messages
+
+#. You must explicitly shut down Docker Compose. For more information, see the [docker-compose down](https://docs.docker.com/compose/reference/down/) documentation. This will delete all of the containers that you created in this quickstart.
 
    .. sourcecode:: bash
 
        docker-compose down
+
+The confluentinc/cp-docker-images GitHub repository has several other interesting examples of docker-compose.yml files that you can use.
 
 .. _quickstart_engine:
 

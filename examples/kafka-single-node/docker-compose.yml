@@ -7,6 +7,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
+    extra_hosts:
+      - "moby:127.0.0.1"
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -17,3 +19,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    extra_hosts:
+      - "moby:127.0.0.1"
+
