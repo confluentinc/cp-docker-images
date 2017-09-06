@@ -1,4 +1,0 @@
-{% set streams_props = env_to_props('STREAMS_SECURITY_', '') -%}
-{% for name, value in streams_props.iteritems() -%}
-{{name}}={{value}}
-{% endfor -%}
