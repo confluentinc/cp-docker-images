@@ -13,7 +13,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka:
-    image: confluentinc/cp-kafka:3.3.0
+    image: confluentinc/cp-enterprise-kafka:3.3.0
     hostname: kafka
     ports:
       - '9092:9092'
