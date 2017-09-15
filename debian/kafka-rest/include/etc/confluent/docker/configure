@@ -19,7 +19,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure KAFKA_REST_ZOOKEEPER_CONNECT
+dub ensure-atleast-one KAFKA_REST_ZOOKEEPER_CONNECT KAFKA_REST_BOOTSTRAP_SERVERS
 dub ensure KAFKA_REST_HOST_NAME
 
 dub path /etc/"${COMPONENT}"/ writable

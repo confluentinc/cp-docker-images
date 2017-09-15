@@ -129,7 +129,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.3.0 \
+      --rm confluentinc/cp-kafka:3.5.0-SNAPSHOT \
       kafka-topics --create --topic adb-test --partitions 20 --replication-factor 3 --if-not-exists --zookeeper localhost:22181
 
   You should see the following output in your terminal window:
@@ -144,7 +144,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.3.0 \
+      --rm confluentinc/cp-kafka:3.5.0-SNAPSHOT \
       kafka-topics --describe --topic adb-test --zookeeper localhost:22181
 
   You should see the following output in your terminal window:
@@ -180,7 +180,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:3.3.0 \
+      confluentinc/cp-kafka:3.5.0-SNAPSHOT \
       bash -c 'kafka-producer-perf-test --topic adb-test --num-records 2000000 --record-size 1000 --throughput 100000 --producer-props bootstrap.servers=localhost:19092'
 
   This command will use the built-in Kafka Performance Producer to produce 2 GB of sample data to the topic. Upon running it, you should see the following:
@@ -207,7 +207,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-enterprise-kafka:3.3.0 \
+      confluentinc/cp-enterprise-kafka:3.5.0-SNAPSHOT \
       bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
 
   You should see the rebalancing start and should see the following:
@@ -248,7 +248,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-enterprise-kafka:3.3.0 \
+      confluentinc/cp-enterprise-kafka:3.5.0-SNAPSHOT \
       bash -c "confluent-rebalancer status --zookeeper localhost:22181"
 
   If you see the a message like ``7 partitions are being rebalanced``, wait for 15-20 seconds and rerun the above command until you see ``No rebalance is currently in progress``.  This means that the rebalance action has completed successfully.
@@ -260,7 +260,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-enterprise-kafka:3.3.0 \
+      confluentinc/cp-enterprise-kafka:3.5.0-SNAPSHOT \
       bash -c "confluent-rebalancer finish --zookeeper localhost:22181"
 
   You should see the following in the logs:
@@ -285,7 +285,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:3.3.0 \
+      --rm confluentinc/cp-kafka:3.5.0-SNAPSHOT \
       kafka-topics --describe --topic adb-test --zookeeper localhost:22181
 
   You should see that partitions are spread across all of the brokers (i.e you should see some replicas and leaders assigned to brokers 4, 5, or 6).
@@ -324,7 +324,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-enterprise-kafka:3.3.0 \
+      confluentinc/cp-enterprise-kafka:3.5.0-SNAPSHOT \
       bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
 
 10. Feel free to experiment with the `confluent-rebalance` command on your own now. When you are done, use the following commands to shutdown all the components.

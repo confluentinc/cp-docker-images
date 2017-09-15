@@ -19,8 +19,11 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$KAFKA_REST_ZOOKEEPER_CONNECT" "${KAFKA_REST_CUB_ZK_TIMEOUT:-40}"
+if [[ -n "${KAFKA_REST_ZOOKEEPER_CONNECT-}" ]]
+then
+    echo "===> Check if Zookeeper is healthy ..."
+    cub zk-ready "$KAFKA_REST_ZOOKEEPER_CONNECT" "${KAFKA_REST_CUB_ZK_TIMEOUT:-40}"
+fi
 
 echo "===> Check if Kafka is healthy ..."
 
@@ -32,8 +35,17 @@ then
         -b "${KAFKA_REST_BOOTSTRAP_SERVERS}" \
         --config /etc/"${COMPONENT}"/admin.properties
 else
-    cub kafka-ready \
-        "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
-        -z "$KAFKA_REST_ZOOKEEPER_CONNECT"
+    if [[ -n "${KAFKA_REST_ZOOKEEPER_CONNECT-}" ]]
+    then
+        cub kafka-ready \
+            "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+            -z "$KAFKA_REST_ZOOKEEPER_CONNECT"
+    elif [[ -n "${KAFKA_REST_BOOTSTRAP_SERVERS-}" ]]
+    then
+        cub kafka-ready \
+            "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+            -b "${KAFKA_REST_BOOTSTRAP_SERVERS}"
+    fi
 fi

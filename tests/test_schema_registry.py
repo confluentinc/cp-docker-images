@@ -45,13 +45,21 @@ class ConfigTest(unittest.TestCase):
         assert "PASS" in output
 
     def test_required_config_failure(self):
-        self.assertTrue("SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL is required." in self.cluster.service_logs("failing-config", stopped=True))
+        self.assertTrue("one of (SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL,SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS) is required." in self.cluster.service_logs("failing-config", stopped=True))
         self.assertTrue("SCHEMA_REGISTRY_HOST_NAME is required." in self.cluster.service_logs("failing-config-host-name", stopped=True))
 
     def test_default_config(self):
         self.is_schema_registry_healthy_for_service("default-config")
         props = self.cluster.run_command_on_service("default-config", "cat /etc/schema-registry/schema-registry.properties")
         expected = """kafkastore.connection.url=zookeeper:2181/defaultconfig
+                host.name=default-config
+            """
+        self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))
+
+    def test_default_config_kafka(self):
+        self.is_schema_registry_healthy_for_service("default-config-kafka")
+        props = self.cluster.run_command_on_service("default-config", "cat /etc/schema-registry/schema-registry.properties")
+        expected = """kafkastore.bootstrap.servers=PLAINTEXT://kafka:9092
                 host.name=default-config
             """
         self.assertEquals(props.translate(None, string.whitespace), expected.translate(None, string.whitespace))

@@ -19,12 +19,13 @@
 This script contains a set of utility functions required for running docker
 containers.
 
-The script has 4 commands:
+The script has 5 commands:
 
 1. template : Uses Jinja2 and environment variables to generate configuration files.
 2. ensure: ensures that a environment variable is set. Used to ensure required properties.
-3. wait: waits for a service to become available on a host:port.
-4. path: Checks a path for permissions (read, write, execute, exists)
+3. ensure-atleast-one: ensures that atleast one of environment variable is set. Used to ensure required properties.
+4. wait: waits for a service to become available on a host:port.
+5. path: Checks a path for permissions (read, write, execute, exists)
 
 These commands log any output to stderr and returns with exitcode=0 if successful, exitcode=1 otherwise.
 
@@ -208,6 +209,23 @@ def exit_if_absent(env_var):
     return True
 
 
+def exit_if_all_absent(env_vars):
+    """Check if any of environment variable is present.
+
+    Args:
+        env_vars: Names of environment variable.
+
+    Returns:
+        Returns True if any of env variable exists, False otherwise.
+
+    """
+    for env_var in env_vars:
+        if os.environ.get(env_var):
+            return True
+    print("one of (%s) is required." % (",".join(env_vars),), file=sys.stderr)
+    return True
+
+
 def fill_and_write_template(template_file, output_file, context=os.environ):
     """Uses Jinja2 template and environment variables to create configuration
        files.
@@ -252,6 +270,9 @@ if __name__ == '__main__':
     check_env = actions.add_parser('ensure', description='Check if env var exists.')
     check_env.add_argument('name', help='Name of env var.')
 
+    check_env = actions.add_parser('ensure-atleast-one', description='Check if env var exists.')
+    check_env.add_argument('names', nargs='*', help='Names of env var.')
+
     check_env = actions.add_parser('wait', description='Wait for network service to appear.')
     check_env.add_argument('host', help='Host.')
     check_env.add_argument('port', help='Port.', type=int)
@@ -277,6 +298,8 @@ if __name__ == '__main__':
         success = fill_and_write_template(args.input, args.output)
     elif args.action == "ensure":
         success = exit_if_absent(args.name)
+    elif args.action == "ensure-atleast-one":
+        success = exit_if_all_absent(args.names)
     elif args.action == "wait":
         success = wait_for_service(args.host, int(args.port), float(args.timeout))
     elif args.action == "http-ready":
