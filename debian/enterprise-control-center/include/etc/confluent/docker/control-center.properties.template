@@ -18,7 +18,8 @@ confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPL
     'CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS': 'confluent.controlcenter.internal.topics.partitions',
     'CONTROL_CENTER_INTERNAL_TOPICS_RETENTION_MS': 'confluent.controlcenter.internal.topics.retention.ms',
     'CONTROL_CENTER_INTERNAL_TOPICS_CHANGELOG_SEGEMENT_BYTES': 'confluent.controlcenter.internal.topics.changelog.segment.bytes',
-    'CONTROL_CENTER_LICENSE': 'confluent.controlcenter.license',
+    'CONTROL_CENTER_LICENSE': 'confluent.license',
+    'CONTROL_CENTER_CONFLUENT_LICENSE': 'confluent.license',
     'CONFLUENT_METRICS_TOPIC_PARTITION': 'confluent.metrics.topic.partitions',
     'CONFLUENT_METRICS_TOPIC_REPLICATION': 'confluent.metrics.topic.replication',
 } -%}
