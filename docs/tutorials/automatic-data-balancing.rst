@@ -5,7 +5,7 @@ Automatic Data Balancing
 
 In this section, we provide a tutorial for running Confluent Auto Data Balancing on Kafka which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,9 +41,9 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     cd cp-docker-images/examples/enterprise-kafka
 
 
-4. Start up the services.  The Docker Compose file has configuration for one Zookeeper and 6 Kafka brokers. These brokers are configured to be on 2 racks. We will first start one rack (with 3 brokers) and create a topic with sample data and run the ADB CLI tool to balance the cluster. After this step, we will walk you through a tutorial for adding another rack of brokers and running the ADB CLI tool to rebalance the data across the new added brokers.
+4. Start up the services.  The Docker Compose file has configuration for one ZooKeeper and 6 Kafka brokers. These brokers are configured to be on 2 racks. We will first start one rack (with 3 brokers) and create a topic with sample data and run the ADB CLI tool to balance the cluster. After this step, we will walk you through a tutorial for adding another rack of brokers and running the ADB CLI tool to rebalance the data across the new added brokers.
 
-  Lets start by starting the Zookeeper and first rack of brokers using the Docker Compose commands.
+  Lets start by starting the ZooKeeper and first rack of brokers using the Docker Compose commands.
 
     .. sourcecode:: bash
 
@@ -53,7 +53,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     .. sourcecode:: bash
 
-      Creating enterprisekafka_zookeeper_1
+      Creating enterprisekafka_ZooKeeper_1
       Creating enterprisekafka_kafka-6_1
       Creating enterprisekafka_kafka-4_1
       Creating enterprisekafka_kafka-5_1
@@ -65,13 +65,13 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     .. sourcecode:: bash
 
-      docker-compose start zookeeper kafka-1 kafka-2 kafka-3
+      docker-compose start ZooKeeper kafka-1 kafka-2 kafka-3
 
     You should see the following
 
     .. sourcecode:: bash
 
-      Starting zookeeper ... done
+      Starting ZooKeeper ... done
       Starting kafka-2 ... done
       Starting kafka-3 ... done
       Starting kafka-1 ... done
@@ -94,19 +94,19 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       enterprisekafka_kafka-4_1     /etc/confluent/docker/run   Exit 0
       enterprisekafka_kafka-5_1     /etc/confluent/docker/run   Exit 0
       enterprisekafka_kafka-6_1     /etc/confluent/docker/run   Exit 0
-      enterprisekafka_zookeeper_1   /etc/confluent/docker/run   Up
+      enterprisekafka_ZooKeeper_1   /etc/confluent/docker/run   Up
 
-    Now check the Zookeeper logs to verify that Zookeeper is healthy.
+    Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
 
     .. sourcecode:: bash
 
-      docker-compose logs zookeeper | grep -i binding
+      docker-compose logs ZooKeeper | grep -i binding
 
     You should see the following in your terminal window:
 
     .. sourcecode:: bash
 
-      zookeeper_1  | [2016-10-21 22:15:22,494] INFO binding to port 0.0.0.0/0.0.0.0:22181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+      ZooKeeper_1  | [2016-10-21 22:15:22,494] INFO binding to port 0.0.0.0/0.0.0.0:22181 (org.apache.ZooKeeper.server.NIOServerCnxnFactory)
 
     Next, check the Kafka logs for the destination cluster to verify that broker is healthy.
 
@@ -130,7 +130,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic adb-test --partitions 20 --replication-factor 3 --if-not-exists --zookeeper localhost:22181
+      kafka-topics --create --topic adb-test --partitions 20 --replication-factor 3 --if-not-exists --ZooKeeper localhost:22181
 
   You should see the following output in your terminal window:
 
@@ -145,7 +145,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic adb-test --zookeeper localhost:22181
+      kafka-topics --describe --topic adb-test --ZooKeeper localhost:22181
 
   You should see the following output in your terminal window:
 
@@ -208,7 +208,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       --net=host \
       --rm \
       confluentinc/cp-enterprise-kafka:3.2.1 \
-      bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
+      bash -c "confluent-rebalancer execute --ZooKeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
 
   You should see the rebalancing start and should see the following:
 
@@ -249,7 +249,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       --net=host \
       --rm \
       confluentinc/cp-enterprise-kafka:3.2.1 \
-      bash -c "confluent-rebalancer status --zookeeper localhost:22181"
+      bash -c "confluent-rebalancer status --ZooKeeper localhost:22181"
 
   If you see the a message like ``7 partitions are being rebalanced``, wait for 15-20 seconds and rerun the above command until you see ``No rebalance is currently in progress``.  This means that the rebalance action has completed successfully.
 
@@ -261,7 +261,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       --net=host \
       --rm \
       confluentinc/cp-enterprise-kafka:3.2.1 \
-      bash -c "confluent-rebalancer finish --zookeeper localhost:22181"
+      bash -c "confluent-rebalancer finish --ZooKeeper localhost:22181"
 
   You should see the following in the logs:
 
@@ -286,7 +286,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic adb-test --zookeeper localhost:22181
+      kafka-topics --describe --topic adb-test --ZooKeeper localhost:22181
 
   You should see that partitions are spread across all of the brokers (i.e you should see some replicas and leaders assigned to brokers 4, 5, or 6).
 
@@ -325,7 +325,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       --net=host \
       --rm \
       confluentinc/cp-enterprise-kafka:3.2.1 \
-      bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
+      bash -c "confluent-rebalancer execute --ZooKeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
 
 10. Feel free to experiment with the `confluent-rebalance` command on your own now. When you are done, use the following commands to shutdown all the components.
 

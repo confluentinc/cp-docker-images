@@ -5,7 +5,7 @@ Replicator Tutorial
 
 In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka Connect cluster because Replicator is built on Connect.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,13 +53,13 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     Creating enterprisereplicator_kafka-1-src-b_1
     Creating enterprisereplicator_kafka-1-src-a_1
     Creating enterprisereplicator_kafka-2-dest_1
-    Creating enterprisereplicator_zookeeper-src-b_1
-    Creating enterprisereplicator_zookeeper-src-a_1
+    Creating enterprisereplicator_ZooKeeper-src-b_1
+    Creating enterprisereplicator_ZooKeeper-src-a_1
     Creating enterprisereplicator_connect-host-1_1
     Creating enterprisereplicator_kafka-2-src-a_1
     Creating enterprisereplicator_kafka-2-src-b_1
     Creating enterprisereplicator_kafka-1-dest_1
-    Creating enterprisereplicator_zookeeper-dest_1
+    Creating enterprisereplicator_ZooKeeper-dest_1
     Creating enterprisereplicator_connect-host-2_1
 
   Start all the services
@@ -75,13 +75,13 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     Starting kafka-1-src-b ... done
     Starting kafka-1-src-a ... done
     Starting kafka-2-dest ... done
-    Starting zookeeper-src-b ... done
-    Starting zookeeper-src-a ... done
+    Starting ZooKeeper-src-b ... done
+    Starting ZooKeeper-src-a ... done
     Starting connect-host-1 ... done
     Starting kafka-2-src-a ... done
     Starting kafka-2-src-b ... done
     Starting kafka-1-dest ... done
-    Starting zookeeper-dest ... done
+    Starting ZooKeeper-dest ... done
     Starting connect-host-2 ... done
 
   Before we move on, let's make sure the services are up and running:
@@ -104,21 +104,21 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     enterprisereplicator_kafka-2-dest_1      /etc/confluent/docker/run   Up
     enterprisereplicator_kafka-2-src-a_1     /etc/confluent/docker/run   Up
     enterprisereplicator_kafka-2-src-b_1     /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-dest_1    /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-src-a_1   /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-src-b_1   /etc/confluent/docker/run   Up
+    enterprisereplicator_ZooKeeper-dest_1    /etc/confluent/docker/run   Up
+    enterprisereplicator_ZooKeeper-src-a_1   /etc/confluent/docker/run   Up
+    enterprisereplicator_ZooKeeper-src-b_1   /etc/confluent/docker/run   Up
 
-  Now check the Zookeeper logs for destination cluster to verify that Zookeeper is healthy.
+  Now check the ZooKeeper logs for destination cluster to verify that ZooKeeper is healthy.
 
   .. sourcecode:: bash
 
-    docker-compose logs zookeeper-dest | grep -i binding
+    docker-compose logs ZooKeeper-dest | grep -i binding
 
   You should see the following in your terminal window:
 
   .. sourcecode:: bash
 
-    zookeeper-dest_1   | [2016-10-20 17:31:40,784] INFO binding to port 0.0.0.0/0.0.0.0:42181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+    ZooKeeper-dest_1   | [2016-10-20 17:31:40,784] INFO binding to port 0.0.0.0/0.0.0.0:42181 (org.apache.ZooKeeper.server.NIOServerCnxnFactory)
 
   Next, check the Kafka logs for the destination cluster to verify that it is healthy:
 
@@ -138,8 +138,8 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
   .. sourcecode:: bash
 
-    docker-compose logs zookeeper-src-a | grep -i binding
-    docker-compose logs zookeeper-src-b | grep -i binding
+    docker-compose logs ZooKeeper-src-a | grep -i binding
+    docker-compose logs ZooKeeper-src-b | grep -i binding
     docker-compose logs kafka-1-src-a | grep -i started
     docker-compose logs kafka-1-src-b | grep -i started
 
@@ -167,7 +167,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic foo --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:22181
+      kafka-topics --create --topic foo --partitions 3 --replication-factor 2 --if-not-exists --ZooKeeper localhost:22181
 
   You should see the following output in your terminal window:
 
@@ -182,7 +182,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic foo --zookeeper localhost:22181
+      kafka-topics --describe --topic foo --ZooKeeper localhost:22181
 
   You should see the following output in your terminal window:
 
@@ -233,9 +233,9 @@ Once you've done that, you can follow the steps below to start up the Confluent 
               "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
               "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
               "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "src.zookeeper.connect": "localhost:22181",
+              "src.ZooKeeper.connect": "localhost:22181",
               "src.kafka.bootstrap.servers": "localhost:9092",
-              "dest.zookeeper.connect": "localhost:42181",
+              "dest.ZooKeeper.connect": "localhost:42181",
               "topic.whitelist": "foo",
               "topic.rename.format": "${topic}.replica"}}'  \
          http://localhost:28082/connectors
@@ -244,7 +244,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
   .. sourcecode:: bash
 
-    {"name":"replicator-src-a-foo","config":{"connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector","key.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","value.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","src.zookeeper.connect":"localhost:22181","src.kafka.bootstrap.servers":"localhost:9092","dest.zookeeper.connect":"localhost:42181","topic.whitelist":"foo","topic.rename.format":"${topic}.replica","name":"replicator-src-a-foo"},"tasks":[]}
+    {"name":"replicator-src-a-foo","config":{"connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector","key.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","value.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","src.ZooKeeper.connect":"localhost:22181","src.kafka.bootstrap.servers":"localhost:9092","dest.ZooKeeper.connect":"localhost:42181","topic.whitelist":"foo","topic.rename.format":"${topic}.replica","name":"replicator-src-a-foo"},"tasks":[]}
 
   Before moving on, let's check the status of the connector using curl on the ``docker exec`` command prompt.
 
@@ -292,7 +292,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic foo.replica --zookeeper localhost:42181
+      kafka-topics --describe --topic foo.replica --ZooKeeper localhost:42181
 
   You should see that the topic ``foo.replica`` is created with 3 partitions and 2 replicas, same as the original topic ``foo``.
 
@@ -312,14 +312,14 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic bar --zookeeper localhost:32181
+      kafka-topics --describe --topic bar --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
@@ -349,9 +349,9 @@ Once you've done that, you can follow the steps below to start up the Confluent 
               "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
               "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
               "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "src.zookeeper.connect": "localhost:32181",
+              "src.ZooKeeper.connect": "localhost:32181",
               "src.kafka.bootstrap.servers": "localhost:9082",
-              "dest.zookeeper.connect": "localhost:42181",
+              "dest.ZooKeeper.connect": "localhost:42181",
               "topic.whitelist": "bar",
               "topic.rename.format": "${topic}.replica"}}'  \
          http://localhost:28082/connectors
@@ -386,7 +386,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
+      kafka-topics --describe --topic bar.replica --ZooKeeper localhost:42181
 
 10. Feel free to experiment with the replicator connector on your own now. When you are done, use the following commands to shutdown all the components.
 

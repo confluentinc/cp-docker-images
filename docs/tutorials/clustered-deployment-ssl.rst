@@ -3,11 +3,11 @@
 Clustered Deployment Using SSL
 -------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and ZooKeeper ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+    It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,46 +67,46 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
 
 
-4. Start Up a 3-node Zookeeper Ensemble by running the three commands below.
+4. Start Up a 3-node ZooKeeper Ensemble by running the three commands below.
 
   .. sourcecode:: bash
 
      docker run -d \
          --net=host \
          --name=zk-1 \
-         -e ZOOKEEPER_SERVER_ID=1 \
-         -e ZOOKEEPER_CLIENT_PORT=22181 \
-         -e ZOOKEEPER_TICK_TIME=2000 \
-         -e ZOOKEEPER_INIT_LIMIT=5 \
-         -e ZOOKEEPER_SYNC_LIMIT=2 \
-         -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:3.2.1
+         -e ZooKeeper_SERVER_ID=1 \
+         -e ZooKeeper_CLIENT_PORT=22181 \
+         -e ZooKeeper_TICK_TIME=2000 \
+         -e ZooKeeper_INIT_LIMIT=5 \
+         -e ZooKeeper_SYNC_LIMIT=2 \
+         -e ZooKeeper_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
+         confluentinc/cp-ZooKeeper:3.2.1
 
   .. sourcecode:: bash
 
      docker run -d \
          --net=host \
          --name=zk-2 \
-         -e ZOOKEEPER_SERVER_ID=2 \
-         -e ZOOKEEPER_CLIENT_PORT=32181 \
-         -e ZOOKEEPER_TICK_TIME=2000 \
-         -e ZOOKEEPER_INIT_LIMIT=5 \
-         -e ZOOKEEPER_SYNC_LIMIT=2 \
-         -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:3.2.1
+         -e ZooKeeper_SERVER_ID=2 \
+         -e ZooKeeper_CLIENT_PORT=32181 \
+         -e ZooKeeper_TICK_TIME=2000 \
+         -e ZooKeeper_INIT_LIMIT=5 \
+         -e ZooKeeper_SYNC_LIMIT=2 \
+         -e ZooKeeper_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
+         confluentinc/cp-ZooKeeper:3.2.1
 
   .. sourcecode:: bash
 
      docker run -d \
          --net=host \
          --name=zk-3 \
-         -e ZOOKEEPER_SERVER_ID=3 \
-         -e ZOOKEEPER_CLIENT_PORT=42181 \
-         -e ZOOKEEPER_TICK_TIME=2000 \
-         -e ZOOKEEPER_INIT_LIMIT=5 \
-         -e ZOOKEEPER_SYNC_LIMIT=2 \
-         -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:3.2.1
+         -e ZooKeeper_SERVER_ID=3 \
+         -e ZooKeeper_CLIENT_PORT=42181 \
+         -e ZooKeeper_TICK_TIME=2000 \
+         -e ZooKeeper_INIT_LIMIT=5 \
+         -e ZooKeeper_SYNC_LIMIT=2 \
+         -e ZooKeeper_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
+         confluentinc/cp-ZooKeeper:3.2.1
 
   Check the logs to confirm that the ZooKeeper servers have booted up successfully:
 
@@ -118,19 +118,19 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-     [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
-     [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.zookeeper.server.quorum.Learner)
-     [2016-07-24 07:17:50,983] INFO Getting a diff from the leader 0x0 (org.apache.zookeeper.server.quorum.Learner)
-     [2016-07-24 07:17:50,986] INFO Snapshotting: 0x0 to /var/lib/zookeeper/data/version-2/snapshot.0 (org.apache.zookeeper.server.persistence.FileTxnSnapLog)
-     [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.zookeeper.server.quorum.QuorumCnxManager)
-     [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.zookeeper.server.quorum.FastLeaderElection)
+     [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/ZooKeeper/log/version-2 snapdir /var/lib/ZooKeeper/data/version-2 (org.apache.ZooKeeper.server.ZooKeeperServer)
+     [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.ZooKeeper.server.quorum.Learner)
+     [2016-07-24 07:17:50,983] INFO Getting a diff from the leader 0x0 (org.apache.ZooKeeper.server.quorum.Learner)
+     [2016-07-24 07:17:50,986] INFO Snapshotting: 0x0 to /var/lib/ZooKeeper/data/version-2/snapshot.0 (org.apache.ZooKeeper.server.persistence.FileTxnSnapLog)
+     [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.ZooKeeper.server.quorum.QuorumCnxManager)
+     [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.ZooKeeper.server.quorum.FastLeaderElection)
 
-  You can repeat the command for the two other Zookeeper nodes.  Next, you should verify that ZK ensemble is ready:
+  You can repeat the command for the two other ZooKeeper nodes.  Next, you should verify that ZK ensemble is ready:
 
   .. sourcecode:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:3.2.1 bash -c "echo stat | nc localhost $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-ZooKeeper:3.2.1 bash -c "echo stat | nc localhost $i | grep Mode"
      done
 
   You should see one ``leader`` and two ``follower`` instances.
@@ -141,14 +141,14 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-4. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
+4. Now that ZooKeeper is up and running, we can fire up a three node Kafka cluster.
 
   .. sourcecode:: bash
 
     docker run -d \
        --net=host \
        --name=kafka-ssl-1 \
-       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ZooKeeper_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
        -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:29092 \
        -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
        -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
@@ -164,7 +164,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run -d \
        --net=host \
        --name=kafka-ssl-2 \
-       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ZooKeeper_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
        -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:39092 \
        -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
        -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
@@ -180,7 +180,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run -d \
        --net=host \
        --name=kafka-ssl-3 \
-       -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
+       -e KAFKA_ZooKeeper_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
        -e KAFKA_ADVERTISED_LISTENERS=SSL://localhost:49092 \
        -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
        -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
@@ -227,7 +227,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --net=host \
         --rm \
         confluentinc/cp-kafka:3.2.1 \
-        kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
+        kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --ZooKeeper localhost:32181
 
   You should see the following output:
 
@@ -243,7 +243,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
           --net=host \
           --rm \
           confluentinc/cp-kafka:3.2.1 \
-          kafka-topics --describe --topic bar --zookeeper localhost:32181
+          kafka-topics --describe --topic bar --ZooKeeper localhost:32181
 
   You should see the following message in your terminal window:
 
@@ -312,7 +312,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   Follow section 3 on generating SSL credentials in the “Docker Client” section above to create the SSL credentials.
 
-2. Start Zookeeper and Kafka using Docker Compose ``up`` command.
+2. Start ZooKeeper and Kafka using Docker Compose ``up`` command.
 
   .. sourcecode:: bash
 
@@ -335,29 +335,29 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       kafkaclusterssl_kafka-ssl-1_1   /etc/confluent/docker/run   Up
       kafkaclusterssl_kafka-ssl-2_1   /etc/confluent/docker/run   Up
       kafkaclusterssl_kafka-ssl-3_1   /etc/confluent/docker/run   Up
-      kafkaclusterssl_zookeeper-1_1   /etc/confluent/docker/run   Up
-      kafkaclusterssl_zookeeper-2_1   /etc/confluent/docker/run   Up
-      kafkaclusterssl_zookeeper-3_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_ZooKeeper-1_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_ZooKeeper-2_1   /etc/confluent/docker/run   Up
+      kafkaclusterssl_ZooKeeper-3_1   /etc/confluent/docker/run   Up
 
-  Check the zookeeper logs to verify that Zookeeper is healthy. For example, for service zookeeper-1:
+  Check the ZooKeeper logs to verify that ZooKeeper is healthy. For example, for service ZooKeeper-1:
 
   .. sourcecode:: bash
 
-      docker-compose logs zookeeper-1
+      docker-compose logs ZooKeeper-1
 
   You should see messages like the following:
 
   .. sourcecode:: bash
 
-      zookeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
-      zookeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.zookeeper.server.quorum.Learner)
+      ZooKeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/ZooKeeper/log/version-2 snapdir /var/lib/ZooKeeper/data/version-2 (org.apache.ZooKeeper.server.ZooKeeperServer)
+      ZooKeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.ZooKeeper.server.quorum.Learner)
 
   Verify that ZK ensemble is ready
 
   .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.2.1 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-ZooKeeper:3.2.1 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
   You should see one ``leader`` and two ``follower`` instances:
@@ -397,7 +397,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 3. Follow section 5 in the "Docker Client" section above to test that your brokers are functioning as expected.
 
-4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
+4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the ZooKeeper cluster.
 
   .. sourcecode:: bash
 

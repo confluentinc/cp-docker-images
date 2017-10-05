@@ -3,11 +3,11 @@
 Clustered Deployment Using SASL and SSL
 ----------------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and Zookeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and ZooKeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and Zookeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+    It is worth noting that we will be configuring Kafka and ZooKeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,10 +94,10 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-    for principal in zookeeper1 zookeeper2 zookeeper3
+    for principal in ZooKeeper1 ZooKeeper2 ZooKeeper3
     do
-      docker exec -it kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "addprinc -randkey ZooKeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ZooKeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
   .. sourcecode:: bash
@@ -126,54 +126,54 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-6. Run a 3-node Zookeeper ensemble with SASL enabled.
+6. Run a 3-node ZooKeeper ensemble with SASL enabled.
 
    .. sourcecode:: bash
 
        docker run -d \
            --net=host \
            --name=zk-sasl-1 \
-           -e ZOOKEEPER_SERVER_ID=1 \
-           -e ZOOKEEPER_CLIENT_PORT=22181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
-           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_1_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
+           -e ZooKeeper_SERVER_ID=1 \
+           -e ZooKeeper_CLIENT_PORT=22181 \
+           -e ZooKeeper_TICK_TIME=2000 \
+           -e ZooKeeper_INIT_LIMIT=5 \
+           -e ZooKeeper_SYNC_LIMIT=2 \
+           -e ZooKeeper_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
+           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/ZooKeeper_1_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -DZooKeeper.authProvider.1=org.apache.ZooKeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:3.2.1
+           confluentinc/cp-ZooKeeper:3.2.1
 
   .. sourcecode:: bash
 
        docker run -d \
            --net=host \
            --name=zk-sasl-2 \
-           -e ZOOKEEPER_SERVER_ID=2 \
-           -e ZOOKEEPER_CLIENT_PORT=32181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
-           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_2_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
+           -e ZooKeeper_SERVER_ID=2 \
+           -e ZooKeeper_CLIENT_PORT=32181 \
+           -e ZooKeeper_TICK_TIME=2000 \
+           -e ZooKeeper_INIT_LIMIT=5 \
+           -e ZooKeeper_SYNC_LIMIT=2 \
+           -e ZooKeeper_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
+           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/ZooKeeper_2_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -DZooKeeper.authProvider.1=org.apache.ZooKeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:3.2.1
+           confluentinc/cp-ZooKeeper:3.2.1
 
   .. sourcecode:: bash
 
        docker run -d \
            --net=host \
            --name=zk-sasl-3 \
-           -e ZOOKEEPER_SERVER_ID=3 \
-           -e ZOOKEEPER_CLIENT_PORT=42181 \
-           -e ZOOKEEPER_TICK_TIME=2000 \
-           -e ZOOKEEPER_INIT_LIMIT=5 \
-           -e ZOOKEEPER_SYNC_LIMIT=2 \
-           -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
-           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_3_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
+           -e ZooKeeper_SERVER_ID=3 \
+           -e ZooKeeper_CLIENT_PORT=42181 \
+           -e ZooKeeper_TICK_TIME=2000 \
+           -e ZooKeeper_INIT_LIMIT=5 \
+           -e ZooKeeper_SYNC_LIMIT=2 \
+           -e ZooKeeper_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
+           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/ZooKeeper_3_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -DZooKeeper.authProvider.1=org.apache.ZooKeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:3.2.1
+           confluentinc/cp-ZooKeeper:3.2.1
 
-  Check the logs to see the Zookeeper server has booted up successfully
+  Check the logs to see the ZooKeeper server has booted up successfully
 
   .. sourcecode:: bash
 
@@ -183,19 +183,19 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. sourcecode:: bash
 
-     [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
-     [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.zookeeper.server.quorum.Learner)
-     [2016-07-24 07:17:50,983] INFO Getting a diff from the leader 0x0 (org.apache.zookeeper.server.quorum.Learner)
-     [2016-07-24 07:17:50,986] INFO Snapshotting: 0x0 to /var/lib/zookeeper/data/version-2/snapshot.0 (org.apache.zookeeper.server.persistence.FileTxnSnapLog)
-     [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.zookeeper.server.quorum.QuorumCnxManager)
-     [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.zookeeper.server.quorum.FastLeaderElection)
+     [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/ZooKeeper/log/version-2 snapdir /var/lib/ZooKeeper/data/version-2 (org.apache.ZooKeeper.server.ZooKeeperServer)
+     [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.ZooKeeper.server.quorum.Learner)
+     [2016-07-24 07:17:50,983] INFO Getting a diff from the leader 0x0 (org.apache.ZooKeeper.server.quorum.Learner)
+     [2016-07-24 07:17:50,986] INFO Snapshotting: 0x0 to /var/lib/ZooKeeper/data/version-2/snapshot.0 (org.apache.ZooKeeper.server.persistence.FileTxnSnapLog)
+     [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.ZooKeeper.server.quorum.QuorumCnxManager)
+     [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.ZooKeeper.server.quorum.FastLeaderElection)
 
-  You can repeat the command for the two other Zookeeper nodes.  Next, you should verify that ZK ensemble is ready:
+  You can repeat the command for the two other ZooKeeper nodes.  Next, you should verify that ZK ensemble is ready:
 
   .. sourcecode:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:3.2.1 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-ZooKeeper:3.2.1 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
      done
 
   You should see one ``leader`` and two ``follower`` instances.
@@ -206,14 +206,14 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-7. Now that Zookeeper is up and running, we can fire up a three node Kafka cluster.
+7. Now that ZooKeeper is up and running, we can fire up a three node Kafka cluster.
 
  .. sourcecode:: bash
 
   docker run -d \
      --net=host \
      --name=kafka-sasl-1 \
-     -e KAFKA_ZOOKEEPER_CONNECT="quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181" \
+     -e KAFKA_ZooKeeper_CONNECT="quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181" \
      -e KAFKA_ADVERTISED_LISTENERS=SASL_SSL://quickstart.confluent.io:29094 \
      -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker1.keystore.jks \
      -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker1_keystore_creds \
@@ -233,7 +233,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   docker run -d \
      --net=host \
      --name=kafka-sasl-2 \
-     -e KAFKA_ZOOKEEPER_CONNECT=quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181 \
+     -e KAFKA_ZooKeeper_CONNECT=quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181 \
      -e KAFKA_ADVERTISED_LISTENERS=SASL_SSL://quickstart.confluent.io:39094 \
      -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker2.keystore.jks \
      -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker2_keystore_creds \
@@ -253,7 +253,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   docker run -d \
      --net=host \
      --name=kafka-sasl-3 \
-     -e KAFKA_ZOOKEEPER_CONNECT=quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181 \
+     -e KAFKA_ZooKeeper_CONNECT=quickstart.confluent.io:22181,quickstart.confluent.io:32181,quickstart.confluent.io:42181 \
      -e KAFKA_ADVERTISED_LISTENERS=SASL_SSL://quickstart.confluent.io:49094 \
      -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
      -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
@@ -307,7 +307,7 @@ Check the logs to see the broker has booted up successfully:
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
         confluentinc/cp-kafka:3.2.1 \
-        kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper quickstart.confluent.io:32181
+        kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --ZooKeeper quickstart.confluent.io:32181
 
   You should see the following output:
 
@@ -325,7 +325,7 @@ Check the logs to see the broker has booted up successfully:
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
           confluentinc/cp-kafka:3.2.1 \
-          kafka-topics --describe --topic bar --zookeeper quickstart.confluent.io:32181
+          kafka-topics --describe --topic bar --ZooKeeper quickstart.confluent.io:32181
 
   You should see the following message in your terminal window:
 
@@ -417,10 +417,10 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
   .. sourcecode:: bash
 
-    for principal in zookeeper1 zookeeper2 zookeeper3
+    for principal in ZooKeeper1 ZooKeeper2 ZooKeeper3
     do
-      docker-compose exec kerberos kadmin.local -q "addprinc -randkey zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
-      docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker-compose exec kerberos kadmin.local -q "addprinc -randkey ZooKeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
+      docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ZooKeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
   .. sourcecode:: bash
@@ -450,7 +450,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     done
 
 
-2. Start Zookeeper and Kafka
+2. Start ZooKeeper and Kafka
 
   .. sourcecode:: bash
 
@@ -473,29 +473,29 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     kafkaclustersasl_kafka-sasl-2_1       /etc/confluent/docker/run   Up
     kafkaclustersasl_kafka-sasl-3_1       /etc/confluent/docker/run   Up
     kafkaclustersasl_kerberos_1           /config.sh                  Up
-    kafkaclustersasl_zookeeper-sasl-1_1   /etc/confluent/docker/run   Up
-    kafkaclustersasl_zookeeper-sasl-2_1   /etc/confluent/docker/run   Up
-    kafkaclustersasl_zookeeper-sasl-3_1   /etc/confluent/docker/run   Up
+    kafkaclustersasl_ZooKeeper-sasl-1_1   /etc/confluent/docker/run   Up
+    kafkaclustersasl_ZooKeeper-sasl-2_1   /etc/confluent/docker/run   Up
+    kafkaclustersasl_ZooKeeper-sasl-3_1   /etc/confluent/docker/run   Up
 
-  Check the zookeeper logs to verify that Zookeeper is healthy. For example, for service zookeeper-1:
+  Check the ZooKeeper logs to verify that ZooKeeper is healthy. For example, for service ZooKeeper-1:
 
   .. sourcecode:: bash
 
-      docker-compose logs zookeeper-sasl-1
+      docker-compose logs ZooKeeper-sasl-1
 
   You should see messages like the following:
 
   .. sourcecode:: bash
 
-      zookeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
-      zookeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.zookeeper.server.quorum.Learner)
+      ZooKeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/ZooKeeper/log/version-2 snapdir /var/lib/ZooKeeper/data/version-2 (org.apache.ZooKeeper.server.ZooKeeperServer)
+      ZooKeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.ZooKeeper.server.quorum.Learner)
 
   Verify that ZK ensemble is ready
 
   .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:3.2.1 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-ZooKeeper:3.2.1 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
        done
 
   You should see one ``leader`` and two ``follower`` instances:
@@ -535,7 +535,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 3. Follow section 8 in the "Docker Client" section above to test that your brokers are functioning as expected.
 
-4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the Zookeeper cluster.
+4. To stop the cluster, first stop Kafka nodes one-by-one and then stop the ZooKeeper cluster.
 
   .. sourcecode:: bash
 

@@ -69,7 +69,7 @@ Important Notes/Caveats
 
 2. Persistent Data (Mounted Volumes)
 
-	When deploying the Kafka and Zookeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
 
 3. Bridge Networking vs. Host Networking
 

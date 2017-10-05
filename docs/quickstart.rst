@@ -5,7 +5,7 @@ Quickstart
 
 This quickstart provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.  
 
-To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
+To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-ZooKeeper to be stopped and restarted without losing their stateful data.  
 
   .. Note::
 
@@ -80,8 +80,8 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
         d42bb38e2f0e: Already exists
         Digest: sha256:61373cf6eca980887164d6fede2552015db31a809c99d6c3d5dfc70867b6cd2d
         Status: Downloaded newer image for confluentinc/cp-kafka:latest
-        Creating kafkasinglenode_zookeeper_1 ... 
-        Creating kafkasinglenode_zookeeper_1 ... done
+        Creating kafkasinglenode_ZooKeeper_1 ... 
+        Creating kafkasinglenode_ZooKeeper_1 ... done
         Creating kafkasinglenode_kafka_1 ... 
         Creating kafkasinglenode_kafka_1 ... done
 
@@ -98,7 +98,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
                   Name                        Command            State   Ports
        -----------------------------------------------------------------------
        kafkasinglenode_kafka_1       /etc/confluent/docker/run   Up
-       kafkasinglenode_zookeeper_1   /etc/confluent/docker/run   Up
+       kafkasinglenode_ZooKeeper_1   /etc/confluent/docker/run   Up
 
    If the state is not `Up`, rerun the ``docker-compose up -d`` command.
 
@@ -106,13 +106,13 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
    .. sourcecode:: bash
 
-       docker-compose logs zookeeper | grep -i binding
+       docker-compose logs ZooKeeper | grep -i binding
 
    You should see the following:
 
    .. sourcecode:: bash
 
-       zookeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+       ZooKeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.ZooKeeper.server.NIOServerCnxnFactory)
 
    Next, check the Kafka logs to verify that broker is healthy.
 
@@ -138,7 +138,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-        kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+        kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
       You should see the following:
 
@@ -151,7 +151,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          kafka-topics --describe --topic foo --zookeeper localhost:32181
+          kafka-topics --describe --topic foo --ZooKeeper localhost:32181
 
       You should see the following:
 
@@ -229,17 +229,17 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
 
     docker run -d \
         --net=host \
-        --name=zookeeper \
-        -e ZOOKEEPER_CLIENT_PORT=32181 \
-        confluentinc/cp-zookeeper:3.2.1
+        --name=ZooKeeper \
+        -e ZooKeeper_CLIENT_PORT=32181 \
+        confluentinc/cp-ZooKeeper:3.2.1
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.2.1`` container and name it ``zookeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-ZooKeeper:3.2.1`` container and name it ``ZooKeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZooKeeper_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
 
   .. sourcecode:: bash
 
-    docker logs zookeeper
+    docker logs ZooKeeper
 
   With this command, you're referencing the container name that you want to see the logs for.  To list all containers (running or failed), you can always run ``docker ps -a``.  This is especially useful when running in detached mode.
 
@@ -247,9 +247,9 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
 
   ::
 
-    [2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+    [2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.ZooKeeper.server.NIOServerCnxnFactory)
 
-  Note that the message shows the ZooKeeper service listening at the port you passed in as ``ZOOKEEPER_CLIENT_PORT`` above.
+  Note that the message shows the ZooKeeper service listening at the port you passed in as ``ZooKeeper_CLIENT_PORT`` above.
 
   If the service is not running, the log messages should provide details to help you identify the problem.   Some common errors include:
 
@@ -266,7 +266,7 @@ Start Kafka.
       docker run -d \
           --net=host \
           --name=kafka \
-          -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+          -e KAFKA_ZooKeeper_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           confluentinc/cp-kafka:3.2.1
 
@@ -305,7 +305,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   You should see the following:
 
@@ -321,7 +321,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --describe --topic foo --zookeeper localhost:32181
+      kafka-topics --describe --topic foo --ZooKeeper localhost:32181
 
   You should see the following:
 
@@ -428,7 +428,7 @@ This section describes how to deploy the REST Proxy container and then consume d
     docker run -d \
       --net=host \
       --name=kafka-rest \
-      -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
+      -e KAFKA_REST_ZooKeeper_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       -e KAFKA_REST_HOST_NAME=localhost \
@@ -497,7 +497,7 @@ This portion of the quickstart provides an overview of how to use Confluent Cont
       --ulimit nofile=16384:16384 \
       -p 9021:9021 \
       -v /tmp/control-center/data:/var/lib/confluent-control-center \
-      -e CONTROL_CENTER_ZOOKEEPER_CONNECT=localhost:32181 \
+      -e CONTROL_CENTER_ZooKeeper_CONNECT=localhost:32181 \
       -e CONTROL_CENTER_BOOTSTRAP_SERVERS=localhost:29092 \
       -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
       -e CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS=1 \
@@ -538,7 +538,7 @@ This portion of the quickstart provides an overview of how to use Confluent Cont
     docker run \
       --net=host \
       --rm confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic c3-test --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic c3-test --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   Now use the console producer with the monitoring interceptor enabled to send data
 
@@ -676,7 +676,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
@@ -684,7 +684,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-config --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
@@ -692,7 +692,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-status --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   .. note::
 
@@ -706,7 +706,7 @@ Next, create a topic for storing data that you'll be sending to Kafka.
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-data --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
 
 Now you should verify that the topics are created before moving on:
@@ -717,7 +717,7 @@ Now you should verify that the topics are created before moving on:
        --net=host \
        --rm \
        confluentinc/cp-kafka:3.2.1 \
-       kafka-topics --describe --zookeeper localhost:32181
+       kafka-topics --describe --ZooKeeper localhost:32181
 
 For this example, you'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``.
 

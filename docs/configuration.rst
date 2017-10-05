@@ -14,40 +14,40 @@ Some configuration variables are required when starting up the Docker images.  W
 ZooKeeper
 ---------
 
-The ZooKeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
+The ZooKeeper image uses variables prefixed with ``ZooKeeper_`` with the variables expressed exactly as they would appear in the ``ZooKeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
 
 	.. sourcecode:: bash
 
 		docker run -d \
 		--net=host \
-		--name=zookeeper \
-		-e ZOOKEEPER_CLIENT_PORT=32181 \
-		-e ZOOKEEPER_TICK_TIME=2000 \
-		-e ZOOKEEPER_SYNC_LIMIT=2
-		confluentinc/cp-zookeeper:3.2.1
+		--name=ZooKeeper \
+		-e ZooKeeper_CLIENT_PORT=32181 \
+		-e ZooKeeper_TICK_TIME=2000 \
+		-e ZooKeeper_SYNC_LIMIT=2
+		confluentinc/cp-ZooKeeper:3.2.1
 
 Required Settings
 """""""""""""""""
 
-``ZOOKEEPER_CLIENT_PORT``
+``ZooKeeper_CLIENT_PORT``
 
   This field is always required.  Tells ZooKeeper where to listen for connections by clients such as Kafka.
 
-``ZOOKEEPER_SERVER_ID``
+``ZooKeeper_SERVER_ID``
 
   Only required when running in clustered mode.  Sets the server ID in the ``myid`` file, which consists of a single line containing only the text of that machine's id. So ``myid`` of server 1 would contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
 
 Confluent Kafka (cp-kafka)
 --------------------------
 
-The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
+The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``ZooKeeper.connect`` you'd run the following command:
 
   .. sourcecode:: bash
 
       docker run -d \
           --net=host \
           --name=kafka \
-          -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+          -e KAFKA_ZooKeeper_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
           confluentinc/cp-kafka:3.2.1
@@ -59,7 +59,7 @@ The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) s
 Required Settings
 """""""""""""""""
 
-``KAFKA_ZOOKEEPER_CONNECT``
+``KAFKA_ZooKeeper_CONNECT``
 
   Tells Kafka how to get in touch with ZooKeeper.
 
@@ -70,14 +70,14 @@ Required Settings
 Confluent Enterprise Kafka (cp-enterprise-kafka)
 ------------------------------------------------
 
-The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
+The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``ZooKeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
 
   .. sourcecode:: bash
 
       docker run -d \
           --net=host \
           --name=kafka \
-          -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+          -e KAFKA_ZooKeeper_CONNECT=localhost:32181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
           -e KAFKA_BROKER_ID=2 \
           -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
@@ -92,7 +92,7 @@ The Enterprise Kafka image includes the packages for Confluent Auto Data Balanci
 Required Settings
 """""""""""""""""
 
-``KAFKA_ZOOKEEPER_CONNECT``
+``KAFKA_ZooKeeper_CONNECT``
 
   Tells Kafka how to get in touch with ZooKeeper.
 
@@ -126,20 +126,20 @@ Required Settings
 
 ``SCHEMA_REGISTRY_HOST_NAME``
 
-  The host name advertised in Zookeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
+  The host name advertised in ZooKeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
 
 
 Kafka REST Proxy
 ----------------
 
-For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with an underscore (_) separating each word instead of periods. As an example, to set the ``listeners``, ``schema.registry.url`` and ``zookeeper.connect`` you'd run the following command:
+For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with an underscore (_) separating each word instead of periods. As an example, to set the ``listeners``, ``schema.registry.url`` and ``ZooKeeper.connect`` you'd run the following command:
 
   .. sourcecode:: bash
 
     docker run -d \
       --net=host \
       --name=kafka-rest \
-      -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
+      -e KAFKA_REST_ZooKeeper_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
       confluentinc/cp-kafka-rest:3.2.1
@@ -152,7 +152,7 @@ The following settings must be passed to run the REST Proxy Docker image.
 
   The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  For more details, please refer to the Confluent Platform documentation on `REST proxy deployment <http://docs.confluent.io/current/kafka-rest/docs/deployment.html#deployment>`_.
 
-``KAFKA_REST_ZOOKEEPER_CONNECT``
+``KAFKA_REST_ZooKeeper_CONNECT``
 
   Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
 
@@ -243,7 +243,7 @@ The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER
     --net=host \
     --name=control-center \
     --ulimit nofile=16384:16384 \
-    -e CONTROL_CENTER_ZOOKEEPER_CONNECT=localhost:32181 \
+    -e CONTROL_CENTER_ZooKeeper_CONNECT=localhost:32181 \
     -e CONTROL_CENTER_BOOTSTRAP_SERVERS=localhost:29092 \
     -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
     -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
@@ -261,7 +261,7 @@ Required Settings
 """""""""""""""""
 The following settings must be passed to run the Confluent Control Center image.
 
-``CONTROL_CENTER_ZOOKEEPER_CONNECT``
+``CONTROL_CENTER_ZooKeeper_CONNECT``
 
   Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
 
@@ -317,9 +317,9 @@ The following example shows how to create a Confluent Kafka Replicator connector
               "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
               "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
               "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "src.zookeeper.connect": "zookeeper-src:2181",
+              "src.ZooKeeper.connect": "ZooKeeper-src:2181",
               "src.kafka.bootstrap.servers": "kafka-src:9082",
-              "dest.zookeeper.connect": "zookeeper-dest:2181",
+              "dest.ZooKeeper.connect": "ZooKeeper-dest:2181",
               "topic.whitelist": "confluent",
               "topic.rename.format": "${topic}.replica"}}'  \
                 http://localhost:28082/connectors

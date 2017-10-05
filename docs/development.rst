@@ -130,14 +130,14 @@ You'll need to first install virtualenv: ``pip install virtualenv``
   .. sourcecode:: bash
 
       cd cp-docker-images
-      make test-zookeeper
+      make test-ZooKeeper
       make test-kafka
 
-To run a single test, you can do so with Python.  In the following example, we run only the ``ConfigTest`` found in ``test_zookeeper.py``:
+To run a single test, you can do so with Python.  In the following example, we run only the ``ConfigTest`` found in ``test_ZooKeeper.py``:
 
   .. sourcecode:: bash
 
-    venv/bin/py.test tests/test_zookeeper.py::ConfigTest -v
+    venv/bin/py.test tests/test_ZooKeeper.py::ConfigTest -v
 
   .. note::
 
@@ -208,13 +208,13 @@ The following examples show to extend the images.
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
 
-  To do this for the Zookeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
+  To do this for the ZooKeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
   ``Dockerfile``
 
   .. sourcecode:: bash
 
-      FROM confluentinc/cp-zookeeper
+      FROM confluentinc/cp-ZooKeeper
 
       COPY include/etc/confluent/docker/configure /etc/confluent/docker/configure
 
@@ -229,20 +229,20 @@ The following examples show to extend the images.
 
 
       # Ensure that URL locations are available.
-      dub ensure ZOOKEEPER_SERVER_CONFIG_URL
-      dub ensure ZOOKEEPER_SERVER_ID_URL
-      dub ensure ZOOKEEPER_LOG_CONFIG_URL
+      dub ensure ZooKeeper_SERVER_CONFIG_URL
+      dub ensure ZooKeeper_SERVER_ID_URL
+      dub ensure ZooKeeper_LOG_CONFIG_URL
 
       # Ensure that the config location is writable.
       dub path /etc/kafka/ writable
 
-      curl -XGET ZOOKEEPER_SERVER_CONFIG_URL > /etc/kafka/zookeeper.properties
-      curl -XGET ZOOKEEPER_SERVER_ID_URL > /var/lib/zookeeper/data/myid
-      curl -XGET ZOOKEEPER_LOG_CONFIG_URL > /etc/kafka/log4j.properties
+      curl -XGET ZooKeeper_SERVER_CONFIG_URL > /etc/kafka/ZooKeeper.properties
+      curl -XGET ZooKeeper_SERVER_ID_URL > /var/lib/ZooKeeper/data/myid
+      curl -XGET ZooKeeper_LOG_CONFIG_URL > /etc/kafka/log4j.properties
 
       Build the image:
 
-          docker build -t foo/zookeeper:latest .
+          docker build -t foo/ZooKeeper:latest .
 
 
   Run it :
@@ -250,10 +250,10 @@ The following examples show to extend the images.
   .. sourcecode:: bash
 
       docker run \
-           -e ZOOKEEPER_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
-           -e ZOOKEEPER_SERVER_ID_URL =http://foo.com/zk1/myid \
-           -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
-           foo/zookeeper:latest
+           -e ZooKeeper_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
+           -e ZooKeeper_SERVER_ID_URL =http://foo.com/zk1/myid \
+           -e ZooKeeper_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
+           foo/ZooKeeper:latest
 
 2. Add More Software
 
@@ -521,7 +521,7 @@ Confluent Platform Utility Belt (cub)
 
 1. zk-ready
 
-  Used for checking if Zookeeper is ready.
+  Used for checking if ZooKeeper is ready.
 
   .. sourcecode:: bash
 
@@ -530,7 +530,7 @@ Confluent Platform Utility Belt (cub)
     Check if ZK is ready.
 
     positional arguments:
-      connect_string  Zookeeper connect string.
+      connect_string  ZooKeeper connect string.
       timeout         Time in secs to wait for service to be ready.
       retries         No of retries to check if leader election is complete.
       wait            Time in secs between retries
@@ -541,7 +541,7 @@ Confluent Platform Utility Belt (cub)
 
   .. sourcecode:: bash
 
-    usage: cub kafka-ready [-h] (-b BOOTSTRAP_BROKER_LIST | -z ZOOKEEPER_CONNECT)
+    usage: cub kafka-ready [-h] (-b BOOTSTRAP_BROKER_LIST | -z ZooKeeper_CONNECT)
                      [-c CONFIG] [-s SECURITY_PROTOCOL]
                      expected_brokers timeout
 
@@ -555,8 +555,8 @@ Confluent Platform Utility Belt (cub)
     -h, --help            show this help message and exit
     -b BOOTSTRAP_BROKER_LIST, --bootstrap_broker_list BOOTSTRAP_BROKER_LIST
                           List of bootstrap brokers.
-    -z ZOOKEEPER_CONNECT, --zookeeper_connect ZOOKEEPER_CONNECT
-                          Zookeeper connect string.
+    -z ZooKeeper_CONNECT, --ZooKeeper_connect ZooKeeper_CONNECT
+                          ZooKeeper connect string.
     -c CONFIG, --config CONFIG
                           Path to config properties file (required when security
                           is enabled).

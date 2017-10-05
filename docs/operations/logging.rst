@@ -22,7 +22,7 @@ A full example for Kafka is shown below:
       --name=kafka-log-example \
       --net=host
       -e KAFKA_BROKER_ID=1 \
-      -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181/jmx \
+      -e KAFKA_ZooKeeper_CONNECT=localhost:32181/jmx \
       -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
       -e KAFKA_JMX_PORT=39999 \
       -e KAFKA_LOG4J_LOGGERS="kafka.controller=WARN,kafka.foo.bar=DEBUG" \
@@ -38,7 +38,7 @@ Component Names
    :header: "Component", "Name"
    :widths: 20, 20
 
-   "Zookeeper", "KAFKA"
+   "ZooKeeper", "KAFKA"
    "Kafka", "KAFKA"
    "Confluent Control Center", "CONTROL_CENTER"
    "Schema Registry", "SCHEMA_REGISTRY"

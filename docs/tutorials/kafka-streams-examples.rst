@@ -172,7 +172,7 @@ Available endpoints **from within the containers** as well as **on your host mac
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
 | Confluent Schema Registry | ``schema.registry.url`` | ``http://schema-registry:8081`` | ``http://localhost:8081``      |
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
-| ZooKeeper ensemble        | ``zookeeper.connect``   | ``zookeeper:32181``             | ``localhost:32181``            |
+| ZooKeeper ensemble        | ``ZooKeeper.connect``   | ``ZooKeeper:32181``             | ``localhost:32181``            |
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
 
 The ZooKeeper endpoint is not required by Kafka Streams applications, but you need it to e.g.
@@ -237,7 +237,7 @@ You can create topics manually with the ``kafka-topics`` CLI tool, which is avai
 
    # Create a new topic named "my-new-topic", using the `kafka` container
    $ docker-compose exec kafka kafka-topics \
-       --zookeeper zookeeper:32181 \
+       --ZooKeeper ZooKeeper:32181 \
        --create --topic my-new-topic --partitions 2 --replication-factor 1
 
   # You should see a line similar to:
@@ -255,7 +255,7 @@ You can list all available topics with the ``kafka-topics`` CLI tool, which is a
 
    # List available topics, using the `kafka` container
    $ docker-compose exec kafka kafka-topics \
-       --zookeeper zookeeper:32181 \
+       --ZooKeeper ZooKeeper:32181 \
        --list
 
 Additional topic information is displayed by running ``--describe`` instead of ``-list``.

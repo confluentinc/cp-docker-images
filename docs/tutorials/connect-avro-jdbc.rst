@@ -3,13 +3,13 @@
 Kafka Connect Tutorial
 ----------------------
 
-In the `quickstart guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quickstart and already have all the other services running, that's great.  Otherwise, you'll need to first startup up Zookeeper, Kafka and the Schema Registry.
+In the `quickstart guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quickstart and already have all the other services running, that's great.  Otherwise, you'll need to first startup up ZooKeeper, Kafka and the Schema Registry.
 
   .. note::
 
     Schema Registry is a dependency for Connect in this tutorial because we will need it for the avro serializer functionality. 
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,20 +39,20 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     eval $(docker-machine env confluent)
 
-2. Start up Zookeeper, Kafka, and Schema Registry.
+2. Start up ZooKeeper, Kafka, and Schema Registry.
 
   We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <../quickstart.html>`_ for a more detailed walkthrough. 
 
-  Start Zookeeper:
+  Start ZooKeeper:
 
   .. sourcecode:: bash
 
     docker run -d \
         --net=host \
-        --name=zookeeper \
-        -e ZOOKEEPER_CLIENT_PORT=32181 \
-        -e ZOOKEEPER_TICK_TIME=2000 \
-        confluentinc/cp-zookeeper:3.2.1
+        --name=ZooKeeper \
+        -e ZooKeeper_CLIENT_PORT=32181 \
+        -e ZooKeeper_TICK_TIME=2000 \
+        confluentinc/cp-ZooKeeper:3.2.1
 
   Start Kafka:
 
@@ -61,7 +61,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run -d \
         --net=host \
         --name=kafka \
-        -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+        -e KAFKA_ZooKeeper_CONNECT=localhost:32181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
         confluentinc/cp-kafka:3.2.1
 
@@ -103,7 +103,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-avro-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-avro-offsets --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
@@ -111,7 +111,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-avro-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-avro-config --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   .. sourcecode:: bash
 
@@ -119,7 +119,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       --net=host \
       --rm \
       confluentinc/cp-kafka:3.2.1 \
-      kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
+      kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --ZooKeeper localhost:32181
 
   Before moving on, let's verify that the topics are created:
 
@@ -129,7 +129,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        --net=host \
        --rm \
        confluentinc/cp-kafka:3.2.1 \
-       kafka-topics --describe --zookeeper localhost:32181
+       kafka-topics --describe --ZooKeeper localhost:32181
 
 
 4. Download the MySQL JDBC driver and copy it to the ``jars`` folder.  If you are running Docker Machine, you will need to SSH into the VM to run these commands. You may have to run the command as root.
@@ -288,7 +288,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        --net=host \
        --rm \
        confluentinc/cp-kafka:3.2.1 \
-       kafka-topics --describe --zookeeper localhost:32181
+       kafka-topics --describe --ZooKeeper localhost:32181
 
 
   Now we will read from the ``quickstart-jdbc-test`` topic to check if the connector works.
@@ -347,4 +347,4 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Because of https://issues.apache.org/jira/browse/KAFKA-4070, you will not see the actual data in the file.
 
-10. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and Zookeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <machine-name>>``.
+10. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <machine-name>>``.

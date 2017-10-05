@@ -26,7 +26,7 @@ Security on JMX
 
 To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
 
-Kafka & Zookeeper
+Kafka & ZooKeeper
 """""""""""""""""
 
 Settings
@@ -48,27 +48,27 @@ Settings
     
       -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
-Launching Kafka and Zookeeper with JMX Enabled
+Launching Kafka and ZooKeeper with JMX Enabled
 ``````````````````````````````````````````````
 
-The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and ZooKeeper with JMX enabled are the same as we saw in the `quickstart guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. sourcecode:: bash
 
   docker run -d \
     --name=zk-jmx \
     --net=host \
-    -e ZOOKEEPER_TICK_TIME=2000 \
-    -e ZOOKEEPER_CLIENT_PORT=32181 \
+    -e ZooKeeper_TICK_TIME=2000 \
+    -e ZooKeeper_CLIENT_PORT=32181 \
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
-    confluentinc/cp-zookeeper:3.2.1
+    confluentinc/cp-ZooKeeper:3.2.1
 
   docker run -d \
     --name=kafka-jmx \
     --net=host \
     -e KAFKA_BROKER_ID=1 \
-    -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181/jmx \
+    -e KAFKA_ZooKeeper_CONNECT=localhost:32181/jmx \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_JMX_PORT=49999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`    

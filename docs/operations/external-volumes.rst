@@ -5,7 +5,7 @@ Mounting External Volumes
 
 When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of Confluent Platform, we'll need to use external volumes for several main use cases:
 
-1. Data Storage: Kafka and Zookeeper will need externally mounted volumes to persist data in the event that a container stops running or is restarted. 
+1. Data Storage: Kafka and ZooKeeper will need externally mounted volumes to persist data in the event that a container stops running or is restarted. 
 2. Security: When security is configured, the secrets are stored on the the host and made available to the containers using mapped volumes.
 3. Configuring Kafka Connect with External Jars: Kafka connect can be configured to use third-party jars by storing them on a volume on the host.
 
@@ -14,12 +14,12 @@ When working with Docker, you may sometimes need to persist data in the event of
 
     In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
 
-Data Volumes for Kafka & Zookeeper
+Data Volumes for Kafka & ZooKeeper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Kafka uses volumes for log data and Zookeeper uses volumes for transaction logs. It is recommended to seperate volumes (on the host) for these services. You will also need to ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
+Kafka uses volumes for log data and ZooKeeper uses volumes for transaction logs. It is recommended to seperate volumes (on the host) for these services. You will also need to ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
 
-Below is an example of how to use Kafka and Zookeeper with mounted volumes. We also show how to configure volumes if you are running Docker container as non root user. In this example, we run the container as user 12345.
+Below is an example of how to use Kafka and ZooKeeper with mounted volumes. We also show how to configure volumes if you are running Docker container as non root user. In this example, we run the container as user 12345.
 
 On the Docker host (e.g. Virtualbox VM), create the directories:
 
@@ -44,18 +44,18 @@ Then start the containers:
     --name=zk-vols \
     --net=host \
     --user=12345 \
-    -e ZOOKEEPER_TICK_TIME=2000 \
-    -e ZOOKEEPER_CLIENT_PORT=32181 \
-    -v /vol1/zk-data:/var/lib/zookeeper/data \
-    -v /vol2/zk-txn-logs:/var/lib/zookeeper/log \
-    confluentinc/cp-zookeeper:3.2.1
+    -e ZooKeeper_TICK_TIME=2000 \
+    -e ZooKeeper_CLIENT_PORT=32181 \
+    -v /vol1/zk-data:/var/lib/ZooKeeper/data \
+    -v /vol2/zk-txn-logs:/var/lib/ZooKeeper/log \
+    confluentinc/cp-ZooKeeper:3.2.1
 
   docker run -d \
     --name=kafka-vols \
     --net=host \
     --user=12345 \
     -e KAFKA_BROKER_ID=1 \
-    -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+    -e KAFKA_ZooKeeper_CONNECT=localhost:32181 \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -v /vol3/kakfa-data:/var/lib/kafka/data \
     confluentinc/cp-kafka:3.2.1
@@ -73,7 +73,7 @@ When security is enabled, the secrets are made available to the containers using
     --name=kafka-sasl-ssl-1 \
     --net=host \
     -e KAFKA_BROKER_ID=1 \
-    -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181/saslssl \
+    -e KAFKA_ZooKeeper_CONNECT=localhost:22181,localhost:32181,localhost:42181/saslssl \
     -e KAFKA_ADVERTISED_LISTENERS=SASL_SSL://localhost:39094 \
     -e KAFKA_SSL_KEYSTORE_FILENAME=kafka.broker3.keystore.jks \
     -e KAFKA_SSL_KEYSTORE_CREDENTIALS=broker3_keystore_creds \
