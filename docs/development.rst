@@ -87,7 +87,7 @@ Setup
 
       docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
-  This command will create a local environment but it is recommended that you create one on AWS. The builds are much faster and more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).  When choosing an instance type, ``m4.large`` is good choice. It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
+  This command will create a local environment but it is recommended that you create one on AWS. The builds are much faster and more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).  When choosing an instance type, ``m4.large`` is good choice. It has 2 CPUs with 8GB RAM and costs around ~$88 monthly.
 
   .. sourcecode:: bash
 
@@ -112,7 +112,7 @@ Setup
 Building the Images
 ~~~~~~~~~~~~~~~~~~~
 
-To get started, you can build all the CP images as follows:
+To get started, you can build all the Confluent Platform images as follows:
 
   .. sourcecode:: bash
 
@@ -208,7 +208,7 @@ The following examples show to extend the images.
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
 
-  To do this for the Zookeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
+  To do this for the ZooKeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
   ``Dockerfile``
 
@@ -462,7 +462,7 @@ The following examples show to extend the images.
 Utility Scripts
 ----------------
 
-Given the dependencies between the various CP components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
+Given the dependencies between the various Confluent Platform components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
 
 Docker Utility Belt (dub)
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -521,7 +521,7 @@ Confluent Platform Utility Belt (cub)
 
 1. zk-ready
 
-  Used for checking if Zookeeper is ready.
+  Used for checking if ZooKeeper is ready.
 
   .. sourcecode:: bash
 
@@ -530,7 +530,7 @@ Confluent Platform Utility Belt (cub)
     Check if ZK is ready.
 
     positional arguments:
-      connect_string  Zookeeper connect string.
+      connect_string  ZooKeeper connect string.
       timeout         Time in secs to wait for service to be ready.
       retries         No of retries to check if leader election is complete.
       wait            Time in secs between retries
@@ -556,7 +556,7 @@ Confluent Platform Utility Belt (cub)
     -b BOOTSTRAP_BROKER_LIST, --bootstrap_broker_list BOOTSTRAP_BROKER_LIST
                           List of bootstrap brokers.
     -z ZOOKEEPER_CONNECT, --zookeeper_connect ZOOKEEPER_CONNECT
-                          Zookeeper connect string.
+                          ZooKeeper connect string.
     -c CONFIG, --config CONFIG
                           Path to config properties file (required when security
                           is enabled).
