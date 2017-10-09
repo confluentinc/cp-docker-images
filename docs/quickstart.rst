@@ -9,7 +9,7 @@ To keep things simple, you can start with a single node Docker environment.  Det
 
   .. Note::
 
-    To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
+    To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
 If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -46,7 +46,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
      eval $(docker-machine env confluent)
 
-#. Clone the CP Docker Images Github Repository.
+#. Clone the Confluent Platform Docker Images Github Repository.
 
    .. sourcecode:: bash
 

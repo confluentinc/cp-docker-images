@@ -26,7 +26,7 @@ Security on JMX
 
 To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
 
-Kafka & Zookeeper
+Kafka & ZooKeeper
 """""""""""""""""
 
 Settings
@@ -48,10 +48,10 @@ Settings
     
       -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
-Launching Kafka and Zookeeper with JMX Enabled
+Launching Kafka and ZooKeeper with JMX Enabled
 ``````````````````````````````````````````````
 
-The steps for launching Kafka and Zookeeper with JMX enabled are the same as we saw in the `quickstart guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and ZooKeeper with JMX enabled are the same as we saw in the `quickstart guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. sourcecode:: bash
 
