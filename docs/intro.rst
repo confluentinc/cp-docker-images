@@ -51,7 +51,7 @@ Requirements
 
 Although the `quickstart guides <quickstart.html>`_ found in this section are meant to be self contained, we recommend familiarizing yourself with Docker before you get started.
 
-The following are prerequisites for running the CP Docker images:
+The following are prerequisites for running the Confluent Platform Docker images:
 
 1. Docker Version 1.11 or greater.  Previous versions have not been tested.
 2. A working Docker environment (Docker for Mac is not recommended - see below)
@@ -69,7 +69,7 @@ Important Notes/Caveats
 
 2. Persistent Data (Mounted Volumes)
 
-	When deploying the Kafka and Zookeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
 
 3. Bridge Networking vs. Host Networking
 
