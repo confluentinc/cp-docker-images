@@ -9,7 +9,7 @@ Using security is optional - non-secured clusters are supported, as well as a mi
    :header: "Component", "Tests"
    :widths: 20, 20
 
-   "Zookeeper", "SASL"
+   "ZooKeeper", "SASL"
    "Kafka", "SASL, SSL"
    "Confluent Control Center", "HTTPS"
    "Schema Registry", "HTTPS"
