@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # You can override vars like REPOSITORY in a local.make file
 -include local.make
 
