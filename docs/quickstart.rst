@@ -9,7 +9,7 @@ To keep things simple, you can start with a single node Docker environment.  Det
 
   .. Note::
 
-    To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The CP Docker Images require Docker version 1.11 or greater.
+  To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
 If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -46,7 +46,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
      eval $(docker-machine env confluent)
 
-#. Clone the CP Docker Images Github Repository.
+#. Clone the Confluent Platform Docker Images Github Repository.
 
    .. sourcecode:: bash
 
@@ -237,7 +237,7 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         confluentinc/cp-zookeeper:3.3.0
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.2.1`` container and name it ``zookeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.3.0`` container and name it ``zookeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
 
@@ -400,6 +400,7 @@ Now that you have Kafka and ZooKeeper up and running, you can deploy some of the
   .. sourcecode:: console
 
     $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.0 bash
+
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
 
@@ -903,4 +904,4 @@ Next you'll see how to monitor the Kafka Connect connectors in Control Center.  
 Cleanup
 +++++++
 
-After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``. 
+After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.  

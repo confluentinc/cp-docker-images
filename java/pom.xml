@@ -8,7 +8,6 @@
     <artifactId>docker-utils</artifactId>
     <packaging>jar</packaging>
     <version>3.3.0</version>
-
     <organization>
         <name>Confluent, Inc.</name>
         <url>http://confluent.io</url>
