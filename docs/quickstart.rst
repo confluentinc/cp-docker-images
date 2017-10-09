@@ -9,7 +9,7 @@ To keep things simple, you can start with a single node Docker environment.  Det
 
   .. Note::
 
-    To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
+  To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
 If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
@@ -22,7 +22,7 @@ Installing & Running Docker
 For this quickstart, you can use Docker Compose or Docker client.
 
 * `Getting Started with Docker Compose`_
-* `Getting Started with Docker client`_
+* `Getting Started with Docker Client`_
 
 
 .. _quickstart_compose:
@@ -85,7 +85,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
         Creating kafkasinglenode_kafka_1 ... 
         Creating kafkasinglenode_kafka_1 ... done
 
-   Tip: You can run this command to verify that the services are up and running:
+   **Tip:** You can run this command to verify that the services are up and running:
 
    .. sourcecode:: bash
 
@@ -206,7 +206,7 @@ Getting Started with Docker Client
 
     The following steps show each Docker container being launched in detached mode and how to access the logs for those detached containers.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` ("detached") flag with ``--it`` ("interactive"). Containers launched in interactive mode will stream the log messages for the Confluent service directly to the terminal window.  For that reason, you'll need a separate terminal for each Docker image launched in interactive mode.
 
-Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6GB of memory to serve as our Docker host.
+Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6 GB of memory to serve as your Docker host.
 
   .. sourcecode:: console
 
@@ -237,7 +237,7 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         confluentinc/cp-zookeeper:3.3.0
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.2.2`` container and name it ``zookeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:3.3.0`` container and name it ``zookeeper``.  You also specify that you want to use host networking and pass in the required parameter for running ZooKeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
 
@@ -514,7 +514,7 @@ This portion of the quickstart provides an overview of how to use Confluent Cont
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
       confluentinc/cp-enterprise-control-center:3.3.0
 
-  Alert readers will notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.   Not to worry, you'll work on that in the next section.  
+  You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.  
   
   Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
 
@@ -621,8 +621,7 @@ section assumes the console producer and
 consumer you launched to illustrate the stream monitoring features
 are still running in the background.
 
-The Alerts / Overview link the lefthand navigation sidebar takes 
-will display a history of all triggered events. To begin receiving 
+The Alerts and Overview link on the lefthand navigation sidebar displays a history of all triggered events. To begin receiving 
 alerts, you'll need to create a trigger. Click the "Triggers" 
 navigation item and then select "+ New trigger".
 
@@ -868,8 +867,7 @@ Now that the connector is up and running, try reading a sample of 10 records fro
     ...
     1000
 
-
-  As you're done with the Docker Host session for now, you can exit it with the following command 
+  Since you're done with the Docker Host session for now, you can exit it with the following command 
 
   .. sourcecode:: bash
 
