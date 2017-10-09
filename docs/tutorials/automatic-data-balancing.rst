@@ -5,14 +5,14 @@ Automatic Data Balancing
 
 In this section, we provide a tutorial for running Confluent Auto Data Balancing on Kafka which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run Docker containers using Docker Compose.
 
-To get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  The CP Docker Images require Docker version 1.11 or greater.
+To get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
 Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
@@ -28,7 +28,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
 
     eval $(docker-machine env confluent)
 
-2. Clone the CP Docker Images Github Repository.
+2. Clone the Confluent Platform Docker Images Github Repository.
 
   .. sourcecode:: bash
 
@@ -41,9 +41,9 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     cd cp-docker-images/examples/enterprise-kafka
 
 
-4. Start up the services.  The Docker Compose file has configuration for one Zookeeper and 6 Kafka brokers. These brokers are configured to be on 2 racks. We will first start one rack (with 3 brokers) and create a topic with sample data and run the ADB CLI tool to balance the cluster. After this step, we will walk you through a tutorial for adding another rack of brokers and running the ADB CLI tool to rebalance the data across the new added brokers.
+4. Start up the services.  The Docker Compose file has configuration for one ZooKeeper and 6 Kafka brokers. These brokers are configured to be on 2 racks. We will first start one rack (with 3 brokers) and create a topic with sample data and run the ADB CLI tool to balance the cluster. After this step, we will walk you through a tutorial for adding another rack of brokers and running the ADB CLI tool to rebalance the data across the new added brokers.
 
-  Lets start by starting the Zookeeper and first rack of brokers using the Docker Compose commands.
+  Lets start by starting the ZooKeeper and first rack of brokers using the Docker Compose commands.
 
     .. sourcecode:: bash
 
@@ -96,7 +96,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
       enterprisekafka_kafka-6_1     /etc/confluent/docker/run   Exit 0
       enterprisekafka_zookeeper_1   /etc/confluent/docker/run   Up
 
-    Now check the Zookeeper logs to verify that Zookeeper is healthy.
+    Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
 
     .. sourcecode:: bash
 
