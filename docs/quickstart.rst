@@ -763,7 +763,7 @@ For this example, you'll create a FileSourceConnector, a FileSinkConnector and d
 
   .. sourcecode:: console
 
-    $ docker exec kafka-connect sh -c 'sec 1000 > /tmp/quickstart/file/input.txt'
+    $ docker exec kafka-connect sh -c 'seq 1000 > /tmp/quickstart/file/input.txt'
 
 Now create the connector using the Kafka Connect REST API. (Note: Make sure you have ``curl`` installed!)
 
