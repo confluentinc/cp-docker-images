@@ -25,12 +25,11 @@ Managing secrets
   which contains the required secrets.
 
 Running containers with arbitrary user IDs
-  The images can be run with arbitrary user IDs. This provides an additional security layer against processes achieving
-  escalated permissions on the host node by escaping the container if there is a container engine vulnerability.
+  The images can be run with arbitrary user IDs. If there is a container engine vulnerability, arbitrary user IDs can prevent processes from escaping the container and gaining escalated permissions on the host node.
 
 
 For details on the available security features in Confluent platform, see the `Confluent Platform Security
 Overview Documentation <http://docs.confluent.io/current/kafka/security.html>`_.
 
-For a tutorials on using SSL in the Confluent Platform, see the documented tutorials on `SSL
+For tutorials on using SSL in the Confluent Platform, see the documented tutorials on `SSL
 <http://docs.confluent.io/current/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/current/kafka/sasl.html>`_.
