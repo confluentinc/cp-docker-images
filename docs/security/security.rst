@@ -3,8 +3,8 @@
 Docker Security
 ===============
 
-Using security is optional. Confluent Platform supports non-secured clusters and a mix of authenticated, unauthenticated,
-encrypted, and non-encrypted clients.  These security features are supported on the Confluent Platform Docker images:
+Confluent Platform supports cluster encryption and authentication, including a mix of authenticated and unauthenticated,
+and encrypted and non-encrypted clients. Using security is optional. These security features are supported on the Confluent Platform Docker images:
 
 .. csv-table::
    :header: "Component", "Tests"
