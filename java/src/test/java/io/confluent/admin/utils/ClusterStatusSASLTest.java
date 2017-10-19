@@ -17,7 +17,7 @@ package io.confluent.admin.utils;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.config.types.Password;
-import org.apache.kafka.common.protocol.SecurityProtocol;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.utils.Utils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
