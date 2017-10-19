@@ -4,7 +4,7 @@ Monitoring
 Using JMX
 ~~~~~~~~~~~~~
 
-For JMX to work with docker containers, the following properties must be set:
+For JMX to work with Docker containers, the following properties must be set:
 
   .. sourcecode:: bash
 
@@ -16,10 +16,10 @@ For JMX to work with docker containers, the following properties must be set:
 Note about ``hostname``:
 
   The JMX client needs to be able to connect to ``java.rmi.server.hostname``.
-  The default for bridged network is the bridged IP so you will only be able to connect from another docker container.
+  The default for bridged network is the bridged IP so you will only be able to connect from another Docker container.
   For host network, this is the IP that the hostname on the host resolves to.
 
-  The hostname is set to ``hostname -i`` in the docker container. If you have more that one network configured for the container, ``hostname -i`` gives you all the IPs, the default is to pick the first IP (or network).
+  The hostname is set to ``hostname -i`` in the Docker container. If you have more that one network configured for the container, ``hostname -i`` gives you all the IPs, the default is to pick the first IP (or network).
 
 Security on JMX
 """""""""""""""
@@ -75,4 +75,4 @@ The steps for launching Kafka and ZooKeeper with JMX enabled are the same as we 
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     confluentinc/cp-kafka:3.4.0-SNAPSHOT
 
-Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a docker machine named "Confluent".  You should substitute with your docker machine name where appropriate.
+Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a Docker machine named "Confluent".  You should substitute with your Docker machine name where appropriate.

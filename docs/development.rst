@@ -75,7 +75,7 @@ We adhered to the following guidelines when developing these Docker bootup scrip
 Setup
 -----
 
-1. Install Docker.  Here we assume you are running on Mac OS X.  For instructions on installing docker on Linux or Windows, please refer to the official `Docker Machine documentation <https://docs.docker.com/engine/installation/>`_.
+1. Install Docker.  Here we assume you are running on Mac OS X.  For instructions on installing Docker on Linux or Windows, please refer to the official `Docker Machine documentation <https://docs.docker.com/engine/installation/>`_.
 
    .. sourcecode:: bash
 
@@ -180,7 +180,7 @@ config management, use service discovery etc.  This page provides instructions f
 Prerequisites
 ~~~~~~~~~~~~~
 
-1. Read the section on :ref:`development <development>` to setup the development environment to build docker images.
+1. Read the section on :ref:`development <development>` to setup the development environment to build Docker images.
 2. Understand how the images are structured by reading the following docs:
 
    -  ``image-structure`` describes the structure of the images
