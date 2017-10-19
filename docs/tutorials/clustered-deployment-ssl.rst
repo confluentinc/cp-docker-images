@@ -12,7 +12,7 @@ In this section, we provide a tutorial for running a secure three-node Kafka clu
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose_ssl>`.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose_ssl>`.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
@@ -310,7 +310,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-ssl
 
-  Follow section 3 on generating SSL credentials in the “Docker Client” section above to create the SSL credentials.
+  Follow section 3 on generating SSL credentials in the ???Docker Client??? section above to create the SSL credentials.
 
 2. Start ZooKeeper and Kafka using Docker Compose ``up`` command.
 
