@@ -14,7 +14,7 @@ It is worth noting that we will be configuring Kafka and ZooKeeper to store data
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 
