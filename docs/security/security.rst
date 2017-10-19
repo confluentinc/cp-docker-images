@@ -1,32 +1,35 @@
 .. _security_with_docker :
 
-Security Overview
-=================
+Docker Security
+===============
 
-Using security is optional - non-secured clusters are supported, as well as a mix of authenticated, unauthenticated, encrypted and non-encrypted clients.  The following security features are currently supported on the Confluent Platform Docker images:
+Confluent Platform supports cluster encryption and authentication, including a mix of authenticated and unauthenticated,
+and encrypted and non-encrypted clients. Using security is optional. These security features are supported on the Confluent Platform Docker images:
 
 .. csv-table::
    :header: "Component", "Tests"
    :widths: 20, 20
 
-   "ZooKeeper", "SASL"
-   "Kafka", "SASL, SSL"
    "Confluent Control Center", "HTTPS"
-   "Schema Registry", "HTTPS"
-   "REST Proxy", "HTTPS"
    "Kafka Connect", "None"
+   "Kafka", "SASL, SSL"
+   "REST Proxy", "HTTPS"
+   "Schema Registry", "HTTPS"
+   "ZooKeeper", "SASL"
 
-For details on available security features in Confluent platform, please refer to the `Confluent Platform Security Overview Documentation <http://docs.confluent.io/current/kafka/security.html>`_.
 
-For a tutorial on using SSL in the Confluent Platform please refer to the documented tutorials on `SSL <http://docs.confluent.io/current/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/current/kafka/sasl.html>`_.
+Managing secrets
+  When you enable security for the Confluent Platform, you must pass secrets (e.g., credentials, certificates, keytabs,
+  Kerberos config etc.) to the container. The images handle this by expecting the credentials to be available in the
+  secrets directory. The containers specify a Docker volume for secrets and expect the admin to map it to a directory on the host
+  which contains the required secrets.
 
-Docker Security
-~~~~~~~~~~~~~~~
+Running containers with arbitrary user IDs
+  The images can be run with arbitrary user IDs. If there is a container engine vulnerability, arbitrary user IDs can prevent processes from escaping the container and gaining escalated permissions on the host node.
 
-1. Managing secrets
 
-  When you enable security for the Confluent Platform, you need to pass secrets (credentials, certificates, keytabs, Kerberos config etc.) to the container. The images handle this by expecting the credentials to be available in the secrets directory. We specify a docker volume for secrets and expect the admin to map it to a directory on the host which contain the required secrets.
+For details on the available security features in Confluent platform, see the `Confluent Platform Security
+Overview Documentation <http://docs.confluent.io/current/kafka/security.html>`_.
 
-2. Running containers with arbitrary User IDs
-
-  The images can be run with arbitrary User IDs. This provides an additional security layer against processes achieving escalated permissions on the host node by escaping the container if there is a container engine vulnerability.
+For tutorials on using SSL in the Confluent Platform, see the documented tutorials on `SSL
+<http://docs.confluent.io/current/kafka/ssl.html>`_ and `SASL <http://docs.confluent.io/current/kafka/sasl.html>`_.
