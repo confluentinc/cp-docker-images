@@ -12,7 +12,7 @@ In this section, we provide a tutorial for running a secure three-node Kafka clu
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, we'll run docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose_sasl>`_.
+For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose_sasl>`_.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
 

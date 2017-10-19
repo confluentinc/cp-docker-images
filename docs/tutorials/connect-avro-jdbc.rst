@@ -200,7 +200,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e MYSQL_DATABASE=connect_test \
       mysql
 
-  Next, Create databases and tables.  You'll need to exec into the docker container to create the databases.
+  Next, Create databases and tables.  You'll need to exec into the Docker container to create the databases.
 
   .. sourcecode:: bash
       
