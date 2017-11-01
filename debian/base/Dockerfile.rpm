@@ -67,6 +67,7 @@ RUN echo "===> clean yum caches ....." \
 RUN echo "===> Installing curl wget netcat python...." \
     && yum install -y \
                 curl \
+                git \
                 wget \
                 nc \
                 python
@@ -74,8 +75,8 @@ RUN echo "===> Installing curl wget netcat python...." \
 RUN echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-    && pip install --no-cache-dir jinja2 \
-                                  requests
+    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.17 \
+    && yum remove -y git \
 
 RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
@@ -115,6 +116,5 @@ gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MIN
 enabled=1 " > /etc/yum.repos.d/confluent.repo; \
     fi
 
-COPY include/dub /usr/local/bin/dub
-COPY include/cub /usr/local/bin/cub
+ENV CUB_CLASSPATH=/etc/confluent/docker/docker-utils.jar
 COPY include/etc/confluent/docker /etc/confluent/docker
