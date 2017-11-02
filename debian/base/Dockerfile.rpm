@@ -76,7 +76,7 @@ RUN echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.17 \
-    && yum remove -y git \
+    && yum remove -y git
 
 RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
