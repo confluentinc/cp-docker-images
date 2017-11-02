@@ -69,15 +69,15 @@ RUN echo "===> Updating debian ....." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apt-transport-https \
                 curl \
+                git \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
     && echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-    && pip install --no-cache-dir jinja2 \
-                                  requests \
-    \
+    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.17 \
+    && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
     && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
@@ -88,6 +88,5 @@ RUN echo "===> Updating debian ....." \
     && if [ "x$ALLOW_UNSIGNED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
     && echo "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
 
-COPY include/dub /usr/local/bin/dub
-COPY include/cub /usr/local/bin/cub
+ENV CUB_CLASSPATH=/etc/confluent/docker/docker-utils.jar
 COPY include/etc/confluent/docker /etc/confluent/docker
