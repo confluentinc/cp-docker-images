@@ -158,7 +158,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       ::
 
         Topic:foo   PartitionCount:1    ReplicationFactor:1 Configs:
-        Topic: foo  Partition: 0    Leader: 1001    Replicas: 1001  Isr: 1001
+        Topic: foo  Partition: 0    Leader: 1    Replicas: 1  Isr: 1
 
    #. Publish some data to your new topic. This command uses the built-in Kafka Console Producer to produce 42 simple messages to the topic.
 
@@ -293,10 +293,8 @@ Start Kafka.
 
     ....
     [2016-07-15 23:31:00,295] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
-    [2016-07-15 23:31:00,295] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
     ...
     ...
-    [2016-07-15 23:31:00,349] INFO [Controller 1]: New broker startup callback for 1 (kafka.controller.KafkaController)
     [2016-07-15 23:31:00,349] INFO [Controller 1]: New broker startup callback for 1 (kafka.controller.KafkaController)
     [2016-07-15 23:31:00,350] INFO [Controller-1-to-broker-1-send-thread], Starting  (kafka.controller.RequestSendThread)
     ...
@@ -904,4 +902,4 @@ Next you'll see how to monitor the Kafka Connect connectors in Control Center.  
 Cleanup
 +++++++
 
-After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.  
+After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
