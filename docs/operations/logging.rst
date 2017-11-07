@@ -29,7 +29,7 @@ A full example for Kafka is shown below:
       -e KAFKA_LOG4J_ROOT_LOGLEVEL=WARN \
       -e KAFKA_TOOLS_LOG4J_LOGLEVEL=ERROR \
       -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-      confluentinc/cp-kafka:3.3.0
+      confluentinc/cp-kafka:3.3.1
 
 
 Component Names
