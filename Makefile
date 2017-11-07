@@ -1,4 +1,4 @@
-DOCKER_VERSION := 2
+DOCKER_VERSION := 3
 CP_VERSION := 3.1.2
 VERSION := ${CP_VERSION}-${DOCKER_VERSION}
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
