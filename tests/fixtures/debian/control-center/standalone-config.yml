@@ -79,3 +79,29 @@ services:
       CONTROL_CENTER_STREAMS_CONSUMER_SSL_TRUSTSTORE_PASSWORD: password
     labels:
       - io.confluent.docker.testing=true
+
+  security-config-with-producer-overrides:
+    image: confluentinc/cp-enterprise-control-center:latest
+    command: "bash -c '/etc/confluent/docker/configure && touch /tmp/config-is-done && sleep infinity'"
+    environment:
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181/defaultconfig"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_COMMAND_TOPIC_REPLICATION: 3
+      CONTROL_CENTER_COMMAND_TOPIC_RETENTION_MS: 1000
+      CONTROL_CENTER_REST_LISTENERS: "http://0.0.0.0:9021,https://0.0.0.0:443"
+      CONTROL_CENTER_REST_SSL_KEYSTORE_LOCATION: "/path/to/keystore"
+      CONTROL_CENTER_CONNECT_TIMEOUT: 30000
+      CONTROL_CENTER_MAIL_ENABLED: "true"
+      CONTROL_CENTER_MAIL_HOST_NAME: "foo.com"
+      CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SS
+      CONTROL_CENTER_STREAMS_SASL_KERBEROS_SERVICE_NAME: kafka
+      CONTROL_CENTER_STREAMS_SSL_KEYSTORE_LOCATION: /path/to/keystore
+      CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: password
+      CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: password
+      CONTROL_CENTER_STREAMS_SSL_TRUSTSTORE_LOCATION: /path/to/truststore
+      CONTROL_CENTER_STREAMS_SSL_TRUSTSTORE_PASSWORD: password
+      CONTROL_CENTER_STREAMS_PRODUCER_SECURITY_PROTOCOL: SS
+      CONTROL_CENTER_STREAMS_PRODUCER_LINGER_MS: 1000
+    labels:
+      - io.confluent.docker.testing=true
