@@ -105,17 +105,3 @@ License
 -------
 
 The Confluent Platform Docker Images are available as open source software under the Apache License v2.0 license.  License details for the individual Confluent Platform components packaged in the images are available with the top-level `platform documentation <http://docs.confluent.io/current/platform.html>`_.
-
-Contents:
-
-.. toctree::
-   :maxdepth: 1
-
-   quickstart
-   intro
-   security/security
-   configuration
-   operations/operations
-   tutorials/tutorials
-   development
-   contributing
