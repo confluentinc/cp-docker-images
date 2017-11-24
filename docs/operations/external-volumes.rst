@@ -29,12 +29,12 @@ On the Docker host (e.g. Virtualbox VM), create the directories:
   # Create dirs for Kafka / ZK data
   mkdir -p /vol1/zk-data
   mkdir -p /vol2/zk-txn-logs
-  mkdir -p /vol3/kakfa-data
+  mkdir -p /vol3/kafka-data
 
   # Make sure user 12345 has r/w permissions
   chown -R 12345 /vol1/zk-data
   chown -R 12345 /vol2/zk-txn-logs
-  chown -R 12345 /vol3/kakfa-data
+  chown -R 12345 /vol3/kafka-data
 
 Then start the containers:
 
@@ -59,7 +59,7 @@ Then start the containers:
     -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-    -v /vol3/kakfa-data:/var/lib/kafka/data \
+    -v /vol3/kafka-data:/var/lib/kafka/data \
     confluentinc/cp-kafka:3.3.1
 
 The data volumes are mounted using the ``-v`` flag.
