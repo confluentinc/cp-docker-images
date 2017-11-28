@@ -240,7 +240,7 @@ The image will then convert these environment variables to corresponding Connect
 
 
 Confluent Control Center
----------------
+------------------------
 
 The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
 
@@ -255,7 +255,7 @@ The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER
     -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
     -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
     -v /mnt/control-center/data:/var/lib/confluent-control-center \
-    confluentinc/cp-control-center:3.3.0
+    confluentinc/cp-enterprise-control-center:3.3.0
 
 Docker Options
 """"""""""""""
