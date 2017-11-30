@@ -3,7 +3,7 @@
 Clustered Deployment Using SASL and SSL
 ----------------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and ZooKeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quickstart guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and ZooKeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
