@@ -707,13 +707,7 @@ Now you should verify that the topics are created before moving on:
 
 For this example, you'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files. If you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``.
 
-  First, let's create the directory where you'll store the input and output data files.  Remember, you must do this within the Docker Host.
-
-  .. sourcecode:: console
-
-    $ docker exec kafka-connect mkdir -p /tmp/quickstart/file
-
-  Next, start a Connect worker in distributed mode. This command points Connect to the three topics that you created in the first step of this quickstart.
+  First, let's start a Connect worker in distributed mode. This command points Connect to the three topics that you created in the first step of this quickstart.
 
   .. sourcecode:: console
 
@@ -738,6 +732,7 @@ For this example, you'll create a FileSourceConnector, a FileSinkConnector and d
         -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
         -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
+        -e CONNECT_PLUGIN_PATH=/usr/share/java \
         -v /tmp/quickstart/file:/tmp/quickstart \
         confluentinc/cp-kafka-connect:4.0.0
 
@@ -753,6 +748,12 @@ For this example, you'll create a FileSourceConnector, a FileSinkConnector and d
 
     [2016-08-25 18:25:19,665] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
     [2016-08-25 18:25:19,676] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
+
+  Next, let's create the directory where you'll store the input and output data files.  Remember, you must do this within the Docker Host.
+
+  .. sourcecode:: console
+
+    $ docker exec kafka-connect mkdir -p /tmp/quickstart/file
 
   You will now create your first connector for reading a file from disk.  To do this, start by creating a file with some data. Again, if you are running Docker Machine then you will need to SSH into the VM to run these commands by running ``docker-machine ssh <your machine name>``. (You may also need to run the command as root).
 
