@@ -1,7 +1,7 @@
 .. _tutorials_overview :
 
-Advanced Tutorials
-==================
+Docker Advanced Tutorials
+=========================
 
 This section provides advanced tutorials for using specific Confluent Platform features on Docker. 
 
