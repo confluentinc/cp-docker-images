@@ -1,9 +1,9 @@
 .. _operations_overview :
 
-Operations
-==========
+Docker Operations
+=================
 
-In this section, we provide a closer look at how to run a Confluent Platform cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quickstart guide <../quickstart.html>`_.
+In this section, we provide a closer look at how to run a Confluent Platform cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quick start guide <../quickstart.html>`_.
 
 We will cover the following topics:
 

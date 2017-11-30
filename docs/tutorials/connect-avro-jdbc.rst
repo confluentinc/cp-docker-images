@@ -3,7 +3,7 @@
 Kafka Connect Tutorial
 ----------------------
 
-In the `quickstart guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quickstart and already have all the other services running, that's great.  Otherwise, you'll need to first startup up ZooKeeper, Kafka and the Schema Registry.
+In the `quick start guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quick start and already have all the other services running, that's great.  Otherwise, you'll need to first startup up ZooKeeper, Kafka and the Schema Registry.
 
   .. note::
 
@@ -41,7 +41,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 2. Start up ZooKeeper, Kafka, and Schema Registry.
 
-  We'll walk through each of the commands for starting up these services, but you should refer to the `quickstart guide <../quickstart.html>`_ for a more detailed walkthrough. 
+  We'll walk through each of the commands for starting up these services, but you should refer to the `quick start guide <../quickstart.html>`_ for a more detailed walkthrough.
 
   Start ZooKeeper:
 

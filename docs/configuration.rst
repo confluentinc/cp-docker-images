@@ -1,16 +1,108 @@
 .. _config_reference :
 
-Configuration
-=============
+Docker Configuration
+====================
 
+You can install the Confluent Platform using Docker images. This section provides an overview of Confluent's Docker images for the Confluent Platform.
+
+
+.. contents::
+    :depth: 2
+
+Confluent Docker Images
+-----------------------
 The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.
+
+The images are available for Confluent Platform 3.0.1 and greater. Images are available on `DockerHub <https://hub.docker.com/u/confluentinc/>`_ for each component of the Confluent Platform. Alternatively, the source files for the images are `available on Github <https://github.com/confluentinc/cp-docker-images>`_ if you would prefer to extend and/or rebuild the images and upload them to your own DockerHub repository.
+
+The table below lists the available images and the Confluent software packages they contain.  You'll note that some images are identified as ```cp-enterprise-${component_name}```.   These images include proprietary components that must be licensed from Confluent when deployed.
+
++------------------+------------------------------+--------------+-----------------------------------------+
+| Component        | Image Name                   | Type         | Packages Included                       |
++==================+==============================+==============+=========================================+
+| Base Image       | cp-base                      | Open Source  | - zulu-openjdk-8                        |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka            | cp-kafka                     | Open Source  | - confluent-kafka-*                     |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka            | cp-enterprise-kafka          | Enterprise   | - confluent-kafka-*                     |
+|                  |                              |              | - confluent-rebalancer                  |
+|                  |                              |              | - confluent-support-metrics             |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Control Center   | cp-enterprise-control-center | Enterprise   | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
+|                  |                              |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka Connect    | cp-kafka-connect             | Enterprise   | - confluent-kafka-connect-jdbc          |
+|                  |                              |              | - confluent-kafka-connect-hdfs          |
+|                  |                              |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
+|                  |                              |              | - confluent-kafka-connect-elasticsearch |
+|                  |                              |              | - confluent-kafka-connect-s3            |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Schema Registry  | cp-schema-registry           | Open Source  | - confluent-schema-registry             |
++------------------+------------------------------+--------------+-----------------------------------------+
+| REST Proxy       | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
++------------------+------------------------------+--------------+-----------------------------------------+
+
+Note: The Kafka Connect image is labeled as "Enterprise" simply because it contains the Confluent Control Center package.  That package enables the deployed connectors to collect the metrics visualized in Confluent Control Center.   No explicit license is required when using the Kafka Connect image on its own.
+
+Configuration Notes
+-------------------
+
+*  Docker for Mac
+
+	We do not recommend using these images with Docker for Mac at this time.  The primary reason is that Docker for Mac does not update the local /etc/hosts file with the hostnames of the deployed containers.   This makes it difficult to access the containerized cluster with client applications running directly on the Mac.  Additionally, the semantics of ``--net=host`` are not clear, so deploying containers with host networking on Docker for Mac is not reliable.  More details on these issues can be found at:
+
+	- `Hostname Issue <https://forums.docker.com/t/docker-for-mac-does-not-add-docker-hostname-to-etc-hosts/8620/4>`_
+	- Host networking on Docker for Mac: `link 1 <https://forums.docker.com/t/should-docker-run-net-host-work/14215>`_, `link 2 <https://forums.docker.com/t/net-host-does-not-work/17378/7>`_, `link 3 <https://forums.docker.com/t/explain-networking-known-limitations-explain-host/15205/4>`_
+
+*  Persistent Data (Mounted Volumes)
+
+	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+
+*  Bridge Networking vs. Host Networking
+
+	Bridge networking is currently only supported on a single host.  For multiple hosts, you will need to use overlay networks which are not currently supported. To expose Kafka to clients outside of the bridge network, you need to find the container IP and put it in ``advertised.listeners``.  This can be difficult to achieve depending on how you're using the images.  Furthermore, it can add a network hop and may not be as performant as the host network, which shares the network stack.  In summary, host networking is the recommended option in the following cases:
+
+		* Multi-host clusters without using Swarm/Kubernetes host network is the best approach
+		* If you need clients to be able to access Kafka outside the bridge/overlay network
+
+*  Launch Settings
+
+    Docker containers should be launched with ``Restart=always`` unless you are using a process manager.   This ensures that intermittent failures in the Docker environment do not result in unnecessary failures of the Confluent services.
+
+*  Adding Connectors to the Kafka Connect Image
+
+	There are currently two ways to add new connectors to the Kafka Connect image.
+
+	* Build a new Docker image that has the connector installed. You can follow the examples found in `Extending Images <development.html#extending-the-docker-images>`_. You will need to make sure that the connector jars are on the CLASSPATH for the Connect service (the default location of /usr/share/java/kafka-connect-* is the recommended location).
+	* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+
+*  Included Java
+
+    The Confluent Docker images are tested and shipped with `Azul Zulu OpenJDK <https://www.azul.com/products/zulu/>`_.  Other JDK's (including Oracle Java) are supported, but you must extend the images yourself to implement that change.
+
+*  Untested Features
+
+	The following features/environments are not currently tested:
+
+		* Schema Registry SSL
+		* Kafka Connect with Security Enabled
+		* Confluent Control Center with Security Enabled
+		* The images are not currently tested on Docker Swarm.
+
+Configuration Parameters
+------------------------
 
 Some configuration variables are required when starting up the Docker images.  We have outlined those variables below for each component along with an example of how to pass them.  For a full list of all available configuration options for each Confluent Platform component, you should refer to their respective documentation.
 
-	.. note::
+.. contents::
+    :depth: 1
+    :local:
 
-		The configuration variable names are prefixed with the name of the component.  For example, the Kafka image will take variables prefixed with ``KAFKA_``.
-
+---------
 ZooKeeper
 ---------
 
@@ -37,10 +129,11 @@ Required Settings
 
   Only required when running in clustered mode.  Sets the server ID in the ``myid`` file, which consists of a single line containing only the text of that machine's id. So ``myid`` of server 1 would contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
 
+--------------------------
 Confluent Kafka (cp-kafka)
 --------------------------
 
-The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
+The Kafka image uses variables prefixed with ``KAFKA_`` with an underscore (``_``) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners`` and ``zookeeper.connect`` you'd run the following command:
 
   .. sourcecode:: bash
 
@@ -67,10 +160,11 @@ Required Settings
 
   Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
 
+------------------------------------------------
 Confluent Enterprise Kafka (cp-enterprise-kafka)
 ------------------------------------------------
 
-The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (_) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
+The Enterprise Kafka image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for Confluent components. These variables have an underscore (``_``) separating each word instead of periods. As an example, to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``confluent.support.customer.id`` you'd run the following command:
 
   .. sourcecode:: bash
 
@@ -101,10 +195,11 @@ Required Settings
   Advertised listeners is required for starting up the Docker image because it is important to think through how other clients are going to connect to kafka.  In a Docker environment, you will need to make sure that your clients can connect to Kafka and other services.  Advertised listeners is how it gives out a host name that can be reached by the client.
 
 
+---------------
 Schema Registry
 ---------------
 
-For the Schema Registry image, use variables prefixed with ``SCHEMA_REGISTRY_`` with an underscore (_) separating each word instead of periods. As an example, to set ``kafkastore.connection.url``, ``host.name``, ``listeners`` and ``debug`` you'd run the following:
+For the Schema Registry image, use variables prefixed with ``SCHEMA_REGISTRY_`` with an underscore (``_``) separating each word instead of periods. As an example, to set ``kafkastore.connection.url``, ``host.name``, ``listeners`` and ``debug`` you'd run the following:
 
   .. sourcecode:: bash
 
@@ -129,10 +224,11 @@ Required Settings
   The host name advertised in ZooKeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
 
 
+----------------
 Kafka REST Proxy
 ----------------
 
-For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with an underscore (_) separating each word instead of periods. As an example, to set the ``listeners``, ``schema.registry.url`` and ``zookeeper.connect`` you'd run the following command:
+For the Kafka REST Proxy image use variables prefixed with ``KAFKA_REST_`` with an underscore (``_``) separating each word instead of periods. As an example, to set the ``listeners``, ``schema.registry.url`` and ``zookeeper.connect`` you'd run the following command:
 
   .. sourcecode:: bash
 
@@ -158,10 +254,11 @@ The following settings must be passed to run the REST Proxy Docker image.
 
   The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
+-------------
 Kafka Connect
----------------
+-------------
 
-The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
+The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
 
   .. sourcecode:: bash
 
@@ -232,10 +329,11 @@ All other settings for Connect like security, monitoring interceptors, producer 
 The image will then convert these environment variables to corresponding Connect config variables.
 
 
+------------------------
 Confluent Control Center
----------------
+------------------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (_) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
 
 .. sourcecode:: bash
 
@@ -282,10 +380,11 @@ Optional Settings
 
   To enable Control Center to interact with a Kafka Connect cluster, set this parameter to the REST endpoint URL for the Kafka Connect cluster.
 
+-------------------------------
 Confluent Enterprise Replicator
 -------------------------------
 
-Confluent Kafka Replicator is a Kafka connector and runs on a Kafka Connect cluster. The image uses variables prefixed with ``CONNECT_`` with an underscore (_) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
+Confluent Kafka Replicator is a Kafka connector and runs on a Kafka Connect cluster. The image uses variables prefixed with ``CONNECT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
 
   .. sourcecode:: bash
 
