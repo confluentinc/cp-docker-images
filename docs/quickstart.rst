@@ -175,7 +175,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --new-consumer --from-beginning --max-messages 42
+          kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --from-beginning --max-messages 42
 
       If everything is working as expected, each of the original messages you produced should be written back out:
 
@@ -356,7 +356,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
       --net=host \
       --rm \
       confluentinc/cp-kafka:4.0.0 \
-      kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --new-consumer --from-beginning --max-messages 42
+      kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --from-beginning --max-messages 42
 
   If everything is working as expected, each of the original messages you produced should be written back out:
 
@@ -578,7 +578,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
         --rm \
         -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-4.0.0.jar \
         confluentinc/cp-kafka-connect:4.0.0 \
-        bash -c 'kafka-console-consumer --consumer-property group.id=qs-consumer --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor --new-consumer --bootstrap-server localhost:29092 --topic c3-test --offset '$OFFSET' --partition 0 --max-messages=1000'
+        bash -c 'kafka-console-consumer --consumer-property group.id=qs-consumer --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor --bootstrap-server localhost:29092 --topic c3-test --offset '$OFFSET' --partition 0 --max-messages=1000'
       sleep 1;
       let OFFSET=OFFSET+1000
     done
@@ -804,7 +804,7 @@ Now that the connector is up and running, try reading a sample of 10 records fro
      --net=host \
      --rm \
      confluentinc/cp-kafka:4.0.0 \
-     kafka-console-consumer --bootstrap-server localhost:29092 --topic quickstart-data --new-consumer --from-beginning --max-messages 10
+     kafka-console-consumer --bootstrap-server localhost:29092 --topic quickstart-data --from-beginning --max-messages 10
 
   You should see the following:
 
