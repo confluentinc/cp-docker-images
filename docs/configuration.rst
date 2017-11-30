@@ -3,7 +3,7 @@
 Docker Configuration
 ====================
 
-The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.
+You can install the Confluent Platform using Docker images. This section provides an overview of Confluent's Docker images for the Confluent Platform.
 
 
 .. contents::
@@ -11,8 +11,7 @@ The Confluent Platform Docker images support passing configuration variables dyn
 
 Confluent Docker Images
 -----------------------
-
-You can install the Confluent Platform using Docker images. This section provides an overview of Confluent's Docker images for the Confluent Platform.
+The Confluent Platform Docker images support passing configuration variables dynamically using environment variables.  More specifically, we use the Docker ``-e`` or ``--env`` flags for setting various settings in the respective images when starting up the images.
 
 The images are available for Confluent Platform 3.0.1 and greater. Images are available on `DockerHub <https://hub.docker.com/u/confluentinc/>`_ for each component of the Confluent Platform. Alternatively, the source files for the images are `available on Github <https://github.com/confluentinc/cp-docker-images>`_ if you would prefer to extend and/or rebuild the images and upload them to your own DockerHub repository.
 
@@ -40,6 +39,7 @@ The table below lists the available images and the Confluent software packages t
 |                  |                              |              | - confluent-schema-registry             |
 |                  |                              |              | - confluent-control-center              |
 |                  |                              |              | - confluent-kafka-connect-elasticsearch |
+|                  |                              |              | - confluent-kafka-connect-s3            |
 +------------------+------------------------------+--------------+-----------------------------------------+
 | Schema Registry  | cp-schema-registry           | Open Source  | - confluent-schema-registry             |
 +------------------+------------------------------+--------------+-----------------------------------------+
@@ -64,7 +64,7 @@ Configuration Notes
 
 *  Bridge Networking vs. Host Networking
 
-	Bridge networking is currently only supported on a single host.  For multiple hosts, you will need to use overlay networks which are not currently supported. It order to expose Kafka to clients outside of the bridge network, you need to find the container IP and put it in ``advertised.listeners``.  This can be difficult to achieve depending on how you're using the images.  Furthermore, it can add a network hop and may not be as performant as the host network, which shares the network stack.  In summary, host networking is the recommended option in the following cases:
+	Bridge networking is currently only supported on a single host.  For multiple hosts, you will need to use overlay networks which are not currently supported. To expose Kafka to clients outside of the bridge network, you need to find the container IP and put it in ``advertised.listeners``.  This can be difficult to achieve depending on how you're using the images.  Furthermore, it can add a network hop and may not be as performant as the host network, which shares the network stack.  In summary, host networking is the recommended option in the following cases:
 
 		* Multi-host clusters without using Swarm/Kubernetes host network is the best approach
 		* If you need clients to be able to access Kafka outside the bridge/overlay network
