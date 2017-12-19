@@ -19,12 +19,13 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-echo "===> Check if Zookeeper is healthy ..."
-cub zk-ready "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL" "${SCHEMA_REGISTRY_CUB_ZK_TIMEOUT:-40}"
+if [ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]
+then
+    echo "===> Check if Zookeeper is healthy ..."
+    cub zk-ready "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL" "${SCHEMA_REGISTRY_CUB_ZK_TIMEOUT:-40}"
+fi
 
-echo "===> Check if Kafka is healthy ..."
-
-if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL = "SSL" ]]
+if ([[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL = "SSL" ]]) || ([[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL = "SASL_SSL" ]])
 then
     cub kafka-ready \
         "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \

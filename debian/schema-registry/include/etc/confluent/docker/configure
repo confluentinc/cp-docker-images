@@ -19,7 +19,12 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-dub ensure SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL
+# return error saying zookeeper variable must be specified if both variables (zk and kafka brokers) are null
+if [[ -z "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" && -z "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
+then
+    dub ensure SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL
+fi
+
 dub ensure SCHEMA_REGISTRY_HOST_NAME
 dub path /etc/"${COMPONENT}"/ writable
 
