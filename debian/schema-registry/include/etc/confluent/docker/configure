@@ -19,7 +19,7 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-if [ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]
+if [[ -z "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" && -z "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
 then
     dub ensure SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL
 fi
