@@ -21,7 +21,7 @@ set -o nounset \
 
 echo "===> Check if Kafka is healthy ..."
 
-if [[ -n "${CONNECT_SECURITY_PROTOCOL-}" ]] && [[ $CONNECT_SECURITY_PROTOCOL = "SSL" ]]
+if [[ -n "${CONNECT_SECURITY_PROTOCOL-}" ]] && [[ $CONNECT_SECURITY_PROTOCOL != "PLAINTEXT" ]]
 then
 
     cub kafka-ready \
