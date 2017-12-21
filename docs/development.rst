@@ -499,6 +499,20 @@ Docker Utility Belt (dub)
       path                  Full path.
       {writable,readable,executable,exists} One of [writable, readable, executable, exists].
 
+5. path-wait
+
+  .. sourcecode:: bash
+
+    usage: dub path-wait [-h] path timeout
+
+    Wait for a path to exist.
+
+    positional arguments:
+      path        Full path.
+      timeout     Time in secs to wait for the path to exist.
+
+    optional arguments:
+      -h, --help  show this help message and exit
 
 Confluent Platform Utility Belt (cub)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
