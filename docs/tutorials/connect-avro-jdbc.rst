@@ -164,7 +164,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         -e CONNECT_CONFIG_STORAGE_TOPIC="quickstart-avro-config" \
         -e CONNECT_OFFSET_STORAGE_TOPIC="quickstart-avro-offsets" \
         -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-avro-status" \
-        -e CONNECT_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+        -e CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=1 \
+        -e CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=1 \
         -e CONNECT_KEY_CONVERTER="io.confluent.connect.avro.AvroConverter" \
         -e CONNECT_VALUE_CONVERTER="io.confluent.connect.avro.AvroConverter" \
         -e CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL="http://localhost:8081" \
