@@ -23,6 +23,12 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
+# allow arg override of required env params
+ARG KAFKA_ZOOKEEPER_CONNECT
+ENV KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
+ARG KAFKA_ADVERTISED_LISTENERS
+ENV KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
+
 ENV COMPONENT=kafka
 
 # primary
