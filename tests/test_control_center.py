@@ -82,18 +82,18 @@ class ConfigTest(unittest.TestCase):
         confluent.controlcenter.command.topic.retention.ms=1000
         confluent.controlcenter.connect.timeout=30000
         confluent.controlcenter.rest.listeners=http://0.0.0.0:9021,https://0.0.0.0:443
-        confluent.controlcenter.streams.security.protocol=SASL_SS
+        confluent.controlcenter.streams.security.protocol=SOME_PROTOCOL
         confluent.controlcenter.streams.sasl.kerberos.service.name=kafka
         confluent.controlcenter.rest.ssl.keystore.location=/path/to/keystore
         confluent.controlcenter.mail.enabled=true
         confluent.controlcenter.mail.host.name=foo.com
-        confluent.controlcenter.streams.producer.security.protocol=SS
+        confluent.controlcenter.streams.producer.security.protocol=ANOTHER_PROTOCOL
         confluent.controlcenter.streams.producer.ssl.keystore.location=/path/to/keystore
         confluent.controlcenter.streams.producer.ssl.keystore.password=password
         confluent.controlcenter.streams.producer.ssl.key.password=password
         confluent.controlcenter.streams.producer.ssl.truststore.location=/path/to/truststore
         confluent.controlcenter.streams.producer.ssl.truststore.password=password
-        confluent.controlcenter.streams.consumer.security.protocol=SS
+        confluent.controlcenter.streams.consumer.security.protocol=ANOTHER_PROTOCOL
         confluent.controlcenter.streams.consumer.ssl.keystore.location=/path/to/keystore
         confluent.controlcenter.streams.consumer.ssl.keystore.password=password
         confluent.controlcenter.streams.consumer.ssl.key.password=password
@@ -104,7 +104,7 @@ class ConfigTest(unittest.TestCase):
 
         admin_props = props_to_list(self.cluster.run_command_on_service("wildcards-config", "cat /etc/confluent-control-center/admin.properties"))
         admin_expected = props_to_list("""
-        security.protocol=SS
+        security.protocol=ANOTHER_PROTOCOL
         ssl.keystore.location=/path/to/keystore
         ssl.keystore.password=password
         ssl.key.password=password
@@ -121,7 +121,7 @@ class ConfigTest(unittest.TestCase):
         admin_props = props_to_list(self.cluster.run_command_on_service("security-config-with-producer-override",
             "cat /etc/confluent-control-center/admin.properties"))
         admin_expected = props_to_list("""
-        security.protocol=SS
+        security.protocol=SOME_PROTOCOL
         sasl.kerberos.service.name=kafka
         ssl.keystore.location=/path/to/keystore
         ssl.keystore.password=password
