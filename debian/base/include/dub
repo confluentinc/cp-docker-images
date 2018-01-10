@@ -48,14 +48,14 @@ def env_to_props(env_prefix, prop_prefix, exclude=[]):
 
     For example: if these are set in the environment
         CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS=4
-        CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL=SASL_SS
+        CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL=SASL_SSL
         CONTROL_CENTER_STREAMS_SASL_KERBEROS_SERVICE_NAME=kafka
 
         then
             env_to_props('CONTROL_CENTER_STREAMS_', 'confluent.controlcenter.streams.', exclude=['CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS'])
         will produce
             {
-                'confluent.controlcenter.streams.security.protocol': 'SASL_SS',
+                'confluent.controlcenter.streams.security.protocol': 'SASL_SSL',
                 'confluent.controlcenter.streams.sasl.kerberos.service.name': 'kafka'
             }
 
