@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-connect-bootstrap
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-connect-bootstrap
+        image: thiagonache/cp-kafka-connect
+        env:
+        - name: DB_PIPELINES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: kafka-connect-bootstrap
+              key: db-pipelines-username
+        - name: DB_PIPELINES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-connect-bootstrap
+              key: db-pipelines-password
+        command: ["/bin/bash","/opt/payload/script.property.file"]
+        volumeMounts:
+        - name: kafka-connect-bootstrap
+          mountPath: /opt/payload
+      restartPolicy: Never
+      # The secret data is exposed to Containers in the Pod through a Volume.
+      volumes:
+        - name: kafka-connect-bootstrap
+          configMap:
+            name: kafka-connect-bootstrap
+  backoffLimit: 4
