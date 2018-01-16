@@ -22,14 +22,20 @@ spec:
           value: $HOSTNAME
         - name: "CONNECT_BOOTSTRAP_SERVERS"
           value: "r0.kafka.rush-street-gaming.aws.confluent.cloud:9092,r0.kafka.rush-street-gaming.aws.confluent.cloud:9093,r0.kafka.rush-street-gaming.aws.confluent.cloud:9094"
-        - name: "CONNECT_SASL_JAAS_CONFIG"
-          value: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$BROKER_API_KEY\" password=\"$BROKER_API_SECRET\";"
+        - name: CONNECT_SASL_JAAS_CONFIG
+          valueFrom:
+            secretKeyRef:
+              name: kafka-connect-bootstrap
+              key: connect-sasl-jaas-config
         - name: "CONNECT_SECURITY_PROTOCOL"
           value: "SASL_SSL"
         - name: "CONNECT_SASL_MECHANISM"
           value: "PLAIN"
         - name: "CONNECT_PRODUCER_SASL_JAAS_CONFIG"
-          value: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$BROKER_API_KEY\" password=\"$BROKER_API_SECRET\";"
+          valueFrom:
+            secretKeyRef:
+              name: kafka-connect-bootstrap
+              key: connect-producer-sasl-jaas-config
         - name: "CONNECT_PRODUCER_SECURITY_PROTOCOL"
           value: "SASL_SSL"
         - name: "CONNECT_PRODUCER_SASL_MECHANISM"
