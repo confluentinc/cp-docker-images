@@ -19,7 +19,7 @@ spec:
         - containerPort: 8081
         env:
         - name: "SCHEMA_REGISTRY_LISTENERS"
-          value: "http://0.0.0.0:8081"
+          value: "http://$HOSTNAME:8081"
         - name: "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS"
           value: "SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9092,SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9093,SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9094"
         - name: "SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG"
