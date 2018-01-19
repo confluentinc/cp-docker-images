@@ -9,6 +9,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
+      # workaround required due to https://docs.aws.amazon.com/codepipeline/latest/userguide/troubleshooting.html#troubleshooting-file-permissions
       - test -d debian/$IMAGE_REPO_NAME/include/etc/confluent/docker && (
         cd debian/$IMAGE_REPO_NAME/include/etc/confluent/docker &&
         chmod +x configure ensure launch run &&
