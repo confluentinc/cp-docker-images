@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: schema-registry
-        image: thiagonache/cp-schema-registry
+        image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/schema-registry:0.0.1-beta
         ports:
         - containerPort: 8081
         env:
@@ -31,5 +31,5 @@ spec:
           value: "SASL_SSL"
         - name: "SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM"
           value: "PLAIN"
-        - name: SCHEMA_REGISTRY_HOST_NAME
-          value: schema-registry
+        - name: "SCHEMA_REGISTRY_HOST_NAME"
+          value: schema-registry"

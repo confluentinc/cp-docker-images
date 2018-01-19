@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kafka-connect
-        image: thiagonache/cp-kafka-connect
+        image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/kafka-connect:0.0.1-beta
         ports:
         - containerPort: 8083
         env:
@@ -76,3 +76,8 @@ spec:
           value: "/usr/share/java"
         - name: "CONNECT_BUFFER_MEMORY"
           value: "50000"
+      "imagePullSecrets": [
+        {
+          "name": "ecr-credentials"
+        }
+      ]
