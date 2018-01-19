@@ -15,6 +15,7 @@ spec:
       containers:
       - name: schema-registry
         image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/schema-registry:0.0.1-beta
+        imagePullPolicy: Always
         ports:
         - containerPort: 8081
         env:
