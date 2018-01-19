@@ -33,3 +33,8 @@ spec:
           value: "PLAIN"
         - name: "SCHEMA_REGISTRY_HOST_NAME"
           value: schema-registry"
+      "imagePullSecrets": [
+        {
+          "name": "ecr-credentials"
+        }
+      ]
