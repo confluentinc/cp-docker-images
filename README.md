@@ -65,8 +65,17 @@ Generate base64 to populate file. The output bXkjNTNjdXIzQHA0NTUK should go in d
 Do the same for each value.
 
 ```
+$ export BROKER_API_KEY=XXX
+$ export BROKER_API_SECRET=XXX
+$ echo "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$BROKER_API_KEY\" password=\"$BROKER_API_SECRET\";" | base64
+b3JnLmFwYWNoZS5rYWZrYS5jb21tb24uc2VjdXJpdHkucGxhaW4uUGxhaW5Mb2dpbk1vZHVsZSByZXF1aXJlZCB1c2VybmFtZT0iWFhYIiBwYXNzd29yZD0iWFhYIjsK
+```
+Set b3JnLmFwYWNoZS5rYWZrYS5jb21tb24uc2VjdXJpdHkucGxhaW4uUGxhaW5Mb2dpbk1vZHVsZSByZXF1aXJlZCB1c2VybmFtZT0iWFhYIiBwYXNzd29yZD0iWFhYIjsK for both jaas-config secrets
+
+```
 $ kubectl apply -f kubernetes/kafka-connect/secret.yml
 ```
+Finally, create secrets.
 
 
 2. Create config
