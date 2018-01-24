@@ -76,22 +76,22 @@ $ kubectl apply -f kubernetes/kafka-connect/config.yml
 This config will be used to bootstrap kafka-connect.
 
 
-3. Batch job
-```
-$ kubectl apply -f kubernetes/kafka-connect/batch.yml
-```
-This container with type batch will run once to bootstrap kafka.
-
-
-4. Deployment
+3. Deployment
 ```
 $ kubectl apply -f kubernetes/kafka-connect/deployment.yml
 ```
 This is the deployment itself (containers that runs application)
 
 
-5. Service
+4. Service
 ```
 $ kubectl apply -f kubernetes/kafka-connect/service.yml
 ```
 This is the LB for talking to multiples containers.
+
+
+5. Batch job
+```
+$ kubectl apply -f kubernetes/kafka-connect/batch.yml
+```
+This container with type batch will run once to bootstrap kafka.
