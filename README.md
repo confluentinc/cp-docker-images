@@ -24,3 +24,83 @@ Start by reading our guidelines on contributing to this project found [here](htt
 
 The project is licensed under the Apache 2 license. For more information on the licenses for each of the individual Confluent Platform components packaged in the images, please refer to the respective [Confluent Platform documentation for each component](http://docs.confluent.io/current/platform.html).  
 
+# Schema registry
+1. Deployment
+```
+$ kubectl apply -f kubernetes/schema-registry/deployment.yml
+```
+Deploy schema registry container. This deployment uses secret that will be created in kafka connect stack. This deployment will be pending status until we deploy kafka connect.
+
+
+2. Service
+```
+$ kubectl apply -f kubernetes/schema-registry/service.yml
+```
+Fixed IP address to make services talk each to each other transparently.
+
+
+# Kafka Connect
+
+1. Create secrets
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-connect-bootstrap
+type: Opaque
+data:
+  db-pipelines-username: a2Fma2FfcmVhZGVy
+  db-pipelines-password: REPLACE_ME
+  connect-sasl-jaas-config: REPLACE_ME
+  connect-producer-sasl-jaas-config: REPLACE_ME
+
+```
+Find values that must be replaced
+
+```
+$ echo -e "my#53cur3@p455" | base64
+bXkjNTNjdXIzQHA0NTUK
+```
+Generate base64 to populate file. The output bXkjNTNjdXIzQHA0NTUK should go in db-pipelines-password.
+Do the same for each value.
+
+```
+$ export BROKER_API_KEY=XXX
+$ export BROKER_API_SECRET=XXX
+$ echo "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$BROKER_API_KEY\" password=\"$BROKER_API_SECRET\";" | base64
+b3JnLmFwYWNoZS5rYWZrYS5jb21tb24uc2VjdXJpdHkucGxhaW4uUGxhaW5Mb2dpbk1vZHVsZSByZXF1aXJlZCB1c2VybmFtZT0iWFhYIiBwYXNzd29yZD0iWFhYIjsK
+```
+Set b3JnLmFwYWNoZS5rYWZrYS5jb21tb24uc2VjdXJpdHkucGxhaW4uUGxhaW5Mb2dpbk1vZHVsZSByZXF1aXJlZCB1c2VybmFtZT0iWFhYIiBwYXNzd29yZD0iWFhYIjsK for both jaas-config secrets
+
+```
+$ kubectl apply -f kubernetes/kafka-connect/secret.yml
+```
+Finally, create secrets.
+
+
+2. Create config
+```
+$ kubectl apply -f kubernetes/kafka-connect/config.yml
+```
+This config will be used to bootstrap kafka-connect.
+
+
+3. Deployment
+```
+$ kubectl apply -f kubernetes/kafka-connect/deployment.yml
+```
+This is the deployment itself (containers that runs application)
+
+
+4. Service
+```
+$ kubectl apply -f kubernetes/kafka-connect/service.yml
+```
+This is the LB for talking to multiples containers.
+
+
+5. Batch job
+```
+$ kubectl apply -f kubernetes/kafka-connect/batch.yml
+```
+This container with type batch will run once to bootstrap kafka.
