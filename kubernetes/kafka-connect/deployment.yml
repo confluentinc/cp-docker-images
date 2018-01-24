@@ -81,3 +81,28 @@ spec:
           "name": "ecr-credentials"
         }
       ]
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kafka-connect-bootstrap
+  namespace: default
+data:
+  payload.property.file: |-
+    {
+      \"name\":\"pipelines-prod-mysql-jdbc\",
+      \"config\":{
+        \"table.whitelist\":[\"tasks\",\"sources\"],
+        \"connector.class\":\"io.confluent.connect.jdbc.JdbcSourceConnector\",
+        \"tasks.max\":5,
+        \"connection.url\":\"jdbc:mysql://pipelines-prod.cfgxykl7ettn.us-east-1.rds.amazonaws.com:3306/data_api_dev?user=$DB_PIPELINES_USERNAME\&password=$DB_PIPELINES_PASSWORD\",
+        \"mode\":\"incrementing\",
+        \"incrementing.column.name\":\"id\",
+        \"topic.prefix\":\"pipelines-prod-\"
+      }
+    }
+  script.property.file: |-
+    #!/bin/bash
+    payload=$(eval "echo "$(cat /opt/payload/payload.property.file)"")
+    curl -X POST -H "Content-Type: application/json" --data "$(echo $payload)" http://kafka-connect:8083/connectors
