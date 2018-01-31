@@ -38,4 +38,5 @@ RUN echo "===> Installing JDBC, Elasticsearch and Hadoop connectors ..." \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
 
+RUN ln -s /usr/share/java/mysql.jar /usr/share/java/kafka/
 COPY include/datasources /datasources
