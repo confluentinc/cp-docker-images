@@ -283,7 +283,10 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
+      -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
+      -e CONNECT_PLUGIN_PATH=/usr/share/java \
       confluentinc/cp-kafka-connect:4.0.0
+
 
 Required Settings
 """""""""""""""""
@@ -328,6 +331,9 @@ The following settings must be passed to run the Kafka Connect Docker image.
 ``CONNECT_REST_ADVERTISED_HOST_NAME``
 
   Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect REST API.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
+
+``CONNECT_PLUGIN_PATH``
+  The plugin.path value indicating the location from which to load Connect plugins in classloading isolation.
 
 Optional Settings
 """""""""""""""""
