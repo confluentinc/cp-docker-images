@@ -3,4 +3,4 @@
 Kafka Streams Examples
 ----------------------
 
-`This content has moved. <http://docs.confluent.io/current/streams/kafka-streams-examples/docs/index.html>`_
+:ref:`This content has moved. <docker-tutorial_kafka-streams-examples>`
