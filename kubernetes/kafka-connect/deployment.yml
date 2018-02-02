@@ -6,8 +6,8 @@ spec:
   selector:
     matchLabels:
       app: kafka-connect
-  replicas: 2 # tells deployment to run 2 pods matching the template
-  template: # create pods using pod definition in this template
+  replicas: 1
+  template:
     metadata:
       labels:
         app: kafka-connect
