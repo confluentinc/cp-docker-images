@@ -19,6 +19,8 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
+. /etc/confluent/docker/mesos-setup.sh
+
 . /etc/confluent/docker/apply-mesos-overrides
 
 echo "===> ENV Variables ..."
