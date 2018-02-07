@@ -28,6 +28,5 @@ RUN echo "===> Installing Replicator ..." \
     && apt-get -qq update \
      && apt-get install -y \
         confluent-kafka-connect-replicator=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
-        confluent-support-metrics=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
      && echo "===> Cleaning up ..."  \
      && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
