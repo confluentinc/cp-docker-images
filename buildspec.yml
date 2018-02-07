@@ -14,13 +14,13 @@ phases:
         cd debian/$IMAGE_REPO_NAME/include/etc/confluent/docker &&
         chmod +x configure ensure launch run &&
         cd - ) || echo "no docker include files"
-      - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION debian/$IMAGE_REPO_NAME
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION debian/$IMAGE_REPO_NAME
+      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION
 artifacts:
   files:
     - '**/*'
