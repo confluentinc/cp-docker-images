@@ -83,6 +83,8 @@ RUN echo "===> Updating debian ....." \
     && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
     && apt-get -qq update \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
+    && echo "===> Installing Kerberos Patch ..." \
+    && apt-get -y install krb5-user \
     && rm -rf /var/lib/apt/lists/* \
     && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
     && if [ "x$ALLOW_UNSIGNED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \

@@ -1,4 +1,9 @@
-{% set security_props = env_to_props('CONTROL_CENTER_STREAMS_PRODUCER_', '') -%}
+{% set producer_security_props = env_to_props('CONTROL_CENTER_STREAMS_PRODUCER_', '') -%}
+{% set security_props = env_to_props('CONTROL_CENTER_STREAMS_', '', exclude=producer_security_props) -%}
 {% for name, value in security_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
+{# producer specific overrides -#}
+{% for name, value in producer_security_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
