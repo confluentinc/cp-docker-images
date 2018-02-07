@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kafka-connect
-        image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/kafka-connect:0.0.1-beta
+        image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/kafka-connect:$CODEBUILD_RESOLVED_SOURCE_VERSION
         imagePullPolicy: Always
         ports:
         - containerPort: 8083
