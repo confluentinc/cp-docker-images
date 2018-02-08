@@ -15,7 +15,6 @@ spec:
       containers:
       - name: kafka-connect
         image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/kafka-connect:$CODEBUILD_RESOLVED_SOURCE_VERSION
-        imagePullPolicy: Always
         ports:
         - containerPort: 8083
         env:
@@ -79,6 +78,6 @@ spec:
           value: "50000"
       "imagePullSecrets": [
         {
-          "name": "ecr-credentials"
+          "name": "aws-ecr-credentials"
         }
       ]
