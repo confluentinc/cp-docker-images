@@ -19,10 +19,5 @@ if [ -z $SKIP_MESOS_AUTO_SETUP ]; then
                 -file $MESOS_SANDBOX/.ssl/ca-bundle.crt \
                 -storepass changeit \
                 -keystore /tmp/kafka-truststore.jks -noprompt
-
-
-        if [ "$KERBEROS_ENABLED" = "true" ]; then
-            export KAFKAREST_OPTS="-Djava.security.auth.login.config=/tmp/client-jaas.conf -Djava.security.krb5.conf=/tmp/krb5.conf"
-        fi
     fi
 fi
