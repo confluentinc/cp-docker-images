@@ -51,13 +51,6 @@ Note: The Kafka Connect image is labeled as "Enterprise" simply because it conta
 Configuration Notes
 -------------------
 
-*  Docker for Mac
-
-	We do not recommend using these images with Docker for Mac at this time.  The primary reason is that Docker for Mac does not update the local /etc/hosts file with the hostnames of the deployed containers.   This makes it difficult to access the containerized cluster with client applications running directly on the Mac.  Additionally, the semantics of ``--net=host`` are not clear, so deploying containers with host networking on Docker for Mac is not reliable.  More details on these issues can be found at:
-
-	- `Hostname Issue <https://forums.docker.com/t/docker-for-mac-does-not-add-docker-hostname-to-etc-hosts/8620/4>`_
-	- Host networking on Docker for Mac: `link 1 <https://forums.docker.com/t/should-docker-run-net-host-work/14215>`_, `link 2 <https://forums.docker.com/t/net-host-does-not-work/17378/7>`_, `link 3 <https://forums.docker.com/t/explain-networking-known-limitations-explain-host/15205/4>`_
-
 *  Persistent Data (Mounted Volumes)
 
 	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
@@ -68,10 +61,6 @@ Configuration Notes
 
 		* Multi-host clusters without using Swarm/Kubernetes host network is the best approach
 		* If you need clients to be able to access Kafka outside the bridge/overlay network
-
-*  Launch Settings
-
-    Docker containers should be launched with ``Restart=always`` unless you are using a process manager.   This ensures that intermittent failures in the Docker environment do not result in unnecessary failures of the Confluent services.
 
 *  Adding Connectors to the Kafka Connect Image
 
@@ -88,9 +77,6 @@ Configuration Notes
 
 	The following features/environments are not currently tested:
 
-		* Schema Registry SSL
-		* Kafka Connect with Security Enabled
-		* Confluent Control Center with Security Enabled
 		* The images are not currently tested on Docker Swarm.
 
 Configuration Parameters
