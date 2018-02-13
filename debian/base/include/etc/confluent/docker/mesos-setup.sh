@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set +o nounset
+
 if [ -z $SKIP_MESOS_AUTO_SETUP ]; then
     if [ -n $MESOS_SANDBOX ] && [ -e $MESOS_SANDBOX/.ssl/scheduler.crt ] && [ -e $MESOS_SANDBOX/.ssl/scheduler.key ]; then
         echo "Entering Mesos auto setup for Java SSL truststore. You should not see this if you are not on mesos ..."
@@ -21,3 +23,5 @@ if [ -z $SKIP_MESOS_AUTO_SETUP ]; then
                 -keystore /tmp/kafka-truststore.jks -noprompt
     fi
 fi
+
+set -o nounset
