@@ -415,7 +415,7 @@ Confluent Kafka Replicator is a Kafka connector and runs on a Kafka Connect clus
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-kafka-connect:4.0.0
+      confluentinc/cp-enterprise-replicator:4.0.0
 
 The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from source Kafka cluster (src) to a destination Kafka cluster (dest).
 
