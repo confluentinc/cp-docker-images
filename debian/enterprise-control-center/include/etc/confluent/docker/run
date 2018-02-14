@@ -19,9 +19,6 @@ set -o nounset \
     -o verbose \
     -o xtrace
 
-#Run Mesos Setup (ignores if mesos env files not detected)
-. /etc/confluent/docker/mesos-setup.sh
-
 #Ignoring Mesos override errors
 . /etc/confluent/docker/apply-mesos-overrides || true
 
