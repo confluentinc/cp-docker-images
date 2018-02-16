@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
+set +o nounset \
     -o errexit \
     -o verbose \
     -o xtrace
@@ -26,26 +26,27 @@ then
 fi
 
 echo "===> Check if Kafka is healthy ..."
-
-if [[ -n "${KAFKA_REST_CLIENT_SECURITY_PROTOCOL-}" ]] && [[ $KAFKA_REST_CLIENT_SECURITY_PROTOCOL != "PLAINTEXT" ]]
-then
-    cub kafka-ready \
-        "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "${KAFKA_REST_BOOTSTRAP_SERVERS}" \
-        --config /etc/"${COMPONENT}"/admin.properties
-else
-    if [[ -n "${KAFKA_REST_ZOOKEEPER_CONNECT-}" ]]
+if [ -z "$MESOS_SANDBOX" ]; then
+    if [[ -n "${KAFKA_REST_CLIENT_SECURITY_PROTOCOL-}" ]] && [[ $KAFKA_REST_CLIENT_SECURITY_PROTOCOL != "PLAINTEXT" ]]
     then
         cub kafka-ready \
             "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
             "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
-            -z "$KAFKA_REST_ZOOKEEPER_CONNECT"
-    elif [[ -n "${KAFKA_REST_BOOTSTRAP_SERVERS-}" ]]
-    then
-        cub kafka-ready \
-            "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
-            "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
-            -b "${KAFKA_REST_BOOTSTRAP_SERVERS}"
+            -b "${KAFKA_REST_BOOTSTRAP_SERVERS}" \
+            --config /etc/"${COMPONENT}"/admin.properties
+    else
+        if [[ -n "${KAFKA_REST_ZOOKEEPER_CONNECT-}" ]]
+        then
+            cub kafka-ready \
+                "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+                "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+                -z "$KAFKA_REST_ZOOKEEPER_CONNECT"
+        elif [[ -n "${KAFKA_REST_BOOTSTRAP_SERVERS-}" ]]
+        then
+            cub kafka-ready \
+                "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+                "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+                -b "${KAFKA_REST_BOOTSTRAP_SERVERS}"
+        fi
     fi
 fi

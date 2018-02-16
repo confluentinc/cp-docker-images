@@ -14,25 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
+set +o nounset \
     -o errexit \
     -o verbose \
     -o xtrace
 
 echo "===> Check if Kafka is healthy ..."
 
-if [[ -n "${CONNECT_SECURITY_PROTOCOL-}" ]] && [[ $CONNECT_SECURITY_PROTOCOL != "PLAINTEXT" ]]
-then
+if [ -z "$MESOS_SANDBOX" ]; then
+    if [[ -n "${CONNECT_SECURITY_PROTOCOL-}" ]] && [[ $CONNECT_SECURITY_PROTOCOL != "PLAINTEXT" ]]
+    then
 
-    cub kafka-ready \
-        "${CONNECT_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${CONNECT_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "$CONNECT_BOOTSTRAP_SERVERS" \
-        --config /etc/"${COMPONENT}"/kafka-connect.properties
-else
+        cub kafka-ready \
+            "${CONNECT_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${CONNECT_CUB_KAFKA_TIMEOUT:-40}" \
+            -b "$CONNECT_BOOTSTRAP_SERVERS" \
+            --config /etc/"${COMPONENT}"/kafka-connect.properties
+    else
 
-    cub kafka-ready \
-        "${CONNECT_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${CONNECT_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "$CONNECT_BOOTSTRAP_SERVERS"
+        cub kafka-ready \
+            "${CONNECT_CUB_KAFKA_MIN_BROKERS:-1}" \
+            "${CONNECT_CUB_KAFKA_TIMEOUT:-40}" \
+            -b "$CONNECT_BOOTSTRAP_SERVERS"
+    fi
 fi
+
+set -o nounset

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
+set +o nounset \
     -o errexit \
     -o verbose \
     -o xtrace
@@ -26,25 +26,27 @@ fi
 
 echo "===> Check if Kafka is healthy ..."
 
-if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL != "PLAINTEXT" ]]
-then
-    cub kafka-ready \
-        "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
-        "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
-        -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}" \
-        --config /etc/"${COMPONENT}"/admin.properties
-else
-    if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]]
+if [ -z "$MESOS_SANDBOX" ]; then
+    if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL-}" ]] && [[ $SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL != "PLAINTEXT" ]]
     then
         cub kafka-ready \
             "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
             "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
-            -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
-    elif [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
-    then
-        cub kafka-ready \
-            "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
-            "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
-            -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}"
+            -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}" \
+            --config /etc/"${COMPONENT}"/admin.properties
+    else
+        if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]]
+        then
+            cub kafka-ready \
+                "${SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS:-1}" \
+                "${SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT:-40}" \
+                -z "$SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL"
+        elif [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS-}" ]]
+        then
+            cub kafka-ready \
+                "${KAFKA_REST_CUB_KAFKA_MIN_BROKERS:-1}" \
+                "${KAFKA_REST_CUB_KAFKA_TIMEOUT:-40}" \
+                -b "${SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS}"
+        fi
     fi
 fi
