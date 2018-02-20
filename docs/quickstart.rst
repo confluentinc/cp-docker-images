@@ -740,6 +740,7 @@ For this example, you'll create a FileSourceConnector, a FileSinkConnector and d
         -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
         -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
+        -e CONNECT_REST_HOST_NAME="localhost" \
         -v /tmp/quickstart/file:/tmp/quickstart \
         confluentinc/cp-kafka-connect:3.3.0
 
