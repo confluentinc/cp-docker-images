@@ -35,6 +35,19 @@ RUN echo "===> Installing Schema Registry (for Avro jars) ..." \
         confluent-schema-registry=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Installing Controlcenter for monitoring interceptors ..."\
     && apt-get install -y confluent-control-center=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
+    && echo "Downloading new ZK Version ... " \
+    && curl -o /tmp/zookeeper-3.4.10.1.jar http://downloads.mesosphere.com/kafka/assets/zookeeper-3.4.10.1.jar \
+    && echo "===> Replacing ZK with newer version" \
+    && rm -f /usr/share/java/confluent-control-center/zookeeper-3.4.10.jar \
+    && rm -f /usr/share/java/schema-registry/zookeeper-3.4.10.jar \
+    && rm -f /usr/share/java/confluent-serializers/zookeeper-3.4.10.jar \
+    && rm -f /usr/share/java/confluent-rebalancer/zookeeper-3.4.10.jar \
+    && rm -f /usr/share/java/confluent-common/zookeeper-3.4.10.jar \
+    && cp /tmp/zookeeper-3.4.10.1.jar /usr/share/java/confluent-control-center \
+    && cp /tmp/zookeeper-3.4.10.1.jar /usr/share/java/schema-registry \
+    && cp /tmp/zookeeper-3.4.10.1.jar /usr/share/java/confluent-serializers \
+    && cp /tmp/zookeeper-3.4.10.1.jar /usr/share/java/confluent-rebalancer \
+    && cp /tmp/zookeeper-3.4.10.1.jar /usr/share/java/confluent-common \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
