@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta2 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: schema-registry
+spec:
+  selector:
+    matchLabels:
+      app: schema-registry
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: schema-registry
+    spec:
+      containers:
+      - name: schema-registry
+        image: 921942764047.dkr.ecr.us-east-1.amazonaws.com/schema-registry:0.0.1-beta
+        ports:
+        - containerPort: 8081
+        env:
+        - name: "SCHEMA_REGISTRY_LISTENERS"
+          value: "http://0.0.0.0:8081"
+        - name: "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS"
+          value: "SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9092,SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9093,SASL_SSL://r0.kafka.rush-street-gaming.aws.confluent.cloud:9094"
+        - name: "SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG"
+          valueFrom:
+            secretKeyRef:
+              name: kafka-connect-bootstrap
+              key: connect-sasl-jaas-config
+        - name: "SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL"
+          value: "SASL_SSL"
+        - name: "SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM"
+          value: "PLAIN"
+        - name: "SCHEMA_REGISTRY_HOST_NAME"
+          value: schema-registry"
+      "imagePullSecrets": [
+        {
+          "name": "aws-ecr-credentials"
+        }
+      ]

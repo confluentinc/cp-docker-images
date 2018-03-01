@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)"
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      # workaround required due to https://docs.aws.amazon.com/codepipeline/latest/userguide/troubleshooting.html#troubleshooting-file-permissions
+      - test -d debian/$IMAGE_REPO_NAME/include/etc/confluent/docker && (
+        cd debian/$IMAGE_REPO_NAME/include/etc/confluent/docker &&
+        chmod +x configure ensure launch run &&
+        cd - ) || echo "no docker include files"
+      - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION debian/$IMAGE_REPO_NAME
+      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - printf '%s' $TAG > tag.txt
+artifacts:
+  files:
+    - '**/*'
+

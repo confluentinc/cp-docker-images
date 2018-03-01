@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-connect
+  labels:
+    app: kafka-connect
+spec:
+  ports:
+  - port: 8083
+    name: app
+  selector:
+    app: kafka-connect

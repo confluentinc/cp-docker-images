@@ -1,0 +1,12 @@
+{
+  "name":"pipelines-prod-mysql-jdbc",
+  "config":{
+    "table.whitelist":["tasks"],
+    "connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max":5,
+    "connection.url":"jdbc:mysql://pipelines-prod.cfgxykl7ettn.us-east-1.rds.amazonaws.com:3306/data_api_dev?user=$OFFICE_PROD_DB_PIPELINES_USERNAME\&password=$OFFICE_PROD_DB_PIPELINES_PASSWORD",
+    "mode":"incrementing",
+    "incrementing.column.name":"id",
+    "topic.prefix":"pipelines-prod-"
+  }
+}
