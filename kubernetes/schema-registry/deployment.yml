@@ -35,6 +35,6 @@ spec:
           value: schema-registry"
       "imagePullSecrets": [
         {
-          "name": "ecr-credentials"
+          "name": "aws-ecr-credentials"
         }
       ]
