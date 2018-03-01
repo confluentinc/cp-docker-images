@@ -49,20 +49,11 @@ metadata:
   name: kafka-connect-bootstrap
 type: Opaque
 data:
-  db-pipelines-username: a2Fma2FfcmVhZGVy
-  db-pipelines-password: REPLACE_ME
   connect-sasl-jaas-config: REPLACE_ME
   connect-producer-sasl-jaas-config: REPLACE_ME
 
 ```
-Find values that must be replaced
-
-```
-$ echo -e "my#53cur3@p455" | base64
-bXkjNTNjdXIzQHA0NTUK
-```
-Generate base64 to populate file. The output bXkjNTNjdXIzQHA0NTUK should go in db-pipelines-password.
-Do the same for each value.
+Notice values that must be replaced and generate base64 for each.
 
 ```
 $ export BROKER_API_KEY=XXX
@@ -97,10 +88,3 @@ This is the deployment itself (containers that runs application)
 $ kubectl apply -f kubernetes/kafka-connect/service.yml
 ```
 This is the LB for talking to multiples containers.
-
-
-5. Batch job
-```
-$ kubectl apply -f kubernetes/kafka-connect/batch.yml
-```
-This container with type batch will run once to bootstrap kafka.
