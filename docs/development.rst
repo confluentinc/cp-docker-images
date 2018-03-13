@@ -97,7 +97,7 @@ Setup
          --amazonec2-region us-west-2 \
          --amazonec2-instance-type m4.large \
          --amazonec2-root-size 100 \
-         --amazonec2-ami ami-16b1a077 \
+         --amazonec2-ami ami-8f78c2f7 \
          --amazonec2-tags Name,$INSTANCE_NAME \
          $USER-aws-confluent
 
