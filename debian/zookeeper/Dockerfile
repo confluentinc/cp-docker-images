@@ -41,4 +41,6 @@ VOLUME ["/var/lib/${COMPONENT}/data", "/var/lib/${COMPONENT}/log", "/etc/${COMPO
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
+HEALTHCHECK CMD /etc/confluent/docker/health
+
 CMD ["/etc/confluent/docker/run"]
