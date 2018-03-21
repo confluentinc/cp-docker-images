@@ -41,6 +41,11 @@ ES_SINK_CONNECTOR_CREATE = """
     http://%s:%s/connectors
 """
 
+ACTIVEMQ_SOURCE_CONNECTOR_CREATE = """
+    curl -X POST -H "Content-Type: application/json" --data '{ "name": "%s", "config": { "connector.class": "io.confluent.connect.jms.JmsSourceConnector", "tasks.max": 1, "activemq.url": "%s", "jms.destination.name": "testing", "kafka.topic": "%s", "confluent.topic.bootstrap.servers=": "%s"}}' \
+    http://%s:%s/connectors
+"""
+
 CONNECTOR_STATUS = "curl -s -X GET http://{host}:{port}/connectors/{name}/status"
 
 
@@ -455,6 +460,47 @@ class SingleNodeDistributedTest(unittest.TestCase):
             time.sleep(1.0)
 
         assert "10000" in tmp
+
+    def test_activemq_source_connector_on_host_network_with_avro(self):
+
+        activemq_topic_prefix = "one-node-activemq-source-avro-"
+        data_topic = "%stest" % activemq_topic_prefix
+        source_connector_name = "one-node-activemq-source-test"
+        sink_connector_name = "one-node-activemq-file-sink-test"
+        worker_host = "localhost"
+        worker_port = 38082
+
+        # Creating topics upfront makes the tests go a lot faster (I suspect this is because consumers dont waste time with rebalances)
+        self.create_topics("kafka-host", "default.avro", data_topic)
+
+        assert "PASS" in self.cluster.run_command_on_service("activemq-host", "bash -c 'bin/activemq producer --message MyMessage --messageCount 1000 --destination queue://TEST' | grep 'Produced: 1000 messages' && echo PASS || echo FAIL")
+
+        # Test from within the container
+        self.is_connect_healthy_for_service("connect-host-avro", 38082)
+
+        activemq_source_create_cmd = ACTIVEMQ_SOURCE_CONNECTOR_CREATE % (
+            source_connector_name,
+            "tcp://127.0.0.1:61616",
+            data_topic,
+            "localhost:9092",
+            worker_host,
+            worker_port)
+
+        activemq_source_status = create_connector(source_connector_name, activemq_source_create_cmd, worker_host, worker_port)
+        self.assertEquals(activemq_source_status, "RUNNING")
+
+        file_sink_create_cmd = FILE_SINK_CONNECTOR_CREATE % (
+            sink_connector_name,
+            data_topic,
+            "/tmp/test/%s" % file_sink_output_file,
+            worker_host,
+            worker_port)
+        sink_status = create_connector(sink_connector_name, file_sink_create_cmd, worker_host, worker_port)
+        self.assertEquals(sink_status, "RUNNING")
+
+        record_count = 1000
+        sink_op = wait_and_get_sink_output("/tmp/kafka-connect-single-node-test", file_sink_output_file, record_count)
+        self.assertEquals(sink_op, 1000)
 
 
 class ClusterHostNetworkTest(unittest.TestCase):

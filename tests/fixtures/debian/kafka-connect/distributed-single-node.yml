@@ -49,6 +49,12 @@ services:
     labels:
     - io.confluent.docker.testing=true
 
+  activemq-host:
+    image: webcenter/activemq:5.14.3
+    network_mode: host
+    labels:
+    - io.confluent.docker.testing=true
+
   connect-host-json:
     image: confluentinc/cp-kafka-connect:latest
     network_mode: host
