@@ -201,7 +201,7 @@ Getting Started with Docker Client
 
   .. note::
 
-    The following steps show each Docker container being launched in detached mode and how to access the logs for those detached containers.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` ("detached") flag with ``--it`` ("interactive"). Containers launched in interactive mode will stream the log messages for the Confluent service directly to the terminal window.  For that reason, you'll need a separate terminal for each Docker image launched in interactive mode.
+    The following steps show each Docker container being launched in detached mode and how to access the logs for those detached containers.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` ("detached") flag with ``-it`` ("interactive"). Containers launched in interactive mode will stream the log messages for the Confluent service directly to the terminal window.  For that reason, you'll need a separate terminal for each Docker image launched in interactive mode.
 
 Create and configure the Docker Machine. This example creates a VirtualBox VM with ~6 GB of memory to serve as your Docker host.
 

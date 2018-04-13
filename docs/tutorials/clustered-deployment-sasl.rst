@@ -26,7 +26,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``-it``.
 
 1. Create and configure the Docker machine. If you are running a docker-machine VM in the cloud like AWS, then you will need to SSH into the VM and run these commands. You may need to run them as root.
 
