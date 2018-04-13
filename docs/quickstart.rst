@@ -5,7 +5,7 @@ Docker Quick Start
 
 This quick start provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.
 
-To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
+To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as ``cp-kafka`` and ``cp-zookeeper`` to be stopped and restarted without losing their stateful data.
 
 Prerequisites
     * :ref:`Confluent Platform system requirements <system-requirements>`
@@ -77,9 +77,9 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
         d42bb38e2f0e: Already exists
         Digest: sha256:61373cf6eca980887164d6fede2552015db31a809c99d6c3d5dfc70867b6cd2d
         Status: Downloaded newer image for confluentinc/cp-kafka:latest
-        Creating kafkasinglenode_zookeeper_1 ... 
+        Creating kafkasinglenode_zookeeper_1 ...
         Creating kafkasinglenode_zookeeper_1 ... done
-        Creating kafkasinglenode_kafka_1 ... 
+        Creating kafkasinglenode_kafka_1 ...
         Creating kafkasinglenode_kafka_1 ... done
 
    **Tip:** You can run this command to verify that the services are up and running:
@@ -130,7 +130,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
    Now you can take this basic deployment for a test drive.  You'll verify that the broker is functioning normally by creating a topic and producing data to it.  You'll use the client tools directly from another Docker container.
 
-   #. Create a topic named ``foo`` and keep things simple by just giving it one partition and one replica.  For a production environment you would have many more broker nodes, partitions, and replicas for scalability and resiliency. 
+   #. Create a topic named ``foo`` and keep things simple by just giving it one partition and one replica.  For a production environment you would have many more broker nodes, partitions, and replicas for scalability and resiliency.
 
       .. sourcecode:: bash
 
@@ -141,7 +141,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
       ::
 
-        Created topic "foo".  
+        Created topic "foo".
 
    #. Verify that the topic was created successfully:
 
@@ -232,7 +232,7 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
   Also, the Docker network ``confluent`` and the required ZooKeeper parameter ``ZOOKEEPER_CLIENT_PORT`` are specified.
   For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
-  Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
+  Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service.
 
   .. sourcecode:: console
 
@@ -295,7 +295,7 @@ Start Kafka.
 
 Now you can take this very basic deployment for a test drive.  You'll verify that the broker is functioning normally by creating a topic and producing data to it.  You'll use the client tools directly from another Docker container.
 
-  First, you'll create a topic.  You'll name it ``foo`` and keep things simple by just giving it one partition and only one replica.  Production environments with more broker nodes would obviously use higher values for both partitions and replicas for scalability and resiliency. 
+  First, you'll create a topic.  You'll name it ``foo`` and keep things simple by just giving it one partition and only one replica.  Production environments with more broker nodes would obviously use higher values for both partitions and replicas for scalability and resiliency.
 
   .. sourcecode:: console
 
@@ -497,8 +497,8 @@ This portion of the quick start provides an overview of how to use Confluent Con
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://kafka-connect:8082 \
       confluentinc/cp-enterprise-control-center:4.1.0
 
-  You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.  
-  
+  You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.
+
   Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
 
   .. sourcecode:: console
@@ -513,7 +513,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
     [2016-08-26 18:47:26,811] INFO Started @5211ms (org.eclipse.jetty.server.Server)
 
   To see the Control Center UI, open the link http://localhost:9021 in your browser.
-  
+
   If you are running Docker Machine, the UI will be running at http://<docker-host-ip>:9021 where the Docker Host IP is the address displayed by running the command ``docker-machine ip confluent``.  If your Docker daemon is running on a remote machine (such as an AWS EC2 instance), you'll need to allow TCP access to that instance on port 9021. This is done in AWS by adding a "Custom TCP Rule" to the instance's security group; the rule should all access to port 9021 from any source IP.
 
   Initially, the Stream Monitoring UI will have no data.
@@ -582,16 +582,16 @@ This portion of the quick start provides an overview of how to use Confluent Con
     1000
     Processed a total of 1000 messages
 
-  You've intentionally setup a slow consumer to consume at a rate 
-  of 1000 messages per second. You'll soon reach a steady state 
-  where the producer window shows an update every 10 seconds while 
-  the consumer window shows bursts of 1000 messages received 
-  every 1 second. The monitoring activity should appear in the 
-  Control Center UI after 15 to 30 seconds.  If you don't see any 
-  activity, use the scaling selector in the upper left hand corner 
-  of the web page to select a smaller time window (the default is 
-  4 hours, and you'll want to zoom in to a 10-minute scale).  You 
-  will notice there will be moments where the bars are colored red 
+  You've intentionally setup a slow consumer to consume at a rate
+  of 1000 messages per second. You'll soon reach a steady state
+  where the producer window shows an update every 10 seconds while
+  the consumer window shows bursts of 1000 messages received
+  every 1 second. The monitoring activity should appear in the
+  Control Center UI after 15 to 30 seconds.  If you don't see any
+  activity, use the scaling selector in the upper left hand corner
+  of the web page to select a smaller time window (the default is
+  4 hours, and you'll want to zoom in to a 10-minute scale).  You
+  will notice there will be moments where the bars are colored red
   to reflect the slow consumption of data.
 
   .. figure:: images/c3-quickstart-monitoring-data.png
@@ -606,8 +606,8 @@ section assumes the console producer and
 consumer you launched to illustrate the stream monitoring features
 are still running in the background.
 
-The Alerts and Overview link on the lefthand navigation sidebar displays a history of all triggered events. To begin receiving 
-alerts, you'll need to create a trigger. Click the "Triggers" 
+The Alerts and Overview link on the lefthand navigation sidebar displays a history of all triggered events. To begin receiving
+alerts, you'll need to create a trigger. Click the "Triggers"
 navigation item and then select "+ New trigger".
 
 Let's configure a trigger to fire when the difference between your actual
@@ -621,8 +621,8 @@ consumption and expected consumption is greater than 1000 messages:
 
 Set the trigger name to be "Underconsumption", which is what will be displayed
 on the history page when your trigger fires. You need to select a specific
-consumer group (``qs-consumer``) for this trigger.   That's the name of 
-the group you specified above in your invocation of 
+consumer group (``qs-consumer``) for this trigger.   That's the name of
+the group you specified above in your invocation of
 ``kafka-console-consumer``.
 
 Set the trigger metric to be "Consumption difference" where the
@@ -851,7 +851,7 @@ Now that the connector is up and running, try reading a sample of 10 records fro
 Monitoring in Control Center
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Next you'll see how to monitor the Kafka Connect connectors in Control Center.  Because you specified the monitoring interceptors when you deployed the Connect container, the data flows through all of your connectors will monitored in the same ways as the console producer/consumer tasks you executed above.  Additionally, Control Center allows us to visually manage and deploy connectors, as you'll see now. 
+Next you'll see how to monitor the Kafka Connect connectors in Control Center.  Because you specified the monitoring interceptors when you deployed the Connect container, the data flows through all of your connectors will monitored in the same ways as the console producer/consumer tasks you executed above.  Additionally, Control Center allows us to visually manage and deploy connectors, as you'll see now.
 
   Select the Management / Kafka Connect link in the Control Center navigation bar.  Select the ``SOURCES`` and ``SINKS`` tabs at the top of the page to see that both the source and sink are running.
 
