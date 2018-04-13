@@ -29,7 +29,7 @@ Getting Started with Docker Compose
 
 Docker Compose is a powerful tool that enables you to launch multiple Docker images in a coordinated fashion.  It is ideal for platforms like Confluent.  Before you get started, you will need to install both the core `Docker Engine <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
 
-#. Create and configure the Docker Machine (Windows Only)
+#. **Windows Only:** Create and configure the Docker Machine
 
    **Important:** If you are using Docker for Mac or Docker for Windows, you can skip this step.
 
@@ -206,10 +206,10 @@ Getting Started with Docker Client
 Docker Network
 ++++++++++++++
 
-First, create the network to run the Confluent containers in.
+Create the Docker network that is used to run the Confluent containers.
 
-.. note::
-  This is required to enable DNS resolution across all our containers, since the default Docker network does not have DNS enabled.
+.. important::
+  A Docker network is required to enable DNS resolution across your containers. The default Docker network does not have DNS enabled.
 
 .. sourcecode:: console
 
@@ -228,7 +228,9 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
         -e ZOOKEEPER_CLIENT_PORT=2181 \
         confluentinc/cp-zookeeper:4.1.0
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.0`` container and name it ``zookeeper``.  We also specify that we want to use the network we just created, and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.0`` container and name it ``zookeeper``.
+  Also, the Docker network ``confluent`` and the required ZooKeeper parameter ``ZOOKEEPER_CLIENT_PORT`` are specified.
+  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
 
@@ -512,7 +514,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
 
   To see the Control Center UI, open the link http://localhost:9021 in your browser.
   
-  If you are running Docker Machine, the UI would be running at http://<docker-host-ip>:9021 where the Docker Host IP is the address displayed by running the command ``docker-machine ip confluent``.  If your Docker daemon is running on a remote machine (such as an AWS EC2 instance), you'll need to allow TCP access to that instance on port 9021. This is done in AWS by adding a "Custom TCP Rule" to the instance's security group; the rule should all access to port 9021 from any source IP.
+  If you are running Docker Machine, the UI will be running at http://<docker-host-ip>:9021 where the Docker Host IP is the address displayed by running the command ``docker-machine ip confluent``.  If your Docker daemon is running on a remote machine (such as an AWS EC2 instance), you'll need to allow TCP access to that instance on port 9021. This is done in AWS by adding a "Custom TCP Rule" to the instance's security group; the rule should all access to port 9021 from any source IP.
 
   Initially, the Stream Monitoring UI will have no data.
 
@@ -879,4 +881,4 @@ Cleanup
 
 After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above, ``docker volume prune`` to remove any remaining unused volumes, and ``docker network rm confluent`` to delete the network we created.
 
-If you are running Docker Machine, you may also want to remove the virtual machine you used. You can do so using ``docker-machine rm confluent``.
+If you are running Docker Machine, you can remove the virtual machine with this command: ``docker-machine rm confluent``.
