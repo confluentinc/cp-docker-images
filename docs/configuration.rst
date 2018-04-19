@@ -60,7 +60,7 @@ Configuration Notes
 
 *  Persistent Data (Mounted Volumes)
 
-	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+	When deploying the Kafka and |zk| images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
 
 *  Bridge Networking vs. Host Networking
 
@@ -103,10 +103,10 @@ Some configuration variables are required when starting up the Docker images.  W
     :local:
 
 ---------
-ZooKeeper
+|zk|
 ---------
 
-The ZooKeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
+The |zk| image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
 
 	.. sourcecode:: bash
 
@@ -123,7 +123,7 @@ Required Settings
 
 ``ZOOKEEPER_CLIENT_PORT``
 
-  This field is always required.  Tells ZooKeeper where to listen for connections by clients such as Kafka.
+  This field is always required.  Tells |zk| where to listen for connections by clients such as Kafka.
 
 ``ZOOKEEPER_SERVER_ID``
 
@@ -157,7 +157,7 @@ Required Settings
 
 ``KAFKA_ZOOKEEPER_CONNECT``
 
-  Tells Kafka how to get in touch with ZooKeeper.
+  Tells Kafka how to get in touch with |zk|.
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
@@ -195,7 +195,7 @@ Required Settings
 
 ``KAFKA_ZOOKEEPER_CONNECT``
 
-  Tells Kafka how to get in touch with ZooKeeper.
+  Tells Kafka how to get in touch with |zk|.
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
@@ -224,11 +224,11 @@ Required Settings
 
 ``SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL``
 
-  ZooKeeper URL for the Kafka cluster.
+  |zk| URL for the Kafka cluster.
 
 ``SCHEMA_REGISTRY_HOST_NAME``
 
-  The host name advertised in ZooKeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
+  The host name advertised in |zk|. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
 
 
 ----------------
@@ -257,9 +257,9 @@ The following settings must be passed to run the REST Proxy Docker image.
 
 ``KAFKA_REST_ZOOKEEPER_CONNECT``
 
-  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
+  Specifies the |zk| connection string in the form hostname:port where host and port are the host and port of a |zk| server. To allow connecting through other |zk| nodes when that |zk| machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
 
-  The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
+  The server may also have a |zk| ``chroot`` path as part of it's |zk| connection string which puts its data under some path in the global |zk| namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
 -------------
 Kafka Connect
@@ -340,7 +340,7 @@ The image will then convert these environment variables to corresponding Connect
 Confluent Control Center
 ------------------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs Control Center, passing in its |zk|, Kafka, and Connect configuration parameters.
 
 .. sourcecode:: bash
 
@@ -368,9 +368,9 @@ The following settings must be passed to run the Confluent Control Center image.
 
 ``CONTROL_CENTER_ZOOKEEPER_CONNECT``
 
-  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
+  Specifies the |zk| connection string in the form hostname:port where host and port are the host and port of a |zk| server. To allow connecting through other |zk| nodes when that |zk| machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
 
-  The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
+  The server may also have a |zk| ``chroot`` path as part of it's |zk| connection string which puts its data under some path in the global |zk| namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
 ``CONTROL_CENTER_BOOTSTRAP_SERVERS``
 

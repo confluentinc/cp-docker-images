@@ -5,10 +5,10 @@ Replicator Tutorial
 
 In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka Connect cluster because Replicator is built on Connect.
 
-It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
-Installing & Running Docker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installing and Running Docker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run Docker using Docker Compose.
 
@@ -108,7 +108,7 @@ Once you've done that, you can follow the steps below to start up the Confluent 
     enterprisereplicator_zookeeper-src-a_1   /etc/confluent/docker/run   Up
     enterprisereplicator_zookeeper-src-b_1   /etc/confluent/docker/run   Up
 
-  Now check the ZooKeeper logs for destination cluster to verify that ZooKeeper is healthy.
+  Now check the |zk| logs for destination cluster to verify that |zk| is healthy.
 
   .. sourcecode:: bash
 
