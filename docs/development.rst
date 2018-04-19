@@ -208,7 +208,7 @@ The following examples show to extend the images.
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
 
-  To do this for the ZooKeeper image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
+  To do this for the |zk| image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
   ``Dockerfile``
 
@@ -505,7 +505,7 @@ Confluent Platform Utility Belt (cub)
 
 1. zk-ready
 
-  Used for checking if ZooKeeper is ready.
+  Used for checking if |zk| is ready.
 
   .. sourcecode:: bash
 
