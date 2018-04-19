@@ -3,13 +3,13 @@
 Clustered Deployment Using SASL and SSL
 ----------------------------------------
 
-In this section, we provide a tutorial for running a secure three-node Kafka cluster and ZooKeeper ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+In this section, we provide a tutorial for running a secure three-node Kafka cluster and |zk| ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to our quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
   .. note::
 
-    It is worth noting that we will be configuring Kafka and ZooKeeper to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+    It is worth noting that we will be configuring Kafka and |zk| to store secrets locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
-Installing & Running Docker
+Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, `skip to the bottom of this guide <clustered_quickstart_compose_sasl>`_.
@@ -126,7 +126,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab ${principal}/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-6. Run a 3-node ZooKeeper ensemble with SASL enabled.
+6. Run a 3-node |zk| ensemble with SASL enabled.
 
    .. sourcecode:: bash
 
@@ -173,7 +173,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
            confluentinc/cp-zookeeper:4.0.0
 
-  Check the logs to see the ZooKeeper server has booted up successfully
+  Check the logs to see the |zk| server has booted up successfully
 
   .. sourcecode:: bash
 
@@ -190,7 +190,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.zookeeper.server.quorum.QuorumCnxManager)
      [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.zookeeper.server.quorum.FastLeaderElection)
 
-  You can repeat the command for the two other ZooKeeper nodes.  Next, you should verify that ZK ensemble is ready:
+  You can repeat the command for the two other |zk| nodes.  Next, you should verify that ZK ensemble is ready:
 
   .. sourcecode:: bash
 
@@ -206,7 +206,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      Mode: leader
      Mode: follower
 
-7. Now that ZooKeeper is up and running, we can fire up a three node Kafka cluster.
+7. Now that |zk| is up and running, we can fire up a three node Kafka cluster.
 
  .. sourcecode:: bash
 
@@ -452,7 +452,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     done
 
 
-5. Start ZooKeeper and Kafka
+5. Start |zk| and Kafka
 
   .. sourcecode:: bash
 
@@ -479,7 +479,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
     kafkaclustersasl_zookeeper-sasl-2_1   /etc/confluent/docker/run   Up
     kafkaclustersasl_zookeeper-sasl-3_1   /etc/confluent/docker/run   Up
 
-  Check the zookeeper logs to verify that ZooKeeper is healthy. For example, for service zookeeper-1:
+  Check the |zk| logs to verify that |zk| is healthy. For example, for service zookeeper-1:
 
   .. sourcecode:: bash
 
@@ -537,7 +537,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 6. Follow section 8 in the "Docker Client" section above to test that your brokers are functioning as expected.
 
-7. To stop the cluster, first stop Kafka nodes one-by-one and then stop the ZooKeeper cluster.
+7. To stop the cluster, first stop Kafka nodes one-by-one and then stop the |zk| cluster.
 
   .. sourcecode:: bash
 
