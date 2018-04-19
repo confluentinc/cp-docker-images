@@ -19,7 +19,7 @@ More specifically, we will run the following services:
 
 - Confluent's
   :cp-examples:`Kafka Music demo application|src/main/java/io/confluent/examples/streams/interactivequeries/kafkamusic/KafkaMusicExample.java`
-- a single-node Kafka cluster with a single-node ZooKeeper ensemble
+- a single-node Kafka cluster with a single-node |zk| ensemble
 - :ref:`Confluent Schema Registry <schemaregistry_intro>`
 
 
@@ -176,7 +176,7 @@ Available endpoints **from within the containers** as well as **on your host mac
 | ZooKeeper ensemble        | ``zookeeper.connect``   | ``zookeeper:32181``             | ``localhost:32181``            |
 +---------------------------+-------------------------+---------------------------------+--------------------------------+
 
-The ZooKeeper endpoint is not required by Kafka Streams applications, but you need it to e.g.
+The |zk| endpoint is not required by Kafka Streams applications, but you need it to e.g.
 :ref:`manually create new Kafka topics <docker-tutorial_kafka-streams-examples_topics-create>` or to
 :ref:`list available Kafka topics <docker-tutorial_kafka-streams-examples_topics-list>`.
 
