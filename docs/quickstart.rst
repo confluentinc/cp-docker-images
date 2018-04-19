@@ -5,7 +5,7 @@ Docker Quick Start
 
 This quick start provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.
 
-To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.  
+To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and |zk| to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as cp-kafka and cp-zookeeper to be stopped and restarted without losing their stateful data.
 
 Prerequisites
     * :ref:`Confluent Platform system requirements <system-requirements>`
@@ -13,7 +13,7 @@ Prerequisites
 
 If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of RAM to the Docker Machine.
 
-Installing & Running Docker
+Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this quickstart, you can use Docker Compose or Docker client.
@@ -49,13 +49,13 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
      git clone https://github.com/confluentinc/cp-docker-images
 
-   An example Docker Compose file is included that will start up ZooKeeper and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from `GitHub <https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml>`_.
+   An example Docker Compose file is included that will start up |zk| and Kafka. Navigate to ``cp-docker-images/examples/kafka-single-node``, where it is located.  Alternatively, you can download the file directly from `GitHub <https://github.com/confluentinc/cp-docker-images/raw/master/examples/kafka-single-node/docker-compose.yml>`_.
 
    .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-single-node
 
 
-#. Start the ZooKeeper and Kafka containers in detached mode (``-d``).  Run this command from the directory that contains the ``docker-compose.yml`` file. For example, use this path to launch a single node environment:
+#. Start the |zk| and Kafka containers in detached mode (``-d``).  Run this command from the directory that contains the ``docker-compose.yml`` file. For example, use this path to launch a single node environment:
 
    .. sourcecode:: bash
 
@@ -99,7 +99,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
 
    If the state is not `Up`, rerun the ``docker-compose up -d`` command.
 
-   Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
+   Now check the |zk| logs to verify that |zk| is healthy.
 
    .. sourcecode:: bash
 
@@ -221,10 +221,10 @@ Next, configure your terminal window to attach it to your new Docker Machine:
 
 All of the subsequent commands should be run from that terminal window to ensure proper access to the running Docker host.  To execute Docker commands from a new terminal window, simply execute the ``eval $(docker-machine env confluent)`` first.
 
-ZooKeeper
+|zk|
 +++++++++++++++++
 
-Start ZooKeeper. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
+Start |zk|. You'll need to keep this service running throughout, so use a dedicated terminal window if you plan to launch the image in the foreground.
 
   .. sourcecode:: console
 
@@ -236,7 +236,7 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
 
   This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.0.0`` container and name it ``zookeeper``.  We also specify that we want to use host networking and pass in the required parameter for running Zookeeper: ``ZOOKEEPER_CLIENT_PORT``.  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
 
-  Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the ZooKeeper service. 
+  Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the |zk| service.
 
   .. sourcecode:: console
 
@@ -244,17 +244,17 @@ Start ZooKeeper. You'll need to keep this service running throughout, so use a d
 
   With this command, you're referencing the container name that you want to see the logs for.  To list all containers (running or failed), you can always run ``docker ps -a``.  This is especially useful when running in detached mode.
 
-  When you output the logs for ZooKeeper, you should see the following message at the end of the log output:
+  When you output the logs for |zk|, you should see the following message at the end of the log output:
 
   ::
 
     [2016-07-24 05:15:35,453] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
 
-  Note that the message shows the ZooKeeper service listening at the port you passed in as ``ZOOKEEPER_CLIENT_PORT`` above.
+  Note that the message shows the |zk| service listening at the port you passed in as ``ZOOKEEPER_CLIENT_PORT`` above.
 
   If the service is not running, the log messages should provide details to help you identify the problem.   Some common errors include:
 
-		* Network port already in use.   In that case, you'll see a message indicating that the ZooKeeper service could not bind to the selected port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
+		* Network port already in use.   In that case, you'll see a message indicating that the |zk| service could not bind to the selected port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
 		* Insufficient resources.   In rare occasions, you may see memory allocation or other low-level failures at startup. This will only happen if you dramatically overload the capacity of your Docker host.
 
 Kafka
@@ -274,7 +274,7 @@ Start Kafka.
 
   .. note::
 
-    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  You also passed in the ZooKeeper port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the ZooKeeper service can be left at ``localhost``.
+    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  You also passed in the |zk| port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the |zk| service can be left at ``localhost``.
 
     Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
 
@@ -370,7 +370,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
 Schema Registry
 +++++++++++++++
 
-Now that you have Kafka and ZooKeeper up and running, you can deploy some of the other components included in Confluent Platform. You'll start by using the Schema Registry to create a new schema and send some Avro data to a Kafka topic. Although you would normally do this from one of your applications, you'll use a utility provided with Schema Registry to send the data without having to write any code.
+Now that you have Kafka and |zk| up and running, you can deploy some of the other components included in Confluent Platform. You'll start by using the Schema Registry to create a new schema and send some Avro data to a Kafka topic. Although you would normally do this from one of your applications, you'll use a utility provided with Schema Registry to send the data without having to write any code.
 
   First, start the Schema Registry container:
 
@@ -480,7 +480,7 @@ Stream Monitoring
 
 This portion of the quick start provides an overview of how to use Confluent Control Center with console producers and consumers to monitor consumption and latency.
 
-  You'll launch the Confluent Control Center image the same as you've done for earlier containers, connecting to the ZooKeeper and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes, so you'll first create a directory on the Docker Machine host for Control Center data. 
+  You'll launch the Confluent Control Center image the same as you've done for earlier containers, connecting to the |zk| and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes, so you'll first create a directory on the Docker Machine host for Control Center data.
 
   .. sourcecode:: console
 
@@ -901,4 +901,4 @@ Next you'll see how to monitor the Kafka Connect connectors in Control Center.  
 Cleanup
 +++++++
 
-After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
+After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and |zk| to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
