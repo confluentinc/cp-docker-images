@@ -6,7 +6,7 @@ Mounting External Volumes
 When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of Confluent Platform, we'll need to use external volumes for several main use cases:
 
 
-1. Data Storage: Kafka and ZooKeeper will need externally mounted volumes to persist data in the event that a container stops running or is restarted.
+1. Data Storage: Kafka and |zk| will need externally mounted volumes to persist data in the event that a container stops running or is restarted.
 2. Security: When security is configured, the secrets are stored on the the host and made available to the containers using mapped volumes.
 3. Configuring Kafka Connect with External Jars: Kafka connect can be configured to use third-party jars by storing them on a volume on the host.
 
@@ -15,14 +15,17 @@ When working with Docker, you may sometimes need to persist data in the event of
 
     In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
 
-Data Volumes for Kafka & ZooKeeper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Volumes for Kafka and |zk|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Kafka uses volumes for log data and ZooKeeper uses volumes for transaction logs. It is recommended to separate volumes (on the host) for these services. You will also need to ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
+Kafka uses volumes for log data and |zk| uses volumes for transaction logs. It is recommended to separate volumes (on the host) for these services. You must also ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
 
-Below is an example of how to use Kafka and ZooKeeper with mounted volumes. We also show how to configure volumes if you are running Docker container as non root user. In this example, we run the container as user 12345.
+.. important:: When mapping volumes from host, you must use full path (e.g. ``/var/lib/kafka/data``).
 
-On the Docker host (e.g. Virtualbox VM), create the directories:
+The following is an example of how to use Kafka and |zk| with mounted volumes and how to configure volumes if you are running
+Docker container as non-root user. In this example, the container is run as user ``12345``.
+
+On the Docker host (e.g. VirtualBox VM), create the directories:
 
 .. sourcecode:: bash
 
