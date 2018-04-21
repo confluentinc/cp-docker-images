@@ -34,17 +34,17 @@ VERSION ?= ${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-${BUILD_NUMBER}
 
 clean-containers:
 	for container in `docker ps -aq -f label=io.confluent.docker.testing=true` ; do \
-        echo "\nRemoving container $${container} \n========================================== " ; \
-				docker rm -f $${container} || exit 1 ; \
-  done
+		echo "\nRemoving container $${container} \n========================================== " ; \
+		docker rm -f $${container} || exit 1 ; \
+	done
 	# Remove dangling volumes
 	docker volume ls -q -f dangling=true | xargs docker volume rm || true;
 
 clean-images:
 	for image in `docker images -q -f label=io.confluent.docker.build.number | uniq` ; do \
-        echo "Removing image $${image} \n==========================================\n " ; \
-				docker rmi -f $${image} || exit 1 ; \
-  done
+		echo "Removing image $${image} \n==========================================\n " ; \
+		docker rmi -f $${image} || exit 1 ; \
+	done
 
 debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
@@ -86,18 +86,18 @@ ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
 	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}"` ; do \
-        echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
-        docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
-  done
+		echo "\n Tagging $${image} as ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}"; \
+		docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
+	done
 
 push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
 	for image in `docker images -f label=io.confluent.docker.build.number -f "dangling=false" --format "{{.Repository}}:{{.Tag}}" | grep $$DOCKER_REMOTE_REPOSITORY` ; do \
-        echo "\n Pushing $${image}"; \
-        docker push $${image}; \
-  done
+		 echo "\n Pushing $${image}"; \
+		docker push $${image}; \
+	done
 
 push-public: clean build-debian
 	for component in ${COMPONENTS} ; do \
@@ -105,7 +105,7 @@ push-public: clean build-debian
 		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \
 		docker push ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1; \
 		docker push ${REPOSITORY}/cp-$${component}:${CONFLUENT_VERSION} || exit 1; \
-  done
+	done
 
 clean: clean-containers clean-images
 	rm -rf debian/base/include/etc/confluent/docker/docker-utils.jar
