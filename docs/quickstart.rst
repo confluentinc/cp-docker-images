@@ -509,9 +509,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
       confluentinc/cp-enterprise-control-center:4.0.0
 
-  You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.  
-  
-  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
+  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching its logs with the following command:
 
   .. sourcecode:: console
 
