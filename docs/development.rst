@@ -57,7 +57,7 @@ Launching the Process
 The ``launch`` script runs the actual process. The script should ensure
 that :
 
--  The process is run with process id 1. Your script should use ``exec`` so the program takes over the shell process rather than running as a child process.  This is so that your program will receive signals like SIGTERM directly rather than it's parent shell process receiving them.
+-  The process is run with process id 1. Your script should use ``exec`` so the program takes over the shell process rather than running as a child process.  This is so that your program will receive signals like SIGTERM directly rather than its parent shell process receiving them.
 -  Log to stdout
 
 Development Guidelines
