@@ -3,15 +3,15 @@
 Clustered Deployment
 --------------------
 
-In this section, we provide a tutorial for running a three-node Kafka cluster and ZooKeeper ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
+In this section, we provide a tutorial for running a three-node Kafka cluster and |zk| ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
   .. note::
 
     If you're looking for a simpler tutorial, please `refer to our quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
-It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
-Installing & Running Docker
+Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
@@ -28,7 +28,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``-it``.
 
 1. Create and configure the Docker machine.
 
@@ -42,7 +42,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     eval $(docker-machine env confluent)
 
-2. Start Up a 3-node ZooKeeper Ensemble
+2. Start Up a 3-node |zk| Ensemble
 
   .. sourcecode:: bash
 
@@ -96,7 +96,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
      [2016-07-24 07:17:52,803] INFO Received connection request /127.0.0.1:50056 (org.apache.zookeeper.server.quorum.QuorumCnxManager)
      [2016-07-24 07:17:52,806] INFO Notification: 1 (message format version), 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEpoch) FOLLOWING (my state) (org.apache.zookeeper.server.quorum.FastLeaderElection)
 
-  You can repeat the command for the two other ZooKeeper nodes.  Next, you should verify that ZK ensemble is ready:
+  You can repeat the command for the two other |zk| nodes.  Next, you should verify that ZK ensemble is ready:
 
   .. sourcecode:: bash
 
@@ -112,7 +112,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     Mode: leader
     Mode: follower
 
-3. Now that ZooKeeper is up and running, we can fire up a three node Kafka cluster.
+3. Now that |zk| is up and running, we can fire up a three node Kafka cluster.
 
   .. sourcecode:: bash
 
@@ -253,12 +253,12 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
     git clone https://github.com/confluentinc/cp-docker-images
 
-  We have provided an example Docker Compose file that will start up ZooKeeper and Kafka.  Navigate to ``cp-docker-images/examples/kafka-cluster``, where it is located:
+  We have provided an example Docker Compose file that will start up |zk| and Kafka.  Navigate to ``cp-docker-images/examples/kafka-cluster``, where it is located:
 
   .. sourcecode:: bash
     cd cp-docker-images/examples/kafka-cluster
 
-2. Start ZooKeeper and Kafka using Docker Compose ``up`` command.
+2. Start |zk| and Kafka using Docker Compose ``up`` command.
 
    .. sourcecode:: bash
 
@@ -283,7 +283,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
        kafkacluster_zookeeper-2_1   /etc/confluent/docker/run   Up
        kafkacluster_zookeeper-3_1   /etc/confluent/docker/run   Up
 
-   Check the ZooKeeper logs to verify that ZooKeeper is healthy. For
+   Check the |zk| logs to verify that |zk| is healthy. For
    example, for service zookeeper-1:
 
    .. sourcecode:: bash

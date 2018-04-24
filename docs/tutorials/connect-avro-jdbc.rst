@@ -3,29 +3,29 @@
 Kafka Connect Tutorial
 ----------------------
 
-In the `quick start guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quick start and already have all the other services running, that's great.  Otherwise, you'll need to first startup up ZooKeeper, Kafka and the Schema Registry.
+In the `quick start guide  <../quickstart.html>`_, we showed you how to get up and running with a simple file connector using Kafka Connect.  In this section, we provide a somewhat more advanced tutorial in which we'll use Avro as the data format and use a JDBC Source Connector to read from a MySQL database. If you're coming from the quick start and already have all the other services running, that's great.  Otherwise, you'll need to first startup up |zk|, Kafka and the Schema Registry.
 
   .. note::
 
     Schema Registry is a dependency for Connect in this tutorial because we will need it for the avro serializer functionality.
 
-It is worth noting that we will be configuring Kafka and ZooKeeper to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.   
+It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
 
-Installing & Running Docker
+Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.  If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
-Starting Up Confluent Platform & Kafka Connect
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Starting Up Confluent Platform and Kafka Connect
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up Confluent Platform.
 
   .. note::
 
-    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``--it``.
+    In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do so by replacing the ``-d`` flags with ``-it``.
 
 1. Create and configure the Docker machine.
 
@@ -39,11 +39,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     eval $(docker-machine env confluent)
 
-2. Start up ZooKeeper, Kafka, and Schema Registry.
+2. Start up |zk|, Kafka, and Schema Registry.
 
   We'll walk through each of the commands for starting up these services, but you should refer to the `quick start guide <../quickstart.html>`_ for a more detailed walkthrough.
 
-  Start ZooKeeper:
+  Start |zk|:
 
   .. sourcecode:: bash
 
@@ -175,6 +175,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
+        -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
+        -e CONNECT_PLUGIN_PATH=/usr/share/java,/etc/kafka-connect/jars \
         -v /tmp/quickstart/file:/tmp/quickstart \
         -v /tmp/quickstart/jars:/etc/kafka-connect/jars \
         confluentinc/cp-kafka-connect:latest
@@ -354,4 +356,4 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
   Because of https://issues.apache.org/jira/browse/KAFKA-4070, you will not see the actual data in the file.
 
-10. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and ZooKeeper to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <machine-name>>``.
+10. Once you're done, cleaning up is simple.  You can simply run ``docker rm -f $(docker ps -a -q)`` to delete all the containers we created in the steps above.  Because we allowed Kafka and |zk| to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <machine-name>>``.

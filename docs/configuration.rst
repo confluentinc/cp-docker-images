@@ -60,7 +60,7 @@ Configuration Notes
 
 *  Persistent Data (Mounted Volumes)
 
-	When deploying the Kafka and ZooKeeper images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+	When deploying the Kafka and |zk| images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
 
 *  Bridge Networking vs. Host Networking
 
@@ -103,10 +103,10 @@ Some configuration variables are required when starting up the Docker images.  W
     :local:
 
 ---------
-ZooKeeper
+|zk|
 ---------
 
-The ZooKeeper image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
+The |zk| image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
 
 	.. sourcecode:: bash
 
@@ -123,7 +123,7 @@ Required Settings
 
 ``ZOOKEEPER_CLIENT_PORT``
 
-  This field is always required.  Tells ZooKeeper where to listen for connections by clients such as Kafka.
+  This field is always required.  Tells |zk| where to listen for connections by clients such as Kafka.
 
 ``ZOOKEEPER_SERVER_ID``
 
@@ -157,7 +157,7 @@ Required Settings
 
 ``KAFKA_ZOOKEEPER_CONNECT``
 
-  Tells Kafka how to get in touch with ZooKeeper.
+  Tells Kafka how to get in touch with |zk|.
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
@@ -195,7 +195,7 @@ Required Settings
 
 ``KAFKA_ZOOKEEPER_CONNECT``
 
-  Tells Kafka how to get in touch with ZooKeeper.
+  Tells Kafka how to get in touch with |zk|.
 
 ``KAFKA_ADVERTISED_LISTENERS``
 
@@ -224,11 +224,12 @@ Required Settings
 
 ``SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL``
 
-  ZooKeeper URL for the Kafka cluster.
+  |zk| URL for the Kafka cluster.
 
 ``SCHEMA_REGISTRY_HOST_NAME``
 
-  The host name advertised in ZooKeeper. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on `Single Master Architecture <http://docs.confluent.io/current/schema-registry/docs/design.html#single-master-architecture>`_.
+  The host name advertised in |zk|. Make sure to set this if running Schema Registry with multiple nodes.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  Hostname must be resolveable because slave nodes serve registration requests indirectly by simply forwarding them to the current master, and returning the response supplied by the master.  For more information, please refer to the Schema Registry documentation on :ref:`Single Master Architecture <schemaregistry_single_master>`.
+
 
 
 ----------------
@@ -253,13 +254,13 @@ The following settings must be passed to run the REST Proxy Docker image.
 
 ``KAFKA_REST_HOST_NAME``
 
-  The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  For more details, please refer to the Confluent Platform documentation on `REST proxy deployment <http://docs.confluent.io/current/kafka-rest/docs/deployment.html#deployment>`_.
+  The host name used to generate absolute URLs in responses.  Hostname is required because it defaults to the Java canonical host name for the container, which may not always be resolvable in a Docker environment.  For more details, please refer to the Confluent Platform documentation on :ref:`REST proxy deployment <kafka-rest-deployment>`.
 
 ``KAFKA_REST_ZOOKEEPER_CONNECT``
 
-  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
+  Specifies the |zk| connection string in the form hostname:port where host and port are the host and port of a |zk| server. To allow connecting through other |zk| nodes when that |zk| machine is down you can also specify multiple hosts in the form hostname1:port1,hostname2:port2,hostname3:port3.
 
-  The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
+  The server may also have a |zk| ``chroot`` path as part of it's |zk| connection string which puts its data under some path in the global |zk| namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
 -------------
 Kafka Connect
@@ -283,7 +284,10 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
+      -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
+      -e CONNECT_PLUGIN_PATH=/usr/share/java \
       confluentinc/cp-kafka-connect:4.0.0
+
 
 Required Settings
 """""""""""""""""
@@ -329,6 +333,9 @@ The following settings must be passed to run the Kafka Connect Docker image.
 
   Advertised host name is required for starting up the Docker image because it is important to think through how other clients are going to connect to Connect REST API.  In a Docker environment, you will need to make sure that your clients can connect to Connect and other services.  Advertised host name is how Connect gives out a host name that can be reached by the client.
 
+``CONNECT_PLUGIN_PATH``
+  The plugin.path value indicating the location from which to load Connect plugins in classloading isolation.
+
 Optional Settings
 """""""""""""""""
 All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
@@ -340,7 +347,7 @@ The image will then convert these environment variables to corresponding Connect
 Confluent Control Center
 ------------------------
 
-The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs Control Center, passing in its ZooKeeper, Kafka, and Connect configuration parameters.
+The Confluent Control Center image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs Control Center, passing in its |zk|, Kafka, and Connect configuration parameters.
 
 .. sourcecode:: bash
 
@@ -368,9 +375,9 @@ The following settings must be passed to run the Confluent Control Center image.
 
 ``CONTROL_CENTER_ZOOKEEPER_CONNECT``
 
-  Specifies the ZooKeeper connection string in the form hostname:port where host and port are the host and port of a ZooKeeper server. To allow connecting through other ZooKeeper nodes when that ZooKeeper machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
+  Specifies the |zk| connection string in the form hostname:port where host and port are the host and port of a |zk| server. To allow connecting through other |zk| nodes when that |zk| machine is down you can also specify multiple hosts in the form ``hostname1:port1,hostname2:port2,hostname3:port3``.
 
-  The server may also have a ZooKeeper ``chroot`` path as part of it's ZooKeeper connection string which puts its data under some path in the global ZooKeeper namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
+  The server may also have a |zk| ``chroot`` path as part of it's |zk| connection string which puts its data under some path in the global |zk| namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
 ``CONTROL_CENTER_BOOTSTRAP_SERVERS``
 
@@ -409,7 +416,7 @@ Confluent Kafka Replicator is a Kafka connector and runs on a Kafka Connect clus
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-kafka-connect:4.0.0
+      confluentinc/cp-enterprise-replicator:4.0.0
 
 The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from source Kafka cluster (src) to a destination Kafka cluster (dest).
 
