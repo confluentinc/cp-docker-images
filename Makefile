@@ -2,15 +2,15 @@
 -include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
-BUILD_NUMBER ?= 3
+BUILD_NUMBER ?= 1
 
-CONFLUENT_MAJOR_VERSION ?= 4
-CONFLUENT_MINOR_VERSION ?= 1
+CONFLUENT_MAJOR_VERSION ?= 5
+CONFLUENT_MINOR_VERSION ?= 0
 CONFLUENT_PATCH_VERSION ?= 0
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION ?= 1.1.0
+KAFKA_VERSION ?= 2.0.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
@@ -25,8 +25,8 @@ ALLOW_UNSIGNED ?= false
 REPOSITORY ?= confluentinc
 
 # Platform-specific version labels for SNAPSHOT packaging. Not necessary when building from public releases.
-CONFLUENT_MVN_LABEL ?=
-CONFLUENT_DEB_LABEL ?=
+CONFLUENT_MVN_LABEL ?= -beta1
+CONFLUENT_DEB_LABEL ?= ~beta1
 CONFLUENT_RPM_LABEL ?=
 
 # This is used only for the "version" (tag) of images on Docker Hub
@@ -49,7 +49,7 @@ clean-images:
 debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
-	&& mvn clean compile package assembly:single -DskipTests \
+	&& mvn -U clean compile package assembly:single -DskipTests \
 	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
@@ -119,7 +119,7 @@ venv/bin/activate: tests/requirements.txt
 test-docker-utils:
 	mkdir -p ../debian/base/include/etc/confluent/docker
 	cd java \
-	&& mvn clean compile package assembly:single \
+	&& mvn -U clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
 	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
