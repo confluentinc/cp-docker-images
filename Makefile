@@ -32,7 +32,7 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	cd java \
 	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-${CP_VERSION}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CP_VERSION}-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
@@ -110,7 +110,7 @@ test-docker-utils:
 	cd java \
 	&& mvn clean compile package assembly:single \
 	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-1.0.0-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
+	&& cp target/docker-utils-${CP_VERSION}-SNAPSHOT-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
 	&& cd -
 
 test-build: venv clean build-debian build-test-images
