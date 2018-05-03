@@ -8,7 +8,7 @@ This section provides advanced tutorials for using specific Confluent Platform f
 **Table of Contents**
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    clustered-deployment
    clustered-deployment-ssl
