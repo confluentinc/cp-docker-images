@@ -43,21 +43,11 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 		else \
 			BUILD_ARGS=""; \
 		fi; \
-		for type in "" rpm; do \
-			DOCKER_FILE="debian/$${component}/Dockerfile"; \
-			COMPONENT_NAME=$${component}; \
-			if [ "$${type}" = "rpm" ]; then \
-				COMPONENT_NAME="rpm-$${component}"; \
-				DOCKER_FILE="$${DOCKER_FILE}.rpm"; \
-			fi; \
-			if [ -a "$${DOCKER_FILE}" ]; then \
-				docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest -f $${DOCKER_FILE} debian/$${component} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest  || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${CP_VERSION} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${VERSION} || exit 1 ; \
-				docker tag ${REPOSITORY}/cp-$${COMPONENT_NAME}:latest ${REPOSITORY}/cp-$${COMPONENT_NAME}:${COMMIT_ID} || exit 1 ; \
-			fi; \
-		done \
+		docker build --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} $${BUILD_ARGS} -t ${REPOSITORY}/cp-$${component}:latest debian/$${component} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:latest  || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${CP_VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${VERSION} || exit 1 ; \
+		docker tag ${REPOSITORY}/cp-$${component}:latest ${REPOSITORY}/cp-$${component}:${COMMIT_ID} || exit 1 ; \
 	done
 
 build-test-images:
