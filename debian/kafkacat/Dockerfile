@@ -6,9 +6,6 @@ ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 LABEL io.confluent.docker=true
 
-WORKDIR /build
-ENV VERSION=1.3.0-1
-
 RUN echo "Building kafkacat ....." \
     && apt-get update -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y kafkacat \
