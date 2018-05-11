@@ -39,6 +39,7 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	pushd debian \
 	&& rm -rf kafkacat \
 	&& git clone https://github.com/edenhill/kafkacat \
+	&& sed -ie "s/runtimeDeps='/runtimeDeps='openssl libsasl2-modules-gssapi-mit krb5-user krb5-config /" kafkacat/Dockerfile \
 	&& popd \
 	&& for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
