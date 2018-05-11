@@ -36,7 +36,12 @@ debian/base/include/etc/confluent/docker/docker-utils.jar:
 	&& cd -
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
-	for component in ${COMPONENTS} ; do \
+	pushd debian \
+	&& rm -rf kafkacat \
+	&& git clone https://github.com/edenhill/kafkacat \
+	&& sed -ie "s/runtimeDeps='/runtimeDeps='openssl libsasl2-modules-gssapi-mit krb5-user krb5-config /" kafkacat/Dockerfile \
+	&& popd \
+	&& for component in ${COMPONENTS} ; do \
 		echo "\n\nBuilding $${component} \n==========================================\n " ; \
 		if [ "$${component}" = "base" ]; then \
 			BUILD_ARGS="--build-arg APT_ALLOW_UNAUTHENTICATED=${APT_ALLOW_UNAUTHENTICATED} --build-arg CONFLUENT_DEB_REPO=${CONFLUENT_DEB_REPO}" ; \
