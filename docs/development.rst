@@ -75,7 +75,7 @@ We adhered to the following guidelines when developing these Docker bootup scrip
 Setup
 -----
 
-1. Install Docker.  Here we assume you are running on Mac OS X.  For instructions on installing Docker on Linux or Windows, please refer to the official `Docker Machine documentation <https://docs.docker.com/engine/installation/>`_.
+1. Install Docker.  Here we assume you are running on macOS.  For instructions on installing Docker on Linux or Windows, please refer to the official `Docker Machine documentation <https://docs.docker.com/engine/installation/>`_.
 
    .. sourcecode:: bash
 
@@ -112,7 +112,7 @@ Setup
 Building the Images
 ~~~~~~~~~~~~~~~~~~~
 
-To get started, you can build all the Confluent Platform images as follows:
+To get started, you can build all the |cp| images as follows:
 
   .. sourcecode:: bash
 
@@ -446,7 +446,7 @@ The following examples show to extend the images.
 Utility Scripts
 ---------------
 
-Given the dependencies between the various Confluent Platform components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
+Given the dependencies between the various |cp| components (e.g. ZK required for Kafka, Kafka and ZK required for Schema Registry, etc.), it is sometimes necessary to be able to check the status of different services.  The following utilities are used during the bootup sequence of the images and in the testing framework.
 
 Docker Utility Belt (dub)
 ~~~~~~~~~~~~~~~~~~~~~~~~~

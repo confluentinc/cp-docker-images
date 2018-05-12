@@ -1,7 +1,7 @@
 .. _connect_quickstart_avro_jdbc:
 
-Kafka Connect Tutorial
-----------------------
+Kafka Connect Tutorial on Docker
+================================
 
 This tutorial uses Avro as the data format and use a JDBC Source Connector to read from a MySQL database.
 
@@ -20,7 +20,7 @@ It is worth noting that we will be configuring Kafka and |zk| to store data loca
 Starting Up Confluent Platform and Kafka Connect
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up Confluent Platform.
+Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up |cp|.
 
 .. note::
 
