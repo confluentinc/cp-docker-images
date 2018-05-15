@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KSQL Experimental UI</title>
+    <script src="/static/ksql.js"></script>
+    <script src="/static/jsontoyaml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/ksql.css">
+    <style>
+
+    </style>
+</head>
+<body>
+
+
+    <div id="ksql-header" style="width:100%">
+        <div id="logo"><img src="/static/logo.png?raw=true" alt="logo@3x.png"> </div>
+        <div style="width:70%; float:left;">
+            <h1 id="title">KSQL</h1>
+            <h5 id="sub-title">experimental ui</h5>
+        </div>
+        <div style="width:20%; float:right;">
+            <h4 id="copyright" style="text-align: right;" class="hint">(c) Confluent Inc., KSQL server v$version</h4>
+        </div>
+    </div>
+
+
+        <div id="command-row">
+            <div id="command-input-div">
+                <div class="section-title">Query:</div>
+                <div id="editor"></div>
+                <button id="run-button" onclick="runCommand()">RUN</button>
+                <span class="loading" id="request_loading" hidden>Streaming data....</span>
+                <button hidden id="cancel_request" onclick="xhr.abort();">Cancel</button>
+            </div>
+            <div id="properties-div">
+                Query Properties: <button onclick="addNewProperty();">Add</button>
+                <div class="hint" >Properties executed with each Query</div>
+                <div class="properties" id="properties">
+                </div>
+            </div>
+        </div>
+
+    <div>
+
+    <div id="templates">
+        <button class="command-button" onclick="sendRequest('/ksql', 'show properties;')">SHOW PROPERTIES</button>
+        <button class="command-button" onclick="sendRequest('/ksql', 'show topics;')">SHOW TOPICS</button>
+        <button class="command-button" onclick="sendRequest('/ksql', 'show streams;')">SHOW STREAMS</button>
+        <button class="command-button" onclick="sendRequest('/ksql', 'show tables;')">SHOW TABLES</button>
+        <button class="command-button" onclick="sendRequest('/ksql', 'show queries;')">SHOW QUERIES</button>
+        <button class="command-button" onclick="editor.setValue('CREATE STREAM MyStream (_time bigint, time varchar, name varchar, request varchar, status int) WITH (kafka_topic = \'kafka_topic\', value_format = \'json\');')">CREATE STREAM [...]</button>
+        <button class="command-button" onclick="editor.setValue('CREATE TABLE events_per_min AS SELECT userid, COUNT(*) AS events FROM ksql_stream WINDOW TUMBLING (SIZE 10 SECONDS) GROUP BY userid;')">CREATE TABLE [...]</button>
+        <button class="command-button" onclick="editor.setValue('SELECT * from MyStream_OR_Table WHERE ;')">SELECT * FROM [..]</button>
+        <button class="command-button" onclick="editor.setValue('PRINT \'topic\' FROM BEGINNING;')">PRINT my_topic [..]</button>
+        <button class="command-button" onclick="editor.setValue('DESCRIBE EXTENDED MyStream_OR_Table;')">DESCRIBE EXTENDED [..]</button>
+        <button class="command-button" onclick="editor.setValue('EXPLAIN MyQueryId;')">EXPLAIN MyQueryId [..]</button>
+
+        <a class="link" href="https://github.com/confluentinc/ksql/blob/master/docs/syntax-reference.md#syntax-reference" target="_blank">
+            View the syntax guide
+        </a>
+        <a class="link" href="https://github.com/confluentinc/ksql/blob/master/docs/examples.md#examples" target="_blank">
+            View KSQL examples
+        </a>
+    </div>
+
+
+        <div id="response-header">
+            <div class="section-title" style="width:30%">Output:</div>
+            <div style="width:15%;float: right; text-align: right;"><font class="hint" size="1">Hint: press CTRL-F to find text</font></div>
+            <div id="selector">Format:
+                <label>
+                    <input checked type="radio" name="output" value="tabular" onchange="updateFormat(renderTabular);"> Tabular
+                </label>
+                <label>
+                    <input type="radio" name="output" value="prettyjson" onchange="updateFormat(renderPrettyJson);"> JSON (pretty)
+                </label>
+                <label>
+                    <input type="radio" name="output" value="compactjson" onchange="updateFormat(renderCompactJson);"> JSON (compact)
+                </label>
+                <label>
+                    <input type="radio" name="output" value="yaml" onchange="updateFormat(renderYaml);"> YAML
+                </label>
+
+            </div>
+
+
+        </div>
+        <div id="response" class="response"></div>
+    </div>
+
+
+    <script>
+        console.log("Loading editor");
+        editor = ace.edit("editor");
+        editor.setTheme("ace/theme/chaos");
+        editor.session.setMode("ace/mode/sql");
+        editor.session.setUseWrapMode(true);
+        editor.setShowPrintMargin(false);
+
+        console.log("Loading editor");
+        response = ace.edit("response");
+        response.setTheme("ace/theme/chaos");
+        response.session.setMode("ace/mode/json");
+        response.setShowPrintMargin(false);
+
+        displayServerVersion()
+    </script>
+
+</body>
+</html>
