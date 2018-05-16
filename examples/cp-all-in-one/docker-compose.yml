@@ -113,6 +113,10 @@ services:
       - $PWD/ksql.properties:/tmp/ksql.properties
       - $PWD/monitoring-interceptors/monitoring-interceptors-4.1.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar
       - $PWD/ui:/usr/ui
+      - $PWD/ksql-datagen-jars/ksql-examples-4.1.0.jar:/usr/share/java/ksql-cli/ksql-examples-4.1.0.jar
+      - $PWD/ksql-datagen-jars/kafka-connect-avro-converter-4.1.0.jar:/usr/share/java/ksql-cli/kafka-connect-avro-converter-4.1.0.jar
+      - $PWD/ksql-datagen-jars/generex-1.0.2.jar:/usr/share/java/ksql-cli/generex-1.0.2.jar
+      - $PWD/ksql-datagen-jars/automaton-1.11-8.jar:/usr/share/java/ksql-cli/automaton-1.11-8.jar
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
