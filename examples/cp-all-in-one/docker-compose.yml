@@ -106,7 +106,9 @@ services:
       - broker
     ports:
       - "8088:8088"
-    command: "perl -e 'while(1){ sleep 99999 }'"
+    command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
+                       sleep 1 && \
+                       ksql-server-start /tmp/ksql.properties 2>&1'"
     volumes:
       - $PWD/ksql.properties:/tmp/ksql.properties
       - $PWD/monitoring-interceptors/monitoring-interceptors-4.1.0.jar:/usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar
