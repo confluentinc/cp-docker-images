@@ -101,9 +101,9 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  ksql-cli:
+  ksql-server:
     image: confluentinc/ksql-cli:4.1.0
-    container_name: ksql-cli
+    container_name: ksql-server
     depends_on:
       - broker
     ports:
