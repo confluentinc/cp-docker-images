@@ -250,7 +250,6 @@ Start |zk|. You'll need to keep this service running throughout, so use a dedica
 
   If the service is not running, the log messages should provide details to help you identify the problem.   Some common errors include:
 
-		* Network port already in use.   In that case, you'll see a message indicating that the |zk| service could not bind to the selected port.  Simply change to an open port or identify (and stop) the Docker container that has a service using that port.
 		* Insufficient resources.   In rare occasions, you may see memory allocation or other low-level failures at startup. This will only happen if you dramatically overload the capacity of your Docker host.
 
 Kafka
@@ -268,8 +267,10 @@ Start Kafka.
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           confluentinc/cp-kafka:4.1.0
 
+
   .. note::
     You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  You also passed in the |zk| port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the |zk| service can be left at ``localhost``.
+
 
     Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
 
@@ -413,7 +414,7 @@ Now that you have Kafka and |zk| up and running, you can deploy some of the othe
 
     If you hit ``Enter`` with an empty line, it will be interpreted as a null value and cause an error. You can simply start the console producer again to continue sending messages.
 
-  When you're done, use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client.  You can then type ``exit`` to leave the container altogether.  Now that you've written avro data to Kafka, you should check that the data was actually produced as expected to consume it.  Although the Schema Registry also ships with a built-in console consumer utility, you'll instead demonstrate how to read it from outside the container on your local machine via the REST Proxy.  The REST Proxy depends on the Schema Registry when producing/consuming avro data, so you'll need to pass in the details for the detached Schema Registry container you launched above.
+  When you're done, use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client.  You can then type ``exit`` to leave the container altogether.  Now that you've written Avro data to Kafka, you should check that the data was actually produced as expected to consume it.  Although the Schema Registry also ships with a built-in console consumer utility, you'll instead demonstrate how to read it from outside the container on your local machine via the REST Proxy.  The REST Proxy depends on the Schema Registry when producing/consuming Avro data, so you'll need to pass in the details for the detached Schema Registry container you launched above.
 
 REST Proxy
 ++++++++++
@@ -476,14 +477,7 @@ Stream Monitoring
 
 This portion of the quick start provides an overview of how to use Confluent Control Center with console producers and consumers to monitor consumption and latency.
 
-  You'll launch the Confluent Control Center image the same as you've done for earlier containers, connecting to the |zk| and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes, so you'll first create a directory on the Docker Machine host for Control Center data.
-
-  .. sourcecode:: console
-
-    $ docker-machine ssh confluent
-
-    docker@confluent:~$ mkdir -p /tmp/control-center/data
-    docker@confluent:~$ exit
+ You'll launch the Confluent Control Center image the same as you've done for earlier containers, connecting to the ZooKeeper and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes.
 
   Now you start Control Center, binding its data directory to the directory you just created and its HTTP interface to port 9021.
 
@@ -504,7 +498,9 @@ This portion of the quick start provides an overview of how to use Confluent Con
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://kafka-connect:8082 \
       confluentinc/cp-enterprise-control-center:4.1.0
 
-  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching its logs with the following command:
+  You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.
+
+  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
 
   .. sourcecode:: console
 
@@ -663,7 +659,7 @@ Kafka Connect
 Getting Started
 ^^^^^^^^^^^^^^^
 
-In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
+In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with Avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
 
 First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. You will create these topics now in the Kafka cluster you have running from the steps above.
 
@@ -884,5 +880,7 @@ Next you'll see how to monitor the Kafka Connect connectors in Control Center.  
 Cleanup
 +++++++
 
-After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above for your target Docker Host.  Because you allowed Kafka and |zk| to store data on their respective containers, there are no additional volumes to clean up.  If you also want to remove the Docker machine you used, you can do so using ``docker-machine rm <your machine name>``.
+After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above, ``docker volume prune`` to remove any remaining unused volumes, and ``docker network rm confluent`` to delete the network we created.
+
+If you are running Docker Machine, you can remove the virtual machine with this command: ``docker-machine rm confluent``.
 
