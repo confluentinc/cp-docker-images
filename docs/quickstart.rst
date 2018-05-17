@@ -413,7 +413,7 @@ Now that you have Kafka and |zk| up and running, you can deploy some of the othe
 
     If you hit ``Enter`` with an empty line, it will be interpreted as a null value and cause an error. You can simply start the console producer again to continue sending messages.
 
-  When you're done, use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client.  You can then type ``exit`` to leave the container altogether.  Now that you've written avro data to Kafka, you should check that the data was actually produced as expected to consume it.  Although the Schema Registry also ships with a built-in console consumer utility, you'll instead demonstrate how to read it from outside the container on your local machine via the REST Proxy.  The REST Proxy depends on the Schema Registry when producing/consuming avro data, so you'll need to pass in the details for the detached Schema Registry container you launched above.
+  When you're done, use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client.  You can then type ``exit`` to leave the container altogether.  Now that you've written Avro data to Kafka, you should check that the data was actually produced as expected to consume it.  Although the Schema Registry also ships with a built-in console consumer utility, you'll instead demonstrate how to read it from outside the container on your local machine via the REST Proxy.  The REST Proxy depends on the Schema Registry when producing/consuming Avro data, so you'll need to pass in the details for the detached Schema Registry container you launched above.
 
 REST Proxy
 ++++++++++
@@ -658,7 +658,7 @@ Kafka Connect
 Getting Started
 ^^^^^^^^^^^^^^^
 
-In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
+In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with Avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
 
 First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. You will create these topics now in the Kafka cluster you have running from the steps above.
 
@@ -882,5 +882,4 @@ Cleanup
 After you're done, cleanup is simple.  Run the command ``docker rm -f $(docker ps -a -q)`` to delete all the containers you created in the steps above, ``docker volume prune`` to remove any remaining unused volumes, and ``docker network rm confluent`` to delete the network we created.
 
 If you are running Docker Machine, you can remove the virtual machine with this command: ``docker-machine rm confluent``.
-
 

@@ -187,7 +187,7 @@ Prerequisites
    -  ``utility_scripts`` describes the utility scripts used in the
       images
 
-3. If you plan to contribute back to the project, please be sure to review our guide on :ref:`contributing <contributing_guide>`.
+3. If you plan to contribute back to the project, see the `contributing guidelines <https://github.com/confluentinc/cp-docker-images/blob/master/CONTRIBUTING.md>`_.
 
 Adding Connectors to the Kafka Connect Image
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
