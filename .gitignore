@@ -9,6 +9,7 @@ __pycache__
 *.srl
 *.req
 *.log
+*.jar
 Untitled*
 docs/_build
 docs/README.md
