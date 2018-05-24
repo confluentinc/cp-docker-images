@@ -130,6 +130,7 @@ services:
     depends_on:
       - broker
       - schema-registry
+      - connect
     volumes:
       - mi2:/usr/share/java/monitoring-interceptors/
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
@@ -140,10 +141,6 @@ services:
                        sleep 10 && \
                        cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-examples/monitoring-interceptors-4.1.0.jar && \
                        tail -f /dev/null'"
-    #                   /usr/bin/ksql-datagen
-    #                   quickstart=users format=json topic=users bootstrap-server=kafka:29092 maxInterval=100 iterations=1000 && \
-    #                   /usr/bin/ksql-datagen
-    #                   quickstart=users format=json topic=users bootstrap-server=kafka:29092 maxInterval=1000'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
