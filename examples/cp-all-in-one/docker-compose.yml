@@ -138,7 +138,7 @@ services:
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry 8081 20 && \
                        echo Waiting a few seconds for topic creation to finish... && \
-                       sleep 10 && \
+                       sleep 11 && \
                        cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-examples/monitoring-interceptors-4.1.0.jar && \
                        tail -f /dev/null'"
     environment:
