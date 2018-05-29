@@ -45,8 +45,13 @@ The table below lists the available images and the Confluent software packages t
 +------------------+------------------------------+--------------+-----------------------------------------+
 | REST Proxy       | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
 +------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL Server      | cp-ksql-server               | Enterprise   | - ksql-rest-app                         |
+|                  |                              |              | - monitoring-interceptors               |
++------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL CLI         | cp-ksql-cli                  | Open Source  | - ksql-cli                              |
++------------------+------------------------------+--------------+-----------------------------------------+
 
-Note: The Kafka Connect image is labeled as "Enterprise" simply because it contains the Confluent Control Center package.  That package enables the deployed connectors to collect the metrics visualized in Confluent Control Center.   No explicit license is required when using the Kafka Connect image on its own.
+Note: The Kafka Connect image is labeled as "Enterprise" simply because it contains the Confluent Control Center package.  That package enables the deployed connectors to collect the metrics visualized in Confluent Control Center.   No explicit license is required when using the Kafka Connect image on its own. Similarly, the KSQL Server image is labelled "Enterprise" because it contains monitoring interceptors which enable the collection of metrics which can be visualized in Confluent Control Center. No explicit license is required to use the KSQL server on its own.
 
 Configuration Notes
 -------------------
@@ -472,3 +477,65 @@ Optional Settings
 All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
 
 The image will then convert these environment variables to corresponding Connect config variables.
+
+-----------
+KSQL Server
+-----------
+
+The KSQL Server image uses variables prefixed with ``KSQL_`` with an underscore (``_``) separating each word instead of periods. As an example, the following command runs the KSQL Server passing in the details of the underlying Kafka cluster to use, the port to listen on, the location where persistent data should be store, and service id of the KSQL server pool, and so on.
+
+.. sourcecode:: bash
+
+  docker run -d \
+    -p 127.0.0.1:8088:8088
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088 \
+    -e KSQL_KSQL_SERVICE_ID=ksql_test_service_id_ \
+    -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
+    -e KSQL_KSQL_SINK_REPLICAS=3 \
+    -e KSQL_KSQL_STREAMS_STATE_DIR=/mnt/data/ksql-server-data \
+    -v /mnt/ksql-server/data:/mnt/data/ksql-server-data/ \
+    confluentinc/cp-ksql-server:4.1.2
+
+Docker Options
+""""""""""""""
+
+* Data persistence: KSQL Server runs Kafka streams applications which may need to store persistent state. The command above maps the state store directory to a directory on the localhost, hence ensuring persistence across multiple sessions of the same container.
+* Port mapping: The above command maps the listener port to 8088 on the localhost, hence ensuring that the CLI running on the same host can connect to the ksql server.
+
+Required Settings
+"""""""""""""""""
+The following settings must be passed to run the KSQL Server image.
+
+``KSQL_BOOTSTRAP_SERVERS``
+
+  A list of host/port pairs to use for establishing the initial connection to the Kafka cluster. The client will make use of all servers irrespective of which servers are specified here for bootstrapping; this list only impacts the initial hosts used to discover the full set of servers. This list should be in the form host1:port1,host2:port2,.... Since these servers are just used for the initial connection to discover the full cluster membership (which may change dynamically), this list need not contain the full set of servers (you may want more than one, though, in case a server is down).
+
+Optional Settings
+"""""""""""""""""
+All other settings for KSQL like security, monitoring interceptors, streams application overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``KSQL_``. For example, if you need to set ``ksql.streams.state.dir``, the environment variable name would be ``KSQL_KSQL_STREAMS_STATE_DIR``.
+
+The image will then convert these environment variables to corresponding KSQL Server config variables.
+
+--------
+KSQL CLI
+--------
+The KSQL CLI image will execute the ``ksql`` command and try to connect to the server at ``http://localhost:8088`` by default, as show below:
+
+.. sourcecode:: bash
+
+  docker run -it -rm confluentinc/cp-ksql-cli:4.1.2
+
+Configuring the KSQL CLI
+""""""""""""""""""""""""
+* Config files: The KSQL CLI config file must be passed in via a file mounted in the image.
+
+.. sourcecode:: bash
+  docker run -it -rm \
+    -v ~/workspace/cli-config:/mnt/ksql-cli
+    confluentinc/cp-ksql-cli:4.1.2 \
+      http://ksql-server.host:8088 \
+      --config-file /mnt/ksql-cli/ksql-cli.properties
+
+
+* Additional CLI options can be appended to the command as necessary.
