@@ -520,11 +520,13 @@ The image will then convert these environment variables to corresponding KSQL Se
 --------
 KSQL CLI
 --------
-The KSQL CLI image will execute the ``ksql`` command and try to connect to the server at ``http://localhost:8088`` by default, as show below:
+The KSQL CLI image will execute the ``ksql`` command and try to connect to the server at ``http://localhost:8088`` by default, as shown below. 
 
 .. sourcecode:: bash
 
   docker run -it -rm confluentinc/cp-ksql-cli:4.1.2
+
+Note: Since the CLI is interactive, we cannot log to stdout as is customary for Docker containers. The KSQSL CLI logs can instead be found at ``/var/logs/ksql-cli/``.
 
 Configuring the KSQL CLI
 """"""""""""""""""""""""
@@ -539,3 +541,4 @@ Configuring the KSQL CLI
 
 
 * Additional CLI options can be appended to the command as necessary.
+
