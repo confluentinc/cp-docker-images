@@ -493,7 +493,7 @@ The KSQL Server image can be configured through environment variables prefixed w
     -e KSQL_KSQL_SERVICE_ID=ksql_test_service_id_ \
     -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
     -e KSQL_KSQL_SINK_REPLICAS=3 \
-    -e KSQL_KSQL_STREAMS_STATE_DIR=/ \
+    -e KSQL_KSQL_STREAMS_STATE_DIR=/docker/container/path \
     -v /docker/host/path:/docker/container/path \
     confluentinc/cp-ksql-server:4.1.2
 
