@@ -482,7 +482,7 @@ The image will then convert these environment variables to corresponding Connect
 KSQL Server
 -----------
 
-The KSQL Server image can be configured through environment variables prefixed with KSQL_, uppercasing each word in the parameter name, and separating each word with an underscore (_) instead of periods (.). For example, bootstrap.servers becomes KSQL_BOOTSTRAP_SERVERS, and ksql.service.id becomes KSQL_KSQL_SERVICE_ID.
+The KSQL Server image can be configured through environment variables prefixed with ``KSQL_``, uppercasing each word in the parameter name, and separating each word with an underscore (_) instead of periods (.). For example, ``bootstrap.servers`` becomes ``KSQL_BOOTSTRAP_SERVERS``, and ``ksql.service.id``  becomes ``KSQL_KSQL_SERVICE_ID``.
 
 .. sourcecode:: bash
 
@@ -500,8 +500,8 @@ The KSQL Server image can be configured through environment variables prefixed w
 Docker Options
 """"""""""""""
 
-* Data persistence: KSQL Server runs Kafka Streams applications which may need to store persistent state locally. The command above maps the state store directory inside the container (cf. KSQL_KSQL_STREAMS_STATE_DIR) to a directory on the Docker host.
-* Port mapping: The above command maps the listener port to 8088 on the Docker host, hence ensuring that other containers (like for the KSQL CLI) running on the same host can connect to the KSQL server container.
+* Data persistence: KSQL Server runs Kafka Streams applications which may need to store persistent state locally. The command above maps the state store directory inside the container (cf. ``KSQL_KSQL_STREAMS_STATE_DIR``) to a directory on the Docker host.
+* Port mapping: The above command maps the listener port to 8088 on the Docker host, hence ensuring that other containers (like for the KSQL CLI) running on the same host can connect to the KSQL Server container.
 
 Required Settings
 """""""""""""""""
@@ -509,7 +509,7 @@ The following settings must be passed to run the KSQL Server image.
 
 ``KSQL_BOOTSTRAP_SERVERS``
 
-To configure the Kafka cluster that KSQL should read from/write to, you must specify one or more "bootstrap" brokers from that Kafka cluster. This parameter is formatted as a comma-separated list of hostname:port pairs; for example, broker-hostname1:9092,broker-hostname2:9092. These brokers are used by KSQL to establish the initial connection to the Kafka cluster and to discover the set of all available brokers in the Kafka cluster, the set of which may change dynamically at runtime (e.g. brokers may be taken down for maintenance). You can but don't need to specify all brokers in the Kafka cluster, though it is recommended to specify at least two brokers to make bootstrapping more resilient against individual broker outages.
+To configure the Kafka cluster that KSQL should read from/write to, you must specify one or more "bootstrap" brokers from that Kafka cluster. This parameter is formatted as a comma-separated list of hostname:port pairs; for example, ``broker-hostname1:9092,broker-hostname2:9092``. These brokers are used by KSQL to establish the initial connection to the Kafka cluster and to discover the set of all available brokers in the Kafka cluster, the set of which may change dynamically at runtime (e.g. brokers may be taken down for maintenance). You can but don't need to specify all brokers in the Kafka cluster, though it is recommended to specify at least two brokers to make bootstrapping more resilient against individual broker outages.
 
 Optional Settings
 """""""""""""""""
