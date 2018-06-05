@@ -248,7 +248,7 @@ In this section, we provide a tutorial for running Replicator which replicates d
       --net=host \
       --rm \
       confluentinc/cp-kafka:4.1.0 \
-      kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --new-consumer --from-beginning --max-messages 1000
+      kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --from-beginning --max-messages 1000
 
    If everything is working as expected, each of the original messages we produced should be written back out:
 
@@ -353,7 +353,7 @@ In this section, we provide a tutorial for running Replicator which replicates d
       --net=host \
       --rm \
       confluentinc/cp-kafka:4.1.0 \
-      kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --new-consumer --from-beginning --max-messages 1000
+      kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --from-beginning --max-messages 1000
 
    .. sourcecode:: bash
 
