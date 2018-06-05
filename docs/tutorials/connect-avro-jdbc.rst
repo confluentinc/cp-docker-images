@@ -305,7 +305,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        --net=host \
        --rm \
        confluentinc/cp-schema-registry:4.1.0 \
-       kafka-avro-console-consumer --bootstrap-server localhost:29092 --topic quickstart-jdbc-test --new-consumer --from-beginning --max-messages 10
+       kafka-avro-console-consumer --bootstrap-server localhost:29092 --topic quickstart-jdbc-test --from-beginning --max-messages 10
 
    You should see the following:
 

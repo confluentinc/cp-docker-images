@@ -169,7 +169,7 @@ class StandaloneNetworkingTest(unittest.TestCase):
             && seq "$MESSAGES" | control-center-run-class kafka.tools.ConsoleProducer --broker-list "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
             && echo PRODUCED "$MESSAGES" messages. \
             && echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor" > /tmp/consumer.config \
-            && control-center-run-class kafka.tools.ConsoleConsumer --bootstrap-server "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --new-consumer --from-beginning --max-messages "$CHECK_MESSAGES" --consumer.config /tmp/consumer.config'
+            && control-center-run-class kafka.tools.ConsoleConsumer --bootstrap-server "$BOOTSTRAP_SERVERS" --topic "$TOPIC" --from-beginning --max-messages "$CHECK_MESSAGES" --consumer.config /tmp/consumer.config'
             """
 
         MESSAGES = 10000
