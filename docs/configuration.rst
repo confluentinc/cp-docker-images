@@ -492,7 +492,7 @@ Confluent Kafka Replicator Executable provides another way to run Replicator by 
       -v /mnt/replicator/config:/etc/replicator \
       confluentinc/cp-enterprise-replicator-executable:4.1.0
 
-will start Replicator given that the directory ``/mnt/replicator/config``, that will be mounted under ``/etc/replicator`` on the Docker image, contains the required files ``consumer.properties``, ``producer.properties`` and the optional but often necessary file ``replication.properties``.
+will start Replicator given that the local directory ``/mnt/replicator/config``, that will be mounted under ``/etc/replicator`` on the Docker image, contains the required files ``consumer.properties``, ``producer.properties`` and the optional but often necessary file ``replication.properties``.
 
 In a similar example, we start Replicator by omitting to add a ``replication.properties`` and by specifying the replication properties by using environment variables. For a complete list of the expected environment variables see the list of settings in the next sections.
 
