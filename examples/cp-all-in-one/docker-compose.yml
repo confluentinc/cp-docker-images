@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.1.0
+    image: confluentinc/cp-zookeeper:5.0.0-beta30
     hostname: zookeeper
     container_name: zookeeper
     ports:
@@ -12,7 +12,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   broker:
-    image: confluentinc/cp-enterprise-kafka:4.1.0
+    image: confluentinc/cp-enterprise-kafka:5.0.0-beta30
     hostname: broker
     container_name: broker
     depends_on:
@@ -35,7 +35,7 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:4.1.0
+    image: confluentinc/cp-schema-registry:5.0.0-beta30
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
@@ -48,7 +48,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
   connect:
-    image: confluentinc/cp-kafka-connect:4.1.0
+    image: confluentinc/cp-kafka-connect:5.0.0-beta30
     hostname: connect
     container_name: connect
     depends_on:
@@ -78,12 +78,13 @@ services:
       CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta30.jar
       CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:4.1.0
+    #image: confluentinc/cp-enterprise-control-center:5.0.0-beta30
+    image: confluentinc/cp-enterprise-control-center:5.0.0-beta1-2
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -91,12 +92,15 @@ services:
       - broker
       - schema-registry
       - connect
+      - ksql-server
     ports:
       - "9021:9021"
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:9092'
       CONTROL_CENTER_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       CONTROL_CENTER_CONNECT_CLUSTER: 'connect:8083'
+      #CONTROL_CENTER_KSQL_URL: "http://ksql-server:8088"
+      CONTROL_CENTER_KSQL_ENDPOINT: "http://ksql-server:8088"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
@@ -104,27 +108,36 @@ services:
       PORT: 9021
 
   ksql-server:
-    image: confluentinc/ksql-cli:4.1.0
+    image: confluentinc/cp-ksql-server:5.0.0-beta30
+    hostname: ksql-server
     container_name: ksql-server
     depends_on:
       - broker
       - connect
     ports:
       - "8088:8088"
-    command: "bash -c -a 'echo Waiting for Kafka to be ready... && \
-                       sleep 10 && \
-                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-cli/monitoring-interceptors-4.1.0.jar && \
-                       ksql-server-start /tmp/ksql.properties 2>&1'"
-    volumes:
-      - mi2:/usr/share/java/monitoring-interceptors/
-      - $PWD/ksql.properties:/tmp/ksql.properties
-      - $PWD/ui:/usr/ui
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
+      KSQL_BOOTSTRAP_SERVERS: "broker:9092"
+      KSQL_HOST_NAME: ksql-server
+      KSQL_APPLICATION_ID: "cp-all-in-one"
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+
+  ksql-cli:
+    image: confluentinc/cp-ksql-cli:5.0.0-beta30
+    container_name: ksql-cli
+    depends_on:
+      - broker
+      - connect
+      - ksql-server
 
   ksql-datagen:
-    image: confluentinc/ksql-examples:4.1.0
+    image: confluentinc/ksql-examples:5.0.0-beta30
     hostname: ksql-datagen
     container_name: ksql-datagen
     depends_on:
@@ -139,7 +152,7 @@ services:
                        cub sr-ready schema-registry 8081 20 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 11 && \
-                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.0.jar /usr/share/java/ksql-examples/monitoring-interceptors-4.1.0.jar && \
+                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.0-beta30.jar /usr/share/java/ksql-examples/monitoring-interceptors-5.0.0-beta30.jar && \
                        tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
