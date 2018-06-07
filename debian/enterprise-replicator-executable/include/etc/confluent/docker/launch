@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+#
+# Copyright 2018 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# Override this section from the script to include the com.sun.management.jmxremote.rmi.port property.
+if [ "x$KAFKA_JMX_OPTS" = "x" ]; then
+  export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "
+fi
+
+# The JMX client needs to be able to connect to java.rmi.server.hostname.
+# The default for bridged n/w is the bridged IP so you will only be able to connect from another docker container.
+# For host n/w, this is the IP that the hostname on the host resolves to.
+
+# If you have more that one n/w configured, hostname -i gives you all the IPs,
+# the default is to pick the first IP (or network).
+export KAFKA_JMX_HOSTNAME=${KAFKA_JMX_HOSTNAME:-$(hostname -i | cut -d" " -f1)}
+
+if [ "x$KAFKA_JMX_PORT" != "x" ]; then
+  # This ensures that the "if" section for JMX_PORT in kafka launch script does not trigger.
+  export JMX_PORT=$KAFKA_JMX_PORT
+  export KAFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Djava.rmi.server.hostname=$KAFKA_JMX_HOSTNAME -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Dcom.sun.management.jmxremote.port=$JMX_PORT"
+fi
+
+echo "===> Launching ${COMPONENT} ... "
+# Add external jars to the classpath
+# And this also makes sure that the CLASSPATH does not start with ":/etc/..."
+# because this causes the plugin scanner to scan the entire disk.
+export CLASSPATH="/etc/kafka-connect/jars/*"
+
+
+# File properties
+export ARGS=""
+if [ "x$CONSUMER_CONFIG" = "x" ]; then
+  export CONSUMER_CONFIG="/etc/${COMPONENT}/consumer.properties"
+fi
+
+if [ "x$PRODUCER_CONFIG" = "x" ]; then
+  export PRODUCER_CONFIG="/etc/${COMPONENT}/producer.properties"
+fi
+
+if [ "x$REPLICATION_CONFIG" = "x" ]; then
+  export REPLICATION_CONFIG="/etc/${COMPONENT}/replication.properties"
+fi
+
+if [ "x$CONSUMER_MONITORING_CONFIG" = "x" ]; then
+  export CONSUMER_MONITORING_CONFIG="/etc/${COMPONENT}/consumer-monitoring.properties"
+fi
+
+if [ "x$PRODUCER_MONITORING_CONFIG" = "x" ]; then
+  export PRODUCER_MONITORING_CONFIG="/etc/${COMPONENT}/producer-monitoring.properties"
+fi
+
+# Required properties
+if [ "x$CLUSTER_ID" = "x" ]; then
+  export CLUSTER_ID="replicator"
+fi
+
+export ARGS="--consumer.config ${CONSUMER_CONFIG}"
+export ARGS="${ARGS} --producer.config ${PRODUCER_CONFIG}"
+export ARGS="${ARGS} --cluster.id ${CLUSTER_ID}"
+
+# Optional file-based properties 
+if [ -f "$REPLICATION_CONFIG" ]; then
+  export ARGS="${ARGS} --replication.config ${REPLICATION_CONFIG}"
+fi
+
+if [ -f "$CONSUMER_MONITORING_CONFIG" ]; then
+  export ARGS="${ARGS} --consumer.monitoring.config ${CONSUMER_MONITORING_CONFIG}"
+fi
+
+if [ -f "$PRODUCER_MONITORING_CONFIG" ]; then
+  export ARGS="${ARGS} --producer.monitoring.config ${PRODUCER_MONITORING_CONFIG}"
+fi
+
+# Optional command line arguments 
+if [ "x$BLACKLIST" != "x" ]; then
+  export ARGS="${ARGS} --blacklist ${BLACKLIST}"
+fi
+
+if [ "x$WHITELIST" != "x" ]; then
+  export ARGS="${ARGS} --whitelist ${WHITELIST}"
+fi
+
+if [ "x$CLUSTER_THREADS" != "x" ]; then
+  export ARGS="${ARGS} --cluster.threads ${CLUSTER_THREADS}"
+fi
+
+if [ "x$CONFLUENT_LICENSE" != "x" ]; then
+  export ARGS="${ARGS} --confluent.license ${CONFLUENT_LICENSE}"
+fi
+
+if [ "x$TOPIC_AUTO_CREATE" != "x" ]; then
+  export ARGS="${ARGS} --topic.auto.create"
+fi
+
+if [ "x$TOPIC_CONFIG_SYNC" != "x" ]; then
+  export ARGS="${ARGS} --topic.config.sync"
+fi
+
+if [ "x$TOPIC_CONFIG_SYNC_INTERVAL_MS" != "x" ]; then
+  export ARGS="${ARGS} --topic.config.sync.interval.ms ${TOPIC_CONFIG_SYNC_INTERVAL_MS}"
+fi
+
+if [ "x$TOPIC_CREATE_BACKOFF_MS" != "x" ]; then
+  export ARGS="${ARGS} --topic.create.backoff.ms ${TOPIC_CREATE_BACKOFF_MS}"
+fi
+
+if [ "x$TOPIC_POLL_INTERVAL_MS" != "x" ]; then
+  export ARGS="${ARGS} --topic.poll.interval.ms ${TOPIC_POLL_INTERVAL_MS}"
+fi
+
+if [ "x$TOPIC_PRESERVE_PARTITIONS" != "x" ]; then
+  export ARGS="${ARGS} --topic.preserve.partitions"
+fi
+
+if [ "x$TOPIC_REGEX" != "x" ]; then
+  export ARGS="${ARGS} --topic.regex ${TOPIC_REGEX}"
+fi
+
+if [ "x$TOPIC_RENAME_FORMAT" != "x" ]; then
+  export ARGS="${ARGS} --topic.rename.format ${TOPIC_RENAME_FORMAT}"
+fi
+
+if [ "x$TOPIC_TIMESTAMP_TYPE" != "x" ]; then
+  export ARGS="${ARGS} --topic.timestamp.type ${TOPIC_TIMESTAMP_TYPE}"
+fi
+
+echo "===> Running: replicator ${ARGS}"
+exec replicator ${ARGS}
