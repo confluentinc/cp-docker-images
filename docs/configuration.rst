@@ -34,7 +34,11 @@ The table below lists the available images and the Confluent software packages t
 |                  |                              |              | - confluent-schema-registry             |
 |                  |                              |              | - confluent-control-center              |
 +------------------+------------------------------+--------------+-----------------------------------------+
-| Kafka Connect    | cp-kafka-connect             | Enterprise* | - confluent-kafka-connect-jdbc          |
+| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
+| Executable       | -executable                  |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka Connect    | cp-kafka-connect             | Enterprise*  | - confluent-kafka-connect-jdbc          |
 |                  |                              |              | - confluent-kafka-connect-hdfs          |
 |                  |                              |              | - confluent-schema-registry             |
 |                  |                              |              | - confluent-control-center              |
@@ -477,6 +481,124 @@ Optional Settings
 All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
 
 The image will then convert these environment variables to corresponding Connect config variables.
+
+------------------------------------------
+Confluent Enterprise Replicator Executable
+------------------------------------------
+
+Confluent Kafka Replicator Executable provides another way to run Replicator by consolidating configuration properties and abstracting Kafka Connect details. The image depends on input files that can be passed by mounting a directory with the expected input files or by mounting each file individually. Additionally, the image supports passing command line parameters to the Replicator executable via environment variables as well. For example:
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=ReplicatorX \
+      --net=host \
+      -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
+      -v /mnt/replicator/config:/etc/replicator \
+      confluentinc/cp-enterprise-replicator-executable:4.1.0
+
+will start Replicator given that the local directory ``/mnt/replicator/config``, that will be mounted under ``/etc/replicator`` on the Docker image, contains the required files ``consumer.properties``, ``producer.properties`` and the optional but often necessary file ``replication.properties``.
+
+In a similar example, we start Replicator by omitting to add a ``replication.properties`` and by specifying the replication properties by using environment variables. For a complete list of the expected environment variables see the list of settings in the next sections.
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=ReplicatorX \
+      --net=host \
+      -e CLUSTER_ID=replicator-east-to-west \
+      -e WHITELIST=confluent \
+      -e TOPIC_RENAME_FORMAT='${topic}.replica' \
+      -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
+      -v /mnt/replicator/config:/etc/replicator \
+      confluentinc/cp-enterprise-replicator-executable:4.1.0
+
+Required Settings with Defaults
+"""""""""""""""""""""""""""""""
+The following files must be passed to run the Replicator Executable Docker image:
+
+``CONSUMER_CONFIG``
+
+  A file that contains the configuration settings for the consumer reading from the origin cluster. Default location is ``/etc/replicator/consumer.properties`` in the Docker image.
+
+``PRODUCER_CONFIG``
+
+  A file that contains the configuration settings for the producer writing to the destination cluster. Default location is ``/etc/replicator/producer.properties`` in the Docker image.
+
+``CLUSTER_ID``
+
+  A string that specifies the unique identifier for the Replicator cluster. Default value is ``replicator``.
+
+Optional Settings
+"""""""""""""""""
+
+Additional settings that are optional and maybe passed to Replicator Executable via environment variable instead of files are:
+
+``REPLICATION_CONFIG``
+
+  A file that contains the configuration settings for the replication from the origin cluster. Default location is ``/etc/replicator/replication.properties`` in the Docker image.
+
+``CONSUMER_MONITORING_CONFIG``
+
+  A file that contains the configuration settings of the producer writing monitoring information related to Replicator's consumer. Default location is ``/etc/replicator/consumer-monitoring.properties`` in the Docker image.
+
+``PRODUCER_MONITORING_CONFIG``
+
+  A file that contains the configuration settings of the producer writing monitoring information related to Replicator's producer. Default location is ``/etc/replicator/producer-monitoring.properties`` in the Docker image.
+
+``BLACKLIST``
+
+  A comma-separated list of topics that should not be replicated, even if they are included in the whitelist or matched by the regular expression.
+
+``WHITELIST``
+
+  A comma-separated list of the names of topics that should be replicated. Any topic that is in this list and not in the blacklist will be replicated.
+
+``CLUSTER_THREADS``
+
+  The total number of threads across all workers in the Replicator cluster.
+
+``CONFLUENT_LICENSE``
+
+  The Confluent license key. Without the license key, Replicator can be used for a 30-day trial period.
+
+``TOPIC_AUTO_CREATE``
+
+  Whether to automatically create topics in the destination cluster if required.
+
+``TOPIC_CONFIG_SYNC``
+
+  Whether to periodically sync topic configuration to the destination cluster.
+
+``TOPIC_CONFIG_SYNC_INTERVAL_MS``
+
+  How often to check for configuration changes when ``topic.config.sync`` is enabled.
+
+``TOPIC_CREATE_BACKOFF_MS``
+
+  Time to wait before retrying auto topic creation or expansion.
+
+``TOPIC_POLL_INTERVAL_MS``
+
+  Specifies how frequently to poll the source cluster for new topics matching the whitelist or regular expression.
+
+``TOPIC_PRESERVE_PARTITIONS``
+
+  Whether to automatically increase the number of partitions in the destination cluster to match the source cluster and ensure that messages replicated from the source cluster use the same partition in the destination cluster.
+
+``TOPIC_REGEX``
+
+  A regular expression that matches the names of the topics to be replicated. Any topic that matches this expression (or is listed in the whitelist) and not in the blacklist will be replicated.
+
+``TOPIC_RENAME_FORMAT``
+
+  A format string for the topic name in the destination cluster, which may contain ${topic} as a placeholder for the originating topic name.
+
+``TOPIC_TIMESTAMP_TYPE``
+
+  The timestamp type for the topics in the destination cluster.
+
+The above optional, non-file, command line settings as well as any other settings for Replicator can be passed to Replicator Executable through the required or optional files listed above as well.
 
 -----------
 KSQL Server
