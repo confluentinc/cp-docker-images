@@ -4,13 +4,13 @@
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
 BUILD_NUMBER ?= 3
 
-CONFLUENT_MAJOR_VERSION ?= 4
+CONFLUENT_MAJOR_VERSION ?= 5 
 CONFLUENT_MINOR_VERSION ?= 1
 CONFLUENT_PATCH_VERSION ?= 0
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION ?= 1.1.0
+KAFKA_VERSION ?= 2.1.0
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-replicator-executable enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
