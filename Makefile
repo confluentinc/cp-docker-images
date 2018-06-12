@@ -4,7 +4,7 @@
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
 BUILD_NUMBER ?= 3
 
-CONFLUENT_MAJOR_VERSION ?= 5 
+CONFLUENT_MAJOR_VERSION ?= 5
 CONFLUENT_MINOR_VERSION ?= 1
 CONFLUENT_PATCH_VERSION ?= 0
 
