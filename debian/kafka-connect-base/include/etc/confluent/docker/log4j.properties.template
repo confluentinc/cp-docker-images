@@ -5,9 +5,18 @@ log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
 
+{% set default_loggers = {
+  'org.reflections': 'ERROR',
+  'org.apache.zookeeper': 'ERROR',
+  'org.I0Itec.zkclient': 'ERROR'
+  } -%}
+
+
+
 {% if env['CONNECT_LOG4J_LOGGERS'] %}
-{% set loggers = parse_log4j_loggers(env['CONNECT_LOG4J_LOGGERS']) %}
-{% for logger,loglevel in loggers.iteritems() %}
-log4j.logger.{{logger}}={{loglevel}}
-{% endfor %}
+	{% set loggers = parse_log4j_loggers(env['CONNECT_LOG4J_LOGGERS'], defaults=default_loggers) %}
+	{% set loggers = parse_log4j_loggers(env['KAFKA_LOG4J_LOGGERS'], loggers) %}
+	{% for logger,loglevel in loggers.iteritems() %}
+		log4j.logger.{{logger}}={{loglevel}}
+	{% endfor %}
 {% endif %}
