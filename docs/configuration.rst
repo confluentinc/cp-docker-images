@@ -34,7 +34,11 @@ The table below lists the available images and the Confluent software packages t
 |                  |                              |              | - confluent-schema-registry             |
 |                  |                              |              | - confluent-control-center              |
 +------------------+------------------------------+--------------+-----------------------------------------+
-| Kafka Connect    | cp-kafka-connect             | Enterprise   | - confluent-kafka-connect-jdbc          |
+| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
+| Executable       | -executable                  |              | - confluent-schema-registry             |
+|                  |                              |              | - confluent-control-center              |
++------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka Connect    | cp-kafka-connect             | Enterprise*  | - confluent-kafka-connect-jdbc          |
 |                  |                              |              | - confluent-kafka-connect-hdfs          |
 |                  |                              |              | - confluent-schema-registry             |
 |                  |                              |              | - confluent-control-center              |
@@ -45,8 +49,13 @@ The table below lists the available images and the Confluent software packages t
 +------------------+------------------------------+--------------+-----------------------------------------+
 | REST Proxy       | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
 +------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL Server      | cp-ksql-server               | Enterprise*  | - ksql-server                           |
+|                  |                              |              | - confluent-monitoring-interceptors     |
++------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL CLI         | cp-ksql-cli                  | Open Source  | - ksql-cli                              |
++------------------+------------------------------+--------------+-----------------------------------------+
 
-Note: The Kafka Connect image is labeled as "Enterprise" simply because it contains the Confluent Control Center package.  That package enables the deployed connectors to collect the metrics visualized in Confluent Control Center.   No explicit license is required when using the Kafka Connect image on its own.
+* Note: The Kafka Connect and KSQL Server images are labeled as "Enterprise" simply because they contain Confluent monitoring interceptors.  The monitoring interceptors enable connectors and KSQL queries to collect the metrics which can be visualized in Confluent Control Center.  The Kafka Connect image includes Confluent Control Center in its entirety, while the KSQL Server image just includes the monitoring interceptors. No explicit license is required when using the Kafka Connect or the KSQL Server image on their own. 
 
 Configuration Notes
 -------------------
@@ -472,3 +481,187 @@ Optional Settings
 All other settings for Connect like security, monitoring interceptors, producer and consumer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``CONNECT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``CONNECT_SSL_KEY_PASSWORD``.
 
 The image will then convert these environment variables to corresponding Connect config variables.
+
+------------------------------------------
+Confluent Enterprise Replicator Executable
+------------------------------------------
+
+Confluent Kafka Replicator Executable provides another way to run Replicator by consolidating configuration properties and abstracting Kafka Connect details. The image depends on input files that can be passed by mounting a directory with the expected input files or by mounting each file individually. Additionally, the image supports passing command line parameters to the Replicator executable via environment variables as well. For example:
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=ReplicatorX \
+      --net=host \
+      -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
+      -v /mnt/replicator/config:/etc/replicator \
+      confluentinc/cp-enterprise-replicator-executable:4.1.0
+
+will start Replicator given that the local directory ``/mnt/replicator/config``, that will be mounted under ``/etc/replicator`` on the Docker image, contains the required files ``consumer.properties``, ``producer.properties`` and the optional but often necessary file ``replication.properties``.
+
+In a similar example, we start Replicator by omitting to add a ``replication.properties`` and by specifying the replication properties by using environment variables. For a complete list of the expected environment variables see the list of settings in the next sections.
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=ReplicatorX \
+      --net=host \
+      -e CLUSTER_ID=replicator-east-to-west \
+      -e WHITELIST=confluent \
+      -e TOPIC_RENAME_FORMAT='${topic}.replica' \
+      -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
+      -v /mnt/replicator/config:/etc/replicator \
+      confluentinc/cp-enterprise-replicator-executable:4.1.0
+
+Required Settings with Defaults
+"""""""""""""""""""""""""""""""
+The following files must be passed to run the Replicator Executable Docker image:
+
+``CONSUMER_CONFIG``
+
+  A file that contains the configuration settings for the consumer reading from the origin cluster. Default location is ``/etc/replicator/consumer.properties`` in the Docker image.
+
+``PRODUCER_CONFIG``
+
+  A file that contains the configuration settings for the producer writing to the destination cluster. Default location is ``/etc/replicator/producer.properties`` in the Docker image.
+
+``CLUSTER_ID``
+
+  A string that specifies the unique identifier for the Replicator cluster. Default value is ``replicator``.
+
+Optional Settings
+"""""""""""""""""
+
+Additional settings that are optional and maybe passed to Replicator Executable via environment variable instead of files are:
+
+``REPLICATION_CONFIG``
+
+  A file that contains the configuration settings for the replication from the origin cluster. Default location is ``/etc/replicator/replication.properties`` in the Docker image.
+
+``CONSUMER_MONITORING_CONFIG``
+
+  A file that contains the configuration settings of the producer writing monitoring information related to Replicator's consumer. Default location is ``/etc/replicator/consumer-monitoring.properties`` in the Docker image.
+
+``PRODUCER_MONITORING_CONFIG``
+
+  A file that contains the configuration settings of the producer writing monitoring information related to Replicator's producer. Default location is ``/etc/replicator/producer-monitoring.properties`` in the Docker image.
+
+``BLACKLIST``
+
+  A comma-separated list of topics that should not be replicated, even if they are included in the whitelist or matched by the regular expression.
+
+``WHITELIST``
+
+  A comma-separated list of the names of topics that should be replicated. Any topic that is in this list and not in the blacklist will be replicated.
+
+``CLUSTER_THREADS``
+
+  The total number of threads across all workers in the Replicator cluster.
+
+``CONFLUENT_LICENSE``
+
+  The Confluent license key. Without the license key, Replicator can be used for a 30-day trial period.
+
+``TOPIC_AUTO_CREATE``
+
+  Whether to automatically create topics in the destination cluster if required.
+
+``TOPIC_CONFIG_SYNC``
+
+  Whether to periodically sync topic configuration to the destination cluster.
+
+``TOPIC_CONFIG_SYNC_INTERVAL_MS``
+
+  How often to check for configuration changes when ``topic.config.sync`` is enabled.
+
+``TOPIC_CREATE_BACKOFF_MS``
+
+  Time to wait before retrying auto topic creation or expansion.
+
+``TOPIC_POLL_INTERVAL_MS``
+
+  Specifies how frequently to poll the source cluster for new topics matching the whitelist or regular expression.
+
+``TOPIC_PRESERVE_PARTITIONS``
+
+  Whether to automatically increase the number of partitions in the destination cluster to match the source cluster and ensure that messages replicated from the source cluster use the same partition in the destination cluster.
+
+``TOPIC_REGEX``
+
+  A regular expression that matches the names of the topics to be replicated. Any topic that matches this expression (or is listed in the whitelist) and not in the blacklist will be replicated.
+
+``TOPIC_RENAME_FORMAT``
+
+  A format string for the topic name in the destination cluster, which may contain ${topic} as a placeholder for the originating topic name.
+
+``TOPIC_TIMESTAMP_TYPE``
+
+  The timestamp type for the topics in the destination cluster.
+
+The above optional, non-file, command line settings as well as any other settings for Replicator can be passed to Replicator Executable through the required or optional files listed above as well.
+
+-----------
+KSQL Server
+-----------
+
+The KSQL Server image can be configured through environment variables prefixed with ``KSQL_``, uppercasing each word in the parameter name, and separating each word with an underscore (_) instead of periods (.). For example, ``bootstrap.servers`` becomes ``KSQL_BOOTSTRAP_SERVERS``, and ``ksql.service.id``  becomes ``KSQL_KSQL_SERVICE_ID``.
+
+.. sourcecode:: bash
+
+  docker run -d \
+    -p 127.0.0.1:8088:8088
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088 \
+    -e KSQL_KSQL_SERVICE_ID=ksql_test_service_id_ \
+    -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
+    -e KSQL_KSQL_SINK_REPLICAS=3 \
+    -e KSQL_KSQL_STREAMS_STATE_DIR=/docker/container/path \
+    -v /docker/host/path:/docker/container/path \
+    confluentinc/cp-ksql-server:4.1.2
+
+Docker Options
+""""""""""""""
+
+* Data persistence: KSQL Server runs Kafka Streams applications which may need to store persistent state locally. The command above maps the state store directory inside the container (cf. ``KSQL_KSQL_STREAMS_STATE_DIR``) to a directory on the Docker host.
+* Port mapping: The above command maps the listener port to 8088 on the Docker host, hence ensuring that other containers (like for the KSQL CLI) running on the same host can connect to the KSQL Server container.
+
+Required Settings
+"""""""""""""""""
+The following settings must be passed to run the KSQL Server image.
+
+``KSQL_BOOTSTRAP_SERVERS``
+
+To configure the Kafka cluster that KSQL should read from/write to, you must specify one or more "bootstrap" brokers from that Kafka cluster. This parameter is formatted as a comma-separated list of hostname:port pairs; for example, ``broker-hostname1:9092,broker-hostname2:9092``. These brokers are used by KSQL to establish the initial connection to the Kafka cluster and to discover the set of all available brokers in the Kafka cluster, the set of which may change dynamically at runtime (e.g. brokers may be taken down for maintenance). You can but don't need to specify all brokers in the Kafka cluster, though it is recommended to specify at least two brokers to make bootstrapping more resilient against individual broker outages.
+
+Optional Settings
+"""""""""""""""""
+All other settings for KSQL like :ref:`security <ksql-security>`, monitoring interceptors, overrides for Kakfa Streams, Kafka Producer, or Kakfa Consumer settings can be passed to the Docker images as environment variables. The names of these environment variables are derived by prefixing with KSQL_, uppercasing each word in the parameter name, and separating each word with an underscore (_) instead of periods (.). For example, if you need to set ``ksql.streams.state.dir``, the environment variable name would be ``KSQL_KSQL_STREAMS_STATE_DIR``.
+
+The image will then convert these environment variables to corresponding KSQL Server config variables.
+
+--------
+KSQL CLI
+--------
+The KSQL CLI image will execute the ``ksql`` command and try to connect to the server at ``http://localhost:8088`` by default, as shown below. 
+
+.. sourcecode:: bash
+
+  docker run -it -rm confluentinc/cp-ksql-cli:4.1.2
+
+Note: Because the CLI is interactive, the container cannot log to STDOUT as is customary for Docker containers. The KSQL CLI logs can instead be found at /var/logs/ksql-cli/ inside the container.
+
+Configuring the KSQL CLI
+""""""""""""""""""""""""
+* Config files: Assuming that the CLI's configuration file is available on the Docker host at ``/docker/container/path/ksql-cli.properties``, then the following command will make the configuration file available to the CLI container at ``/docker/container/path/ksql-cli.properties``.
+
+.. sourcecode:: bash
+  docker run -it -rm \
+    -v /docker/host/path/:/docker/container/path
+    confluentinc/cp-ksql-cli:4.1.2 \
+      http://ksql-server.host:8088 \
+      --config-file /docker/container/path/ksql-cli.properties
+
+
+* Additional CLI options can be appended to the command as necessary. See :ref:`the KSQL CLI documentation <install_ksql-cli>` for the KSQL CLI options you can use.
+* The KSQL CLI cannot be configured via environment variables, unlike the KSQL Server image.
+
