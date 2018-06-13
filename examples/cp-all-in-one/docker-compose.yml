@@ -4,6 +4,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper
     hostname: zookeeper
+    container_name: zookeeper
     ports:
       - "2181:2181"
     environment:
@@ -13,6 +14,7 @@ services:
   broker:
     image: confluentinc/cp-enterprise-kafka
     hostname: broker
+    container_name: broker
     depends_on:
       - zookeeper
     ports:
@@ -30,25 +32,27 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
-  schema_registry:
+  schema-registry:
     image: confluentinc/cp-schema-registry
-    hostname: schema_registry
+    hostname: schema-registry
+    container_name: schema-registry
     depends_on:
       - zookeeper
       - broker
     ports:
       - "8081:8081"
     environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema_registry
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
   connect:
     image: confluentinc/cp-kafka-connect
     hostname: connect
+    container_name: connect
     depends_on:
       - zookeeper
       - broker
-      - schema_registry
+      - schema-registry
     ports:
       - "8083:8083"
     environment:
@@ -64,9 +68,9 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema_registry:8081'
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
       CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema_registry:8081'
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
       CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -74,10 +78,11 @@ services:
   control-center:
     image: confluentinc/cp-enterprise-control-center
     hostname: control-center
+    container_name: control-center
     depends_on:
       - zookeeper
       - broker
-      - schema_registry
+      - schema-registry
       - connect
     ports:
       - "9021:9021"
@@ -91,3 +96,18 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:latest
+    depends_on:
+      - zookeeper
+      - broker
+      - schema-registry
+    ports:
+      - 8082:8082
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:9092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
