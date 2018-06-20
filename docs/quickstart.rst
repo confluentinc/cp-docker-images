@@ -162,7 +162,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
+          bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 42 messages.'"
 
       After running the command, you should see the following:
 
@@ -175,7 +175,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --from-beginning --max-messages 42
+          kafka-console-consumer --bootstrap-server localhost:9092 --topic foo --from-beginning --max-messages 42
 
       If everything is working as expected, each of the original messages you produced should be written back out:
 
