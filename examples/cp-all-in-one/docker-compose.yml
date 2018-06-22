@@ -137,6 +137,8 @@ services:
       - broker
       - connect
       - ksql-server
+    entrypoint: /bin/sh
+    tty: true
 
   ksql-datagen:
     image: confluentinc/ksql-examples:5.0.0-beta30
