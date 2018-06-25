@@ -127,6 +127,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
        -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
+       -e KAFKA_SSL_CLIENT_AUTH=required \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
        confluentinc/cp-kafka:4.1.0
@@ -143,6 +144,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
        -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
+       -e KAFKA_SSL_CLIENT_AUTH=required \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
        confluentinc/cp-kafka:4.1.0
@@ -159,6 +161,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
        -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
+       -e KAFKA_SSL_CLIENT_AUTH=required \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
        confluentinc/cp-kafka:4.1.0

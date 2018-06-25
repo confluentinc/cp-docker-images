@@ -191,6 +191,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SSL_KEY_CREDENTIALS=broker1_sslkey_creds \
          -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker1.truststore.jks \
          -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
+         -e KAFKA_SSL_CLIENT_AUTH=required \
          -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SASL_SSL \
          -e KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=GSSAPI \
          -e KAFKA_SASL_ENABLED_MECHANISMS=GSSAPI \
@@ -211,6 +212,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SSL_KEY_CREDENTIALS=broker2_sslkey_creds \
          -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker2.truststore.jks \
          -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
+         -e KAFKA_SSL_CLIENT_AUTH=required \
          -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SASL_SSL \
          -e KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=GSSAPI \
          -e KAFKA_SASL_ENABLED_MECHANISMS=GSSAPI \
@@ -231,6 +233,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SSL_KEY_CREDENTIALS=broker3_sslkey_creds \
          -e KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.broker3.truststore.jks \
          -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
+         -e KAFKA_SSL_CLIENT_AUTH=required \
          -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SASL_SSL \
          -e KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=GSSAPI \
          -e KAFKA_SASL_ENABLED_MECHANISMS=GSSAPI \

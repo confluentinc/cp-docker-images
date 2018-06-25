@@ -56,6 +56,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
+      KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
       - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
@@ -78,6 +79,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: broker2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker2_truststore_creds
+      KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
       - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
@@ -100,6 +102,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: broker3_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker3.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker3_truststore_creds
+      KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
     volumes:
       - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
