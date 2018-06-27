@@ -1,9 +1,12 @@
-.. _replicator :
+.. _replicator:
 
-Replicator Tutorial
--------------------
+Replicator Tutorial on Docker
+=============================
 
-In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka Connect cluster because Replicator is built on Connect.
+In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a
+destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data
+for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka
+Connect cluster because Replicator is built on Connect.
 
 .. include:: includes/docker-tutorials.rst
     :start-line: 2
@@ -12,6 +15,7 @@ In this section, we provide a tutorial for running Replicator which replicates d
    Kafka cluster and a Kafka Connect cluster. Navigate to ``cp-docker-images/examples/enterprise-replicator``, where it is located:
 
    .. sourcecode:: bash
+
     cd cp-docker-images/examples/enterprise-replicator
 
 #. Start the Kafka and Kafka Connect clusters using Docker Compose ``create`` and ``start`` commands.

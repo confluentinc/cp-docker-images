@@ -1,7 +1,7 @@
-.. _clustered_quickstart :
+.. _clustered_quickstart:
 
-Clustered Deployment
---------------------
+Clustered Deployment on Docker
+==============================
 
 This tutorial runs a three-node Kafka cluster and |zk| ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
@@ -15,7 +15,7 @@ Installing and Running Docker
 
 For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
 
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The Confluent Platform Docker Images require Docker version 1.11 or greater.
+To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The |cp| Docker Images require Docker version 1.11 or greater.
 
 
 .. _docker-setup-3-node:
@@ -23,9 +23,9 @@ To get started, you'll need to first `install Docker and get it running <https:/
 Docker Client: Setting Up a Three Node Kafka Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you're running on Windows or Mac OS X, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
+If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
 
-Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up Confluent Platform.
+Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up |cp|.
 
 .. note:: In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate
           how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do
@@ -247,9 +247,9 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 Docker Compose: Setting Up a Three Node Kafka Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
+Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the |cp| services.
 
-#. Clone the Confluent Platform Docker Images Github Repository.
+#. Clone the |cp| Docker Images Github Repository.
 
    .. sourcecode:: bash
 

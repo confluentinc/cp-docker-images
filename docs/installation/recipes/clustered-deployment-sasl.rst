@@ -1,7 +1,7 @@
 .. _clustered_deployment_sasl:
 
-Clustered Deployment Using SASL and SSL
-----------------------------------------
+Clustered Deployment Using SASL and SSL on Docker
+=================================================
 
 This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to the quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
@@ -47,7 +47,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
     echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
 
-#. Build and run the kerberos image
+#. Build and run the Kerberos image.
 
    .. sourcecode:: bash
 
@@ -356,7 +356,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 Docker Compose: Setting Up a Three Node Confluent Platform Cluster with SASL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
+Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the |cp| services.
 
 #. Follow sections 1, 2 and 3 in :ref:`docker-client-setup-3-node-sasl` to create a docker-machine and generate the SSL credentials.
 
