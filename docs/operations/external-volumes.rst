@@ -3,7 +3,7 @@
 Mounting External Volumes
 -------------------------
 
-When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of Confluent Platform, we'll need to use external volumes for several main use cases:
+When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of |cp|, we'll need to use external volumes for several main use cases:
 
 
 1. Data Storage: Kafka and |zk| will need externally mounted volumes to persist data in the event that a container stops running or is restarted.

@@ -1,7 +1,7 @@
 .. _clustered_deployment_ssl:
 
-Clustered Deployment Using SSL
--------------------------------
+Clustered Deployment Using SSL on Docker
+========================================
 
 This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to the quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
 
@@ -273,9 +273,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 Docker Compose: Setting Up a Three Node Confluent Platform Cluster with SSL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the Confluent Platform services.
+Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the |cp| services.
 
-#. Clone the Confluent Platform Docker Images Github Repository.
+#. Clone the |cp| Docker Images Github Repository.
 
    .. sourcecode:: bash
 
