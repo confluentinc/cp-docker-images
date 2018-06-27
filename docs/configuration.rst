@@ -279,7 +279,6 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
       -e CONNECT_PLUGIN_PATH=/usr/share/java \
       confluentinc/cp-kafka-connect:4.0.0
 

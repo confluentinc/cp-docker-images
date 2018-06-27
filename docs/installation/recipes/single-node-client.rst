@@ -575,7 +575,6 @@ topics. You will create these topics in the Kafka cluster you have running from 
         -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
         -e CONNECT_REST_ADVERTISED_HOST_NAME="kafka-connect" \
         -e CONNECT_LOG4J_ROOT_LOGLEVEL=DEBUG \
-        -e CONNECT_LOG4J_LOGGERS=org.reflections=ERROR \
         -e CONNECT_PLUGIN_PATH=/usr/share/java \
         -e CONNECT_REST_HOST_NAME="kafka-connect" \
         -v /tmp/quickstart/file:/tmp/quickstart \
