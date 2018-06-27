@@ -36,6 +36,6 @@ RUN apt-get update -y \
         libsasl2-modules-gssapi-mit \
         krb5-user \
         krb5-config \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 CMD ["kafkacat"]
