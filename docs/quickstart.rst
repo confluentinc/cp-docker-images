@@ -269,7 +269,7 @@ Start Kafka.
 
 
   .. note::
-    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  You also passed in the |zk| port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the |zk| service can be left at ``localhost``.
+    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:9092``.  This will make Kafka accessible from outside the container by advertising it's location on the Docker host.  You also passed in the |zk| port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the |zk| service can be left at ``localhost``.
 
 
     Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
