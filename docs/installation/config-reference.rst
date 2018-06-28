@@ -27,7 +27,7 @@ the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tick
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -e ZOOKEEPER_TICK_TIME=2000 \
     -e ZOOKEEPER_SYNC_LIMIT=2 \
-    confluentinc/cp-zookeeper:4.0.0
+    confluentinc/cp-zookeeper:5.0.0
 
 Required |zk| Settings
 """"""""""""""""""""""
@@ -59,7 +59,7 @@ run the following commands to set ``broker.id``, ``advertised.listeners``, ``zoo
       -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
       -e KAFKA_BROKER_ID=2 \
       -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-      confluentinc/cp-kafka:4.0.0
+      confluentinc/cp-kafka:5.0.0
 
 .. note:: The ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  This makes Kafka accessible from
           outside the container by advertising its location on the Docker host.
@@ -98,7 +98,7 @@ and ``confluent.support.customer.id``:
       -e KAFKA_BROKER_ID=2 \
       -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
       -e CONFLUENT_SUPPORT_CUSTOMER_ID=c0 \
-      confluentinc/cp-enterprise-kafka:4.0.0
+      confluentinc/cp-enterprise-kafka:5.0.0
 
 .. note:: The ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  It makes Kafka accessible from outside
           of the container by advertising its location on the Docker host.
@@ -139,7 +139,7 @@ underscore (``_``) to separate each word. For example, run the following to set 
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
       -e SCHEMA_REGISTRY_DEBUG=true \
-      confluentinc/cp-schema-registry:4.0.0
+      confluentinc/cp-schema-registry:5.0.0
 
 Required Schema Registry Settings
 """""""""""""""""""""""""""""""""
@@ -169,7 +169,7 @@ The variables used in the Kafka REST Proxy (``cp-kafka-rest``) image are prefixe
       -e KAFKA_REST_ZOOKEEPER_CONNECT=localhost:32181 \
       -e KAFKA_REST_LISTENERS=http://localhost:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://localhost:8081 \
-      confluentinc/cp-kafka-rest:4.0.0
+      confluentinc/cp-kafka-rest:5.0.0
 
 Required Kafka REST Proxy Settings
 """"""""""""""""""""""""""""""""""
@@ -215,7 +215,7 @@ the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` o
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
       -e CONNECT_PLUGIN_PATH=/usr/share/java \
-      confluentinc/cp-kafka-connect:4.0.0
+      confluentinc/cp-kafka-connect:5.0.0
 
 
 Required Kafka Connect Settings
@@ -284,7 +284,7 @@ of periods. For example, the following command runs |c3-short|, passing in its |
     -e CONTROL_CENTER_REPLICATION_FACTOR=1 \
     -e CONTROL_CENTER_CONNECT_CLUSTER=http://localhost:28082 \
     -v /mnt/control-center/data:/var/lib/confluent-control-center \
-    confluentinc/cp-enterprise-control-center:4.0.0
+    confluentinc/cp-enterprise-control-center:5.0.0
 
 |c3-short| Docker Options
 """""""""""""""""""""""""
@@ -348,7 +348,7 @@ and the ``key`` or ``value`` converter:
       -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
-      confluentinc/cp-enterprise-replicator:4.0.0
+      confluentinc/cp-enterprise-replicator:5.0.0
 
 The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from
 source Kafka cluster (src) to a destination Kafka cluster (dest).
@@ -427,7 +427,7 @@ Confluent Kafka Replicator Executable (``cp-enterprise-replicator-executable``) 
       --net=host \
       -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
       -v /mnt/replicator/config:/etc/replicator \
-      confluentinc/cp-enterprise-replicator-executable:4.1.0
+      confluentinc/cp-enterprise-replicator-executable:5.0.0
 
 will start Replicator given that the local directory ``/mnt/replicator/config``, that will be mounted under ``/etc/replicator`` on the Docker image, contains the required files ``consumer.properties``, ``producer.properties`` and the optional but often necessary file ``replication.properties``.
 
@@ -443,7 +443,7 @@ In a similar example, we start Replicator by omitting to add a ``replication.pro
       -e TOPIC_RENAME_FORMAT='${topic}.replica' \
       -e REPLICATOR_LOG4J_ROOT_LOGLEVEL=DEBUG \
       -v /mnt/replicator/config:/etc/replicator \
-      confluentinc/cp-enterprise-replicator-executable:4.1.0
+      confluentinc/cp-enterprise-replicator-executable:5.0.0
 
 Required Confluent Enterprise Replicator Executable Settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -512,3 +512,265 @@ Additional settings that are optional and maybe passed to Replicator Executable 
     The timestamp type for the topics in the destination cluster.
 
 The above optional, non-file, command line settings as well as any other settings for Replicator can be passed to Replicator Executable through the required or optional files listed above as well.
+
+-----------
+KSQL Server
+-----------
+
+KSQL Headless Server Settings
+"""""""""""""""""""""""""""""
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster.  
+
+``KSQL_KSQL_SERVICE_ID``
+    The ID...
+
+``KSQL_KSQL_QUERIES_FILE``
+    the file...
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -v /path/on/host:/path/in/container/ \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+      -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+
+
+
+KSQL Headless Server with Interceptors Settings
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The ID...
+
+``KSQL_KSQL_QUERIES_FILE``
+    the file...
+
+``KSQL_PRODUCER_INTERCEPTOR_CLASSES``
+    
+
+``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
+    
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -v /path/on/host:/path/in/container/ \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+      -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+      -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+      -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+Interactive Server Configuration
+""""""""""""""""""""""""""""""""
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The ID...
+
+``KSQL_LISTENERS``
+    
+
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -p 127.0.0.1:8088:8088 \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+      -e KSQL_KSQL_SERVICE_ID=confluent_test_2 \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+
+Interactive Server Configuration with Interceptors
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The ID...
+
+``KSQL_LISTENERS``
+    
+``KSQL_PRODUCER_INTERCEPTOR_CLASSES``
+    
+
+``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
+    
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -p 127.0.0.1:8088:8088 \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+      -e KSQL_KSQL_SERVICE_ID=confluent_test_2_ \
+      -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+      -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+In interactive mode, the cli running outside Docker can connect to the server running in Docker:
+
+  .. sourcecode:: bash
+
+    ./bin/ksql
+    ... Edited out the ascii art...
+    CLI v5.0.0, Server v5.0.0-SNAPSHOT located at http://localhost:8088
+
+    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+    ksql>
+
+Connect to a Secure Kafka Cluster, Like |ccloud|
+""""""""""""""""""""""""""""""""""""""""""""""""
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The ID...
+
+``KSQL_LISTENERS``
+    
+``KSQL_KSQL_SINK_REPLICAS``
+    
+
+``KSQL_KSQL_STREAMS_REPLICATION_FACTOR``
+    
+
+``KSQL_SECURITY_PROTOCOL``
+    
+
+``KSQL_SASL_JAAS_CONFIG``
+    
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -p 127.0.0.1:8088:8088 \
+      -e KSQL_BOOTSTRAP_SERVERS=REMOVED_SERVER1:9092,REMOVED_SERVER2:9093,REMOVED_SERVER3:9094 \
+      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+      -e KSQL_KSQL_SERVICE_ID=default_ \
+      -e KSQL_KSQL_SINK_REPLICAS=3 \
+      -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
+      -e KSQL_SECURITY_PROTOCOL=SASL_SSL \
+      -e KSQL_SASL_MECHANISM=PLAIN \
+      -e KSQL_SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\"...\" password=\"...\";" \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+Configuration via Java system properties
+""""""""""""""""""""""""""""""""""""""""
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_OPTS``
+    
+
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      -v /path/on/host:/path/in/container/ \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dksql.queries.file=/path/in/container/queries.sql" \
+      confluentinc/cp-ksql-server:5.0.0
+
+
+View logs
+"""""""""
+
+  .. sourcecode:: bash
+
+    docker logs -f <container id>
+    [2018-05-24 23:43:05,591] INFO stream-thread [_confluent-ksql-default_transient_1507119262168861890_1527205385485-71c8a94c-abe9-45ba-91f5-69a762ec5c1d-StreamThread-17] Starting (org.apache.kafka.streams.processor.internals.StreamThread:713)
+    ...
+
+
+--------
+KSQL CLI
+--------
+
+Connect to a Dockerized KSQL Server
+"""""""""""""""""""""""""""""""""""
+
+This works because of the Docker network created by the KSQL Server.
+
+
+``KSQL_BOOTSTRAP_SERVERS``
+    List of hosts that are running in a Kafka cluster. 
+
+``KSQL_OPTS``
+    
+
+
+  .. sourcecode:: bash
+
+    # Run the server
+    docker run -d -p 10.0.0.11:8088:8088 \
+      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+      -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dlisteners=http://0.0.0.0:8088/" \  
+      confluentinc/cp-ksql-server:5.0.0
+
+    # Now connect the CLI to it.
+    docker run -it confluentinc/cp-ksql-cli http://10.0.0.11:8088 
+    .. clipped ascii art ..
+    Copyright 2017 Confluent Inc.
+
+    CLI v5.0.0-SNAPSHOT, Server v5.0.0-SNAPSHOT located at http://10.0.0.11:8088
+
+    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+    ksql>
+
+
+Provide a config file
+"""""""""""""""""""""
+
+  .. sourcecode:: bash
+
+    # Assume server is running.
+    ls /path/on/host/ksql-cli.properties
+
+    docker run -it \
+      -v /path/on/host/:/path/in/container  \
+      confluentinc/cp-ksql-cli:5.0.0 http://10.0.0.11:8088 \
+      --config-file /path/in/container/ksql-cli.properties
+
+
+
+Connect to a KSQL Server running on another host, like AWS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+  .. sourcecode:: bash
+
+    docker run -it confluentinc/cp-ksql-cli:5.0.0-beta30 \
+      http://ec2-blah.us-blah.compute.amazonaws.com:8080
+
+    ... ascii art ..
+    Copyright 2017 Confluent Inc.
+
+    CLI v5.0.0-SNAPSHOT, Server v5.0.0-SNAPSHOT located at http://ec2-blah.us-blah.compute.amazonaws.com:8080
+
+    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+    ksql>
+
+
