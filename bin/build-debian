@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# todo: added for debugging. to be removed once integration is complete
+echo "------------- ENV variables --------------------"
+echo "COMPONENTS=${COMPONENTS}" 
+echo "ALLOW_UNSIGNED=${ALLOW_UNSIGNED} "
+echo "CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}"
+echo "KAFKA_VERSION=${KAFKA_VERSION}"
+echo "CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"
+echo "CONFLUENT_DEB_LABEL=${CONFLUENT_DEB_LABEL}"
+echo "CONFLUENT_RPM_LABEL=${CONFLUENT_RPM_LABEL}"
+echo "CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION}"
+echo "CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION}"
+echo "CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION}"
+echo "CONFLUENT_VERSION=${CONFLUENT_VERSION}"
+echo "VERSION=${VERSION}"
+echo "COMMIT_ID=${COMMIT_ID}"
+echo "BUILD_NUMBER=${BUILD_NUMBER}"
+echo "REPOSITORY=${REPOSITORY}"
+
 for component in ${COMPONENTS} ; do
     echo "\n\nBuilding ${component} \n==========================================\n "
 
