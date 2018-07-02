@@ -189,12 +189,19 @@ Prerequisites
 
 3. If you plan to contribute back to the project, see the `contributing guidelines <https://github.com/confluentinc/cp-docker-images/blob/master/CONTRIBUTING.md>`_.
 
-Adding Connectors to the Kafka Connect Image
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. _adding_connectors_to_images :
 
-There are currently two ways to add new connectors to the Kafka Connect image.
+Adding Connectors to the Kafka Connect Images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
+Confluent provides two images for Kafka Connect:
+
+    - The Kafka Connect Base image is a minimal but easily-extended image that contains Kafka Connect and all of its dependencies. When started, it will run the Connect framework in distributed mode.
+    - The Kafka Connect image extends the Kafka Connect Base image and includes several of the connectors supported by Confluent including the JDBC source and sink connectors, the HDFS connector, and the Elasticsearch connector.
+
+There are currently two ways to add new connectors to these images.
+
+* Build a new Docker image that has the new connectors installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
@@ -204,7 +211,74 @@ Examples
 
 The following examples show to extend the images.
 
-1. Download configuration from a URL
+1. Adding connectors from `Confluent Hub <http://confluent.io/hub>`_
+
+  This example shows how to use the
+  `Confluent Hub client <https://docs.confluent.io/current/confluent-hub/client.html>`_ to create a
+  Docker image that extends from one of Confluent's Kafka Connect images but which contains a custom
+  set of connectors. This may be useful if you'd like to use a connector that isn't contained in the
+  ``cp-kafka-connect`` image, or if you'd like to keep the custom image lightweight and not include
+  any connectors that you don't plan to use.
+
+  First, choose an image you'd like to extend from. Functionally, the ``cp-kafka-connect`` and
+  ``cp-kafka-connect-base`` images are identical; the only difference is that the former image
+  already contains several of Confluent's connectors, whereas the latter comes with none by default.
+  This example will extend from the ``cp-kafka-connect-base`` image.
+
+  Second, choose the connectors from Confluent Hub that you'd like to include in your custom image.
+  This example will use connectors for MongoDB, Microsoft's Azure IoT Hub, and Google BigQuery to
+  create a custom image.
+
+  Once you've decided on an image to extend from and the connectors you'd like to add to it,
+  actually creating the image is straightforward. First, write a Dockerfile:
+
+  .. sourcecode:: bash
+
+      FROM confluentinc/cp-kafka-connect-base:5.0.0
+      
+      RUN   confluent-hub install --no-prompt hpgrahsl/kafka-connect-mongodb:1.1.0 \
+         && confluent-hub install --no-prompt microsoft/kafka-connect-iothub:0.6 \
+         && confluent-hub install --no-prompt wepay/kafka-connect-bigquery:1.1.0
+
+
+  And then build it:
+
+  .. sourcecode:: bash
+
+      docker build . -t my-custom-image:1.0.0
+
+  
+  The output from that command should resemble:
+
+  .. sourcecode:: bash
+
+      Step 1/2 : FROM confluentinc/cp-kafka-connect-base
+       ---> e0d92da57dc3
+      ...
+      Running in a "--no-prompt" mode 
+      Implicit acceptance of the license below:
+      Apache 2.0 
+      https://github.com/wepay/kafka-connect-bigquery/blob/master/LICENSE.md 
+      Implicit confirmation of the question: You are about to install 'kafka-connect-bigquery' from WePay, as published on Confluent Hub. 
+      Downloading component BigQuery Sink Connector 1.1.0, provided by WePay from Confluent Hub and installing into /usr/share/confluent-hub-components 
+      Adding installation directory to plugin path in the following files: 
+        /etc/kafka/connect-distributed.properties 
+        /etc/kafka/connect-standalone.properties 
+        /etc/schema-registry/connect-avro-distributed.properties 
+        /etc/schema-registry/connect-avro-standalone.properties 
+ 
+      Completed 
+      Removing intermediate container 48d4506b8a83
+       ---> 496befc3d3f7
+      Successfully built 496befc3d3f7
+      Successfully tagged my-custom-image:1.0.0
+
+
+  This will result in an image named ``my-custom-image`` that contains the MongoDB, IoT Hub, and
+  BigQuery connectors, and which will be capable of running any/all all of them via the Kafka
+  Connect framework. 
+
+2. Download configuration from a URL
 
   This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
 
@@ -255,7 +329,7 @@ The following examples show to extend the images.
            -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
            foo/zookeeper:latest
 
-2. Add More Software
+3. Add More Software
 
   This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver.
 
@@ -278,7 +352,7 @@ The following examples show to extend the images.
 
    **This approach can also be used to create images with your own Kafka Connect Plugins.**
 
-3. Logging to volumes
+4. Logging to volumes
 
   The images only expose volumes for data and security configuration. But you might want to write to external storage for some use cases. For example: You might want to write the Kafka authorizer logs to a volume for auditing.
 
@@ -337,7 +411,7 @@ The following examples show to extend the images.
 
     docker build -t foo/kafka-auditable:latest .
 
-4. Writing heap and verbose GC logging to external volumes
+5. Writing heap and verbose GC logging to external volumes
 
   You might want to log heap dumps and GC logs to an external volumes for debugging for the Kafka image.
 
@@ -368,7 +442,7 @@ The following examples show to extend the images.
         -e KAFKA_HEAP_OPTS="-Xmx256M -Xloggc:/var/log/jvm-logs/verbose-gc.log -verbose:gc -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/jvm-logs" \
         foo/kafka-verbose-jvm:latest
 
-5. External Service discovery
+6. External Service discovery
 
   You can extend the images to support for any service discovery mechanism either by overriding relevent properties or by overriding the ``configure`` script as explained in example 1.
 
@@ -376,7 +450,7 @@ The following examples show to extend the images.
 
 .. _oracle_jdk :
 
-6. Use Oracle JDK
+7. Use Oracle JDK
 
   The images ship with Azul Zulu OpenJDK.  Due to licensing restrictions, we cannot bundle Oracle JDK, but we are testing on Zulu OpenJDK and do suggest it as a viable alternative.  In the event that you really need to use Oracle's version, you can follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
 

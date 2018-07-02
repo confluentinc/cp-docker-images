@@ -17,45 +17,44 @@ The images are available for Confluent Platform 3.0.1 and greater. Images are av
 
 The table below lists the available images and the Confluent software packages they contain.  You'll note that some images are identified as ```cp-enterprise-${component_name}```.   These images include proprietary components that must be licensed from Confluent when deployed.
 
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Component        | Image Name                   | Type         | Packages Included                       |
-+==================+==============================+==============+=========================================+
-| Base Image       | cp-base                      | Open Source  | - zulu-openjdk-8                        |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Kafka            | cp-kafka                     | Open Source  | - confluent-kafka-*                     |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Kafka            | cp-enterprise-kafka          | Enterprise   | - confluent-kafka-*                     |
-|                  |                              |              | - confluent-rebalancer                  |
-|                  |                              |              | - confluent-support-metrics             |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Control Center   | cp-enterprise-control-center | Enterprise   | - confluent-control-center              |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
-|                  |                              |              | - confluent-schema-registry             |
-|                  |                              |              | - confluent-control-center              |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Replicator       | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
-| Executable       | -executable                  |              | - confluent-schema-registry             |
-|                  |                              |              | - confluent-control-center              |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Kafka Connect    | cp-kafka-connect             | Enterprise*  | - confluent-kafka-connect-jdbc          |
-|                  |                              |              | - confluent-kafka-connect-hdfs          |
-|                  |                              |              | - confluent-schema-registry             |
-|                  |                              |              | - confluent-control-center              |
-|                  |                              |              | - confluent-kafka-connect-elasticsearch |
-|                  |                              |              | - confluent-kafka-connect-s3            |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| Schema Registry  | cp-schema-registry           | Open Source  | - confluent-schema-registry             |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| REST Proxy       | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| KSQL Server      | cp-ksql-server               | Enterprise*  | - ksql-server                           |
-|                  |                              |              | - confluent-monitoring-interceptors     |
-+------------------+------------------------------+--------------+-----------------------------------------+
-| KSQL CLI         | cp-ksql-cli                  | Open Source  | - ksql-cli                              |
-+------------------+------------------------------+--------------+-----------------------------------------+
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Component          | Image Name                   | Type         | Packages Included                       |
++====================+==============================+==============+=========================================+
+| Base Image         | cp-base                      | Open Source  | - zulu-openjdk-8                        |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka              | cp-kafka                     | Open Source  | - confluent-kafka-*                     |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka              | cp-enterprise-kafka          | Enterprise   | - confluent-kafka-*                     |
+|                    |                              |              | - confluent-rebalancer                  |
+|                    |                              |              | - confluent-support-metrics             |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Control Center     | cp-enterprise-control-center | Enterprise   | - confluent-control-center              |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Replicator         | cp-enterprise-replicator     | Enterprise   | - confluent-kafka-replicator            |
+|                    |                              |              | - confluent-schema-registry             |
+|                    |                              |              | - confluent-control-center              |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka Connect Base | cp-kafka-connect-base        | Enterprise   | - confluent-schema-registry             |
+|                    |                              |              | - confluent-control-center              |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Kafka Connect      | cp-kafka-connect             | Enterprise   | - confluent-kafka-connect-jdbc          |
+|                    |                              |              | - confluent-kafka-connect-hdfs          |
+|                    |                              |              | - confluent-schema-registry             |
+|                    |                              |              | - confluent-control-center              |
+|                    |                              |              | - confluent-kafka-connect-elasticsearch |
+|                    |                              |              | - confluent-kafka-connect-s3            |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| Schema Registry    | cp-schema-registry           | Open Source  | - confluent-schema-registry             |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| REST Proxy         | cp-kafka-rest                | Open Source  | - confluent-kafka-rest                  |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL Server        | cp-ksql-server               | Enterprise*  | - ksql-server                           |
+|                    |                              |              | - confluent-monitoring-interceptors     |
++--------------------+------------------------------+--------------+-----------------------------------------+
+| KSQL CLI           | cp-ksql-cli                  | Open Source  | - ksql-cli                              |
++--------------------+------------------------------+--------------+-----------------------------------------+
 
-* Note: The Kafka Connect and KSQL Server images are labeled as "Enterprise" simply because they contain Confluent monitoring interceptors.  The monitoring interceptors enable connectors and KSQL queries to collect the metrics which can be visualized in Confluent Control Center.  The Kafka Connect image includes Confluent Control Center in its entirety, while the KSQL Server image just includes the monitoring interceptors. No explicit license is required when using the Kafka Connect or the KSQL Server image on their own. 
+* Note: The Kafka Connect and Kafka Connect Base images are labeled as "Enterprise" simply because they contain the Confluent Control Center package.  That package enables the deployed connectors to collect the metrics visualized in Confluent Control Center.   No explicit license is required when using these images on their own.
 
 Configuration Notes
 -------------------
@@ -73,10 +72,7 @@ Configuration Notes
 
 *  Adding Connectors to the Kafka Connect Image
 
-	There are currently two ways to add new connectors to the Kafka Connect image.
-
-	* Build a new Docker image that has the connector installed. You can follow the examples found in `Extending Images <development.html#extending-the-docker-images>`_. You will need to make sure that the connector jars are on the CLASSPATH for the Connect service (the default location of /usr/share/java/kafka-connect-* is the recommended location).
-	* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+    See :ref:`Adding Connectors to the Kafka Connect Images <adding_connectors_to_images>`
 
 *  Included Java
 
@@ -257,11 +253,11 @@ The following settings must be passed to run the REST Proxy Docker image.
 
   The server may also have a |zk| ``chroot`` path as part of its |zk| connection string which puts its data under some path in the global |zk| namespace. If so the consumer should use the same chroot path in its connection string. For example to give a chroot path of /chroot/path you would give the connection string as ``hostname1:port1,hostname2:port2,hostname3:port3/chroot/path``.
 
--------------
-Kafka Connect
--------------
+----------------------------------
+Kafka Connect Base / Kafka Connect
+----------------------------------
 
-The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
+The Kafka Connect Base and Kafka Connect images use variables prefixed with ``CONNECT_`` with an underscore (``_``) separating each word instead of periods. As an example, to run the Kafka Connect image and set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter, run the following command:
 
   .. codewithvars:: bash
 
@@ -285,7 +281,7 @@ The Kafka Connect image uses variables prefixed with ``CONNECT_`` with an unders
 
 Required Settings
 """""""""""""""""
-The following settings must be passed to run the Kafka Connect Docker image.
+The following settings must be passed to run the Kafka Connect Base and Kafka Connect Docker images.
 
 ``CONNECT_BOOTSTRAP_SERVERS``
 
