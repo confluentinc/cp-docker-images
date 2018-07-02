@@ -19,7 +19,7 @@ the images use the Docker ``-e`` or ``--env`` flags for setting various settings
 The |zk| (``cp-zookeeper``) image uses variables prefixed with ``ZOOKEEPER_`` with the variables expressed exactly as they would appear in
 the ``zookeeper.properties`` file.  As an example, to set ``clientPort``, ``tickTime``, and ``syncLimit`` run the command below:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     docker run -d \
     --net=host \
@@ -50,7 +50,7 @@ The Kafka (``cp-kafka``) image uses variables prefixed with ``KAFKA_`` with an u
 run the following commands to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, and
 ``offsets.topic.replication.factor``:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
       --net=host \
@@ -88,7 +88,7 @@ Confluent components. These variables have an underscore (``_``) that seperates 
 run this command to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``offsets.topic.replication.factor``,
 and ``confluent.support.customer.id``:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
       --net=host \
@@ -130,7 +130,7 @@ For the Schema Registry (``cp-schema-registry``) image, use variables prefixed w
 underscore (``_``) to separate each word. For example, run the following to set ``kafkastore.connection.url``, ``host.name``,
 ``listeners`` and ``debug``:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     docker run -d \
       --net=host \
@@ -161,7 +161,7 @@ The variables used in the Kafka REST Proxy (``cp-kafka-rest``) image are prefixe
 (``_``) that separates each word. For example, run this command to set the ``listeners``, ``schema.registry.url`` and
 ``zookeeper.connect``:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     docker run -d \
       --net=host \
@@ -198,7 +198,7 @@ The variables used in the Kafka Connect (``cp-kafka-connect``) image are prefixe
 each word. For example, run this command to set the required properties like ``bootstrap.servers``,
 the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` or ``value`` converter:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     docker run -d \
       --name=kafka-connect \
@@ -273,7 +273,7 @@ The image will then convert these environment variables to corresponding Connect
 The |c3| (``cp-control-center``) image uses variables prefixed with ``CONTROL_CENTER_`` with an underscore (``_``) that separates each word, instead
 of periods. For example, the following command runs |c3-short|, passing in its |zk|, Kafka, and Connect configuration parameters.
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
     --net=host \
@@ -332,7 +332,7 @@ uses variables prefixed with ``CONNECT_`` with an underscore (``_``) separating 
 commands to set the required properties like ``bootstrap.servers``, the topic names for ``config``, ``offsets`` and ``status``
 and the ``key`` or ``value`` converter:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     docker run -d \
       --name=cp-enterprise-replicator \
@@ -420,7 +420,7 @@ Confluent Enterprise Replicator Executable Configuration
 
 Confluent Kafka Replicator Executable (``cp-enterprise-replicator-executable``) provides another way to run Replicator by consolidating configuration properties and abstracting Kafka Connect details. The image depends on input files that can be passed by mounting a directory with the expected input files or by mounting each file individually. Additionally, the image supports passing command line parameters to the Replicator executable via environment variables as well. For example:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker run -d \
       --name=ReplicatorX \
@@ -433,7 +433,7 @@ will start Replicator given that the local directory ``/mnt/replicator/config``,
 
 In a similar example, we start Replicator by omitting to add a ``replication.properties`` and by specifying the replication properties by using environment variables. For a complete list of the expected environment variables see the list of settings in the next sections.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker run -d \
       --name=ReplicatorX \
@@ -535,14 +535,14 @@ Run a standalone KSQL Server instance in a container.
 ``KSQL_KSQL_QUERIES_FILE``
     A file that specifies predefined KSQL queries.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -v /path/on/host:/path/in/container/ \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
-      -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
-      confluentinc/cp-ksql-server:|release|
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+    -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+    confluentinc/cp-ksql-server:|release|
 
 KSQL Headless Server with Interceptors Settings
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -567,17 +567,16 @@ For more info on interceptor classes, see :ref:`Confluent Monitoring Interceptor
 ``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
     A list of fully qualified class names for consumer interceptors.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -v /path/on/host:/path/in/container/ \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
-      -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
-      -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
-      -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
-      confluentinc/cp-ksql-server:|release|
-
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+    -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+    -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+    -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+    confluentinc/cp-ksql-server:|release|
 
 Interactive Server Configuration
 """"""""""""""""""""""""""""""""
@@ -595,15 +594,14 @@ Run a KSQL Server that enables manual interaction by using the KSQL CLI.
 ``KSQL_LISTENERS``
     A list of URIs, including the protocol, that the broker listens on.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -p 127.0.0.1:8088:8088 \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
-      -e KSQL_KSQL_SERVICE_ID=confluent_test_2 \
-      confluentinc/cp-ksql-server:|release|
-
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=confluent_test_2 \
+    confluentinc/cp-ksql-server:|release|
 
 Interactive Server Configuration with Interceptors
 """"""""""""""""""""""""""""""""""""""""""""""""""
@@ -629,31 +627,30 @@ the KSQL CLI. For more info on interceptor classes, see
 ``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
     A list of fully qualified class names for consumer interceptors.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -p 127.0.0.1:8088:8088 \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
-      -e KSQL_KSQL_SERVICE_ID=confluent_test_2_ \
-      -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
-      -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
-      confluentinc/cp-ksql-server:|release|
-
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=confluent_test_2_ \
+    -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+    -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+    confluentinc/cp-ksql-server:|release|
 
 In interactive mode, the CLI instance running outside Docker can connect to the
 server running in Docker.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    ./bin/ksql
+  ./bin/ksql
 
-    ... 
-    CLI v|release|, Server v|release|-SNAPSHOT located at http://localhost:8088
+  ... 
+  CLI v|release|, Server v|release|-SNAPSHOT located at http://localhost:8088
 
-    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
 
-    ksql>
+  ksql>
 
 Connect to a Secure Kafka Cluster, Like |ccloud|
 """"""""""""""""""""""""""""""""""""""""""""""""
@@ -689,20 +686,19 @@ Learn about :ref:`KSQL Security <ksql-security>`.
 ``KSQL_SASL_JAAS_CONFIG``
     The Java Authentication and Authorization Service (JAAS) configuration.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -p 127.0.0.1:8088:8088 \
-      -e KSQL_BOOTSTRAP_SERVERS=REMOVED_SERVER1:9092,REMOVED_SERVER2:9093,REMOVED_SERVER3:9094 \
-      -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
-      -e KSQL_KSQL_SERVICE_ID=default_ \
-      -e KSQL_KSQL_SINK_REPLICAS=3 \
-      -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
-      -e KSQL_SECURITY_PROTOCOL=SASL_SSL \
-      -e KSQL_SASL_MECHANISM=PLAIN \
-      -e KSQL_SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\"<username>\" password=\"<strong-password>\";" \
-      confluentinc/cp-ksql-server:|release|
-
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=REMOVED_SERVER1:9092,REMOVED_SERVER2:9093,REMOVED_SERVER3:9094 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=default_ \
+    -e KSQL_KSQL_SINK_REPLICAS=3 \
+    -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
+    -e KSQL_SECURITY_PROTOCOL=SASL_SSL \
+    -e KSQL_SASL_MECHANISM=PLAIN \
+    -e KSQL_SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\"<username>\" password=\"<strong-password>\";" \
+    confluentinc/cp-ksql-server:|release|
 
 Configure a KSQL Server by Using Java System Properties
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -716,14 +712,13 @@ Run a KSQL Server with a configration that's defined by Java properties.
 ``KSQL_OPTS``
     A space-separated list of Java options.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -d \
-      -v /path/on/host:/path/in/container/ \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dksql.queries.file=/path/in/container/queries.sql" \
-      confluentinc/cp-ksql-server:|release|
-
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dksql.queries.file=/path/in/container/queries.sql" \
+    confluentinc/cp-ksql-server:|release|
 
 View logs
 """""""""
@@ -731,11 +726,11 @@ View logs
 Use the ``docker logs`` command to view KSQL logs that are generated from 
 within the container.
 
-  .. sourcecode:: bash
+.. sourcecode:: bash
 
-    docker logs -f <container-id>
-    [2018-05-24 23:43:05,591] INFO stream-thread [_confluent-ksql-default_transient_1507119262168861890_1527205385485-71c8a94c-abe9-45ba-91f5-69a762ec5c1d-StreamThread-17] Starting (org.apache.kafka.streams.processor.internals.StreamThread:713)
-    ...
+  docker logs -f <container-id>
+  [2018-05-24 23:43:05,591] INFO stream-thread [_confluent-ksql-default_transient_1507119262168861890_1527205385485-71c8a94c-abe9-45ba-91f5-69a762ec5c1d-StreamThread-17] Starting (org.apache.kafka.streams.processor.internals.StreamThread:713)
+  ...
 
 --------
 KSQL CLI
@@ -757,24 +752,24 @@ dockerized KSQL server.
 ``KSQL_OPTS``
     A space-separated list of Java options.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    # Run KSQL Server.
-    docker run -d -p 10.0.0.11:8088:8088 \
-      -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
-      -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dlisteners=http://0.0.0.0:8088/" \  
-      confluentinc/cp-ksql-server:|release|
+  # Run KSQL Server.
+  docker run -d -p 10.0.0.11:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dlisteners=http://0.0.0.0:8088/" \  
+    confluentinc/cp-ksql-server:|release|
 
-    # Connect the KSQL CLI to the server.
-    docker run -it confluentinc/cp-ksql-cli http://10.0.0.11:8088 
-    ...
-    Copyright 2017 Confluent Inc.
+  # Connect the KSQL CLI to the server.
+  docker run -it confluentinc/cp-ksql-cli http://10.0.0.11:8088 
+  ...
+  Copyright 2017 Confluent Inc.
 
-    CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://10.0.0.11:8088
+  CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://10.0.0.11:8088
 
-    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
 
-    ksql>
+  ksql>
 
 
 Provide a Configuration File
@@ -784,35 +779,33 @@ Set up a a KSQL CLI instance by using a configuration file, and run it in a
 container. 
 
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    # Assume KSQL Server is running.
-    # Ensure that the configuration file exists.
-    ls /path/on/host/ksql-cli.properties
+  # Assume KSQL Server is running.
+  # Ensure that the configuration file exists.
+  ls /path/on/host/ksql-cli.properties
 
-    docker run -it \
-      -v /path/on/host/:/path/in/container  \
-      confluentinc/cp-ksql-cli:|release| http://10.0.0.11:8088 \
-      --config-file /path/in/container/ksql-cli.properties
-
+  docker run -it \
+    -v /path/on/host/:/path/in/container  \
+    confluentinc/cp-ksql-cli:|release| http://10.0.0.11:8088 \
+    --config-file /path/in/container/ksql-cli.properties
 
 Connect to a KSQL Server Running on Another Host, Like AWS
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Run a KSQL CLI instance in a container and connect to a remote KSQL Server host.
 
-  .. codewithvars::bash
+.. codewithvars:: bash
 
-    docker run -it confluentinc/cp-ksql-cli:|release| \
-      http://ec2-etc.us-etc.compute.amazonaws.com:8080
+  docker run -it confluentinc/cp-ksql-cli:|release| \
+    http://ec2-etc.us-etc.compute.amazonaws.com:8080
 
-    ... 
-    Copyright 2017 Confluent Inc.
+  ... 
+  Copyright 2017 Confluent Inc.
 
-    CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://ec2-blah.us-blah.compute.amazonaws.com:8080
+  CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://ec2-blah.us-blah.compute.amazonaws.com:8080
 
-    Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
 
-    ksql>
-
+  ksql>
 
