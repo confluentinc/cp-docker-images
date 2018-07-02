@@ -200,7 +200,7 @@ You can now continue to :ref:`docker-qs-step-2`.
 .. _docker-qs-step-2:
 
 ==================
-Step 3: Start |sr|
+Step 4: Start |sr|
 ==================
 
 In this step, |sr| is used to create a new schema and send some Avro data to a Kafka topic. Although you would normally
@@ -261,7 +261,7 @@ to write any code.
    #. Use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client. You can then type ``exit`` to leave the container altogether.
 
 ========================
-Step 3: Start REST Proxy
+Step 5: Start REST Proxy
 ========================
 
 This section describes how to deploy the REST Proxy container and then consume data from the Confluent REST Proxy service.
@@ -324,7 +324,7 @@ that you launched in the previous step.
    #. Use ``Ctrl+C`` or ``Ctrl+D`` to stop the producer client. You can then type ``exit`` to leave the container altogether.
 
 ========================
-Step 5: Start |c3-short|
+Step 6: Start |c3-short|
 ========================
 
 :ref:`control_center` is a web-based tool for managing and monitoring Apache Kafka. This portion of the quick start provides
@@ -505,7 +505,7 @@ This is because you setup your consumer to consume data at a slower rate than yo
 
 
 ===========================
-Step 6: Start Kafka Connect
+Step 7: Start Kafka Connect
 ===========================
 
 In this section, a simple data pipeline is created by using Kafka Connect. You will read data from a file and write that
@@ -713,7 +713,7 @@ topics. You will create these topics in the Kafka cluster you have running from 
 
 
 =============================
-Step 7. Monitor in |c3-short|
+Step 8. Monitor in |c3-short|
 =============================
 
 Next you'll see how to monitor the Kafka Connect connectors in |c3-short|.  Because you specified the monitoring interceptors when you deployed the Connect container, the data flows through all of your connectors will monitored in the same ways as the console producer/consumer tasks you executed above.  Additionally, |c3-short| allows us to visually manage and deploy connectors, as you'll see now.
