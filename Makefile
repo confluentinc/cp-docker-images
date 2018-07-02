@@ -48,10 +48,8 @@ clean-images:
 
 debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
-	cd java \
-	&& mvn clean compile package assembly:single -DskipTests \
-	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
-	&& cd -
+	mvn -U clean compile package -DskipTests \
+	&& cp docker-utils/target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar debian/base/include/etc/confluent/docker/docker-utils.jar 
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	COMPONENTS="${COMPONENTS}" \
@@ -117,12 +115,9 @@ venv/bin/activate: tests/requirements.txt
 	touch venv/bin/activate
 
 test-docker-utils:
-	mkdir -p ../debian/base/include/etc/confluent/docker
-	cd java \
-	&& mvn clean compile package assembly:single \
-	&& src/test/bin/cli-test.sh \
-	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar ../debian/base/include/etc/confluent/docker/docker-utils.jar \
-	&& cd -
+	mkdir -p debian/base/include/etc/confluent/docker
+	mvn -U clean compile package \
+	&& cp docker-utils/target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar debian/base/include/etc/confluent/docker/docker-utils.jar
 
 test-build: venv clean build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_build.py -v
