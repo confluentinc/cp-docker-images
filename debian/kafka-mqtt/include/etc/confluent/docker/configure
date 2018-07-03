@@ -22,8 +22,8 @@ set -o nounset \
 dub ensure KAFKA_MQTT_BOOTSTRAP_SERVERS
 dub ensure KAFKA_MQTT_TOPIC_REGEX_LIST
 
-dub path /etc/"${COMPONENT}"/ writable
+dub path /etc/"confluent-${COMPONENT}"/ writable
 
-dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/${COMPONENT}/${COMPONENT}.properties"
-dub template "/etc/confluent/docker/log4j.properties.template" "/etc/${COMPONENT}/log4j.properties"
+dub template "/etc/confluent/docker/${COMPONENT}.properties.template" "/etc/confluent-${COMPONENT}/${COMPONENT}.properties"
+dub template "/etc/confluent/docker/log4j.properties.template" "/etc/confluent-${COMPONENT}/log4j.properties"
 

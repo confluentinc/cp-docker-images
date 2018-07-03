@@ -3,7 +3,7 @@ log4j.rootLogger={{ env["KAFKA_MQTT_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, 
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+log4j.appender.stdout.layout.ConversionPattern=[%d] [%t] %p %m (%c:%L)%n
 
 {% if env['KAFKA_MQTT_LOG4J_LOGGERS'] %}
 {% set loggers = parse_log4j_loggers(env['KAFKA_MQTT_LOG4J_LOGGERS']) %}

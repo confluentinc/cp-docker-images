@@ -15,4 +15,4 @@
 # limitations under the License.
 
 echo "===> Launching ${COMPONENT} ... "
-exec "${COMPONENT}"-start /etc/"${COMPONENT}"/"${COMPONENT}".properties
+exec "${COMPONENT}"-start /etc/"confluent-${COMPONENT}"/"${COMPONENT}".properties

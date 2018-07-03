@@ -665,10 +665,10 @@ Configuring the KSQL CLI
 * The KSQL CLI cannot be configured via environment variables, unlike the KSQL Server image.
 
 -------------------------------
-Confluent Kafka MQTT Proxy
+Confluent Kafka MQTT
 -------------------------------
 
-For the Kafka MQTT Proxy image, use variables prefixed with ``KAFKA_MQTT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set ``bootstrap.servers``, ``topic.regex.list`` you'd run the following:
+For the Kafka MQTT image, use variables prefixed with ``KAFKA_MQTT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set ``bootstrap.servers``, ``topic.regex.list`` you'd run the following:
 
   .. sourcecode:: bash
 
@@ -681,7 +681,7 @@ For the Kafka MQTT Proxy image, use variables prefixed with ``KAFKA_MQTT_`` with
 
 Required Settings
 """""""""""""""""
-The following settings must be passed to run the Kafka Connect Docker image:
+The following settings must be passed to run the Kafka MQTT Docker image:
 
 ``KAFKA_MQTT_BOOTSTRAP_SERVERS``
 
@@ -693,6 +693,6 @@ The following settings must be passed to run the Kafka Connect Docker image:
 
 Optional Settings
 """""""""""""""""
-All other settings for Kafka MQTT Proxy like security, producer overrides can be passed to the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``KAFKA_MQTT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``KAFKA_MQTT_SSL_KEY_PASSWORD``.
+All other settings for Kafka MQTT like security, producer overrides can be passed to the Docker image as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``KAFKA_MQTT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``KAFKA_MQTT_SSL_KEY_PASSWORD``.
 
-The image will then convert these environment variables to corresponding Kafka MQTT Proxy config variables.
+The image will then convert these environment variables to corresponding Kafka MQTT config variables.
