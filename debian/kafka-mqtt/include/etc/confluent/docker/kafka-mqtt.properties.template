@@ -1,0 +1,4 @@
+{% set kr_props = env_to_props('KAFKA_MQTT_', '') -%}
+{% for name, value in kr_props.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
