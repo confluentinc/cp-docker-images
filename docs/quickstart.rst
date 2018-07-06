@@ -162,7 +162,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 42 messages.'"
+          bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:29092 --topic foo && echo 'Produced 42 messages.'"
 
       After running the command, you should see the following:
 
@@ -175,7 +175,7 @@ Docker Compose is a powerful tool that enables you to launch multiple Docker ima
       .. sourcecode:: bash
 
         docker-compose exec kafka  \
-          kafka-console-consumer --bootstrap-server localhost:9092 --topic foo --from-beginning --max-messages 42
+          kafka-console-consumer --bootstrap-server localhost:29092 --topic foo --from-beginning --max-messages 42
 
       If everything is working as expected, each of the original messages you produced should be written back out:
 
@@ -267,12 +267,18 @@ Start Kafka.
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           confluentinc/cp-kafka:4.1.0
 
-  .. note:: You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``kafka:9092``.  This will make Kafka
-            accessible to other containers by advertising it's location on the Docker network.  You also passed in the ZooKeeper
-            port that you used when launching that container a moment ago. Because you are using ``--net=host``, the hostname
-            for the ZooKeeper service can be left at ``localhost``.
 
-    Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
+  .. note::
+    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to
+    ``localhost:9092``. This makes Kafka accessible from outside the container
+    by advertising its location on the Docker host. You also passed in the |zk|
+    port that you used when launching that container a moment ago. Because you
+    are using ``--net=host``, the hostname for the |zk| service can be left at
+    ``localhost``.
+
+    Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1. 
+    This is needed when you are running with a single-node cluster.  If you
+    have three or more nodes, you do not need to change this from the default.
 
   Check the logs to see the broker has booted up successfully:
 
@@ -477,7 +483,7 @@ Stream Monitoring
 
 This portion of the quick start provides an overview of how to use Confluent Control Center with console producers and consumers to monitor consumption and latency.
 
-  You'll launch the |c3-short| image the same as you've done for earlier containers, connecting to the |zk| and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes.
+ You'll launch the |c3-short| image the same as you've done for earlier containers, connecting to the |zk| and Kafka containers that are already running.  This is also a good opportunity to illustrate mounted volumes.
 
   Now you start Control Center, binding its data directory to the directory you just created and its HTTP interface to port 9021.
 
@@ -500,7 +506,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
 
   You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.
 
-  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
+  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching its logs with the following command:
 
   .. sourcecode:: console
 
