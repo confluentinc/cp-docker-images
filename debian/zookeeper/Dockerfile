@@ -25,10 +25,13 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
+ARG RELEASE_QUALITY=${RELEASE_QUALITY}
+
 ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && if [ "${RELEASE_QUALITY}" = "beta" ] || [ "${RELEASE_QUALITY}" = "rc" ]; then CONFLUENT_PLATFORM_LABEL=""; fi \
+    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \

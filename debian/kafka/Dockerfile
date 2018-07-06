@@ -29,13 +29,16 @@ ENV KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
 ARG KAFKA_ADVERTISED_LISTENERS
 ENV KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
 
+ARG RELEASE_QUALITY=${RELEASE_QUALITY}
+
 ENV COMPONENT=kafka
 
 # primary
 EXPOSE 9092
 
 RUN echo "===> installing ${COMPONENT}..." \
-    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}-${CONFLUENT_DEB_VERSION} \
+    && if [ "${RELEASE_QUALITY}" = "beta" ] || [ "${RELEASE_QUALITY}" = "rc" ]; then CONFLUENT_PLATFORM_LABEL=""; fi \
+    && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \

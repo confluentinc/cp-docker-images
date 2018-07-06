@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # todo: added for debugging. to be removed once integration is complete
 echo "------------- ENV variables --------------------"
@@ -17,12 +18,16 @@ echo "VERSION=${VERSION}"
 echo "COMMIT_ID=${COMMIT_ID}"
 echo "BUILD_NUMBER=${BUILD_NUMBER}"
 echo "REPOSITORY=${REPOSITORY}"
+echo "RELEASE_QUALITY=${RELEASE_QUALITY}"
 
 for component in ${COMPONENTS} ; do
     echo "\n\nBuilding ${component} \n==========================================\n "
 
     if [ "${component}" = "base" ]; then
         BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"
+
+    elif [ "${component}" = "kafka" ] || [ "${component}" = "zookeeper" ]; then
+        BUILD_ARGS="--build-arg RELEASE_QUALITY=${RELEASE_QUALITY}"
 
     else
         BUILD_ARGS=""
@@ -36,7 +41,6 @@ for component in ${COMPONENTS} ; do
             COMPONENT_NAME="rpm-${component}"
             DOCKER_FILE="${DOCKER_FILE}.rpm"
             CONFLUENT_PLATFORM_LABEL=${CONFLUENT_RPM_LABEL}
-
         else
             CONFLUENT_PLATFORM_LABEL=${CONFLUENT_DEB_LABEL}
         fi
@@ -51,4 +55,3 @@ for component in ${COMPONENTS} ; do
         fi;
     done
 done
-
