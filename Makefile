@@ -12,7 +12,7 @@ CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CON
 
 KAFKA_VERSION ?= 2.0.0
 
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-replicator-executable enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
@@ -57,7 +57,7 @@ build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
 	COMPONENTS="${COMPONENTS}" \
 	ALLOW_UNSIGNED=${ALLOW_UNSIGNED} \
 	CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} \
-    KAFKA_VERSION=${KAFKA_VERSION} \
+	KAFKA_VERSION=${KAFKA_VERSION} \
 	CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL} \
 	CONFLUENT_DEB_LABEL=${CONFLUENT_DEB_LABEL} \
 	CONFLUENT_RPM_LABEL=${CONFLUENT_RPM_LABEL} \
