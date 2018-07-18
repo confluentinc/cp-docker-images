@@ -180,14 +180,14 @@ config management, use service discovery etc.  This page provides instructions f
 Prerequisites
 ~~~~~~~~~~~~~
 
-1. Read the section on :ref:`development <development>` to setup the development environment to build Docker images.
-2. Understand how the images are structured by reading the following docs:
+#. Read the section on :ref:`development <development>` to setup the development environment to build Docker images.
+#. Understand how the images are structured by reading the following docs:
 
    -  ``image-structure`` describes the structure of the images
    -  ``utility_scripts`` describes the utility scripts used in the
       images
 
-3. If you plan to contribute back to the project, see the `contributing guidelines <https://github.com/confluentinc/cp-docker-images/blob/master/CONTRIBUTING.md>`_.
+#. If you plan to contribute back to the project, see the `contributing guidelines <https://github.com/confluentinc/cp-docker-images/blob/master/CONTRIBUTING.md>`_.
 
 .. _adding_connectors_to_images :
 
@@ -196,13 +196,13 @@ Adding Connectors to the Kafka Connect Images
 
 Confluent provides two images for Kafka Connect:
 
-    - The Kafka Connect Base image is a minimal but easily-extended image that contains Kafka Connect and all of its dependencies. When started, it will run the Connect framework in distributed mode.
+    - The Kafka Connect Base image contains Kafka Connect and all of its dependencies. When started, it will run the Connect framework in distributed mode.
     - The Kafka Connect image extends the Kafka Connect Base image and includes several of the connectors supported by Confluent including the JDBC source and sink connectors, the HDFS connector, and the Elasticsearch connector.
 
 There are currently two ways to add new connectors to these images.
 
-* Build a new Docker image that has the new connectors installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
-* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+* Build a new Docker image that has the new connectors installed. You can follow examples 1 or 3 in the documentation below.
+* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external JARs.
 
 .. _examples :
 
@@ -211,309 +211,306 @@ Examples
 
 The following examples show to extend the images.
 
-1. Adding connectors from `Confluent Hub <http://confluent.io/hub>`_
+#.  Add connectors from `Confluent Hub <http://confluent.io/hub>`_
 
-  This example shows how to use the
-  `Confluent Hub client <https://docs.confluent.io/current/confluent-hub/client.html>`_ to create a
-  Docker image that extends from one of Confluent's Kafka Connect images but which contains a custom
-  set of connectors. This may be useful if you'd like to use a connector that isn't contained in the
-  ``cp-kafka-connect`` image, or if you'd like to keep the custom image lightweight and not include
-  any connectors that you don't plan to use.
+    This example shows how to use the
+    `Confluent Hub client <https://docs.confluent.io/current/confluent-hub/client.html>`_ to create a
+    Docker image that extends from one of Confluent's Kafka Connect images but which contains a custom
+    set of connectors. This may be useful if you'd like to use a connector that isn't contained in the
+    ``cp-kafka-connect`` image, or if you'd like to keep the custom image lightweight and not include
+    any connectors that you don't plan to use.
+    
+    #.  Choose an image to extend:
 
-  First, choose an image you'd like to extend from. Functionally, the ``cp-kafka-connect`` and
-  ``cp-kafka-connect-base`` images are identical; the only difference is that the former image
-  already contains several of Confluent's connectors, whereas the latter comes with none by default.
-  This example will extend from the ``cp-kafka-connect-base`` image.
+        Functionally, the ``cp-kafka-connect`` and ``cp-kafka-connect-base`` images are identical;
+        the only difference is that the former image already contains several of Confluent's
+        connectors, whereas the latter comes with none by default. This example will extend from the
+        ``cp-kafka-connect-base`` image.
+    
+    #. Choose the connectors from Confluent Hub that you'd like to include in your custom image.
 
-  Second, choose the connectors from Confluent Hub that you'd like to include in your custom image.
-  This example will use connectors for MongoDB, Microsoft's Azure IoT Hub, and Google BigQuery to
-  create a custom image.
+        This example will create a custom image with only the MongoDB, Microsoft's Azure IoT Hub,
+        and Google BigQuery connectors.
+    
+    #.  Write a Dockerfile:
+    
+        .. sourcecode:: bash
+    
+            FROM confluentinc/cp-kafka-connect-base:5.0.0
+            
+            RUN   confluent-hub install --no-prompt hpgrahsl/kafka-connect-mongodb:1.1.0 \
+               && confluent-hub install --no-prompt microsoft/kafka-connect-iothub:0.6 \
+               && confluent-hub install --no-prompt wepay/kafka-connect-bigquery:1.1.0
 
-  Once you've decided on an image to extend from and the connectors you'd like to add to it,
-  actually creating the image is straightforward. First, write a Dockerfile:
+    #.  Build the Dockerfile:
 
-  .. sourcecode:: bash
+        .. sourcecode:: bash
+          
+            docker build . -t my-custom-image:1.0.0
 
-      FROM confluentinc/cp-kafka-connect-base:5.0.0
+        The output from that command should resemble:
+    
+        .. sourcecode:: bash
+              
+            Step 1/2 : FROM confluentinc/cp-kafka-connect-base
+             ---> e0d92da57dc3
+            ...
+            Running in a "--no-prompt" mode 
+            Implicit acceptance of the license below:
+            Apache 2.0 
+            https://github.com/wepay/kafka-connect-bigquery/blob/master/LICENSE.md 
+            Implicit confirmation of the question: You are about to install 'kafka-connect-bigquery' from WePay, as published on Confluent Hub. 
+            Downloading component BigQuery Sink Connector 1.1.0, provided by WePay from Confluent Hub and installing into /usr/share/confluent-hub-components 
+            Adding installation directory to plugin path in the following files: 
+              /etc/kafka/connect-distributed.properties 
+              /etc/kafka/connect-standalone.properties 
+              /etc/schema-registry/connect-avro-distributed.properties 
+              /etc/schema-registry/connect-avro-standalone.properties 
+         
+            Completed 
+            Removing intermediate container 48d4506b8a83
+             ---> 496befc3d3f7
+            Successfully built 496befc3d3f7
+            Successfully tagged my-custom-image:1.0.0
+
+    This will result in an image named ``my-custom-image`` that contains the MongoDB, IoT Hub, and
+    BigQuery connectors, and which will be capable of running any/all all of them via the Kafka
+    Connect framework.
+
+#.  Download configuration from a URL
+
+    This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
+
+    To do this for the |zk| image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
+
+    ``Dockerfile``
+
+    .. sourcecode:: bash
       
-      RUN   confluent-hub install --no-prompt hpgrahsl/kafka-connect-mongodb:1.1.0 \
-         && confluent-hub install --no-prompt microsoft/kafka-connect-iothub:0.6 \
-         && confluent-hub install --no-prompt wepay/kafka-connect-bigquery:1.1.0
+        FROM confluentinc/cp-zookeeper
+
+        COPY include/etc/confluent/docker/configure /etc/confluent/docker/configure
+
+    ``include/etc/confluent/docker/configure``
+
+    .. sourcecode:: bash
+
+        set -o nounset \
+            -o errexit \
+            -o verbose \
+            -o xtrace
+        
+        
+        # Ensure that URL locations are available.
+        dub ensure ZOOKEEPER_SERVER_CONFIG_URL
+        dub ensure ZOOKEEPER_SERVER_ID_URL
+        dub ensure ZOOKEEPER_LOG_CONFIG_URL
+        
+        # Ensure that the config location is writable.
+        dub path /etc/kafka/ writable
+        
+        curl -XGET ZOOKEEPER_SERVER_CONFIG_URL > /etc/kafka/zookeeper.properties
+        curl -XGET ZOOKEEPER_SERVER_ID_URL > /var/lib/zookeeper/data/myid
+        curl -XGET ZOOKEEPER_LOG_CONFIG_URL > /etc/kafka/log4j.properties
+        
+        Build the image:
+        
+            docker build -t foo/zookeeper:latest .
+
+    Run it :
+
+    .. sourcecode:: bash
+
+        docker run \
+             -e ZOOKEEPER_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
+             -e ZOOKEEPER_SERVER_ID_URL =http://foo.com/zk1/myid \
+             -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
+             foo/zookeeper:latest
+
+#.  Add More Software
+
+    This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver. If this approach is used to add new connectors to an image, the connector JARs must be on the ``plugin.path`` or the classpath for the Connect framework.
+
+    ``Dockerfile``
+
+    .. sourcecode:: bash
+
+        FROM confluentinc/cp-kafka-connect
+        
+        ENV MYSQL_DRIVER_VERSION 5.1.39
+        
+        RUN curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" \
+            | tar -xzf - -C /usr/share/java/kafka/ --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+            Build the image:
+    
+    .. sourcecode:: bash
+    
+        docker build -t foo/mysql-connect:latest .
+
+    **This approach can also be used to create images with your own Kafka Connect Plugins.**
+
+#.  Logging to volumes
 
+    The images only expose volumes for data and security configuration. But you might want to write to external storage for some use cases. For example: You might want to write the Kafka authorizer logs to a volume for auditing.
 
-  And then build it:
+    ``Dockerfile``
 
-  .. sourcecode:: bash
-
-      docker build . -t my-custom-image:1.0.0
-
-  
-  The output from that command should resemble:
-
-  .. sourcecode:: bash
-
-      Step 1/2 : FROM confluentinc/cp-kafka-connect-base
-       ---> e0d92da57dc3
-      ...
-      Running in a "--no-prompt" mode 
-      Implicit acceptance of the license below:
-      Apache 2.0 
-      https://github.com/wepay/kafka-connect-bigquery/blob/master/LICENSE.md 
-      Implicit confirmation of the question: You are about to install 'kafka-connect-bigquery' from WePay, as published on Confluent Hub. 
-      Downloading component BigQuery Sink Connector 1.1.0, provided by WePay from Confluent Hub and installing into /usr/share/confluent-hub-components 
-      Adding installation directory to plugin path in the following files: 
-        /etc/kafka/connect-distributed.properties 
-        /etc/kafka/connect-standalone.properties 
-        /etc/schema-registry/connect-avro-distributed.properties 
-        /etc/schema-registry/connect-avro-standalone.properties 
- 
-      Completed 
-      Removing intermediate container 48d4506b8a83
-       ---> 496befc3d3f7
-      Successfully built 496befc3d3f7
-      Successfully tagged my-custom-image:1.0.0
-
-
-  This will result in an image named ``my-custom-image`` that contains the MongoDB, IoT Hub, and
-  BigQuery connectors, and which will be capable of running any/all all of them via the Kafka
-  Connect framework. 
-
-2. Download configuration from a URL
-
-  This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
-
-  To do this for the |zk| image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
-
-  ``Dockerfile``
-
-  .. codewithvars:: bash
-
-      FROM confluentinc/cp-zookeeper
-
-      COPY include/etc/confluent/docker/configure /etc/confluent/docker/configure
-
-  ``include/etc/confluent/docker/configure``
-
-  .. codewithvars:: bash
-
-      set -o nounset \
-          -o errexit \
-          -o verbose \
-          -o xtrace
-
-
-      # Ensure that URL locations are available.
-      dub ensure ZOOKEEPER_SERVER_CONFIG_URL
-      dub ensure ZOOKEEPER_SERVER_ID_URL
-      dub ensure ZOOKEEPER_LOG_CONFIG_URL
-
-      # Ensure that the config location is writable.
-      dub path /etc/kafka/ writable
-
-      curl -XGET ZOOKEEPER_SERVER_CONFIG_URL > /etc/kafka/zookeeper.properties
-      curl -XGET ZOOKEEPER_SERVER_ID_URL > /var/lib/zookeeper/data/myid
-      curl -XGET ZOOKEEPER_LOG_CONFIG_URL > /etc/kafka/log4j.properties
-
-      Build the image:
-
-          docker build -t foo/zookeeper:latest .
-
-
-  Run it :
-
-  .. codewithvars:: bash
-
-      docker run \
-           -e ZOOKEEPER_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
-           -e ZOOKEEPER_SERVER_ID_URL =http://foo.com/zk1/myid \
-           -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
-           foo/zookeeper:latest
-
-3. Add More Software
-
-  This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver.
-
-   ``Dockerfile``
-
-   .. codewithvars:: bash
-
-       FROM confluentinc/cp-kafka-connect
-
-       ENV MYSQL_DRIVER_VERSION 8.0.11
-
-       RUN curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" \
-           | tar -xzf - -C /usr/share/java/kafka/ --strip-components=1 mysql-connector-java-8.0.11/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
-
-   Build the image:
-
-   .. codewithvars:: bash
-
-       docker build -t foo/mysql-connect:latest .
-
-   **This approach can also be used to create images with your own Kafka Connect Plugins.**
-
-4. Logging to volumes
-
-  The images only expose volumes for data and security configuration. But you might want to write to external storage for some use cases. For example: You might want to write the Kafka authorizer logs to a volume for auditing.
-
-  ``Dockerfile``
-
-  .. codewithvars:: bash
-
-      FROM confluentinc/cp-kafka
-
-      # Make sure the log directory is world-writable
-      RUN echo "===> Creating authorizer logs dir ..." \
-           && mkdir -p /var/log/kafka-auth-logs
-           && chmod -R ag+w /var/log/kafka-auth-logs
-
-      VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets", "/var/log/kafka-auth-logs"]
-
-      COPY include/etc/confluent/log4j.properties.template /etc/confluent/log4j.properties.template
-
-  ``include/etc/confluent/log4j.properties.template``
-
-  .. codewithvars:: bash
-
-    log4j.rootLogger={{ env["KAFKA_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, stdout
-
-    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-    log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-    log4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender
-    log4j.appender.authorizerAppender.DatePattern='.'yyyy-MM-dd-HH
-    log4j.appender.authorizerAppender.File=/var/log/kafka-auth-logs/kafka-authorizer.log
-    log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
-    log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
-
-    log4j.additivity.kafka.authorizer.logger=false
-
-    {% set loggers = {
-     'kafka': 'INFO',
-     'kafka.network.RequestChannel$': 'WARN',
-     'kafka.producer.async.DefaultEventHandler': 'DEBUG',
-     'kafka.request.logger': 'WARN',
-     'kafka.controller': 'TRACE',
-     'kafka.log.LogCleaner': 'INFO',
-     'state.change.logger': 'TRACE',
-     'kafka.authorizer.logger': 'WARN, authorizerAppender'
-     } -%}
-
-
-    {% if env['KAFKA_LOG4J_LOGGERS'] %}
-    {% set loggers = parse_log4j_loggers(env['KAFKA_LOG4J_LOGGERS'], loggers) %}
-    {% endif %}
-
-  Build the image:
-
-  .. codewithvars:: bash
-
-    docker build -t foo/kafka-auditable:latest .
-
-5. Writing heap and verbose GC logging to external volumes
-
-  You might want to log heap dumps and GC logs to an external volumes for debugging for the Kafka image.
-
-  ``Dockerfile``
-
-  .. codewithvars:: bash
-
-    FROM confluentinc/cp-kafka
-
-    # Make sure the jvm log directory is world-writable
-    RUN echo "===> Creating jvm logs dir ..." \
-         && mkdir -p /var/log/jvm-logs
-         && chmod -R ag+w /var/log/jvm-logs
-
-    VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets", "/var/log/jvm-logs"]
-
-  Build the image:
-
-  .. codewithvars:: bash
-
-    docker build -t foo/kafka-verbose-jvm:latest .
-
-  Run it:
-
-  .. codewithvars:: bash
-
-    docker run \
-        -e KAFKA_HEAP_OPTS="-Xmx256M -Xloggc:/var/log/jvm-logs/verbose-gc.log -verbose:gc -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/jvm-logs" \
-        foo/kafka-verbose-jvm:latest
-
-6. External Service discovery
-
-  You can extend the images to support for any service discovery mechanism either by overriding relevent properties or by overriding the ``configure`` script as explained in example 1.
-
-  The images support Mesos by overriding relevent proprties for Mesos service discovery. See ``debian/kafka-connect/includes/etc/confluent/docker/mesos-overrides`` for examples.
-
-.. _oracle_jdk :
-
-7. Use Oracle JDK
-
-  The images ship with Azul Zulu OpenJDK.  Due to licensing restrictions, we cannot bundle Oracle JDK, but we are testing on Zulu OpenJDK and do suggest it as a viable alternative.  In the event that you really need to use Oracle's version, you can follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
-
-  1. Change the base image to install Oracle JDK instead of Zulu OpenJDK by updating ``debian/base/Dockerfile``.
-
-    .. codewithvars:: bash
-
-       FROM debian:jessie
-
-       ARG COMMIT_ID=unknown
-       LABEL io.confluent.docker.git.id=$COMMIT_ID
-       ARG BUILD_NUMBER=-1
-       LABEL io.confluent.docker.build.number=$BUILD_NUMBER
-
-       MAINTAINER partner-support@confluent.io
-       LABEL io.confluent.docker=true
-
-
-       # Python
-       ENV PYTHON_VERSION="2.7.9-1"
-       ENV PYTHON_PIP_VERSION="8.1.2"
-
-       # Confluent
-       ENV SCALA_VERSION="2.11"
-       ENV CONFLUENT_MAJOR_VERSION="|version|"
-       ENV CONFLUENT_VERSION="|release|"
-       ENV CONFLUENT_DEB_VERSION="1"
-
-       # Zulu
-       ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
-
-       # Replace the following lines for Zulu OpenJDK...
-       #
-       && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
-       && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
-       && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
-       && apt-get -qq update \
-       && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
-       && rm -rf /var/lib/apt/lists/* \
-
-       # ...with the following lines for Oracle JDK
-       #
-       && echo "===> Adding webupd8 repository for Oracle JDK..."  \
-       && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
-       && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
-       && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
-       && apt-get update \
-       \
-       && echo "===> Installing Oracle JDK 8 ..."   \
-       && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
-       && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
-       && DEBIAN_FRONTEND=noninteractive  apt-get install -y --force-yes \
-                       oracle-java8-installer \
-                       oracle-java8-set-default  \
-                       ca-certificates \
-       && rm -rf /var/cache/oracle-jdk8-installer \
-       && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
-
-  2. Next, rebuild all the images:
-
-    .. codewithvars:: bash
-
-      make build-debian
+    .. sourcecode:: bash
+
+        FROM confluentinc/cp-kafka
+        
+        # Make sure the log directory is world-writable
+        RUN echo "===> Creating authorizer logs dir ..." \
+             && mkdir -p /var/log/kafka-auth-logs
+             && chmod -R ag+w /var/log/kafka-auth-logs
+        
+        VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets", "/var/log/kafka-auth-logs"]
+        
+        COPY include/etc/confluent/log4j.properties.template /etc/confluent/log4j.properties.template
+
+    ``include/etc/confluent/log4j.properties.template``
+
+    .. sourcecode:: bash
+
+        log4j.rootLogger={{ env["KAFKA_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, stdout
+        
+        log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+        log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+        log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+        
+        log4j.appender.authorizerAppender=org.apache.log4j.DailyRollingFileAppender
+        log4j.appender.authorizerAppender.DatePattern='.'yyyy-MM-dd-HH
+        log4j.appender.authorizerAppender.File=/var/log/kafka-auth-logs/kafka-authorizer.log
+        log4j.appender.authorizerAppender.layout=org.apache.log4j.PatternLayout
+        log4j.appender.authorizerAppender.layout.ConversionPattern=[%d] %p %m (%c)%n
+        
+        log4j.additivity.kafka.authorizer.logger=false
+        
+        {% set loggers = {
+         'kafka': 'INFO',
+         'kafka.network.RequestChannel$': 'WARN',
+         'kafka.producer.async.DefaultEventHandler': 'DEBUG',
+         'kafka.request.logger': 'WARN',
+         'kafka.controller': 'TRACE',
+         'kafka.log.LogCleaner': 'INFO',
+         'state.change.logger': 'TRACE',
+         'kafka.authorizer.logger': 'WARN, authorizerAppender'
+         } -%}
+        
+        
+        {% if env['KAFKA_LOG4J_LOGGERS'] %}
+        {% set loggers = parse_log4j_loggers(env['KAFKA_LOG4J_LOGGERS'], loggers) %}
+        {% endif %}
+
+    Build the image:
+
+    .. sourcecode:: bash
+
+        docker build -t foo/kafka-auditable:latest .
+
+#.  Writing heap and verbose GC logging to external volumes
+
+    You might want to log heap dumps and GC logs to an external volumes for debugging for the Kafka image.
+
+    ``Dockerfile``
+
+    .. sourcecode:: bash
+
+        FROM confluentinc/cp-kafka
+        
+        # Make sure the jvm log directory is world-writable
+        RUN echo "===> Creating jvm logs dir ..." \
+             && mkdir -p /var/log/jvm-logs
+             && chmod -R ag+w /var/log/jvm-logs
+        
+        VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets", "/var/log/jvm-logs"]
+
+    Build the image:
+
+    .. sourcecode:: bash
+
+        docker build -t foo/kafka-verbose-jvm:latest .
+
+    Run it:
+
+    .. sourcecode:: bash
+
+        docker run \
+            -e KAFKA_HEAP_OPTS="-Xmx256M -Xloggc:/var/log/jvm-logs/verbose-gc.log -verbose:gc -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/jvm-logs" \
+            foo/kafka-verbose-jvm:latest
+
+#.  External Service discovery
+
+    You can extend the images to support for any service discovery mechanism either by overriding relevent properties or by overriding the ``configure`` script as explained in example 1.
+
+    The images support Mesos by overriding relevent proprties for Mesos service discovery. See ``debian/kafka-connect/includes/etc/confluent/docker/mesos-overrides`` for examples.
+
+    .. _oracle_jdk :
+
+#.  Use Oracle JDK
+
+    The images ship with Azul Zulu OpenJDK.  Due to licensing restrictions, we cannot bundle Oracle JDK, but we are testing on Zulu OpenJDK and do suggest it as a viable alternative.  In the event that you really need to use Oracle's version, you can follow the steps below to modify the images to include Oracle JDK instead of Zulu OpenJDK.
+
+    #.  Change the base image to install Oracle JDK instead of Zulu OpenJDK by updating ``debian/base/Dockerfile``.
+    
+        .. sourcecode:: bash
+        
+            FROM debian:jessie
+            
+            ARG COMMIT_ID=unknown
+            LABEL io.confluent.docker.git.id=$COMMIT_ID
+            ARG BUILD_NUMBER=-1
+            LABEL io.confluent.docker.build.number=$BUILD_NUMBER
+            
+            MAINTAINER partner-support@confluent.io
+            LABEL io.confluent.docker=true
+            
+            
+            # Python
+            ENV PYTHON_VERSION="2.7.9-1"
+            ENV PYTHON_PIP_VERSION="8.1.2"
+            
+            # Confluent
+            ENV SCALA_VERSION="2.11"
+            ENV CONFLUENT_MAJOR_VERSION="4.1"
+            ENV CONFLUENT_VERSION="4.1.0"
+            ENV CONFLUENT_DEB_VERSION="1"
+            
+            # Zulu
+            ENV ZULU_OPENJDK_VERSION="8=8.15.0.1"
+            
+            # Replace the following lines for Zulu OpenJDK...
+            #
+            && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
+            && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
+            && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
+            && apt-get -qq update \
+            && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
+            && rm -rf /var/lib/apt/lists/* \
+            
+            # ...with the following lines for Oracle JDK
+            #
+            && echo "===> Adding webupd8 repository for Oracle JDK..."  \
+            && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
+            && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
+            && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
+            && apt-get update \
+            \
+            && echo "===> Installing Oracle JDK 8 ..."   \
+            && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
+            && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
+            && DEBIAN_FRONTEND=noninteractive  apt-get install -y --force-yes \
+                            oracle-java8-installer \
+                            oracle-java8-set-default  \
+                            ca-certificates \
+            && rm -rf /var/cache/oracle-jdk8-installer \
+            && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    
+    #.  Next, rebuild all the images:
+    
+        .. sourcecode:: bash
+        
+            make build-debian
 
 .. _utility_scripts :
 
