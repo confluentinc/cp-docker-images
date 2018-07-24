@@ -224,7 +224,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
          --net=host \
          --rm \
          confluentinc/cp-kafka:4.1.0 \
-         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
+         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --consumer --from-beginning --max-messages 42
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset``
    topic behind the scenes when you consume data for the first time and this may take some time):
