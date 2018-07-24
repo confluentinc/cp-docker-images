@@ -335,7 +335,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
         confluentinc/cp-kafka:4.1.0 \
-        kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
+        kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
