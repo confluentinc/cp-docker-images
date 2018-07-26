@@ -7,13 +7,13 @@ Create and configure the Docker Machine on VirtualBox.
 
 #. Create a `VirtualBox <https://www.virtualbox.org/wiki/Downloads>`_ instance running a Docker container named ``confluent`` with 6 GB of memory.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
 #. Configure your terminal window to attach it to your new Docker Machine:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker-machine env confluent
 

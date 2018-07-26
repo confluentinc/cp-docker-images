@@ -16,7 +16,7 @@ Note: The ``Component Names`` table lists the ``{COMPONENT}`` names for each com
 
 A full example for Kafka is shown below:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker run -d \
       --name=kafka-log-example \
@@ -29,7 +29,7 @@ A full example for Kafka is shown below:
       -e KAFKA_LOG4J_ROOT_LOGLEVEL=WARN \
       -e KAFKA_TOOLS_LOG4J_LOGLEVEL=ERROR \
       -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-      confluentinc/cp-kafka:4.1.0
+      confluentinc/cp-kafka:|release|
 
 
 Component Names

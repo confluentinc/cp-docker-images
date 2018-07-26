@@ -28,13 +28,13 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Create and configure the Docker machine.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
    Next, configure your terminal window to attach it to your new Docker Machine:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     eval $(docker-machine env confluent)
 
@@ -44,18 +44,18 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    Start |zk|:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
         --net=host \
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         -e ZOOKEEPER_TICK_TIME=2000 \
-        confluentinc/cp-zookeeper:4.1.0
+        confluentinc/cp-zookeeper:|release|
 
    Start Kafka:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
         --net=host \
@@ -63,7 +63,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
         -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-        confluentinc/cp-kafka:4.1.0
+        confluentinc/cp-kafka:|release|
 
    .. note:: To make Kafka accessible from outside the container by advertising its location on the Docker host, the
              ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``. The ``offsets.topic.replication.factor``
@@ -72,7 +72,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    Start the Schema Registry:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
       --net=host \
@@ -80,7 +80,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-      confluentinc/cp-schema-registry:4.1.0
+      confluentinc/cp-schema-registry:|release|
 
    You can confirm that each of the services is up by checking the logs using the following command: ``docker logs <container_name>``. For example, if we run ``docker logs kafka``, we should see the following at the end of the log output:
 
@@ -98,38 +98,38 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Now let's start up Kafka Connect.  Connect stores config, status, and offsets of the connectors in Kafka topics. We will create these topics now using the Kafka broker we created above.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:|release| \
       kafka-topics --create --topic quickstart-avro-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:|release| \
       kafka-topics --create --topic quickstart-avro-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:|release| \
       kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    Before moving on, you can verify that the topics are created:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:4.1.0 \
+       confluentinc/cp-kafka:|release| \
        kafka-topics --describe --zookeeper localhost:32181
 
 
@@ -137,20 +137,20 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    First, create a folder named ``jars``:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     mkdir -p /tmp/quickstart/jars
 
    Then download the JDBC driver:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-5.1.39-bin.jar
 
 
 #. Start a connect worker with Avro support.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run -d \
         --name=kafka-connect-avro \
@@ -179,13 +179,13 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Make sure that the connect worker is healthy.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker logs kafka-connect-avro | grep started
 
    You should see the following output in your terminal window:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     [2016-08-25 19:18:38,517] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
     [2016-08-25 19:18:38,557] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
@@ -194,7 +194,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    First, launch the database container
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
       --name=quickstart-mysql \
@@ -207,19 +207,19 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    Next, Create databases and tables.  You'll need to exec into the Docker container to create the databases.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker exec -it quickstart-mysql bash
 
    On the bash prompt, create a MySQL shell
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     mysql -u confluent -pconfluent
 
    Now, execute the following SQL statements:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       CREATE DATABASE IF NOT EXISTS connect_test;
       USE connect_test;
@@ -254,13 +254,13 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    Set the CONNECT_HOST.  If you are running this on Docker Machine, then the hostname will be ``docker-machine ip <your docker machine name>``.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     export CONNECT_HOST=localhost
 
    Create the JDBC Source connector.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       curl -X POST \
         -H "Content-Type: application/json" \
@@ -269,46 +269,46 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    The output of this command should be similar to the message shown below:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       {"name":"quickstart-jdbc-source","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector","tasks.max":"1","connection.url":"jdbc:mysql://127.0.0.1:3306/connect_test?user=root&password=confluent","mode":"incrementing","incrementing.column.name":"id","timestamp.column.name":"modified","topic.prefix":"quickstart-jdbc-","poll.interval.ms":"1000","name":"quickstart-jdbc-source"},"tasks":[]}
 
    Check the status of the connector using curl as follows:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     curl -s -X GET http://$CONNECT_HOST:28083/connectors/quickstart-jdbc-source/status
 
    You should see the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       {"name":"quickstart-jdbc-source","connector":{"state":"RUNNING","worker_id":"localhost:28083"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28083"}]}
 
    The JDBC sink create intermediate topics for storing data. We should see a ``quickstart-jdbc-test`` topic.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:4.1.0 \
+       confluentinc/cp-kafka:|release| \
        kafka-topics --describe --zookeeper localhost:32181
 
 
    Now you will read from the ``quickstart-jdbc-test`` topic to check if the connector works.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run \
        --net=host \
        --rm \
-       confluentinc/cp-schema-registry:4.1.0 \
+       confluentinc/cp-schema-registry:|release| \
        kafka-avro-console-consumer --bootstrap-server localhost:29092 --topic quickstart-jdbc-test --from-beginning --max-messages 10
 
    You should see the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       {"id":1,"name":{"string":"alice"},"email":{"string":"alice@abc.com"},"department":{"string":"engineering"},"modified":1472153437000}
       {"id":2,"name":{"string":"bob"},"email":{"string":"bob@abc.com"},"department":{"string":"sales"},"modified":1472153437000}
@@ -318,7 +318,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. You will now launch a File Sink to read from this topic and write to an output file.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       curl -X POST -H "Content-Type: application/json" \
         --data '{"name": "quickstart-avro-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-jdbc-test", "file": "/tmp/quickstart/jdbc-output.txt"}}' \
@@ -326,25 +326,25 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    You should see the following in the output.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       {"name":"quickstart-avro-file-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","topics":"quickstart-jdbc-test","file":"/tmp/quickstart/jdbc-output.txt","name":"quickstart-avro-file-sink"},"tasks":[]}
 
    Check the status of the connector by running the following curl command:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     curl -s -X GET http://$CONNECT_HOST:28083/connectors/quickstart-avro-file-sink/status
 
    You should get the response shown below:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     {"name":"quickstart-avro-file-sink","connector":{"state":"RUNNING","worker_id":"localhost:28083"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28083"}]}
 
    Now check the file to see if the data is present. You will need to SSH into the VM if you are running Docker Machine.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     cat /tmp/quickstart/file/jdbc-output.txt | wc -l
 
