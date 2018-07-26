@@ -6,7 +6,7 @@ Using JMX
 
 For JMX to work with Docker containers, the following properties must be set:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     java.rmi.server.hostname=<JMX_HOSTNAME>
     com.sun.management.jmxremote.local.only=false
@@ -44,7 +44,7 @@ Settings
 
     The default setting is as follows:
 
-    .. sourcecode:: bash
+    .. codewithvars:: bash
 
       -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
@@ -53,7 +53,7 @@ Launching Kafka and |zk| with JMX Enabled
 
 The steps for launching Kafka and |zk| with JMX enabled are the same as we saw in the `quick start guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
     --name=zk-jmx \
@@ -62,7 +62,7 @@ The steps for launching Kafka and |zk| with JMX enabled are the same as we saw i
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
-    confluentinc/cp-zookeeper:4.1.0
+    confluentinc/cp-zookeeper:|release|
 
   docker run -d \
     --name=kafka-jmx \
@@ -73,6 +73,6 @@ The steps for launching Kafka and |zk| with JMX enabled are the same as we saw i
     -e KAFKA_JMX_PORT=49999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent` \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-    confluentinc/cp-kafka:4.1.0
+    confluentinc/cp-kafka:|release|
 
 Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a Docker machine named "Confluent".  You should substitute with your Docker machine name where appropriate.
