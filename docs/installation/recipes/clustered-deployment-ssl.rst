@@ -25,7 +25,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
    the cp-docker-images repo. Make sure that you have OpenSSL and JDK installed. For more information about security, see
    the :ref:`security documentation <security>`.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     cd $(pwd)/examples/kafka-cluster-ssl/secrets
     ./create-certs.sh
@@ -35,13 +35,13 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
    Set the environment variable for the secrets directory. This is used in later commands. Make sure that you are in the
    ``cp-confluent-images`` directory.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
 
 #. Start Up a 3-node |zk| Ensemble by running the three commands below.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker run -d \
          --net=host \
@@ -52,9 +52,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker run -d \
          --net=host \
@@ -65,9 +65,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker run -d \
          --net=host \
@@ -78,17 +78,17 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:|release|
 
    Check the logs to confirm that the |zk| servers have booted up successfully:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker logs zk-1
 
    You should see messages like this at the end of the log output:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
      [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.zookeeper.server.quorum.Learner)
@@ -99,15 +99,15 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 
    You can repeat the command for the two other |zk| nodes.  Next, you should verify that ZK ensemble is ready:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-zookeeper:|release| bash -c "echo stat | nc localhost $i | grep Mode"
      done
 
    You should see one ``leader`` and two ``follower`` instances.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      Mode: follower
      Mode: leader
@@ -115,7 +115,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 
 #. Now that |zk| is up and running, you can start a three node Kafka cluster.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
        --net=host \
@@ -129,9 +129,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
        --net=host \
@@ -145,9 +145,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker run -d \
        --net=host \
@@ -161,11 +161,11 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:|release|
 
    Check the logs to see the broker has booted up successfully:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker logs kafka-ssl-1
       docker logs kafka-ssl-2
@@ -173,14 +173,14 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 
    You should see start see bootup messages. For example, ``docker logs kafka-ssl-3 | grep started`` should show the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
 
    You should see the messages like the following on the broker acting as controller.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
       [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
@@ -193,33 +193,33 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 
    Now that the brokers are up, you can test that they're working as expected by creating a topic.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:|release| \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
    You should see the following output:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     Created topic "bar".
 
    Now verify that the topic is created successfully by describing the topic.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:|release| \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
    You should see the following message in your terminal window:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        Topic:bar   PartitionCount:3    ReplicationFactor:3 Configs:
        Topic: bar  Partition: 0    Leader: 1003    Replicas: 1003,1002,1001    Isr: 1003,1002,1001
@@ -228,35 +228,35 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
 
    Next, you can try generating some data to the ``bar`` topic that was just created.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
         docker run \
           --net=host \
           --rm \
           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:|release| \
           bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar -producer.config /etc/kafka/secrets/host.producer.ssl.config && echo 'Produced 42 messages.'"
 
    The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       Produced 42 messages.
 
    It looked like things were successfully written, but now you can try reading the messages back using the Console Consumer and make sure they're all accounted for.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run \
         --net=host \
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:|release| \
         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.config --max-messages 42
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        1
        4
@@ -277,7 +277,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 #. Clone the |cp| Docker Images Github Repository.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-ssl
@@ -286,7 +286,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 #. Start |zk| and Kafka using Docker Compose ``up`` command.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        export KAFKA_SSL_SECRETS_DIR=$(pwd)/secrets
        docker-compose create
@@ -294,13 +294,13 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    In another terminal window, go to the same directory (kafka-cluster).  Make sure the services are up and running
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker-compose ps
 
    You should see the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
          Name                         Command            State   Ports
       -------------------------------------------------------------------------
@@ -313,28 +313,28 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Check the |zk| logs to verify that |zk| is healthy. For example, for service zookeeper-1:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker-compose logs zookeeper-1
 
    You should see messages like the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       zookeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
       zookeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.zookeeper.server.quorum.Learner)
 
    Verify that ZK ensemble is ready
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:|release| bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower`` instances:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       Mode: follower
       Mode: leader
@@ -342,7 +342,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Check the logs to see the broker has booted up successfully
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker-compose logs kafka-ssl-1
       docker-compose logs kafka-ssl-2
@@ -350,14 +350,14 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    You should see start see bootup messages. For example, ``docker-compose logs kafka-3 | grep started`` shows the following
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       kafka-ssl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
       kafka-ssl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
 
    You should see the messages like the following on the broker acting as controller.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       (Tip: `docker-compose logs | grep controller` makes it easy to grep through logs for all services.)
 
@@ -371,7 +371,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 #. To stop the cluster, first stop Kafka nodes one-by-one and then stop the |zk| cluster.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker-compose stop kafka-ssl-1
     docker-compose stop kafka-ssl-2

@@ -34,19 +34,19 @@ Now that you have all of the Docker dependencies installed, you can create a Doc
 
 #. Create and configure the Docker machine.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
    Next, configure your terminal window to attach it to your new Docker Machine:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     eval $(docker-machine env confluent)
 
 #. Clone the git repository:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     git clone https://github.com/confluentinc/cp-docker-images
     cd cp-docker-images

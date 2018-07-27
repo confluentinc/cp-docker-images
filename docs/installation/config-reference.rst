@@ -353,7 +353,7 @@ and the ``key`` or ``value`` converter:
 The following example shows how to create a Confluent Kafka Replicator connector which replicates topic "confluent" from
 source Kafka cluster (src) to a destination Kafka cluster (dest).
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
     curl -X POST \
          -H "Content-Type: application/json" \
@@ -726,7 +726,7 @@ View logs
 Use the ``docker logs`` command to view KSQL logs that are generated from 
 within the container.
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker logs -f <container-id>
   [2018-05-24 23:43:05,591] INFO stream-thread [_confluent-ksql-default_transient_1507119262168861890_1527205385485-71c8a94c-abe9-45ba-91f5-69a762ec5c1d-StreamThread-17] Starting (org.apache.kafka.streams.processor.internals.StreamThread:713)
