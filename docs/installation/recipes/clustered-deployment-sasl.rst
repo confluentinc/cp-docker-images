@@ -24,7 +24,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-cluster-sasl/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     cd $(pwd)/examples/kafka-cluster-sasl/secrets
     ./create-certs.sh
@@ -33,7 +33,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-docker-images`` directory.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
         export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
 
@@ -41,7 +41,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    You must create an entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP. In Linux, run the below commands on the Linux host. If running Docker Machine (eg for Mac or Windows), you will need to SSH into the VM and run the below commands as root. You can SSH into the Docker Machine VM by running ``docker-machine ssh confluent``.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 
@@ -49,21 +49,21 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
 #. Build and run the Kerberos image.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     cd tests/images/kerberos
-    docker build -t confluentinc/cp-kerberos:4.1.0 .
+    docker build -t confluentinc/cp-kerberos:|release| .
 
     docker run -d \
       --name=kerberos \
       --net=host \
       -v ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab \
       -v /dev/urandom:/dev/random \
-      confluentinc/cp-kerberos:4.1.0
+      confluentinc/cp-kerberos:|release|
 
 #. Create the principals and keytabs.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     for principal in zookeeper1 zookeeper2 zookeeper3
     do
@@ -71,7 +71,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
       docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     for principal in zkclient1 zkclient2 zkclient3
     do
@@ -81,7 +81,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    For Kafka brokers, the principal should be called ``kafka``.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     for principal in broker1 broker2 broker3
     do
@@ -89,7 +89,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
       docker exec -it kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
     done
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     for principal in saslproducer saslconsumer
     do
@@ -99,7 +99,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
 #. Run a 3-node |zk| ensemble with SASL enabled.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker run -d \
            --net=host \
@@ -112,9 +112,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_1_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.0
+           confluentinc/cp-zookeeper:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker run -d \
            --net=host \
@@ -127,9 +127,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_2_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.0
+           confluentinc/cp-zookeeper:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker run -d \
            --net=host \
@@ -142,17 +142,17 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_3_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.0
+           confluentinc/cp-zookeeper:|release|
 
    Check the logs to see the |zk| server has booted up successfully
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      docker logs zk-sasl-1
 
    You should see messages like this at the end of the log output:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      [2016-07-24 07:17:50,960] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
      [2016-07-24 07:17:50,961] INFO FOLLOWING - LEADER ELECTION TOOK - 21823 (org.apache.zookeeper.server.quorum.Learner)
@@ -163,15 +163,15 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    You can repeat the command for the two other |zk| nodes.  Next, you should verify that ZK ensemble is ready:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-zookeeper:|release| bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
      done
 
    You should see one ``leader`` and two ``follower`` instances.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
      Mode: follower
      Mode: leader
@@ -179,7 +179,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
 #. Now that |zk| is up and running, we can fire up a three node Kafka cluster.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run -d \
          --net=host \
@@ -197,9 +197,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.0
+          confluentinc/cp-kafka:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run -d \
          --net=host \
@@ -217,9 +217,9 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker2_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.0
+          confluentinc/cp-kafka:|release|
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run -d \
          --net=host \
@@ -237,12 +237,12 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.0
+          confluentinc/cp-kafka:|release|
 
 
    Check the logs to see the broker has booted up successfully:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker logs kafka-sasl-1
       docker logs kafka-sasl-2
@@ -250,14 +250,14 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    You should see start see bootup messages. For example, ``docker logs kafka-sasl-3 | grep started`` should show the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
       [2016-07-24 07:29:20,258] INFO [Kafka Server 1003], started (kafka.server.KafkaServer)
 
    You should see the messages like the following on the broker acting as controller.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
       [2016-07-24 07:29:20,283] TRACE Controller 1001 epoch 1 received response {error_code=0} for a request sent to broker localhost:29092 (id: 1001 rack: null) (state.change.logger)
@@ -270,37 +270,37 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    Now that the brokers are up, we'll test that they're working as expected by creating a topic.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run \
         --net=host \
         --rm \
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:|release| \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper quickstart.confluent.io:32181
 
    You should see the following output:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     Created topic "bar".
 
    Now verify that the topic is created successfully by describing the topic.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker run \
           --net=host \
           --rm \
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:|release| \
           kafka-topics --describe --topic bar --zookeeper quickstart.confluent.io:32181
 
    You should see the following message in your terminal window:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        Topic:bar   PartitionCount:3    ReplicationFactor:3 Configs:
        Topic: bar  Partition: 0    Leader: 1003    Replicas: 1003,1002,1001    Isr: 1003,1002,1001
@@ -309,37 +309,37 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
 
    Next, you can try generating some data to the ``bar`` topic that was just created.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
         docker run \
           --net=host \
           --rm \
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:|release| \
           bash -c "seq 42 | kafka-console-producer --broker-list quickstart.confluent.io:29094 --topic bar --producer.config /etc/kafka/secrets/host.producer.ssl.sasl.config && echo 'Produced 42 messages.'"
 
    The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       Produced 42 messages.
 
    It looked like things were successfully written, but let's try reading the messages back using the Console Consumer and make sure they're all accounted for.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker run \
         --net=host \
         --rm \
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:|release| \
         kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        1
        4
@@ -362,13 +362,13 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Set the environment variable for secrets directory. This is used in the compose file.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
     
 #. Build the Kerberos image
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     cd tests/images/kerberos
     docker build -t confluentinc/cp-kerberos:latest .
@@ -377,7 +377,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Make sure you are in the ``cp-docker-images`` directory.
   
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker-compose create kerberos
        docker-compose start kerberos
@@ -388,7 +388,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    ii. Now, lets create all the principals and their keytabs on Kerberos.
 
-       .. sourcecode:: bash
+       .. codewithvars:: bash
 
         for principal in zookeeper1 zookeeper2 zookeeper3
         do
@@ -396,7 +396,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
           docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab zookeeper/quickstart.confluent.io@TEST.CONFLUENT.IO"
         done
 
-       .. sourcecode:: bash
+       .. codewithvars:: bash
 
         for principal in zkclient1 zkclient2 zkclient3
         do
@@ -406,7 +406,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
         For Kafka brokers, the principal should be called ``kafka``.
 
-        .. sourcecode:: bash
+        .. codewithvars:: bash
 
             for principal in broker1 broker2 broker3
             do
@@ -414,7 +414,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
               docker-compose exec kerberos kadmin.local -q "ktadd -norandkey -k /tmp/keytab/${principal}.keytab kafka/quickstart.confluent.io@TEST.CONFLUENT.IO"
             done
 
-        .. sourcecode:: bash
+        .. codewithvars:: bash
 
             for principal in saslproducer saslconsumer
             do
@@ -425,20 +425,20 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 #. Start |zk| and Kafka
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker-compose create
        docker-compose start
 
    Before we move on, let's make sure the services are up and running:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker-compose ps
 
    You should see the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       Name                            Command            State   Ports
     -------------------------------------------------------------------------------
@@ -452,28 +452,28 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Check the |zk| logs to verify that |zk| is healthy. For example, for service zookeeper-1:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker-compose logs zookeeper-sasl-1
 
    You should see messages like the following:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       zookeeper-1_1  | [2016-07-25 04:58:12,901] INFO Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/log/version-2 snapdir /var/lib/zookeeper/data/version-2 (org.apache.zookeeper.server.ZooKeeperServer)
       zookeeper-1_1  | [2016-07-25 04:58:12,902] INFO FOLLOWING - LEADER ELECTION TOOK - 235 (org.apache.zookeeper.server.quorum.Learner)
 
    Verify that |zk| ensemble is ready.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:|release| bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower`` instances:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       Mode: follower
       Mode: leader
@@ -481,7 +481,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    Check the logs to see the broker has booted up successfully
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       docker-compose logs kafka-sasl-1
       docker-compose logs kafka-sasl-2
@@ -489,7 +489,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    You should start seeing bootup messages. For example, ``docker-compose logs kafka-sasl-3 | grep started`` shows the following
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       kafka-sasl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
       kafka-sasl-3_1      | [2016-07-25 04:58:15,189] INFO [Kafka Server 3], started (kafka.server.KafkaServer)
@@ -498,7 +498,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
    .. tip:: `docker-compose logs | grep controller` makes it easy to grep through logs for all services.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
       kafka-sasl-1_1      | [2016-09-01 08:48:42,585] INFO [Controller-1-to-broker-2-send-thread], Starting  (kafka.controller.RequestSendThread)
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
@@ -510,7 +510,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
 #. To stop the cluster, first stop Kafka nodes one-by-one and then stop the |zk| cluster.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
     docker-compose stop kafka-sasl-1
     docker-compose stop kafka-sasl-2

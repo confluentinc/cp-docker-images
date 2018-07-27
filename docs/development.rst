@@ -77,19 +77,19 @@ Setup
 
 1. Install Docker.  Here we assume you are running on macOS.  For instructions on installing Docker on Linux or Windows, please refer to the official `Docker Machine documentation <https://docs.docker.com/engine/installation/>`_.
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        brew install docker docker-machine
 
 2. Create a Docker Machine:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
 
   This command will create a local environment but it is recommended that you create one on AWS. The builds are much faster and more predictable (virtualbox stops when you close the lid of the laptop and sometimes gets into a weird state).  When choosing an instance type, ``m4.large`` is good choice. It has 2 vCPUs with 8GB RAM and costs around ~$88 monthly.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       export INSTANCE_NAME=$USER-docker-machine
       docker-machine create \
@@ -103,7 +103,7 @@ Setup
 
 3. Configure your terminal window to attach it to your new Docker Machine:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        eval $(docker-machine env confluent)
 
@@ -114,7 +114,7 @@ Building the Images
 
 To get started, you can build all the |cp| images as follows:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     make build-debian
 
@@ -127,7 +127,7 @@ Running Tests
 
 You'll need to first install virtualenv: ``pip install virtualenv``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       cd cp-docker-images
       make test-zookeeper
@@ -135,7 +135,7 @@ You'll need to first install virtualenv: ``pip install virtualenv``
 
 To run a single test, you can do so with Python.  In the following example, we run only the ``ConfigTest`` found in ``test_zookeeper.py``:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     venv/bin/py.test tests/test_zookeeper.py::ConfigTest -v
 
@@ -212,7 +212,7 @@ The following examples show to extend the images.
 
   ``Dockerfile``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       FROM confluentinc/cp-zookeeper
 
@@ -220,7 +220,7 @@ The following examples show to extend the images.
 
   ``include/etc/confluent/docker/configure``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       set -o nounset \
           -o errexit \
@@ -247,7 +247,7 @@ The following examples show to extend the images.
 
   Run it :
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       docker run \
            -e ZOOKEEPER_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
@@ -261,7 +261,7 @@ The following examples show to extend the images.
 
    ``Dockerfile``
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        FROM confluentinc/cp-kafka-connect
 
@@ -272,7 +272,7 @@ The following examples show to extend the images.
 
    Build the image:
 
-   .. sourcecode:: bash
+   .. codewithvars:: bash
 
        docker build -t foo/mysql-connect:latest .
 
@@ -284,7 +284,7 @@ The following examples show to extend the images.
 
   ``Dockerfile``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
       FROM confluentinc/cp-kafka
 
@@ -299,7 +299,7 @@ The following examples show to extend the images.
 
   ``include/etc/confluent/log4j.properties.template``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     log4j.rootLogger={{ env["KAFKA_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, stdout
 
@@ -333,7 +333,7 @@ The following examples show to extend the images.
 
   Build the image:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker build -t foo/kafka-auditable:latest .
 
@@ -343,7 +343,7 @@ The following examples show to extend the images.
 
   ``Dockerfile``
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     FROM confluentinc/cp-kafka
 
@@ -356,13 +356,13 @@ The following examples show to extend the images.
 
   Build the image:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker build -t foo/kafka-verbose-jvm:latest .
 
   Run it:
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     docker run \
         -e KAFKA_HEAP_OPTS="-Xmx256M -Xloggc:/var/log/jvm-logs/verbose-gc.log -verbose:gc -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/jvm-logs" \
@@ -382,7 +382,7 @@ The following examples show to extend the images.
 
   1. Change the base image to install Oracle JDK instead of Zulu OpenJDK by updating ``debian/base/Dockerfile``.
 
-    .. sourcecode:: bash
+    .. codewithvars:: bash
 
        FROM debian:jessie
 
@@ -401,8 +401,8 @@ The following examples show to extend the images.
 
        # Confluent
        ENV SCALA_VERSION="2.11"
-       ENV CONFLUENT_MAJOR_VERSION="4.1"
-       ENV CONFLUENT_VERSION="4.1.0"
+       ENV CONFLUENT_MAJOR_VERSION="|version|"
+       ENV CONFLUENT_VERSION="|release|"
        ENV CONFLUENT_DEB_VERSION="1"
 
        # Zulu
@@ -437,7 +437,7 @@ The following examples show to extend the images.
 
   2. Next, rebuild all the images:
 
-    .. sourcecode:: bash
+    .. codewithvars:: bash
 
       make build-debian
 
@@ -453,7 +453,7 @@ Docker Utility Belt (dub)
 
 1. Template
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: dub template [-h] input output
 
@@ -465,7 +465,7 @@ Docker Utility Belt (dub)
 
 2. ensure
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: dub ensure [-h] name
 
@@ -476,7 +476,7 @@ Docker Utility Belt (dub)
 
 3. wait
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: dub wait [-h] host port timeout
 
@@ -489,7 +489,7 @@ Docker Utility Belt (dub)
 
 4. path
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: dub path [-h] path {writable,readable,executable,exists}
 
@@ -501,7 +501,7 @@ Docker Utility Belt (dub)
 
 5. path-wait
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: dub path-wait [-h] path timeout
 
@@ -521,7 +521,7 @@ Confluent Platform Utility Belt (cub)
 
   Used for checking if |zk| is ready.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: cub zk-ready [-h] connect_string timeout retries wait
 
@@ -537,7 +537,7 @@ Confluent Platform Utility Belt (cub)
 
   Used for checking if Kafka is ready.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: cub kafka-ready [-h] (-b BOOTSTRAP_BROKER_LIST | -z ZOOKEEPER_CONNECT)
                      [-c CONFIG] [-s SECURITY_PROTOCOL]
@@ -566,7 +566,7 @@ Confluent Platform Utility Belt (cub)
 
   Used for checking if the Schema Registry is ready.  If you have multiple Schema Registry nodes, you may need to check their availability individually.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: cub sr-ready [-h] host port timeout
 
@@ -579,7 +579,7 @@ Confluent Platform Utility Belt (cub)
 
   Used for checking if the REST Proxy is ready.  If you have multiple REST Proxy nodes, you may need to check their availability individually.
 
-  .. sourcecode:: bash
+  .. codewithvars:: bash
 
     usage: cub kr-ready [-h] host port timeout
 
