@@ -42,3 +42,8 @@ confluent.metrics.topic.replication={{env.get('CONTROL_CENTER_METRICS_TOPIC_REPL
 {% for name, value in metrics_props.iteritems() -%}
 {{name}}={{value}}
 {% endfor -%}
+
+{% set command_props_additional_cluster = env_to_props('CONTROL_CENTER_CONFLUENT_CONTROLCENTER_KAFKA_', 'confluent.controlcenter.kafka.', exclude=excludes) -%}
+{% for name, value in command_props_additional_cluster.iteritems() -%}
+{{name}}={{value}}
+{% endfor -%}
