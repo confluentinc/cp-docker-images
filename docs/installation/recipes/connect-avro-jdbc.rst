@@ -145,7 +145,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    .. sourcecode:: bash
 
-    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-5.1.39-bin.jar
+    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.11.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-8.0.11/mysql-connector-java-8.0.11-bin.jar
 
 
 #. Start a connect worker with Avro support.
