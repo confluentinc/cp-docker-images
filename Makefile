@@ -2,15 +2,15 @@
 -include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
-BUILD_NUMBER ?= 3
+BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 4
 CONFLUENT_MINOR_VERSION ?= 0
-CONFLUENT_PATCH_VERSION ?= 1
+CONFLUENT_PATCH_VERSION ?= 3
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION ?= 1.0.0
+KAFKA_VERSION ?= 1.0.3
 
 COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
