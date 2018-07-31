@@ -2,7 +2,7 @@
 -include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
-BUILD_NUMBER ?= 3
+BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 5
 CONFLUENT_MINOR_VERSION ?= 1
