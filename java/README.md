@@ -1,11 +1,11 @@
 # docker-utils
 
-##Overview
+## Overview
 
 This is set of utilites which are used by the Confluent Docker images. It has two command line utilities which are used for testing if a Zookeeper or Kafka cluster is healthy and ready to accept client requests.
 
 
-##How does it work ?
+## How does it work ?
 
 **zk-ready**
 
@@ -20,7 +20,7 @@ This command tries to connect to the cluster and waits for events which signify 
 This command sends a metadata query to the broker and verifies that expected number of brokers are present.
 
 
-##How to package / run ?
+## How to package / run ?
 
 1. Create a jar with dependencies
 
@@ -39,7 +39,6 @@ This command sends a metadata query to the broker and verifies that expected num
 
 ## Client.properties
 
-@@ -1,146 +0,0 @@
 ``bootstrap.servers``
   A list of host/port pairs to use for establishing the initial connection to the Kafka cluster. The client will make use of all servers irrespective of which servers are specified here for bootstrapping&mdash;this list only impacts the initial hosts used to discover the full set of servers. This list should be in the form <code>host1:port1,host2:port2,...</code>. Since these servers are just used for the initial connection to discover the full cluster membership (which may change dynamically), this list need not contain the full set of servers (you may want more than one, though, in case a server is down).
 
