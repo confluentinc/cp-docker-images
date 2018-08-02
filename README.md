@@ -5,6 +5,14 @@ Docker images for deploying and running the Confluent Platform.  The images are 
 
 Full documentation for using the images can be found [here](http://docs.confluent.io/current/cp-docker-images/docs/intro.html).
 
+# Deprecation Notice
+
+This is used for building images for version 4.1.x or lower, and should not be used for adding new images. If any new
+images is added, please make sure to add to our [Release steps](https://confluentinc.atlassian.net/wiki/x/ywE6Cg) as
+they are hardcoded for now (fix is coming soon).
+
+For any new images, they should be added to the repo itself by following [Docker Build Integration](https://confluentinc.atlassian.net/wiki/x/PIDaC)
+
 # Important Caveat - Images Not Tested for Docker for Mac or Windows
 	
 These images are not tested on Docker for Mac or Docker for Windows. These images will be updated in the near future to support these platforms. For more details on these known issues, you can refer to the following links:
