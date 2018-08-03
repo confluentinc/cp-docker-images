@@ -370,7 +370,7 @@ Stream Monitoring
 #. To see the |c3-short| UI, open the link http://localhost:9021 in your browser.
 
    If you are running Docker Machine, the UI will be running at ``http://<docker-host-ip>:9021``. You can find the Docker
-   Host IP by running this command: 
+   Host IP by running this command:
 
    .. sourcecode:: console
 
@@ -623,23 +623,23 @@ topics. You will create these topics in the Kafka cluster you have running from 
 
         {"name":"quickstart-file-source","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSourceConnector","tasks.max":"1","topic":"quickstart-data","file":"/tmp/quickstart/file/input.txt","name":"quickstart-file-source"},"tasks":[]}
 
-    #. Optional: verify the status of the connector using this curl command:
+   #. Optional: verify the status of the connector using this curl command:
 
-       .. sourcecode:: console
+      .. sourcecode:: console
 
             $ docker exec kafka-connect curl -s -X GET http://kafka-connect:8082/connectors/quickstart-file-source/status
 
-       You should see the following output including the ``state`` of the connector as ``RUNNING``:
+      You should see the following output including the ``state`` of the connector as ``RUNNING``:
 
-       .. sourcecode:: console
+      .. sourcecode:: console
 
         {"name":"quickstart-file-source","connector":{"state":"RUNNING","worker_id":"kafka-connect:8082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"kafka-connect:8082"}]}
 
-    #. Optional: Read a sample of 10 records from the ``quickstart-data`` topic to check if the connector is uploading data to
-       Kafka. You should run this command in a separate terminal window, retaining the SSH session to the Docker Host for
-       later commands.
+   #. Optional: Read a sample of 10 records from the ``quickstart-data`` topic to check if the connector is uploading data to
+      Kafka. You should run this command in a separate terminal window, retaining the SSH session to the Docker Host for
+      later commands.
 
-       .. sourcecode:: console
+      .. sourcecode:: console
 
         $ docker run \
           --net=confluent \
@@ -649,9 +649,9 @@ topics. You will create these topics in the Kafka cluster you have running from 
           quickstart-data --from-beginning --max-messages 10
 
 
-       You should see the following:
+      You should see the following:
 
-       .. sourcecode:: console
+      .. sourcecode:: console
 
             {"schema":{"type":"string","optional":false},"payload":"1"}
             {"schema":{"type":"string","optional":false},"payload":"2"}
@@ -668,7 +668,7 @@ topics. You will create these topics in the Kafka cluster you have running from 
        Success!  You now have a functioning source connector!
 
 #. Launch a File Sink to read from this topic and write to an output file.  Run the following command from the Docker
-  Host session started earlier:
+   Host session started earlier:
 
    .. sourcecode:: console
 
