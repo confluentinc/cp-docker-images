@@ -382,7 +382,7 @@ Stream Monitoring
 
    Initially, the Stream Monitoring UI will have no data.
 
-   .. figure:: images/c3-quickstart-init.png
+   .. figure:: ../../images/c3-quickstart-init.png
     :width: 600px
 
    Confluent Control Center Initial View
