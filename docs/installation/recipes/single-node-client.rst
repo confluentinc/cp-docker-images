@@ -456,7 +456,7 @@ If you don't see any activity, use the scaling selector in the upper left hand c
 time window (the default is 4 hours, and you'll want to zoom in to a 10-minute scale). You will notice there will be moments
 where the bars are colored red to reflect the slow consumption of data.
 
-.. figure:: images/c3-quickstart-monitoring-data.png
+.. figure:: ../../images/c3-quickstart-monitoring-data.png
     :width: 600px
 
 Alerts
@@ -472,7 +472,7 @@ alerts, you'll need to create a trigger. Click the "Triggers" navigation item an
 Let's configure a trigger to fire when the difference between your actual consumption and expected consumption is greater
 than 1000 messages:
 
-.. figure:: images/c3-quickstart-new-trigger-form.png
+.. figure:: ../../images/c3-quickstart-new-trigger-form.png
     :width: 600px
 
     New trigger
@@ -489,7 +489,7 @@ After saving the trigger, |c3-short| will now prompt us to associate an action t
 trigger fires. For now, the only action is to send an email. Select your new trigger and choose maximum send rate for your
 alert email.
 
-.. figure:: images/c3-quickstart-new-action-form.png
+.. figure:: ../../images/c3-quickstart-new-action-form.png
     :width: 600px
 
     New action
@@ -498,7 +498,7 @@ alert email.
 Let's return to your trigger history page. In a short while, you should see a new trigger show up in your alert history.
 This is because you setup your consumer to consume data at a slower rate than your producer.
 
-.. figure:: images/c3-quickstart-alerts-history.png
+.. figure:: ../../images/c3-quickstart-alerts-history.png
     :width: 600px
 
     A newly triggered event
@@ -720,12 +720,12 @@ Next you'll see how to monitor the Kafka Connect connectors in |c3-short|.  Beca
 
   Select the Management / Kafka Connect link in the |c3-short| navigation bar.  Select the ``SOURCES`` and ``SINKS`` tabs at the top of the page to see that both the source and sink are running.
 
-  .. figure:: images/c3-quickstart-connect-view-src.png
+  .. figure:: ../../images/c3-quickstart-connect-view-src.png
    :scale: 50%
 
    Confluent Control Center showing a Connect source
 
-  .. figure:: images/c3-quickstart-connect-view-sink.png
+  .. figure:: ../../images/c3-quickstart-connect-view-sink.png
    :scale: 50%
 
    Confluent Control Center showing a Connect sink
@@ -733,7 +733,7 @@ Next you'll see how to monitor the Kafka Connect connectors in |c3-short|.  Beca
 
  You should start to see stream monitoring data from Kafka Connect in the |c3-short| UI from the running connectors.  Remember that the file contained only 1000 messages, so you'll only see a short spike of topic data.
 
-  .. figure:: images/c3-quickstart-connect-monitoring.png
+  .. figure:: ../../images/c3-quickstart-connect-monitoring.png
    :scale: 50%
 
    Confluent Control Center monitoring Kafka Connect
