@@ -1,7 +1,7 @@
 .. _external_volumes:
 
-Mounting External Volumes
--------------------------
+Mounting Docker External Volumes
+--------------------------------
 
 When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of |cp|, we'll need to use external volumes for several main use cases:
 

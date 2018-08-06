@@ -1,5 +1,5 @@
-Configuring logging
--------------
+Configuring Docker logging
+--------------------------
 
 All logs are sent to ``stdout`` by default. You can change this by :ref:`extending the images <extending_images>`.
 
