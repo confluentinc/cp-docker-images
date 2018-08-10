@@ -197,12 +197,12 @@ Adding Connectors to the Kafka Connect Images
 Confluent provides two images for Kafka Connect:
 
     - The Kafka Connect Base image contains Kafka Connect and all of its dependencies. When started, it will run the Connect framework in distributed mode.
-    - The Kafka Connect image extends the Kafka Connect Base image and includes several of the connectors supported by Confluent including the JDBC source and sink connectors, the HDFS connector, and the Elasticsearch connector.
+    - The Kafka Connect image extends the Kafka Connect Base image and includes several of the connectors supported by Confluent: JDBC, Elasticsearch, HDFS, S3, and JMS.
 
 There are currently two ways to add new connectors to these images.
 
 * Build a new Docker image that has the new connectors installed. You can follow examples 1 or 3 in the documentation below.
-* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external JARs.
+* Use the `cp-kafka-connect` or `cp-kafka-connect-base` image as-is and `add the connector JARs via volumes <operations/external-volumes.html>`_.
 
 .. _examples :
 
