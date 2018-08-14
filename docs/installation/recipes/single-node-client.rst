@@ -718,25 +718,25 @@ Step 8. Monitor in |c3-short|
 
 Next you'll see how to monitor the Kafka Connect connectors in |c3-short|.  Because you specified the monitoring interceptors when you deployed the Connect container, the data flows through all of your connectors will monitored in the same ways as the console producer/consumer tasks you executed above.  Additionally, |c3-short| allows us to visually manage and deploy connectors, as you'll see now.
 
-  Select the Management / Kafka Connect link in the |c3-short| navigation bar.  Select the ``SOURCES`` and ``SINKS`` tabs at the top of the page to see that both the source and sink are running.
+Select the Management / Kafka Connect link in the |c3-short| navigation bar.  Select the ``SOURCES`` and ``SINKS`` tabs at the top of the page to see that both the source and sink are running.
 
-  .. figure:: ../../images/c3-quickstart-connect-view-src.png
-   :scale: 50%
+.. figure:: ../../images/c3-quickstart-connect-view-src.png
+    :scale: 50%
 
-   Confluent Control Center showing a Connect source
+    Confluent Control Center showing a Connect source
 
-  .. figure:: ../../images/c3-quickstart-connect-view-sink.png
-   :scale: 50%
+.. figure:: ../../images/c3-quickstart-connect-view-sink.png
+    :scale: 50%
 
-   Confluent Control Center showing a Connect sink
+    Confluent Control Center showing a Connect sink
 
 
- You should start to see stream monitoring data from Kafka Connect in the |c3-short| UI from the running connectors.  Remember that the file contained only 1000 messages, so you'll only see a short spike of topic data.
+You should start to see stream monitoring data from Kafka Connect in the |c3-short| UI from the running connectors.  Remember that the file contained only 1000 messages, so you'll only see a short spike of topic data.
 
-  .. figure:: ../../images/c3-quickstart-connect-monitoring.png
-   :scale: 50%
+.. figure:: ../../images/c3-quickstart-connect-monitoring.png
+    :scale: 50%
 
-   Confluent Control Center monitoring Kafka Connect
+    Confluent Control Center monitoring Kafka Connect
 
 =======
 Cleanup
