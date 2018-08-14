@@ -8,5 +8,7 @@ Docker Images
     :maxdepth: 1
 
     installation/index
+    config-reference
+    image-reference
     operations/index
     security
