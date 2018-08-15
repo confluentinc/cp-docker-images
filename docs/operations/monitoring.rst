@@ -51,7 +51,7 @@ Settings
 Launching Kafka and |zk| with JMX Enabled
 ``````````````````````````````````````````````
 
-The steps for launching Kafka and |zk| with JMX enabled are the same as shown in the :ref:`quick start guide <docker_quickstart>`, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and |zk| with JMX enabled are the same as shown in the :ref:`single-node-basic`, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. codewithvars:: bash
 
