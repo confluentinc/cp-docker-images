@@ -195,7 +195,7 @@ Adding Connectors to the Kafka Connect Image
 There are currently two ways to add new connectors to the Kafka Connect image.
 
 * Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
-* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on :ref:`Configuring Kafka Connect with External Jars <config_connect_ext_jars>` to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
 

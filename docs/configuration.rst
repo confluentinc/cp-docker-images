@@ -1,4 +1,4 @@
-.. _config_reference :
+.. _config_reference:
 
 Docker Configuration
 ====================
@@ -53,7 +53,7 @@ Configuration Notes
 
 *  Persistent Data (Mounted Volumes)
 
-	When deploying the Kafka and |zk| images, you should always use `mounted volumes <operations/external-volumes.html>`_ for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
+	When deploying the Kafka and |zk| images, you should always use :ref:`mounted volumes <external_volumes>` for the file systems those images use for their persistent data.  This ensures that the containers will retain their proper state when stopped and restarted.  The other images maintain their state directly in Kafka topics, so mounted volumes are not usually required for those containers.
 
 *  Bridge Networking vs. Host Networking
 
@@ -66,8 +66,8 @@ Configuration Notes
 
 	There are currently two ways to add new connectors to the Kafka Connect image.
 
-	* Build a new Docker image that has the connector installed. You can follow the examples found in `Extending Images <development.html#extending-the-docker-images>`_. You will need to make sure that the connector jars are on the CLASSPATH for the Connect service (the default location of /usr/share/java/kafka-connect-* is the recommended location).
-	* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+	* Build a new Docker image that has the connector installed. You can follow the examples found in :ref:`Extending Images <extending_images>`. You will need to make sure that the connector jars are on the CLASSPATH for the Connect service (the default location of /usr/share/java/kafka-connect-* is the recommended location).
+	* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on :ref:`Configuring Kafka Connect with External Jars <config_connect_ext_jars>` to configure the `cp-kafka-connect` container with external jars.
 
 *  Included Java
 
