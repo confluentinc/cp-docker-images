@@ -3,7 +3,7 @@
 Docker Operations
 =================
 
-In this section, we provide a closer look at how to run a Confluent Platform cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the `quick start guide <../quickstart.html>`_.
+In this section, we provide a closer look at how to run a |cp| cluster on Docker.  If you are looking for a simple tutorial, you should refer instead to the :ref:`quick start guide <quickstart>`.
 
 We will cover the following topics:
 
