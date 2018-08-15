@@ -40,7 +40,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Start up |zk|, Kafka, and Schema Registry.
 
-   We'll walk through each of the commands for starting up these services, but you should refer to the :ref:`quick start guide <docker_quickstart>` for a more detailed walkthrough.
+   We'll walk through each of the commands for starting up these services, but you should refer to the :ref:`single-node-basic` for a more detailed walkthrough.
 
    Start |zk|:
 
