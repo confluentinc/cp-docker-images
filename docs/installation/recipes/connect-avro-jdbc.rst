@@ -11,7 +11,7 @@ You must first startup up |zk|, Kafka and the Schema Registry.
 
     Schema Registry is a dependency for Connect in this tutorial because it used with the Avro serializer functionality.
 
-It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our :ref:`documentation on Docker external volumes <external_volumes>` for an example of how to add mounted volumes to the host machine.
 
 .. include:: includes/docker-tutorials.rst
     :start-line: 11
@@ -40,7 +40,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Start up |zk|, Kafka, and Schema Registry.
 
-   We'll walk through each of the commands for starting up these services, but you should refer to the `quick start guide <../quickstart.html>`_ for a more detailed walkthrough.
+   We'll walk through each of the commands for starting up these services, but you should refer to the :ref:`quick start guide <docker_quickstart>` for a more detailed walkthrough.
 
    Start |zk|:
 

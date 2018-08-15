@@ -13,7 +13,7 @@ When working with Docker, you may sometimes need to persist data in the event of
 
   .. note::
 
-    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
+    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on :ref:`extending the images <extending_images>`.
 
 Data Volumes for Kafka and |zk|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,6 +99,8 @@ In the example above, we specify the location of the data volumes by setting ``-
 .. codewithvars:: bash
 
   -e KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
+
+.. _config_connect_ext_jars:
 
 Configuring Connect with External jars
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
