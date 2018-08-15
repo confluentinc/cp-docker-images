@@ -3,7 +3,7 @@
 Clustered Deployment Using SSL on Docker
 ========================================
 
-This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.  If you're looking for a simpler tutorial, please :ref:`refer to the quick start guide <docker_quickstart>`, which is limited to a single node Kafka cluster.
+This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.
 
 .. include:: includes/docker-tutorials.rst
     :start-line: 2
