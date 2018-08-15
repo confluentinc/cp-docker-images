@@ -230,7 +230,7 @@ Start |zk|. You'll need to keep this service running throughout, so use a dedica
 
   This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.0`` container and name it ``zookeeper``.
   Also, the Docker network ``confluent`` and the required ZooKeeper parameter ``ZOOKEEPER_CLIENT_PORT`` are specified.
-  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the :ref:`configuration reference docs <config_reference>`.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the |zk| service.
 
@@ -659,7 +659,7 @@ Kafka Connect
 Getting Started
 ^^^^^^^^^^^^^^^
 
-In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with Avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
+In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the :ref:`Using a JDBC Connector with Avro data <connect_quickstart_avro_jdbc>` tutorial.
 
 First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. You will create these topics now in the Kafka cluster you have running from the steps above.
 
