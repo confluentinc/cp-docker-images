@@ -24,7 +24,7 @@ Note about ``hostname``:
 Security on JMX
 """""""""""""""
 
-To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
+To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html.
 
 Kafka and |zk|
 """""""""""""""""
@@ -51,7 +51,7 @@ Settings
 Launching Kafka and |zk| with JMX Enabled
 ``````````````````````````````````````````````
 
-The steps for launching Kafka and |zk| with JMX enabled are the same as we saw in the `quick start guide <../quickstart.html>`_, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
+The steps for launching Kafka and |zk| with JMX enabled are the same as shown in the :ref:`quick start guide <docker_quickstart>`, with the only difference being that you set ``KAFKA_JMX_PORT`` and ``KAFKA_JMX_HOSTNAME`` for both.  Here are examples of the Docker ``run`` commands for each service:
 
 .. sourcecode:: bash
 
