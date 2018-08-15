@@ -3,7 +3,7 @@
 Clustered Deployment Using SASL and SSL on Docker
 =================================================
 
-This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please `refer to the quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker.  If you're looking for a simpler tutorial, please :ref:`refer to the quick start guide <docker_quickstart>`, which is limited to a single node Kafka cluster.
 
 .. include:: includes/docker-tutorials.rst
     :start-line: 2
