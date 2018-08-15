@@ -202,7 +202,7 @@ Confluent provides two images for Kafka Connect:
 There are currently two ways to add new connectors to these images.
 
 * Build a new Docker image that has the new connectors installed. You can follow examples 1 or 3 in the documentation below.
-* Use the `cp-kafka-connect` or `cp-kafka-connect-base` image as-is and `add the connector JARs via volumes <operations/external-volumes.html>`_.
+* Use the `cp-kafka-connect` or `cp-kafka-connect-base` image as-is and :ref:`add the connector JARs via volumes <external_volumes>`.
 
 .. _examples :
 
