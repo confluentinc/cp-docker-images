@@ -167,7 +167,7 @@ Push to the Docker hub:
 
 ``push-public``
 
-.. _extending_images :
+.. _extending_images:
 
 Extending the Docker Images
 ---------------------------
@@ -214,7 +214,7 @@ The following examples show to extend the images.
 #.  Add connectors from `Confluent Hub <http://confluent.io/hub>`_
 
     This example shows how to use the
-    `Confluent Hub client <https://docs.confluent.io/current/confluent-hub/client.html>`_ to create a
+    :ref:`Confluent Hub client <confluent_hub_client>` to create a
     Docker image that extends from one of Confluent's Kafka Connect images but which contains a custom
     set of connectors. This may be useful if you'd like to use a connector that isn't contained in the
     ``cp-kafka-connect`` image, or if you'd like to keep the custom image lightweight and not include
