@@ -25,9 +25,6 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
-# remove
-ARG RELEASE_QUALITY=${RELEASE_QUALITY}
-
 ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
