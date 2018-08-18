@@ -2,7 +2,7 @@
 -include local.make
 
 # Bump this on subsequent build, reset on new version or public release. Inherit from env for CI builds.
-BUILD_NUMBER ?= 3
+BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 5
 CONFLUENT_MINOR_VERSION ?= 1
@@ -28,7 +28,6 @@ REPOSITORY ?= confluentinc
 CONFLUENT_MVN_LABEL ?=
 CONFLUENT_DEB_LABEL ?=
 CONFLUENT_RPM_LABEL ?=
-CONFLUENT_PLATFORM_LABEL ?=
 
 # This is used only for the "version" (tag) of images on Docker Hub
 VERSION ?= ${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-${BUILD_NUMBER}

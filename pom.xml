@@ -23,7 +23,7 @@
     <artifactId>docker-utils</artifactId>
     <packaging>jar</packaging>
     <name>docker-utils</name>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>${confluent.version}</version>
 
     <licenses>
         <license>
