@@ -10,7 +10,7 @@ This tutorial builds a single node Docker environment using Docker client. You w
 Docker containers.
 
 Prerequisites
-    - .. include:: ../../includes/docker-version.rst
+    - .. include:: ../includes/docker-version.rst
 
     - `curl <https://curl.haxx.se/>`_
 
