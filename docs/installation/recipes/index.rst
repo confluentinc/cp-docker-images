@@ -5,19 +5,6 @@ Docker Installation Recipes
 
 This section provides installation recipes for using specific |cp| features on Docker.
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   single-node-client
-   clustered-deployment
-   clustered-deployment-ssl
-   clustered-deployment-sasl
-   connect-avro-jdbc
-   automatic-data-balancing
-   replicator
-
-
 You should consider the following before using the Docker images.
 
 Persistent Data (Mounted Volumes)
