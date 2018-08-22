@@ -161,6 +161,7 @@ test-all: \
 	test-kafka \
 	test-kafka-connect \
 	test-enterprise-replicator \
+	test-enterprise-kafka \
 	test-schema-registry \
 	test-kafka-rest \
 	test-control-center
