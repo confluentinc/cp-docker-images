@@ -1,7 +1,7 @@
 .. _external_volumes:
 
-Mounting External Volumes
--------------------------
+Mounting Docker External Volumes
+--------------------------------
 
 When working with Docker, you may sometimes need to persist data in the event of a container going down or share data across containers.  In order to do so, you can use `Docker Volumes <https://docs.docker.com/engine/tutorials/dockervolumes/>`_.  In the case of |cp|, we'll need to use external volumes for several main use cases:
 
@@ -13,7 +13,7 @@ When working with Docker, you may sometimes need to persist data in the event of
 
   .. note::
 
-    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
+    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on :ref:`extending the images <extending_images>`.
 
 Data Volumes for Kafka and |zk|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,7 +27,7 @@ Docker container as non-root user. In this example, the container is run as user
 
 On the Docker host (e.g. VirtualBox VM), create the directories:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   # Create dirs for Kafka / ZK data
   mkdir -p /vol1/zk-data
@@ -41,7 +41,7 @@ On the Docker host (e.g. VirtualBox VM), create the directories:
 
 Then start the containers:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   # Run ZK with user 12345 and volumes mapped to host volumes
   docker run -d \
@@ -52,7 +52,7 @@ Then start the containers:
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -v /vol1/zk-data:/var/lib/zookeeper/data \
     -v /vol2/zk-txn-logs:/var/lib/zookeeper/log \
-    confluentinc/cp-zookeeper:4.1.0
+    confluentinc/cp-zookeeper:|release|
 
   docker run -d \
     --name=kafka-vols \
@@ -63,7 +63,7 @@ Then start the containers:
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -v /vol3/kafka-data:/var/lib/kafka/data \
-    confluentinc/cp-kafka:4.1.0
+    confluentinc/cp-kafka:|release|
 
 The data volumes are mounted using the ``-v`` flag.
 
@@ -72,7 +72,7 @@ Security: Data Volumes for Configuring Secrets
 
 When security is enabled, the secrets are made available to the containers using volumes.  For example, if the host has the secrets (credentials, keytab, certificates, kerberos config, JAAS config) in ``/vol007/kafka-node-1-secrets``, we can configure Kafka as follows to use the secrets:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
     --name=kafka-sasl-ssl-1 \
@@ -96,9 +96,11 @@ When security is enabled, the secrets are made available to the containers using
 
 In the example above, we specify the location of the data volumes by setting ``-v /vol007/kafka-node-1-secrets:/etc/kafka/secrets``.  We then specify how they are to be used by setting:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   -e KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/host_broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/host_krb.conf
+
+.. _config_connect_ext_jars:
 
 Configuring Connect with External jars
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,7 +109,7 @@ Kafka connect can be configured to use third-party jars by storing them on a vol
 
 At the host (e.g. Virtualbox VM), download the MySQL driver:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   # Create a dir for jars and download the mysql jdbc driver into the directories
   mkdir -p /vol42/kafka-connect/jars
@@ -117,7 +119,7 @@ At the host (e.g. Virtualbox VM), download the MySQL driver:
 
 Then start Kafka connect mounting the download directory as ``/etc/kafka-connect/jars``:
 
-.. sourcecode:: bash
+.. codewithvars:: bash
 
   docker run -d \
     --name=connect-host-json \

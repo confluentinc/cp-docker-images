@@ -1,4 +1,4 @@
-.. _:
+.. _cp-docker-install:
 
 Installing and Configuring using Docker
 =======================================
