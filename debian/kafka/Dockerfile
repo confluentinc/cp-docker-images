@@ -40,9 +40,10 @@ RUN echo "===> installing ${COMPONENT}..." \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     \
-		&& echo "===> Setting up ${COMPONENT} dirs..." \
-   	&& mkdir -p /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets\
-   	&& chmod -R ag+w /etc/${COMPONENT} /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets
+    && echo "===> Setting up ${COMPONENT} dirs..." \
+    && mkdir -p /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets\
+    && chmod -R ag+w /etc/${COMPONENT} /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets \
+    && chown root:root /var/log/kafka /var/log/confluent /var/lib/kafka /var/lib/zookeeper
 
 
 VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets"]
