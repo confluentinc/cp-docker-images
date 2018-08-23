@@ -594,3 +594,299 @@ Additional settings that are optional and maybe passed to Replicator Executable 
   The timestamp type for the topics in the destination cluster.
 
 The above optional, non-file, command line settings as well as any other settings for Replicator can be passed to Replicator Executable through the required or optional files listed above as well.
+
+-----------
+KSQL Server
+-----------
+
+For a complete list of KSQL parameters, see :ref:`KSQL Configuration Parameter Reference <ksql-param-reference>`.
+
+KSQL Headless Server Settings
+"""""""""""""""""""""""""""""
+
+Run a standalone KSQL Server instance in a container.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster.  
+
+``KSQL_KSQL_SERVICE_ID``
+    The service ID of the KSQL server, which is used as the prefix for the
+    internal topics created by KSQL.
+
+``KSQL_KSQL_QUERIES_FILE``
+    A file that specifies predefined KSQL queries.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+    -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+    confluentinc/cp-ksql-server:|release|
+
+KSQL Headless Server with Interceptors Settings
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+Run a standalone KSQL Server with specified interceptor classes in a container.
+For more info on interceptor classes, see :ref:`Confluent Monitoring Interceptors <controlcenter_clients>`.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The service ID of the KSQL server, which is used as the prefix for the
+    internal topics created by KSQL.
+
+``KSQL_KSQL_QUERIES_FILE``
+    A file that specifies predefined KSQL queries.
+
+``KSQL_PRODUCER_INTERCEPTOR_CLASSES``
+    A list of fully qualified class names for producer interceptors.
+
+``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
+    A list of fully qualified class names for consumer interceptors.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_KSQL_SERVICE_ID=confluent_standalone_2_ \
+    -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+    -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+    -e KSQL_KSQL_QUERIES_FILE=/path/in/container/queries.sql \
+    confluentinc/cp-ksql-server:|release|
+
+Interactive Server Configuration
+""""""""""""""""""""""""""""""""
+
+Run a KSQL Server that enables manual interaction by using the KSQL CLI.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The service ID of the KSQL server, which is used as the prefix for the
+    internal topics created by KSQL.
+
+``KSQL_LISTENERS``
+    A list of URIs, including the protocol, that the broker listens on.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=confluent_test_2 \
+    confluentinc/cp-ksql-server:|release|
+
+Interactive Server Configuration with Interceptors
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Run a KSQL Server with interceptors that enables manual interaction by using
+the KSQL CLI. For more info on interceptor classes, see
+:ref:`Confluent Monitoring Interceptors <controlcenter_clients>`.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster.
+
+``KSQL_KSQL_SERVICE_ID``
+    The service ID of the KSQL server, which is used as the prefix for the
+    internal topics created by KSQL.
+
+``KSQL_LISTENERS``
+    A list of URIs, including the protocol, that the broker listens on.    
+
+``KSQL_PRODUCER_INTERCEPTOR_CLASSES``
+    A list of fully qualified class names for producer interceptors.
+
+``KSQL_CONSUMER_INTERCEPTOR_CLASSES``
+    A list of fully qualified class names for consumer interceptors.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=confluent_test_2_ \
+    -e KSQL_PRODUCER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor \
+    -e KSQL_CONSUMER_INTERCEPTOR_CLASSES=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor \
+    confluentinc/cp-ksql-server:|release|
+
+In interactive mode, the CLI instance running outside Docker can connect to the
+server running in Docker.
+
+.. codewithvars:: bash
+
+  ./bin/ksql
+
+  ... 
+  CLI v|release|, Server v|release|-SNAPSHOT located at http://localhost:8088
+
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+  ksql>
+
+Connect to a Secure Kafka Cluster, Like |ccloud|
+""""""""""""""""""""""""""""""""""""""""""""""""
+
+Run a KSQL Server that uses a secure connection to a Kafka cluster. 
+Learn about :ref:`KSQL Security <ksql-security>`.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster. 
+
+``KSQL_KSQL_SERVICE_ID``
+    The service ID of the KSQL server, which is used as the prefix for the
+    internal topics created by KSQL.
+
+``KSQL_LISTENERS``
+    A list of URIs, including the protocol, that the broker listens on.
+    
+``KSQL_KSQL_SINK_REPLICAS``
+    The default number of replicas for the topics created by KSQL.
+    The default is one.
+
+``KSQL_KSQL_STREAMS_REPLICATION_FACTOR``
+    The replication factor for internal topics, the command topic, and output
+    topics. 
+
+``KSQL_SECURITY_PROTOCOL``
+    The protocol that your Kafka cluster uses for security.
+
+``KSQL_SASL_MECHANISM``
+    The SASL mechanism that your Kafka cluster uses for security.
+
+``KSQL_SASL_JAAS_CONFIG``
+    The Java Authentication and Authorization Service (JAAS) configuration.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -p 127.0.0.1:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=REMOVED_SERVER1:9092,REMOVED_SERVER2:9093,REMOVED_SERVER3:9094 \
+    -e KSQL_LISTENERS=http://0.0.0.0:8088/ \
+    -e KSQL_KSQL_SERVICE_ID=default_ \
+    -e KSQL_KSQL_SINK_REPLICAS=3 \
+    -e KSQL_KSQL_STREAMS_REPLICATION_FACTOR=3 \
+    -e KSQL_SECURITY_PROTOCOL=SASL_SSL \
+    -e KSQL_SASL_MECHANISM=PLAIN \
+    -e KSQL_SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\"<username>\" password=\"<strong-password>\";" \
+    confluentinc/cp-ksql-server:|release|
+
+Configure a KSQL Server by Using Java System Properties
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Run a KSQL Server with a configration that's defined by Java properties.  
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster.
+
+``KSQL_OPTS``
+    A space-separated list of Java options.
+
+.. codewithvars:: bash
+
+  docker run -d \
+    -v /path/on/host:/path/in/container/ \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dksql.queries.file=/path/in/container/queries.sql" \
+    confluentinc/cp-ksql-server:|release|
+
+View logs
+"""""""""
+
+Use the ``docker logs`` command to view KSQL logs that are generated from 
+within the container.
+
+.. codewithvars:: bash
+
+  docker logs -f <container-id>
+  [2018-05-24 23:43:05,591] INFO stream-thread [_confluent-ksql-default_transient_1507119262168861890_1527205385485-71c8a94c-abe9-45ba-91f5-69a762ec5c1d-StreamThread-17] Starting (org.apache.kafka.streams.processor.internals.StreamThread:713)
+  ...
+
+--------
+KSQL CLI
+--------
+
+Connect to a Dockerized KSQL Server
+"""""""""""""""""""""""""""""""""""
+
+Run a KSQL CLI instance in a container and connect to a KSQL Server that's
+running in a container.
+
+The Docker network created by KSQL Server enables you to connect to a
+dockerized KSQL server.
+
+``KSQL_BOOTSTRAP_SERVERS``
+    A list of hosts for establishing the initial connection to the Kafka
+    cluster.
+
+``KSQL_OPTS``
+    A space-separated list of Java options.
+
+.. codewithvars:: bash
+
+  # Run KSQL Server.
+  docker run -d -p 10.0.0.11:8088:8088 \
+    -e KSQL_BOOTSTRAP_SERVERS=localhost:9092 \
+    -e KSQL_OPTS="-Dksql.service.id=confluent_test_3_  -Dlisteners=http://0.0.0.0:8088/" \  
+    confluentinc/cp-ksql-server:|release|
+
+  # Connect the KSQL CLI to the server.
+  docker run -it confluentinc/cp-ksql-cli http://10.0.0.11:8088 
+  ...
+  Copyright 2017 Confluent Inc.
+
+  CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://10.0.0.11:8088
+
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+  ksql>
+
+
+Provide a Configuration File
+""""""""""""""""""""""""""""
+
+Set up a a KSQL CLI instance by using a configuration file, and run it in a
+container. 
+
+
+.. codewithvars:: bash
+
+  # Assume KSQL Server is running.
+  # Ensure that the configuration file exists.
+  ls /path/on/host/ksql-cli.properties
+
+  docker run -it \
+    -v /path/on/host/:/path/in/container  \
+    confluentinc/cp-ksql-cli:|release| http://10.0.0.11:8088 \
+    --config-file /path/in/container/ksql-cli.properties
+
+Connect to a KSQL Server Running on Another Host, Like AWS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Run a KSQL CLI instance in a container and connect to a remote KSQL Server host.
+
+.. codewithvars:: bash
+
+  docker run -it confluentinc/cp-ksql-cli:|release| \
+    http://ec2-etc.us-etc.compute.amazonaws.com:8080
+
+  ... 
+  Copyright 2017 Confluent Inc.
+
+  CLI v|release|-SNAPSHOT, Server v|release|-SNAPSHOT located at http://ec2-blah.us-blah.compute.amazonaws.com:8080
+
+  Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+  ksql>
