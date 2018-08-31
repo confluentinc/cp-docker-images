@@ -144,15 +144,16 @@ services:
     hostname: ksql-datagen
     container_name: ksql-datagen
     depends_on:
+      - ksql-server
       - broker
       - schema-registry
       - connect
     volumes:
       - mi2:/usr/share/java/monitoring-interceptors/
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker:9092 1 20 && \
+                       cub kafka-ready -b broker:9092 1 40 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready schema-registry 8081 20 && \
+                       cub sr-ready schema-registry 8081 40 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 11 && \
                        cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.1.0.jar /usr/share/java/ksql-examples/monitoring-interceptors-5.1.0.jar && \
