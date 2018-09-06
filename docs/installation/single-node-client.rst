@@ -10,7 +10,7 @@ This tutorial builds a single node Docker environment using Docker client. You w
 Docker containers.
 
 Prerequisites
-    - .. include:: ../../includes/docker-version.rst
+    - .. include:: ../includes/docker-version.rst
 
     - `curl <https://curl.haxx.se/>`_
 
@@ -762,6 +762,6 @@ Next Steps
 - For examples of how to add mounted volumes to your host machines, see :ref:`external_volumes`. Mounted volumes provide a
   persistent storage layer for deployed containers. With a persistent storage layer, you can stop and restart Docker images,
   such as ``cp-kafka`` and ``cp-zookeeper``, without losing their stateful data.
-- For examples of more complex target environments, see the :ref:`tutorials_overview`.
+- For examples of more complex target environments, see the :ref:`cp-docker-install`.
 - For more information about |sr|, see :ref:`schemaregistry_intro`.
 - For a more in-depth Kafka Connect example, see :ref:`connect_quickstart_avro_jdbc`.
