@@ -133,7 +133,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        kafka-topics --describe --zookeeper localhost:32181
 
 
-#. Download the MySQL JDBC driver and copy it to the ``jars`` folder.  If you are running Docker Machine, you will need to SSH into the VM to run these commands. You may have to run the command as root.
+#. Download the latest MySQL JDBC driver and copy it to the ``jars`` folder.  If you are running Docker Machine, you must
+   SSH into the VM to run these commands. You may have to run the command as root.
 
    First, create a folder named ``jars``:
 
@@ -141,11 +142,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     mkdir -p /tmp/quickstart/jars
 
-   Then download the JDBC driver:
+   Then download the JDBC driver, replacing ``<driver-version> `` with the latest version:
 
    .. codewithvars:: bash
 
-    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.11.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-8.0.11/mysql-connector-java-8.0.11-bin.jar
+    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/<driver-version>.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 <driver-version>/<driver-version>-bin.jar
 
 
 #. Start a connect worker with Avro support.
