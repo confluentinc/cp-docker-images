@@ -16,7 +16,7 @@ Note: The ``Component Names`` table lists the ``{COMPONENT}`` names for each com
 
 A full example for Kafka is shown below:
 
-  .. codewithvars:: bash
+.. codewithvars:: bash
 
     docker run -d \
       --name=kafka-log-example \
