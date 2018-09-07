@@ -19,15 +19,14 @@ Prerequisites
 Step 1: Setup Your Docker Environment
 =====================================
 
-.. include:: ../../includes/docker-machine.rst
+.. include:: ../includes/docker-machine.rst
 
 Create a Docker Network
 -----------------------
 
 Create the Docker network that is used to run the Confluent containers.
 
-.. important::
-A Docker network is required to enable DNS resolution across your containers. The default Docker network does not have DNS enabled.
+.. important:: A Docker network is required to enable DNS resolution across your containers. The default Docker network does not have DNS enabled.
 
 .. codewithvars:: console
 

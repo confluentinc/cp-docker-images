@@ -10,5 +10,6 @@ Docker Images
     installation/index
     config-reference
     image-reference
+    development
     operations/index
     security
