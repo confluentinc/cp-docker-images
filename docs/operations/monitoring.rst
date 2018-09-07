@@ -6,7 +6,7 @@ Using JMX
 
 For JMX to work with Docker containers, the following properties must be set:
 
-  .. codewithvars:: bash
+.. codewithvars:: bash
 
     java.rmi.server.hostname=<JMX_HOSTNAME>
     com.sun.management.jmxremote.local.only=false
@@ -32,21 +32,21 @@ Kafka and |zk|
 Settings
 ````````
 
-  ``KAFKA_JMX_PORT``
+``KAFKA_JMX_PORT``
     JMX Port.
 
 
-  ``KAFKA_JMX_OPTS``
+``KAFKA_JMX_OPTS``
     JMX options.
 
-  ``KAFKA_JMX_HOSTNAME``
+``KAFKA_JMX_HOSTNAME``
     hostname associated with locally created remote objects.
 
-    The default setting is as follows:
+The default setting is as follows:
 
-    .. codewithvars:: bash
+.. codewithvars:: bash
 
-      -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
+  -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false
 
 Launching Kafka and |zk| with JMX Enabled
 ``````````````````````````````````````````````
