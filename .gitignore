@@ -21,3 +21,4 @@ java/.classpath
 java/.project
 java/.settings/
 .vscode/*
+examples/cp-all-in-one-cloud/delta_configs/
