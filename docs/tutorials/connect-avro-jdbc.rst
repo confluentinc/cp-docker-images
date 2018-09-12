@@ -142,11 +142,11 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     mkdir -p /tmp/quickstart/jars
 
-   Then download the JDBC driver, replacing ``<driver-version> `` with the latest version:
+   Then download the JDBC driver:
 
    .. sourcecode:: bash
 
-    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/<driver-version>.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 <driver-version>/<driver-version>-bin.jar
+    curl -k -SL "http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.37.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-5.1.37/mysql-connector-java-5.1.37-bin.jar
 
 
 #. Start a connect worker with Avro support.
