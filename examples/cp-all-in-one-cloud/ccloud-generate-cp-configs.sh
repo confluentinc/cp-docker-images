@@ -40,6 +40,7 @@
 
 # Confluent Cloud configuration
 CCLOUD_CONFIG=$HOME/.ccloud/config
+PERM=$(stat -c "%a" $HOME/.ccloud/config)
 
 ### Glean BOOTSTRAP_SERVERS and SASL_JAAS_CONFIG (key and password) from the Confluent Cloud configuration file
 BOOTSTRAP_SERVERS=$( grep "^bootstrap.server" $CCLOUD_CONFIG | awk -F'=' '{print $2;}' )
@@ -75,6 +76,7 @@ do
     echo "confluent.monitoring.interceptor.$line" >> $INTERCEPTORS_CCLOUD_CONFIG
   fi
 done < "$CCLOUD_CONFIG"
+chmod $PERM $INTERCEPTORS_CCLOUD_CONFIG
 
 echo -e "\nConfluent Platform Components:"
 
@@ -94,7 +96,7 @@ do
     echo "kafkastore.$line" >> $SR_CONFIG_DELTA
   fi
 done < "$CCLOUD_CONFIG"
-
+chmod $PERM $SR_CONFIG_DELTA
 
 # Confluent Replicator for Confluent Cloud
 REPLICATOR_PRODUCER_DELTA=$DEST/replicator-to-ccloud-producer.delta
@@ -106,7 +108,7 @@ echo "retry.backoff.ms=500" >> $REPLICATOR_PRODUCER_DELTA
 REPLICATOR_SASL_JAAS_CONFIG=$SASL_JAAS_CONFIG
 REPLICATOR_SASL_JAAS_CONFIG=${REPLICATOR_SASL_JAAS_CONFIG//\\=/=}
 REPLICATOR_SASL_JAAS_CONFIG=${REPLICATOR_SASL_JAAS_CONFIG//\"/\\\"}
-
+chmod $PERM $REPLICATOR_PRODUCER_DELTA
 
 # KSQL Server runs locally and connects to Confluent Cloud
 KSQL_SERVER_DELTA=$DEST/ksql-server-ccloud.delta
@@ -120,12 +122,14 @@ echo "ksql.streams.producer.request.timeout.ms=300000" >> $KSQL_SERVER_DELTA
 echo "ksql.streams.producer.max.block.ms=9223372036854775807" >> $KSQL_SERVER_DELTA
 echo "ksql.streams.replication.factor=3" >> $KSQL_SERVER_DELTA
 echo "ksql.sink.replicas=3" >> $KSQL_SERVER_DELTA
+chmod $PERM $KSQL_SERVER_DELTA
 
 # KSQL DataGen for Confluent Cloud
 KSQL_DATAGEN_DELTA=$DEST/ksql-datagen.delta
 echo "$KSQL_DATAGEN_DELTA"
 cp $INTERCEPTORS_CCLOUD_CONFIG $KSQL_DATAGEN_DELTA
 echo "interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor" >> $KSQL_DATAGEN_DELTA
+chmod $PERM $KSQL_DATAGEN_DELTA
 
 # Confluent Control Center runs locally, monitors Confluent Cloud, and uses Confluent Cloud cluster as the backstore
 C3_DELTA=$DEST/control-center-ccloud.delta
@@ -141,6 +145,7 @@ while read -r line
     fi
   fi
 done < "$CCLOUD_CONFIG"
+chmod $PERM $C3_DELTA
 
 echo -e "\nKafka Clients:"
 
@@ -183,6 +188,7 @@ props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG + SaslConfigs.SASL_JAAS_CONF
 
 // .... additional configuration settings
 EOF
+chmod $PERM $JAVA_PC_CONFIG
 
 # Java (Streams)
 JAVA_STREAMS_CONFIG=$DEST/java_streams.delta
@@ -224,6 +230,7 @@ props.put(StreamsConfig.CONSUMER_PREFIX + ConsumerConfig.INTERCEPTOR_CLASSES_CON
 
 // .... additional configuration settings
 EOF
+chmod $PERM $JAVA_STREAMS_CONFIG
 
 # Python
 PYTHON_CONFIG=$DEST/python.delta
@@ -258,6 +265,7 @@ consumer = Consumer({
            // .... additional configuration settings
 })
 EOF
+chmod $PERM $PYTHON_CONFIG
 
 # .NET 
 DOTNET_CONFIG=$DEST/dotnet.delta
@@ -294,6 +302,7 @@ var consumerConfig = new Dictionary<string, object>
     // .... additional configuration settings
 };
 EOF
+chmod $PERM $DOTNET_CONFIG
 
 # Go
 GO_CONFIG=$DEST/go.delta
@@ -331,6 +340,7 @@ consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
                  // .... additional configuration settings
                  })
 EOF
+chmod $PERM $GO_CONFIG
 
 # Node.js
 NODE_CONFIG=$DEST/node.delta
@@ -365,6 +375,7 @@ var consumer = Kafka.KafkaConsumer.createReadStream({
     objectMode: false
 });
 EOF
+chmod $PERM $NODE_CONFIG
 
 # C++
 CPP_CONFIG=$DEST/cpp.delta
@@ -403,6 +414,7 @@ if (consumerConfig->set("metadata.broker.list", "$BOOTSTRAP_SERVERS", errstr) !=
 }
 RdKafka::Consumer *consumer = RdKafka::Consumer::create(consumerConfig, errstr);
 EOF
+chmod $PERM $CPP_CONFIG
 
 # ENV
 ENV_CONFIG=$DEST/env.delta
@@ -414,3 +426,4 @@ export SASL_JAAS_CONFIG='$SASL_JAAS_CONFIG'
 export SR_BOOTSTRAP_SERVERS='$SR_BOOTSTRAP_SERVERS'
 export REPLICATOR_SASL_JAAS_CONFIG='$REPLICATOR_SASL_JAAS_CONFIG'
 EOF
+chmod $PERM $ENV_CONFIG
