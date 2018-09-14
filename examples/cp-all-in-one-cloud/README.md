@@ -9,10 +9,20 @@
 
 Use this in a non-production Confluent Cloud instance. Ensure that you have properly initialized Confluent CLI on this host and have a valid configuration file at `$HOME/.ccloud/config`
 
-Steps:
+Step 1: Generate a file of ENV variables used by Docker Compose to set the bootstrap servers and security configuration
 
 ```bash
-$ ./ccloud-generate-cp-configs.sh
+$ ./ccloud-generate-env-vars.sh
+```
+
+Step 2: Source that file of ENV variables
+
+```bash
 $ source ./delta_configs/env.delta
+```
+
+Step 3: Bring up the Docker environment with Docker Compose
+
+```bash
 $ docker-compose up -d
 ```
