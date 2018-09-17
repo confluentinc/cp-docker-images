@@ -9,7 +9,7 @@
 
 Note: Use this in a *non-production* Confluent Cloud instance for development purposes only.
 
-On the host from which you are running Docker, ensure that you have properly initialized Confluent CLI and have a valid configuration file at `$HOME/.ccloud/config`.
+On the host from which you are running Docker, ensure that you have properly initialized Confluent Cloud CLI and have a valid configuration file at `$HOME/.ccloud/config`.
 
 Step 1: Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration
 
