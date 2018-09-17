@@ -9,10 +9,11 @@
 #
 ###############################################################################
 
+set -eu
 
 # Confluent Cloud configuration
 CCLOUD_CONFIG=$HOME/.ccloud/config
-if [[ ! -e $CCLOUD_CONFIG ]]; then
+if [[ ! -f $CCLOUD_CONFIG ]]; then
   echo "'ccloud' is not initialized. Run 'ccloud init' and try again"
   exit 1
 fi
@@ -33,12 +34,11 @@ CLOUD_SECRET=$( echo $SASL_JAAS_CONFIG | awk '{print $4}' | awk -F'"' '$0=$2' )
 #echo "secret: $CLOUD_SECRET"
 
 # Destination directory
-if [[ ! -z "$1" ]]; then
+if [[ $# -ne 0 ]] && [[ ! -z "$1" ]]; then
   DEST=$1
 else
   DEST="delta_configs"
 fi
-rm -fr $DEST
 mkdir -p $DEST
 
 REPLICATOR_SASL_JAAS_CONFIG=$SASL_JAAS_CONFIG
@@ -47,6 +47,7 @@ REPLICATOR_SASL_JAAS_CONFIG=${REPLICATOR_SASL_JAAS_CONFIG//\"/\\\"}
 
 ENV_CONFIG=$DEST/env.delta
 echo "$ENV_CONFIG"
+rm -f $ENV_CONFIG
 
 cat <<EOF >> $ENV_CONFIG
 export BOOTSTRAP_SERVERS='$BOOTSTRAP_SERVERS'
