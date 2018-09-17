@@ -11,7 +11,7 @@ Note: Use this in a *non-production* Confluent Cloud instance for development pu
 
 On the host from which you are running Docker, ensure that you have properly initialized Confluent CLI and have a valid configuration file at `$HOME/.ccloud/config`.
 
-Step 1: Generate a file of ENV variables used by Docker Compose to set the bootstrap servers and security configuration
+Step 1: Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration
 
 ```bash
 $ ./ccloud-generate-env-vars.sh
@@ -25,9 +25,11 @@ $ source ./delta_configs/env.delta
 
 # Bring up services
 
+Make sure you completed the steps in the Setup section above before proceeding. 
+
 You may bring up all services in the Docker Compose file at once or individually.
 
-All services at once:
+## All services at once
 
 ```bash
 $ docker-compose up -d
@@ -48,7 +50,7 @@ $ docker-compose up -d connect
 ## Confluent Control Center
 
 ```bash
-$ docker-compose up -d connect
+$ docker-compose up -d control-center
 ```
 
 ## KSQL Server
