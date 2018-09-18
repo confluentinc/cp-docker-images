@@ -37,3 +37,6 @@ RUN echo "===> Installing JDBC, Elasticsearch and Hadoop connectors ..." \
         confluent-kafka-connect-jms=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+
+RUN echo "===> Installing GCS Sink Connector ..."
+RUN confluent-hub install confluentinc/kafka-connect-gcs:latest --no-prompt
