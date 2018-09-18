@@ -32,6 +32,7 @@ when deployed.
 |                  |                              |                              | - confluent-control-center              |
 |                  |                              |                              | - confluent-kafka-connect-elasticsearch |
 |                  |                              |                              | - confluent-kafka-connect-s3            |
+|                  |                              |                              | - confluent-kafka-connect-gcs           |
 +------------------+------------------------------+------------------------------+-----------------------------------------+
 | KSQL Server      | cp-ksql-server               | |cpe|                        | - ksql-server                           |
 |                  |                              |                              | - confluent-monitoring-interceptors     |
