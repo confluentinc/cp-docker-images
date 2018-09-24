@@ -47,7 +47,7 @@ PRODUCER = """bash -c "\
 CONSUMER = """bash -c "\
         export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
         && dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties" \
-        && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
+        && kafka-console-consumer --bootstrap-server {brokers} --topic foo --from-beginning --consumer.config /etc/kafka/secrets/{config} --max-messages {messages}"
         """
 
 KAFKACAT_SSL_CONSUMER = """kafkacat -X security.protocol=ssl \
@@ -65,7 +65,7 @@ PLAIN_CLIENTS = """bash -c "\
     && kafka-topics --create --topic {topic} --partitions 1 --replication-factor 3 --if-not-exists --zookeeper $KAFKA_ZOOKEEPER_CONNECT \
     && seq {messages} | kafka-console-producer --broker-list {brokers} --topic {topic} \
     && echo PRODUCED {messages} messages. \
-    && kafka-console-consumer --bootstrap-server {brokers} --topic foo --new-consumer --from-beginning --max-messages {messages}"
+    && kafka-console-consumer --bootstrap-server {brokers} --topic foo --from-beginning --max-messages {messages}"
     """
 
 JMX_CHECK = """bash -c "\

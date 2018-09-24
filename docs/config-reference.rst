@@ -809,3 +809,36 @@ Run a KSQL CLI instance in a container and connect to a remote KSQL Server host.
 
   ksql>
 
+-------------------------------
+Confluent Kafka MQTT
+-------------------------------
+
+For the Kafka MQTT image, use variables prefixed with ``KAFKA_MQTT_`` with an underscore (``_``) separating each word instead of periods. As an example, to set ``bootstrap.servers``, ``topic.regex.list`` you'd run the following:
+
+  .. sourcecode:: bash
+
+    docker run -d \
+      --name=cp-kafka-mqtt \
+      --net=host \
+      -e KAFKA_MQTT_BOOTSTRAP_SERVERS=PLAINTEXT://localhost:29092 \
+      -e KAFKA_MQTT_TOPIC_REGEX_LIST=mqtt:.* \
+      confluentinc/cp-kafka-mqtt:5.0.0
+
+Required Settings
+"""""""""""""""""
+The following settings must be passed to run the Kafka MQTT Docker image:
+
+``KAFKA_MQTT_BOOTSTRAP_SERVERS``
+
+  A list of host/port pairs to use for establishing the initial connection to the Kafka cluster. The client will make use of all servers irrespective of which servers are specified here for bootstrapping; this list only impacts the initial hosts used to discover the full set of servers. This list should be in the form host1:port1,host2:port2,.... Since these servers are just used for the initial connection to discover the full cluster membership (which may change dynamically), this list need not contain the full set of servers (you may want more than one, though, in case a server is down).
+
+``KAFKA_MQTT_TOPIC_REGEX_LIST``
+
+  A comma-separated list of pairs of type '<kafka topic>:<regex>' that is used to map MQTT topics to Kafka topics.
+
+Optional Settings
+"""""""""""""""""
+All other settings for Kafka MQTT like security, producer overrides can be passed to the Docker image as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``, converting the resulting string to uppercase and prefixing it with ``KAFKA_MQTT_``. For example, if you need to set ``ssl.key.password``, the environment variable name would be ``KAFKA_MQTT_SSL_KEY_PASSWORD``.
+
+The image will then convert these environment variables to corresponding Kafka MQTT config variables.
+
