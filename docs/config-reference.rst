@@ -126,7 +126,7 @@ Required Confluent Enterprise Kafka Settings
 Schema Registry Configuration
 -----------------------------
 
-For the Schema Registry (``cp-schema-registry``) image, use variables prefixed with ``SCHEMA_REGISTRY_`` with an
+For the |sr| (``cp-schema-registry``) image, use variables prefixed with ``SCHEMA_REGISTRY_`` with an
 underscore (``_``) to separate each word. For example, run the following to set ``kafkastore.connection.url``, ``host.name``,
 ``listeners`` and ``debug``:
 
