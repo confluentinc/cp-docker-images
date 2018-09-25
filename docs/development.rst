@@ -635,7 +635,7 @@ Confluent Platform Utility Belt (cub)
 
 3. sr-ready
 
-  Used for checking if the Schema Registry is ready.  If you have multiple Schema Registry nodes, you may need to check their availability individually.
+  Used for checking if |sr| is ready.  If you have multiple Schema Registry nodes, you may need to check their availability individually.
 
   .. codewithvars:: bash
 
