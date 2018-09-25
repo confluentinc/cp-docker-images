@@ -5,7 +5,7 @@ Kafka Connect Tutorial on Docker
 
 This tutorial uses Avro as the data format and use a JDBC Source Connector to read from a MySQL database.
 
-You must first startup up |zk|, Kafka and the Schema Registry. 
+You must first startup up |zk|, Kafka and |sr|.
 
 .. note::
 
@@ -70,7 +70,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
              is set to 1 at runtime, since there is only one active broker in this example.
 
 
-   Start the Schema Registry:
+   Start |sr|:
 
    .. codewithvars:: bash
 
