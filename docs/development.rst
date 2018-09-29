@@ -473,7 +473,7 @@ The following examples show to extend the images.
             # Confluent
             ENV SCALA_VERSION="2.11"
             ENV CONFLUENT_MAJOR_VERSION="4.1"
-            ENV CONFLUENT_VERSION="4.1.0"
+            ENV CONFLUENT_VERSION="5.1.0-beta180929024526"
             ENV CONFLUENT_DEB_VERSION="1"
             
             # Zulu
