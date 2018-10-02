@@ -14,10 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
-    -o errexit \
-    -o verbose \
-    -o xtrace
+. /etc/confluent/docker/bash-config
 
 dub ensure-atleast-one SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
 dub ensure SCHEMA_REGISTRY_HOST_NAME

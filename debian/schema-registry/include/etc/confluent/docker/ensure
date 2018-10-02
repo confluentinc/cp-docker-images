@@ -14,10 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
-    -o errexit \
-    -o verbose \
-    -o xtrace
+. /etc/confluent/docker/bash-config
+
 if [[ -n "${SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL-}" ]]
 then
     echo "===> Check if Zookeeper is healthy ..."

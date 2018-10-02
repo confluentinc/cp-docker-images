@@ -14,10 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
-    -o errexit \
-    -o verbose \
-    -o xtrace
+. /etc/confluent/docker/bash-config
 
 #Run Mesos Setup (ignores if mesos env files not detected)
 . /etc/confluent/docker/mesos-setup.sh
@@ -26,7 +23,7 @@ set -o nounset \
 . /etc/confluent/docker/apply-mesos-overrides || true
 
 echo "===> ENV Variables ..."
-env | sort
+env | sort | grep -vP 'PASSWORD|JAAS_CONFIG'
 
 echo "===> User"
 id
