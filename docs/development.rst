@@ -295,11 +295,7 @@ The following examples show to extend the images.
 
     .. sourcecode:: bash
 
-        set -o nounset \
-            -o errexit \
-            -o verbose \
-            -o xtrace
-        
+        . /etc/confluent/docker/bash-config
         
         # Ensure that URL locations are available.
         dub ensure ZOOKEEPER_SERVER_CONFIG_URL

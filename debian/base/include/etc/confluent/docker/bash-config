@@ -1,6 +1,5 @@
-#!/bin/bash
 #
-# Copyright 2016 Confluent Inc.
+# Copyright 2018 Confluent Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-. /etc/confluent/docker/bash-config
+set -o nounset \
+    -o errexit
 
-echo "===> Check if /var/lib/zookeeper/data is writable ..."
-dub path /var/lib/zookeeper/data writable
+# Trace may expose passwords/credentials by printing them to stdout, so turn on with care.
+if [ "${TRACE:-}" == "true" ]; then
+  set -o verbose \
+      -o xtrace
+fi
 
-echo "===> Check if /var/lib/zookeeper/log is writable ..."
-dub path /var/lib/zookeeper/log writable
+
+function show_env {
+    env | sort | grep -vP 'PASSWORD|JAAS_CONFIG'
+}

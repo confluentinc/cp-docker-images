@@ -14,10 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
-    -o errexit \
-    -o verbose \
-    -o xtrace
+. /etc/confluent/docker/bash-config
 
 dub ensure KAFKA_MQTT_BOOTSTRAP_SERVERS
 dub ensure KAFKA_MQTT_TOPIC_REGEX_LIST
