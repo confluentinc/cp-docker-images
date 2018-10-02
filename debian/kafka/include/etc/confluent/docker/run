@@ -26,7 +26,7 @@ if [ $# -ne 0 ]; then
 fi
 
 echo "===> ENV Variables ..."
-env | sort | grep -vP 'PASSWORD|JAAS_CONFIG'
+show_env
 
 echo "===> User"
 id

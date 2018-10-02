@@ -20,7 +20,7 @@
 . /etc/confluent/docker/apply-mesos-overrides
 
 echo "===> ENV Variables ..."
-env | sort | grep -vP 'PASSWORD|JAAS_CONFIG'
+show_env
 
 echo "===> User"
 id
