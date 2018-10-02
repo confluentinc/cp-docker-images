@@ -1,6 +1,9 @@
 #!/bin/bash
 
-. /etc/confluent/docker/bash-config
+set -o nounset \
+    -o errexit \
+    -o verbose \
+    -o xtrace
 
 # Generate CA key
 openssl req -new -x509 -keyout snakeoil-ca-1.key -out snakeoil-ca-1.crt -days 365 -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' -passin pass:confluent -passout pass:confluent
