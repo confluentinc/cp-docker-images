@@ -348,7 +348,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       docker-compose logs kafka-ssl-2
       docker-compose logs kafka-ssl-3
 
-   You should see start see bootup messages. For example, ``docker-compose logs kafka-3 | grep started`` shows the following
+   You should see start see bootup messages. For example, ``docker-compose logs kafka-ssl-3 | grep started`` shows the following
 
    .. codewithvars:: bash
 
