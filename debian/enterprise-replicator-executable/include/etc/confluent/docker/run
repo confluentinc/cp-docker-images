@@ -14,16 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -o nounset \
-    -o errexit \
-    -o verbose \
-    -o xtrace
+. /etc/confluent/docker/bash-config
 
 . /etc/confluent/docker/mesos-setup.sh
 . /etc/confluent/docker/apply-mesos-overrides
 
 echo "===> ENV Variables ..."
-env | sort
+show_env
 
 echo "===> User"
 id

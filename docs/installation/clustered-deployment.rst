@@ -338,6 +338,6 @@ Before you get started, you will first need to install `Docker <https://docs.doc
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-   .. tip:: ``docker-compose log | grep controller`` makes it easy to grep through logs for all services.
+   .. tip:: ``docker-compose logs | grep controller`` makes it easy to grep through logs for all services.
 
 #. Follow step 4 in :ref:`docker-setup-3-node` section above to test that your brokers are functioning as expected.

@@ -37,7 +37,7 @@ PRODUCE_DATA = """bash -c "\
 CONSUME_DATA = """bash -c "\
         export KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG \
         && dub template "/etc/confluent/docker/tools-log4j.properties.template" "/etc/kafka/tools-log4j.properties" \
-        && kafka-console-consumer --bootstrap-server {brokers} --topic {topic} --new-consumer --from-beginning --max-messages {messages}"
+        && kafka-console-consumer --bootstrap-server {brokers} --topic {topic} --from-beginning --max-messages {messages}"
         """
 
 
