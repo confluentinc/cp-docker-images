@@ -401,6 +401,10 @@ The following examples show to extend the images.
         {% if env['KAFKA_LOG4J_LOGGERS'] %}
         {% set loggers = parse_log4j_loggers(env['KAFKA_LOG4J_LOGGERS'], loggers) %}
         {% endif %}
+        
+        {% for logger,loglevel in loggers.iteritems() %}
+        log4j.logger.{{logger}}={{loglevel}}
+        {% endfor %}
 
     Build the image:
 
