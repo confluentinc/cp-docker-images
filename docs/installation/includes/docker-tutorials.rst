@@ -6,9 +6,6 @@
           Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add
           mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
 
-.. contents:: In this Tutorial
-    :local:
-
 Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
