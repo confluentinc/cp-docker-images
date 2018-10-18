@@ -71,7 +71,8 @@ Configuration Notes
 
 *  Included Java
 
-    The Confluent Docker images are tested and shipped with `Azul Zulu OpenJDK <https://www.azul.com/products/zulu/>`_.  Other JDK's (including Oracle Java) are supported, but you must extend the images yourself to implement that change.
+    The Confluent Docker images are tested and shipped with `Azul Zulu OpenJDK <https://www.azul.com/products/zulu/>`_.
+    For more information about Java support, see :ref:`supported Java versions <java-sys-req>`.
 
 *  Untested Features
 
