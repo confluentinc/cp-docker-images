@@ -3,11 +3,6 @@
 Docker Developer Guide
 ======================
 
-**Table of Contents**
-
-.. contents::
-  :local:
-
 .. _image_design_overview :
 
 Image Design Overview
