@@ -482,6 +482,9 @@ Additional settings that are optional and maybe passed to Replicator Executable 
 
 ``TOPIC_AUTO_CREATE``
     Whether to automatically create topics in the destination cluster if required.
+    If you disable automatic topic creation, Kafka Streams and KSQL applications
+    continue to work. Kafka Streams and KSQL applications use the Admin Client,
+    so topics are still created.
 
 ``TOPIC_CONFIG_SYNC``
     Whether to periodically sync topic configuration to the destination cluster.
