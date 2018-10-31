@@ -50,7 +50,7 @@ services:
   connect:
     image: confluentinc/kafka-connect-datagen:0.1.0
     build:
-      context: https://github.com/confluentinc/kafka-connect-datagen/raw/DOCS-941/Dockerfile-confluenthub
+      context: https://github.com/confluentinc/kafka-connect-datagen/raw/master/Dockerfile-confluenthub
       dockerfile: Dockerfile-confluenthub
     hostname: connect
     container_name: connect
