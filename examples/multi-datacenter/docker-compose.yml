@@ -66,6 +66,8 @@ services:
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc1
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
 
   schema-registry-dc2:
     image: confluentinc/cp-schema-registry:5.0.0
@@ -83,6 +85,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
       SCHEMA_REGISTRY_MASTER_ELIGIBILITY: "false"
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8082"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
 
   replicator-dc1-to-dc2:
     image: confluentinc/cp-enterprise-replicator:5.0.0
