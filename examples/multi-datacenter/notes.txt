@@ -1,0 +1,3 @@
+./submit_replicator_dc1_to_dc2.sh
+docker-compose exec schema-registry-dc1 kafka-avro-console-consumer --topic topic1 --bootstrap-server broker-dc2:9093 --property schema.registry.url=http://schema-registry-dc1:8081
+docker-compose exec broker-dc2 kafka-run-class kafka.tools.DumpLogSegments --print-data-log --files /var/lib/kafka/data/topic1-0/00000000000000000000.log 
