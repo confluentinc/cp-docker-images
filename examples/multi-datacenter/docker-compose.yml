@@ -1,0 +1,149 @@
+---
+version: '2'
+services:
+  zookeeper-dc1:
+    image: confluentinc/cp-zookeeper:5.0.0
+    hostname: zookeeper-dc1
+    container_name: zookeeper-dc1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  zookeeper-dc2:
+    image: confluentinc/cp-zookeeper:5.0.0
+    hostname: zookeeper-dc2
+    container_name: zookeeper-dc2
+    ports:
+      - "2182:2182"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker-dc1:
+    image: confluentinc/cp-enterprise-kafka:5.0.0
+    hostname: broker-dc1
+    container_name: broker-dc1
+    depends_on:
+      - zookeeper-dc1
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc1:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+
+  broker-dc2:
+    image: confluentinc/cp-enterprise-kafka:5.0.0
+    hostname: broker-dc2
+    container_name: broker-dc2
+    depends_on:
+      - zookeeper-dc2
+    ports:
+      - "29093:29093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc2:2182'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc2:9093,PLAINTEXT_HOST://localhost:29093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+
+  schema-registry-dc1:
+    image: confluentinc/cp-schema-registry:5.0.0
+    hostname: schema-registry-dc1
+    container_name: schema-registry-dc1
+    restart: always
+    depends_on:
+      - zookeeper-dc1
+      - broker-dc1
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc1
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
+
+  schema-registry-dc2:
+    image: confluentinc/cp-schema-registry:5.0.0
+    hostname: schema-registry-dc2
+    container_name: schema-registry-dc2
+    restart: always
+    depends_on:
+      - zookeeper-dc1
+      - broker-dc1
+      - schema-registry-dc1
+    ports:
+      - "8082:8082"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc2
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
+      SCHEMA_REGISTRY_MASTER_ELIGIBILITY: "false"
+
+  replicator-dc1-to-dc2:
+    image: confluentinc/cp-enterprise-replicator:5.0.0
+    hostname: replicator-dc1-to-dc2
+    container_name: replicator-dc1-to-dc2
+    depends_on:
+      - zookeeper-dc1
+      - broker-dc1
+      - schema-registry-dc1
+      - zookeeper-dc2
+      - broker-dc2
+      - schema-registry-dc2
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc2:9093'
+      CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc1-to-dc2
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry-dc1:8081,http://schema-registry-dc2:8082'
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_PLUGIN_PATH: /usr/share/java
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+
+  replicator-dc2-to-dc1:
+    image: confluentinc/cp-enterprise-replicator:5.0.0
+    hostname: replicator-dc2-to-dc1
+    container_name: replicator-dc2-to-dc1
+    depends_on:
+      - zookeeper-dc1
+      - broker-dc1
+      - schema-registry-dc1
+      - zookeeper-dc2
+      - broker-dc2
+      - schema-registry-dc2
+    ports:
+      - "8084:8084"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc1:9092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc2-to-dc1
+      CONNECT_REST_PORT: 8084
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_PLUGIN_PATH: /usr/share/java
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
