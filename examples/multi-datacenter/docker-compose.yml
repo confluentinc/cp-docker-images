@@ -82,6 +82,7 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc2
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
       SCHEMA_REGISTRY_MASTER_ELIGIBILITY: "false"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8082"
 
   replicator-dc1-to-dc2:
     image: confluentinc/cp-enterprise-replicator:5.0.0
@@ -100,13 +101,13 @@ services:
       CONNECT_BOOTSTRAP_SERVERS: 'broker-dc2:9093'
       CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc1-to-dc2
       CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: "group-replicator-dc1-to-dc2"
-      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc1-to-dc2
+      CONNECT_GROUP_ID: "connect-dc2"
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc2
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
-      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets-dc1-to-dc2
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets-dc2
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_TOPIC: connect-status-dc1-to-dc2
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status-dc2
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
@@ -133,13 +134,13 @@ services:
       CONNECT_BOOTSTRAP_SERVERS: 'broker-dc1:9092'
       CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc2-to-dc1
       CONNECT_REST_PORT: 8084
-      CONNECT_GROUP_ID: "group-replicator-dc2-to-dc1"
-      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc2-to-dc1
+      CONNECT_GROUP_ID: "connect-dc1"
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc1
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
-      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets-dc2-to-dc1
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets-dc1
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_TOPIC: connect-status-dc2-to-dc1
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status-dc1
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
@@ -147,3 +148,43 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_PLUGIN_PATH: /usr/share/java
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+
+  datagen-dc1:
+    image: "confluentinc/ksql-examples:5.0.0"
+    hostname: datagen-dc1
+    container_name: datagen-dc1
+    depends_on:
+      - broker-dc1
+      - schema-registry-dc1
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b broker-dc1:9092 1 20 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry-dc1 8081 90 && \
+                       sleep 10 && \
+                       /usr/bin/ksql-datagen quickstart=pageviews format=avro topic=topic1 maxInterval=5000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9092'"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
+      STREAMS_BOOTSTRAP_SERVERS: broker-dc1:9092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry-dc1
+      STREAMS_SCHEMA_REGISTRY_PORT: 8081
+
+  datagen-dc2:
+    image: "confluentinc/ksql-examples:5.0.0"
+    hostname: datagen-dc2
+    container_name: datagen-dc2
+    depends_on:
+      - broker-dc2
+      - schema-registry-dc2
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b broker-dc2:9093 1 20 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry-dc2 8082 90 && \
+                       sleep 10 && \
+                       /usr/bin/ksql-datagen quickstart=pageviews format=avro topic=topic1 maxInterval=5000 schemaRegistryUrl=http://schema-registry-dc2:8082 bootstrap-server=broker-dc2:9093'"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
+      STREAMS_BOOTSTRAP_SERVERS: broker-dc2:9093
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry-dc2
+      STREAMS_SCHEMA_REGISTRY_PORT: 8082
