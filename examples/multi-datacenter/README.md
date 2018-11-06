@@ -1,20 +1,19 @@
 # Overview
 
-This example setups an active-active multi-datacenter design.
+This example deploys an active-active multi-datacenter design.
+It is for demo only, not for production.
 
-DC1 has:
+Here is a list of Confluent Platform services and their associated ports
 
-* 1 ZooKeeper
-* 1 Broker
-* 1 Schema Registry (primary)
-* 1 Confluent Replicator copying data from DC2 to DC1
+|                | DC1                     | DC2                     |
+|----------------|-------------------------|-------------------------|
+|ZooKeeper       | 2181                    | 2182                    |
+|Broker          | 9091                    | 9092                    |
+|Schema Registry | 8081 (primary)          | 8082 (secondary)        |
+|Replicator      | 8381 (copying DC2->DC1) | 8382 (copying DC1->DC2) |
 
-DC2 has:
+There are also Docker containers with data generators that populate the topic `topic1` in each datacenter.
 
-* 1 ZooKeeper
-* 1 Broker
-* 1 Schema Registry (secondary)
-* 1 Confluent Replicator copying data from DC1 to DC2
 
 # Pre-requisites
 
@@ -23,13 +22,13 @@ DC2 has:
 
 # Running
 
-Start everything, including data generation that populates the topic `topic1`:
+Start all services, and print some messages from various topics in each datacenter:
 
 ```bash
 ./start.sh
 ```
 
-Stop everything:
+Stop all services:
 
 ```bash
 ./stop.sh
