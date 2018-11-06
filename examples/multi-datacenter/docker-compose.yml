@@ -28,12 +28,12 @@ services:
     depends_on:
       - zookeeper-dc1
     ports:
-      - "29092:29092"
+      - "29091:29091"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc1:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc1:9091,PLAINTEXT_HOST://localhost:29091
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
@@ -44,12 +44,12 @@ services:
     depends_on:
       - zookeeper-dc2
     ports:
-      - "29093:29093"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc2:2182'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc2:9093,PLAINTEXT_HOST://localhost:29093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc2:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
@@ -65,9 +65,9 @@ services:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc1
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9091'
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
-      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   schema-registry-dc2:
     image: confluentinc/cp-schema-registry:5.0.0
@@ -82,10 +82,10 @@ services:
       - "8082:8082"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-dc2
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9092'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://broker-dc1:9091'
       SCHEMA_REGISTRY_MASTER_ELIGIBILITY: "false"
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8082"
-      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   replicator-dc1-to-dc2:
     image: 368821881613.dkr.ecr.us-west-2.amazonaws.com/confluentinc/cp-enterprise-replicator:5.1.x-37
@@ -99,11 +99,11 @@ services:
       - broker-dc2
       - schema-registry-dc2
     ports:
-      - "8084:8084"
+      - "8382:8382"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc2:9093'
+      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc2:9092'
       CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc1-to-dc2
-      CONNECT_REST_PORT: 8084
+      CONNECT_REST_PORT: 8382
       CONNECT_GROUP_ID: "connect-dc2"
       CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc2
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
@@ -132,11 +132,11 @@ services:
       - broker-dc2
       - schema-registry-dc2
     ports:
-      - "8083:8083"
+      - "8381:8381"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc1:9092'
+      CONNECT_BOOTSTRAP_SERVERS: 'broker-dc1:9091'
       CONNECT_REST_ADVERTISED_HOST_NAME: replicator-dc2-to-dc1
-      CONNECT_REST_PORT: 8083
+      CONNECT_REST_PORT: 8381
       CONNECT_GROUP_ID: "connect-dc1"
       CONNECT_CONFIG_STORAGE_TOPIC: connect-configs-dc1
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
@@ -159,16 +159,18 @@ services:
     depends_on:
       - broker-dc1
       - schema-registry-dc1
+    volumes:
+      - $PWD/schema-dc1.avro:/tmp/schema-dc1.avro
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker-dc1:9092 1 20 && \
+                       cub kafka-ready -b broker-dc1:9091 1 20 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc1 8081 90 && \
                        sleep 10 && \
-                       /usr/bin/ksql-datagen quickstart=pageviews format=avro topic=topic1 maxInterval=5000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9092'"
+                       /usr/bin/ksql-datagen schema=/tmp/schema-dc1.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9091'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
-      STREAMS_BOOTSTRAP_SERVERS: broker-dc1:9092
+      STREAMS_BOOTSTRAP_SERVERS: broker-dc1:9091
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry-dc1
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
@@ -179,15 +181,17 @@ services:
     depends_on:
       - broker-dc2
       - schema-registry-dc2
-    #command: "bash -c 'echo Waiting for Kafka to be ready... && \
-    #                   cub kafka-ready -b broker-dc2:9093 1 20 && \
-    #                   echo Waiting for Confluent Schema Registry to be ready... && \
-    #                   cub sr-ready schema-registry-dc2 8082 90 && \
-    #                   sleep 10 && \
-    #                   /usr/bin/ksql-datagen quickstart=pageviews format=avro topic=topic1 maxInterval=5000 schemaRegistryUrl=http://schema-registry-dc2:8082 bootstrap-server=broker-dc2:9093'"
+    volumes:
+      - $PWD/schema-dc2.avro:/tmp/schema-dc2.avro
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b broker-dc2:9092 1 20 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry-dc2 8082 90 && \
+                       sleep 10 && \
+                       /usr/bin/ksql-datagen schema=/tmp/schema-dc2.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc2:9092'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
-      STREAMS_BOOTSTRAP_SERVERS: broker-dc2:9093
+      STREAMS_BOOTSTRAP_SERVERS: broker-dc2:9092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry-dc2
       STREAMS_SCHEMA_REGISTRY_PORT: 8082

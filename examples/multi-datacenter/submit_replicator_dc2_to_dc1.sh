@@ -9,12 +9,12 @@ DATA=$( cat << EOF
     "topic.whitelist": "topic1",
     "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-    "dest.kafka.bootstrap.servers": "broker-dc1:9092",
-    "dest.kafka.replication.factor": 1,
-    "src.kafka.bootstrap.servers": "broker-dc2:9093",
+    "src.kafka.bootstrap.servers": "broker-dc2:9092",
     "src.consumer.group.id": "replicator-dc2-to-dc1",
     "src.kafka.timestamps.producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
-    "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc2:9093",
+    "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc2:9092",
+    "dest.kafka.bootstrap.servers": "broker-dc1:9091",
+    "dest.kafka.replication.factor": 1,
     "provenance.header.enable": "true",
     "header.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "tasks.max": "1"
@@ -23,4 +23,4 @@ DATA=$( cat << EOF
 EOF
 )
 
-curl -X POST -H "${HEADER}" --data "${DATA}" http://localhost:8083/connectors
+curl -X POST -H "${HEADER}" --data "${DATA}" http://localhost:8381/connectors
