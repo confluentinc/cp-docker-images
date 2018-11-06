@@ -1,7 +1,7 @@
 # Overview
 
-This example deploys an active-active multi-datacenter design.
-It is for demo only, not for production.
+This example deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
+This is for demo purposes only, not for production.
 
 Here is a list of Confluent Platform services and their associated ports
 
@@ -14,7 +14,7 @@ Here is a list of Confluent Platform services and their associated ports
 
 # Data generation and topic names
 
-There are also Docker containers with data generators that populate the topic `topic1` in each datacenter.
+There are also Docker containers with data generators that produce data to the same topic name `topic1` in each datacenter.
 Confluent Replicator 5.1 prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1`, by using provenance information in the message headers.
 
 # Pre-requisites
@@ -35,3 +35,7 @@ Stop all services:
 ```bash
 ./stop.sh
 ```
+
+# Additional Reading
+
+Whitepaper: [Disaster Recovery for Multi-Datacenter Apache Kafka Deployments](https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/)
