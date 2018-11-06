@@ -12,8 +12,10 @@ Here is a list of Confluent Platform services and their associated ports
 |Schema Registry | 8081 (primary)          | 8082 (secondary)        |
 |Replicator      | 8381 (copying DC2->DC1) | 8382 (copying DC1->DC2) |
 
-There are also Docker containers with data generators that populate the topic `topic1` in each datacenter.
+# Data generation and topic names
 
+There are also Docker containers with data generators that populate the topic `topic1` in each datacenter.
+Confluent Replicator 5.1 prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1`, by using provenance information in the message headers.
 
 # Pre-requisites
 
