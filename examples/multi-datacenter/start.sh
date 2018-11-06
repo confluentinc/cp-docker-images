@@ -9,6 +9,8 @@ sleep 40
 echo -e "\nsleeping 60s"
 sleep 60
 
+# The remainder of this script is purely to output some interesting data to help you understand the replication
+
 echo -e "\n-----DC1-----"
 echo -e "\nlist topics:"
 docker-compose exec broker-dc1 kafka-topics --list --zookeeper zookeeper-dc1:2181
