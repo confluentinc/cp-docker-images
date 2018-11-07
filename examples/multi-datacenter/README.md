@@ -36,6 +36,19 @@ Stop all services:
 ./stop.sh
 ```
 
+# Java Consumer Applications
+
+After a disaster event occurs, consumers can switch datacenters and automatically restart consuming data in the destination cluster where they left off in the origin cluster, a capability introduced in Confluent Platform version 5.0.
+To use this capability, configure Java consumer applications with an interceptor called link:https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover[Consumer Timestamps Interceptor], which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.1-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
+Run the consumer as shown below:
+
+```bash
+git clone https://github.com/confluentinc/examples.git
+cd clients/avro
+mvn clean package
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample
+```
+
 # Additional Reading
 
 Whitepaper: [Disaster Recovery for Multi-Datacenter Apache Kafka Deployments](https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/)
