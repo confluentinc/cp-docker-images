@@ -231,7 +231,7 @@ The following examples show to extend the images.
     
         .. sourcecode:: bash
     
-            FROM confluentinc/cp-kafka-connect-base:5.0.0
+            FROM confluentinc/cp-kafka-connect-base:5.0.2
             
             RUN   confluent-hub install --no-prompt hpgrahsl/kafka-connect-mongodb:1.1.0 \
                && confluent-hub install --no-prompt microsoft/kafka-connect-iothub:0.6 \
