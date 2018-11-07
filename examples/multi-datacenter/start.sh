@@ -1,8 +1,27 @@
 #!/bin/bash
 
 docker-compose up -d
-echo "sleeping 40s"
-sleep 40
+attempt=0
+while [ $attempt -le 59 ]; do
+    attempt=$(( $attempt + 1 ))
+    echo "Waiting for server to be up (attempt: $attempt)..."
+    result=$(docker logs replicator-dc1-to-dc2)
+    if grep -q 'Finishing starting connectors' <<< $result ; then
+      echo "Replicator dc1-to-dc2 is up!"
+      break
+    fi
+    sleep 2
+done
+while [ $attempt -le 59 ]; do
+    attempt=$(( $attempt + 1 ))
+    echo "Waiting for server to be up (attempt: $attempt)..."
+    result=$(docker logs replicator-dc2-to-dc1)
+    if grep -q 'Finishing starting connectors' <<< $result ; then
+      echo "Replicator dc2-to-dc1 is up!"
+      break
+    fi
+    sleep 2
+done
 
 ./submit_replicator_dc1_to_dc2.sh
 ./submit_replicator_dc2_to_dc1.sh

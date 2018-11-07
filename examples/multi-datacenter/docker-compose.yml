@@ -162,7 +162,7 @@ services:
     volumes:
       - $PWD/schema-dc1.avro:/tmp/schema-dc1.avro
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker-dc1:9091 1 20 && \
+                       cub kafka-ready -b broker-dc1:9091 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc1 8081 90 && \
                        sleep 10 && \
@@ -184,7 +184,7 @@ services:
     volumes:
       - $PWD/schema-dc2.avro:/tmp/schema-dc2.avro
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker-dc2:9092 1 20 && \
+                       cub kafka-ready -b broker-dc2:9092 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc2 8082 90 && \
                        sleep 10 && \
