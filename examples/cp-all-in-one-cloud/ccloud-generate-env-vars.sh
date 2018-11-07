@@ -20,7 +20,7 @@
 # This code reads the Confluent Cloud configuration in $HOME/.ccloud/config
 # and writes the ENV variables used by Docker Compose to a file called 'delta_configs/env.delta'
 #
-# Reference: https://github.com/confluentinc/quickstart-demos/blob/5.0.0-post/ccloud/ccloud-generate-cp-configs.sh
+# Reference: https://github.com/confluentinc/quickstart-demos/blob/5.0.1-post/ccloud/ccloud-generate-cp-configs.sh
 #
 ###############################################################################
 
