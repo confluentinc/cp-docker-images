@@ -1,0 +1,59 @@
+---
+version: '2'
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22888:23888
+    network_mode: host
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-ssl-1:
+    image: confluentinc/cp-kafka:latest
+    network_mode: host
+    depends_on:
+      - zookeeper-1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:19092
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore_creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+    volumes:
+      - ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-mqtt:
+    image: confluentinc/cp-kafka-mqtt:latest
+    network_mode: host
+    depends_on:
+      - kafka-ssl-1
+    environment:
+      KAFKA_MQTT_BOOTSTRAP_SERVERS: SSL://localhost:19092
+      KAFKA_MQTT_CONFLUENT_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MQTT_TOPIC_REGEX_LIST: temperature:.*
+      KAFKA_MQTT_PRODUCER_SECURITY_PROTOCOL: SSL
+      KAFKA_MQTT_PRODUCER_SSL_KEYSTORE_LOCATION: /etc/confluent-kafka-mqtt/secrets/kafka.producer.keystore.jks
+      KAFKA_MQTT_PRODUCER_SSL_KEYSTORE_PASSWORD: confluent
+      KAFKA_MQTT_PRODUCER_SSL_KEY_PASSWORD: confluent
+      KAFKA_MQTT_PRODUCER_SSL_TRUSTSTORE_LOCATION: /etc/confluent-kafka-mqtt/secrets/kafka.producer.truststore.jks
+      KAFKA_MQTT_PRODUCER_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_MQTT_PRODUCER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+    volumes:
+      - ${KAFKA_SSL_SECRETS_DIR}:/etc/confluent-kafka-mqtt/secrets
+    extra_hosts:
+      - "moby:127.0.0.1"
