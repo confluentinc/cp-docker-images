@@ -25,4 +25,4 @@ cub kafka-ready \
     "${KAFKA_MQTT_CUB_KAFKA_MIN_BROKERS:-1}" \
     "${KAFKA_MQTT_CUB_KAFKA_TIMEOUT:-40}" \
     -b "${KAFKA_MQTT_BOOTSTRAP_SERVERS}" \
-    --config /etc/"${COMPONENT}"/admin.properties
+    --config /etc/"confluent-${COMPONENT}"/admin.properties
