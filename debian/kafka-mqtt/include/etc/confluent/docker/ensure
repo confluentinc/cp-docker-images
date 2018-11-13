@@ -24,4 +24,5 @@ echo "===> Check if Kafka is healthy ..."
 cub kafka-ready \
     "${KAFKA_MQTT_CUB_KAFKA_MIN_BROKERS:-1}" \
     "${KAFKA_MQTT_CUB_KAFKA_TIMEOUT:-40}" \
-    -b "${KAFKA_MQTT_BOOTSTRAP_SERVERS}"
+    -b "${KAFKA_MQTT_BOOTSTRAP_SERVERS}" \
+    --config /etc/"${COMPONENT}"/admin.properties
