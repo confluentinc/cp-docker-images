@@ -17,7 +17,6 @@ Installation Recipes
        connect-avro-jdbc
        automatic-data-balancing
        replicator
-       secured-mqtt
 
 
 You should consider the following before using the Docker images.
