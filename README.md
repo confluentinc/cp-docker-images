@@ -7,11 +7,9 @@ Full documentation for using the images can be found [here](http://docs.confluen
 
 # Deprecation Notice
 
-This is used for building images for version 4.1.x or lower, and should not be used for adding new images. If any new
-images is added, please make sure to add to our [Release steps](https://confluentinc.atlassian.net/wiki/x/ywE6Cg) as
-they are hardcoded for now (fix is coming soon).
+This is used for building images for version 4.1.x or lower, and should not be used for adding new images.
 
-For any new images, they should be added to the repo itself by following [Docker Build Integration](https://confluentinc.atlassian.net/wiki/x/PIDaC)
+For any new images, they should be added as part of the project repo using [dockerfile-maven-plugin](https://github.com/spotify/dockerfile-maven).
 
 # Networking and Kafka on Docker
 
