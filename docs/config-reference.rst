@@ -512,6 +512,31 @@ Additional settings that are optional and maybe passed to Replicator Executable 
 
 The above optional, non-file, command line settings as well as any other settings for Replicator can be passed to Replicator Executable through the required or optional files listed above as well.
 
+------------------------------
+Kafka MQTT Proxy Configuration
+------------------------------
+
+Required Kafka MQTT Proxy Settings
+""""""""""""""""""""""""""""""""""
+The following settings must be passed to run the Kafka MQTT Proxy Docker image.
+
+``KAFKA_MQTT_BOOTSTRAP_SERVERS``
+    A list of host/port pairs to use for establishing the initial connection to the Kafka cluster.
+
+``KAFKA_MQTT_TOPIC_REGEX_LIST``
+    A comma-separated list of pairs of type '<kafka topic>:<regex>' that is used to map MQTT topics to Kafka topics.
+
+Optional Kafka MQTT Proxy Settings
+""""""""""""""""""""""""""""""""""
+All other settings for Kafka MQTT Proxy like security, network, producer overrides can be passed to
+the Docker images as environment variables. The names of these environment variables are derived by replacing ``.`` with ``_``,
+converting the resulting string to uppercase and prefixing it with ``KAFKA_MQTT_``. For example, if you need to set
+``listeners``, the environment variable name would be ``KAFKA_MQTT_LISTENERS``.
+In order to configure producer, ``KAFKA_MQTT_PRODUCER_`` prefix should be used.
+E.g., to set producer's client id, pass ``KAFKA_MQTT_PRODUCER_CLIENT_ID`` environment variable.
+
+The image will then convert these environment variables to corresponding Kafka MQTT Proxy config variables.
+
 -----------
 KSQL Server
 -----------
