@@ -1,7 +1,7 @@
 BUILD_NUMBER := 1
 CP_VERSION := 3.2.5
 
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka kafka-streams-examples
+COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-kafka
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
@@ -134,9 +134,6 @@ test-enterprise-kafka: venv clean-containers build-debian build-test-images
 test-control-center: venv clean-containers build-debian build-test-images
 	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_control_center.py -v
 
-test-kafka-streams-examples: venv clean-containers build-debian build-test-images
-	IMAGE_DIR=$(pwd) venv/bin/py.test tests/test_kafka_streams_examples.py -v
-
 test-all: \
 	venv \
 	clean \
@@ -150,5 +147,4 @@ test-all: \
 	test-enterprise-replicator \
 	test-schema-registry \
 	test-kafka-rest \
-	test-control-center \
-	test-kafka-streams-examples
+	test-control-center
