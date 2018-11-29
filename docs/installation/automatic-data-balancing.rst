@@ -3,108 +3,36 @@
 Automatic Data Balancing on Docker
 ==================================
 
-This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
+This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalancer>`, which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
 
-.. include:: includes/docker-tutorials.rst
-    :start-line: 2
+.. include:: includes/start-download.rst
 
-#. Start the services by using the example Docker Compose file.  Navigate to ``cp-docker-images/examples/enterprise-kafka``, where it is located:
+#.  Clone the Docker images repository, checkout the |release| branch, and navigate to the directory with the multi-datacenter example.
 
-   .. codewithvars:: bash
+    .. codewithvars:: bash
 
-    cd cp-docker-images/examples/enterprise-kafka
+        git clone https://github.com/confluentinc/cp-docker-images
+        git checkout |release_post_branch|
+        cd cp-docker-images/examples/cp-all-in-one/
 
 
-#. Start up the services.  The Docker Compose file has configuration for one |zk| and 6 Kafka brokers. These brokers are configured to be on 2 racks. We will first start one rack (with 3 brokers) and create a topic with sample data and run the ADB CLI tool to balance the cluster. After this step, we will walk you through a tutorial for adding another rack of brokers and running the ADB CLI tool to rebalance the data across the new added brokers.
+#.  Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
+    Kafka cluster and a |kconnect| cluster.
 
-   Start |zk| and first rack of brokers using the Docker Compose commands.
+    ::
 
-   .. codewithvars:: bash
+        docker-compose up -d
 
-      docker-compose create
-
-   You should see the following
-
-   .. codewithvars:: bash
-
-      Creating enterprisekafka_zookeeper_1
-      Creating enterprisekafka_kafka-6_1
-      Creating enterprisekafka_kafka-4_1
-      Creating enterprisekafka_kafka-5_1
-      Creating enterprisekafka_kafka-2_1
-      Creating enterprisekafka_kafka-3_1
-      Creating enterprisekafka_kafka-1_1
-
-   Start the services
-
-   .. codewithvars:: bash
-
-      docker-compose start zookeeper kafka-1 kafka-2 kafka-3
-
-   You should see the following
-
-   .. codewithvars:: bash
-
-      Starting zookeeper ... done
-      Starting kafka-2 ... done
-      Starting kafka-3 ... done
-      Starting kafka-1 ... done
-
-   Make sure the services are up and running:
-
-   .. codewithvars:: bash
-
-      docker-compose ps
-
-   You should see the following:
-
-   .. codewithvars:: bash
-
-        Name                        Command            State    Ports
-      ------------------------------------------------------------------------
-      enterprisekafka_kafka-1_1     /etc/confluent/docker/run   Up
-      enterprisekafka_kafka-2_1     /etc/confluent/docker/run   Up
-      enterprisekafka_kafka-3_1     /etc/confluent/docker/run   Up
-      enterprisekafka_kafka-4_1     /etc/confluent/docker/run   Exit 0
-      enterprisekafka_kafka-5_1     /etc/confluent/docker/run   Exit 0
-      enterprisekafka_kafka-6_1     /etc/confluent/docker/run   Exit 0
-      enterprisekafka_zookeeper_1   /etc/confluent/docker/run   Up
-
-   Now check the |zk| logs to verify that |zk| is healthy.
-
-   .. codewithvars:: bash
-
-      docker-compose logs zookeeper | grep -i binding
-
-   You should see the following in your terminal window:
-
-   .. codewithvars:: bash
-
-      zookeeper_1  | [2016-10-21 22:15:22,494] INFO binding to port 0.0.0.0/0.0.0.0:22181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
-
-   Next, check the Kafka logs for the destination cluster to verify that broker is healthy.
-
-   .. codewithvars:: bash
-
-      docker-compose logs kafka-1 | grep -i started
-
-   You should see message a message that looks like the following:
-
-   .. codewithvars:: bash
-
-      kafka-1_1    | [2016-10-21 22:19:50,964] INFO [Socket Server on Broker 1], Started 1 acceptor threads (kafka.network.SocketServer)
-      kafka-1_1    | [2016-10-21 22:19:51,300] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
-      ....
+    This starts the |cp| with separate containers for all |cp| components.
 
 
 #. Now that the brokers are up, we will create a test topic called "adb-test".
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --create --topic adb-test --partitions 20 --replication-factor 3 --if-not-exists --zookeeper localhost:22181
+    docker-compose exec broker \
+    kafka-topics --create --topic adb-test --partitions 20 --replication-factor 1 \
+    --if-not-exists --zookeeper zookeeper:22181
 
    You should see the following output in your terminal window:
 
@@ -116,10 +44,8 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic adb-test --zookeeper localhost:22181
+    docker-compose exec broker \
+    kafka-topics --describe --topic adb-test --zookeeper localhost:22181
 
    You should see the following output in your terminal window:
 
@@ -151,11 +77,9 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:|release| \
-      bash -c 'kafka-producer-perf-test --topic adb-test --num-records 2000000 --record-size 1000 --throughput 100000 --producer-props bootstrap.servers=localhost:19092'
+    docker-compose exec broker \
+    bash -c 'kafka-producer-perf-test --topic adb-test --num-records 2000000 \
+    --record-size 1000 --throughput 100000 --producer-props bootstrap.servers=localhost:19092'
 
    This command will use the built-in Kafka Performance Producer to produce 2 GB of sample data to the topic. Upon running it, you should see the following:
 
@@ -178,11 +102,9 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-enterprise-kafka:|release| \
-      bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
+    docker-compose exec broker \
+    bash -c "confluent-rebalancer execute --zookeeper localhost:22181 \
+    --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
 
    You should see the rebalancing start and should see the following:
 
@@ -219,11 +141,8 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-enterprise-kafka:|release| \
-      bash -c "confluent-rebalancer status --zookeeper localhost:22181"
+    docker-compose exec broker \
+    bash -c "confluent-rebalancer status --zookeeper localhost:22181"
 
    If you see the a message like ``7 partitions are being rebalanced``, wait for 15-20 seconds and rerun the above command until you see ``No rebalance is currently in progress``.  This means that the rebalance action has completed successfully.
 
@@ -231,11 +150,8 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-enterprise-kafka:|release| \
-      bash -c "confluent-rebalancer finish --zookeeper localhost:22181"
+    docker-compose exec broker \
+    bash -c "confluent-rebalancer finish --zookeeper localhost:22181"
 
    You should see the following in the logs:
 
@@ -257,10 +173,8 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic adb-test --zookeeper localhost:22181
+    docker-compose exec broker \
+    kafka-topics --describe --topic adb-test --zookeeper localhost:22181
 
    You should see that partitions are spread across all of the brokers (i.e you should see some replicas and leaders assigned to brokers 4, 5, or 6).
 
@@ -295,11 +209,9 @@ This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows yo
 
    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-enterprise-kafka:|release| \
-      bash -c "confluent-rebalancer execute --zookeeper localhost:22181 --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
+    docker-compose exec broker \
+    bash -c "confluent-rebalancer execute --zookeeper localhost:22181 \
+    --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
 
 #. Feel free to experiment with the `confluent-rebalance` command on your own now. When you are done, use the following commands to shutdown all the components.
 

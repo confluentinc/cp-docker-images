@@ -1,10 +1,12 @@
-Monitoring Docker
------------------
+Monitoring Docker using JMX
+---------------------------
 
-Using JMX
-~~~~~~~~~~~~~
+You can monitor |cp| Docker deployments by using Java Management Extensions (JMX).
 
-For JMX to work with Docker containers, the following properties must be set:
+Configure Environment
+"""""""""""""""""""""
+
+To use JMX with Docker containers, you must set the following properties:
 
 .. codewithvars:: bash
 
@@ -14,20 +16,19 @@ For JMX to work with Docker containers, the following properties must be set:
     com.sun.management.jmxremote.port=<JMX_PORT>
 
 Note about ``hostname``:
-
   The JMX client needs to be able to connect to ``java.rmi.server.hostname``.
   The default for bridged network is the bridged IP so you will only be able to connect from another Docker container.
   For host network, this is the IP that the hostname on the host resolves to.
 
   The hostname is set to ``hostname -i`` in the Docker container. If you have more that one network configured for the container, ``hostname -i`` gives you all the IPs, the default is to pick the first IP (or network).
 
-Security on JMX
-"""""""""""""""
+Configure Security
+""""""""""""""""""
 
 To set security on JMX, you can follow the SSL and authentication sections in this guide: https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html.
 
-Kafka and |zk|
-"""""""""""""""""
+Configure Kafka and |zk|
+""""""""""""""""""""""""
 
 Settings
 ````````
