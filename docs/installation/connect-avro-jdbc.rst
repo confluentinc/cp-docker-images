@@ -14,8 +14,8 @@ You must first startup up |zk|, Kafka and |sr|.
 It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our :ref:`documentation on Docker external volumes <external_volumes>` for an example of how to add mounted volumes to the host machine.
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 11
-    :end-line: 19
+    :start-after: install-run
+    :end-before: setting-up-3-node
 
 Starting Up Confluent Platform and Kafka Connect
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -3,10 +3,9 @@
 Automatic Data Balancing on Docker
 ==================================
 
-This tutorial runs Confluent Auto Data Balancing (ADB) on Kafka, which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
+This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalancer>`, which allows you to shift data to create an even workload across your cluster.  By the end of this tutorial, you will have successfully run Confluent Auto Data Balancing CLI to rebalance data after adding and removing brokers.
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 2
 
 #. Start the services by using the example Docker Compose file.  Navigate to ``cp-docker-images/examples/enterprise-kafka``, where it is located:
 

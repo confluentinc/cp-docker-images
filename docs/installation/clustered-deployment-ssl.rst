@@ -6,38 +6,14 @@ Clustered Deployment Using SSL on Docker
 This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL security enabled on Docker.
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 2
-    :end-line: 19
+    :end-before: setting-up-3-node
 
 .. _docker-client-setup-3-node-ssl:
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 21
+    :start-after: setting-up-3-node
 
-#. Generate Credentials
-
-   You must generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore
-   for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-cluster-ssl/secrets`` to generate
-   them. For production, use `these scripts <https://github.com/confluentinc/confluent-platform-security-tools>`_ for
-   generating certificates.
-
-   This example uses the ``create-certs.sh`` that is available in the ``examples/kafka-cluster-ssl/secrets`` directory in
-   the cp-docker-images repo. Make sure that you have OpenSSL and JDK installed. For more information about security, see
-   the :ref:`security documentation <security>`.
-
-   .. codewithvars:: bash
-
-    cd $(pwd)/examples/kafka-cluster-ssl/secrets
-    ./create-certs.sh
-    (Type yes for all "Trust this certificate? [no]:" prompts.)
-    cd -
-
-   Set the environment variable for the secrets directory. This is used in later commands. Make sure that you are in the
-   ``cp-confluent-images`` directory.
-
-   .. codewithvars:: bash
-
-    export KAFKA_SSL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-ssl/secrets
+#. .. include:: ../includes/create-secret.rst
 
 #. Start Up a 3-node |zk| Ensemble by running the three commands below.
 

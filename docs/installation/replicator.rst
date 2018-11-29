@@ -3,140 +3,54 @@
 Replicator Tutorial on Docker
 =============================
 
-In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a
+This topic provides a tutorial for running Replicator which replicates data from two source Kafka clusters to a
 destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data
 for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka
 Connect cluster because Replicator is built on Connect.
 
-.. include:: includes/docker-tutorials.rst
-    :start-line: 2
+Step 1: Download and Start Confluent Platform Using Docker
+----------------------------------------------------------
 
-#. Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
-   Kafka cluster and a Kafka Connect cluster. Navigate to ``cp-docker-images/examples/enterprise-replicator``, where it is located:
+#.  Clone the |cp| Docker Images GitHub Repository and checkout the |release| branch.
 
-   .. codewithvars:: bash
+    .. cocewithvars:: bash
 
-    cd cp-docker-images/examples/enterprise-replicator
+        git clone https://github.com/confluentinc/cp-docker-images && git checkout |release|
 
-#. Start the Kafka and Kafka Connect clusters using Docker Compose ``create`` and ``start`` commands.
+#.  Navigate to ``enterprise-replicator`` directory.
 
-   .. codewithvars:: bash
+    ::
 
-    docker-compose create
+        cd cp-docker-images/examples/cp-all-in-one/
 
-   You should see the following
+#.  Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
+    Kafka cluster and a |kconnect| cluster. Start |cp| specifying two options: (``-d``) to run in detached mode and
+    (``--build``) to build the |kconnect| image with the source connector ``kafka-connect-datagen`` from Confluent Hub.
 
-   .. codewithvars:: bash
+    ::
 
-    Creating enterprisereplicator_kafka-1-src-b_1
-    Creating enterprisereplicator_kafka-1-src-a_1
-    Creating enterprisereplicator_kafka-2-dest_1
-    Creating enterprisereplicator_zookeeper-src-b_1
-    Creating enterprisereplicator_zookeeper-src-a_1
-    Creating enterprisereplicator_connect-host-1_1
-    Creating enterprisereplicator_kafka-2-src-a_1
-    Creating enterprisereplicator_kafka-2-src-b_1
-    Creating enterprisereplicator_kafka-1-dest_1
-    Creating enterprisereplicator_zookeeper-dest_1
-    Creating enterprisereplicator_connect-host-2_1
+        docker-compose up -d --build
 
-   Start all the services
+    This starts the |cp| with separate containers for all |cp| components. Your output should resemble the following:
 
-   .. codewithvars:: bash
+    ::
 
-    docker-compose start
-
-   You should see the following
-
-   .. codewithvars:: bash
-
-    Starting kafka-1-src-b ... done
-    Starting kafka-1-src-a ... done
-    Starting kafka-2-dest ... done
-    Starting zookeeper-src-b ... done
-    Starting zookeeper-src-a ... done
-    Starting connect-host-1 ... done
-    Starting kafka-2-src-a ... done
-    Starting kafka-2-src-b ... done
-    Starting kafka-1-dest ... done
-    Starting zookeeper-dest ... done
-    Starting connect-host-2 ... done
-
-   Before we move on, let's make sure the services are up and running:
-
-   .. codewithvars:: bash
-
-    docker-compose ps
-
-   You should see the following:
-
-   .. codewithvars:: bash
-
-      Name                             Command            State   Ports
-    ----------------------------------------------------------------------------------
-    enterprisereplicator_connect-host-1_1    /etc/confluent/docker/run   Up
-    enterprisereplicator_connect-host-2_1    /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-1-dest_1      /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-1-src-a_1     /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-1-src-b_1     /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-2-dest_1      /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-2-src-a_1     /etc/confluent/docker/run   Up
-    enterprisereplicator_kafka-2-src-b_1     /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-dest_1    /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-src-a_1   /etc/confluent/docker/run   Up
-    enterprisereplicator_zookeeper-src-b_1   /etc/confluent/docker/run   Up
-
-   Now check the |zk| logs for destination cluster to verify that |zk| is healthy.
-
-   .. codewithvars:: bash
-
-    docker-compose logs zookeeper-dest | grep -i binding
-
-   You should see the following in your terminal window:
-
-   .. codewithvars:: bash
-
-    zookeeper-dest_1   | [2016-10-20 17:31:40,784] INFO binding to port 0.0.0.0/0.0.0.0:42181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
-
-   Next, check the Kafka logs for the destination cluster to verify that it is healthy:
-
-   .. codewithvars:: bash
-
-    docker-compose logs kafka-1-dest | grep -i started
-
-   You should see message a message that looks like the following:
-
-   .. codewithvars:: bash
-
-    kafka-1-dest_1     | [2016-10-20 17:31:45,364] INFO [Socket Server on Broker 1002], Started 1 acceptor threads (kafka.network.SocketServer)
-    kafka-1-dest_1     | [2016-10-20 17:31:45,792] INFO [Kafka Server 1002], started (kafka.server.KafkaServer)
-    ....
-
-   Similarly verify that the ``source-a`` and ``source-b`` Kafka clusters are ready by running the following commands and verifying the output as described in the steps above.
-
-   .. codewithvars:: bash
-
-    docker-compose logs zookeeper-src-a | grep -i binding
-    docker-compose logs zookeeper-src-b | grep -i binding
-    docker-compose logs kafka-1-src-a | grep -i started
-    docker-compose logs kafka-1-src-b | grep -i started
-
-   Now, you can make sure that the Connect worker is up by running the following command to search the logs:
-
-   .. codewithvars:: bash
-
-    docker-compose logs connect-host-1 | grep started
-
-   You should see the following
-
-   .. codewithvars:: bash
-
-    connect-host-1_1   | [2016-10-20 17:31:48,942] INFO Kafka Connect started (org.apache.kafka.connect.runtime.Connect)
-    connect-host-1_1   | [2016-10-20 17:31:50,403] INFO Worker started (org.apache.kafka.connect.runtime.Worker)
-    connect-host-1_1   | [2016-10-20 17:31:50,988] INFO Herder started (org.apache.kafka.connect.runtime.distributed.DistributedHerder)
+                                Name                                    Command            State   Ports
+        ------------------------------------------------------------------------------------------------
+        enterprise-replicator_connect-host-1_1_a0bc370f5955    /etc/confluent/docker/run   Up
+        enterprise-replicator_connect-host-2_1_e3363e6942ba    /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-1-dest_1_1ce7e46d4381      /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-1-src-a_1_de9873d9cac8     /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-1-src-b_1_6b16aa08de8f     /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-2-dest_1_5fae4dbf1798      /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-2-src-a_1_ee94494f36cb     /etc/confluent/docker/run   Up
+        enterprise-replicator_kafka-2-src-b_1_bfa537044701     /etc/confluent/docker/run   Up
+        enterprise-replicator_zookeeper-dest_1_1e1f0a8656bd    /etc/confluent/docker/run   Up
+        enterprise-replicator_zookeeper-src-a_1_9eea9b7b010d   /etc/confluent/docker/run   Up
+        enterprise-replicator_zookeeper-src-b_1_497d7053822c   /etc/confluent/docker/run   Up
 
 
-#. You will now create our first Kafka Connect Replicator connector for replicating topic "foo" from source cluster ``source-a``.
+#. You will now create your first Kafka Connect Replicator connector for replicating topic "foo" from source cluster ``source-a``.
 
    First, create a topic named ``foo``.
 
@@ -171,7 +85,7 @@ Connect cluster because Replicator is built on Connect.
     Topic: foo     	Partition: 1   	Leader: 1001   	Replicas: 1001,1002    	Isr: 1001,1002
     Topic: foo     	Partition: 2   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
 
-#. Next, we'll try generating some data to our new topic:
+#. Next, you'll try generating some data to your new topic:
 
    .. codewithvars:: bash
 
@@ -193,7 +107,7 @@ Connect cluster because Replicator is built on Connect.
 
     docker-compose exec connect-host-1 bash
 
-   You should see a bash prompt now. We will call this the ``docker exec`` command prompt:
+   You should see a bash prompt now. you will call this the ``docker exec`` command prompt:
 
    .. codewithvars:: bash
 
@@ -254,7 +168,7 @@ Connect cluster because Replicator is built on Connect.
       confluentinc/cp-kafka:|release| \
       kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --from-beginning --max-messages 1000
 
-   If everything is working as expected, each of the original messages we produced should be written back out:
+   If everything is working as expected, each of the original messages you produced should be written back out:
 
    .. codewithvars:: bash
 
@@ -281,7 +195,7 @@ Connect cluster because Replicator is built on Connect.
     Topic: foo.replica     	Partition: 1   	Leader: 1001   	Replicas: 1001,1002    	Isr: 1001,1002
     Topic: foo.replica     	Partition: 2   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
 
-#. Now, we will replicate another topic from a different source cluster.
+#. Now, you will replicate another topic from a different source cluster.
 
    First, create a new topic on the cluster ``source-b`` and add some data to it. Run the following commands to create and verify the topic. You should see output similar to steps 4 and 5 above:
 

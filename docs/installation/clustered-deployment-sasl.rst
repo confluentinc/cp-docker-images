@@ -6,46 +6,15 @@ Clustered Deployment Using SASL and SSL on Docker
 This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL.  By the end of this tutorial, you will have successfully installed and run a simple deployment with SSL and SASL security enabled on Docker. 
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 2
-    :end-line: 19
+    :end-before: setting-up-3-node
 
 
 .. _docker-client-setup-3-node-sasl:
 
 .. include:: includes/docker-tutorials.rst
-    :start-line: 21
+    :start-after: setting-up-3-node
 
-#. Generate Credentials
-
-   You must generate CA certificates (or use yours if you already have one) and then generate a keystore and truststore
-   for brokers and clients. You can use the ``create-certs.sh`` script in ``examples/kafka-cluster-ssl/secrets`` to generate
-   them. For production, use `these scripts <https://github.com/confluentinc/confluent-platform-security-tools>`_ for
-   generating certificates.
-
-   For this example, we will use the ``create-certs.sh`` available in the ``examples/kafka-cluster-sasl/secrets`` directory in cp-docker-images. See "security" section for more details on security. Make sure that you have OpenSSL and JDK installed.
-
-   .. codewithvars:: bash
-
-    cd $(pwd)/examples/kafka-cluster-sasl/secrets
-    ./create-certs.sh
-    (Type yes for all "Trust this certificate? [no]:" prompts.)
-    cd -
-
-   Set the environment variable for secrets directory. We will use this later in our commands. Make sure you are in the ``cp-docker-images`` directory.
-
-   .. codewithvars:: bash
-
-        export KAFKA_SASL_SECRETS_DIR=$(pwd)/examples/kafka-cluster-sasl/secrets
-
-   To configure SASL, all your nodes will need to have a proper hostname. It is not advisable to use ``localhost`` as the hostname.
-
-   You must create an entry in ``/etc/hosts`` with hostname ``quickstart.confluent.io`` that points to ``eth0`` IP. In Linux, run the below commands on the Linux host. If running Docker Machine (eg for Mac or Windows), you will need to SSH into the VM and run the below commands as root. You can SSH into the Docker Machine VM by running ``docker-machine ssh confluent``.
-
-   .. codewithvars:: bash
-
-    export ETH0_IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
-
-    echo ${ETH0_IP} quickstart.confluent.io >> /etc/hosts
+#. .. include:: ../includes/create-secret.rst
 
 #. Build and run the Kerberos image.
 

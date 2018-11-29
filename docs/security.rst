@@ -1,4 +1,4 @@
-.. _security_with_docker :
+.. _security_with_docker:
 
 Docker Security
 ===============

@@ -5,40 +5,9 @@ Clustered Deployment on Docker
 
 This tutorial runs a three-node Kafka cluster and |zk| ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
-It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
+It is worth noting that you will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
 
-Installing and Running Docker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-For this tutorial, we'll run Docker using the Docker client.  If you are interested in information on using Docker Compose to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose>`.
-
-To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.  The |cp| Docker Images require Docker version 1.11 or greater.
-
-
-.. _docker-setup-3-node:
-
-Docker Client: Setting Up a Three Node Kafka Cluster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you're running on Windows or macOS, you'll need to use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.  Docker runs natively on Linux, so the Docker host will be your local machine if you go that route.  If you are running on Mac or Windows, be sure to allocate at least 4 GB of ram to the Docker Machine.
-
-Now that we have all of the Docker dependencies installed, we can create a Docker machine and begin starting up |cp|.
-
-.. note:: In the following steps we'll be running each Docker container in detached mode.  However, we'll also demonstrate
-          how access the logs for a running container.  If you prefer to run the containers in the foreground, you can do
-          so by replacing the ``-d`` flags with ``-it``.
-
-#. Create and configure the Docker machine.
-
-   .. codewithvars:: bash
-
-        docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
-
-   Next, configure your terminal window to attach it to your new Docker Machine:
-
-   .. codewithvars:: bash
-
-        eval $(docker-machine env confluent)
+.. include:: includes/docker-tutorials.rst
 
 #. Start Up a 3-node |zk| Ensemble
 
@@ -110,7 +79,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         Mode: leader
         Mode: follower
 
-#. Now that |zk| is up and running, we can fire up a three node Kafka cluster.
+#. Now that |zk| is up and running, you can fire up a three node Kafka cluster.
 
    .. codewithvars:: bash
 
@@ -213,7 +182,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
       Produced 42 messages.
 
-   It looked like things were successfully written, but let's try reading the messages back using the Console Consumer and make sure they're all accounted for.
+   It looked like things were successfully written, but here you can try reading the messages back using the Console Consumer and make sure they're all accounted for.
 
    .. codewithvars:: bash
 
@@ -264,7 +233,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
 
        docker-compose up
 
-   In another terminal window, go to the same directory (kafka-cluster).  Before we move on, let's make sure the services are up and running:
+   In another terminal window, go to the same directory (kafka-cluster).  Before you move on, make sure the services are up and running:
 
    .. codewithvars:: bash
 
