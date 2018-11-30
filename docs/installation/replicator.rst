@@ -8,16 +8,8 @@ destination Kafka cluster.  By the end of this tutorial, you will have successfu
 for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka
 Connect cluster because Replicator is built on Connect.
 
-Prerequisites:
-    - .. include:: ../includes/docker-version.rst
-    - Git
+.. include:: includes/start-download.rst
 
-
-Step 1: Download and Start |cp| Using Docker
---------------------------------------------
-
-#.  In `Docker’s advanced settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated
-    to Docker to at least 8 GB (default is 2 GB).
 #.  Clone the Docker images repository, navigate to the examples directory, and checkout the |release| branch.
 
     .. codewithvars:: bash
@@ -28,7 +20,7 @@ Step 1: Download and Start |cp| Using Docker
 
 #.  Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
     Kafka cluster and a |kconnect| cluster. Start |cp| specifying two options: (``-d``) to run in detached mode and
-    (``--build``) to build the |kconnect| image with the source connector ``kafka-connect-datagen`` from Confluent Hub.
+    (``--build``) to build.
 
     ::
 
@@ -62,11 +54,9 @@ from source cluster ``source-a``.
 
     .. codewithvars:: bash
 
-        docker run \
-          --net=host \
-          --rm confluentinc/cp-kafka:|release| \
-          kafka-topics --create --topic foo --partitions 3 --replication-factor 2 \
-          --if-not-exists --zookeeper localhost:22181
+        docker run --net=host --rm confluentinc/cp-kafka:5.0.0 kafka-topics \
+        --create --topic foo --partitions 3 --replication-factor 2 \
+        --if-not-exists --zookeeper localhost:22181
 
     You should see the following output in your terminal window:
 
@@ -79,12 +69,9 @@ from source cluster ``source-a``.
 
     .. codewithvars:: bash
 
-        docker run \
-          --net=host \
-          --rm \
-          confluentinc/cp-kafka:|release| \
-          bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 \
-          --broker-list localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
+        docker run --net=host --rm confluentinc/cp-kafka:|release| \
+        bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list \
+        localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
 
     This command will use the built-in Kafka Console Producer to produce 100 simple messages to the topic. After running,
     you should see the following:
@@ -153,10 +140,11 @@ In this step, you try out some common operations. Now that the connector is up a
     .. codewithvars:: bash
 
         docker run \
-          --net=host \
-          --rm \
-          confluentinc/cp-kafka:|release| \
-          kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --from-beginning --max-messages 1000
+        --net=host \
+        --rm \
+        confluentinc/cp-kafka:|release| \
+        kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica \
+        --from-beginning --max-messages 1000
 
     If everything is working as expected, each of the original messages you produced should be written back out:
 
@@ -169,30 +157,35 @@ In this step, you try out some common operations. Now that the connector is up a
 
 #.  Replicate another topic from a different source cluster.
 
-    #.  Create a new topic on the cluster ``source-b`` and add some data to it. Run the following commands to create and verify the topic.
-        You should see output similar to the previous steps:
+    #.  Create a new topic on the cluster ``source-b``.
 
         .. codewithvars:: bash
 
             docker run \
-              --net=host \
-              --rm confluentinc/cp-kafka:|release| \
-              kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:32181
+            --net=host \
+            --rm confluentinc/cp-kafka:|release| \
+            kafka-topics --create --topic bar --partitions 3 --replication-factor 2 \
+            --if-not-exists --zookeeper localhost:32181
+
+    #.  Verify the topic.
 
         .. codewithvars:: bash
 
             docker run \
-              --net=host \
-              --rm confluentinc/cp-kafka:|release| \
-              kafka-topics --describe --topic bar --zookeeper localhost:32181
+            --net=host \
+            --rm confluentinc/cp-kafka:|release| \
+            kafka-topics --describe --topic bar --zookeeper localhost:32181
+
+    #.  Add some data to it.
 
         .. codewithvars:: bash
 
             docker run \
-              --net=host \
-              --rm \
-              confluentinc/cp-kafka:|release| \
-              bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
+            --net=host \
+            --rm \
+            confluentinc/cp-kafka:|release| \
+            bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 \
+            --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
 
     #.  Exec into the Kafka Connect container and run the replicator connector. You should see output similar to the previous step.
 
@@ -237,11 +230,11 @@ In this step, you try out some common operations. Now that the connector is up a
     .. codewithvars:: bash
 
             docker run \
-              --net=host \
-              --rm \
-              confluentinc/cp-kafka:|release| \
-              kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica \
-              --from-beginning --max-messages 1000
+            --net=host \
+            --rm \
+            confluentinc/cp-kafka:|release| \
+            kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica \
+            --from-beginning --max-messages 1000
 
     Verify that the destination topic was created properly. You should see output similar to the
     previous step.
@@ -249,9 +242,9 @@ In this step, you try out some common operations. Now that the connector is up a
     .. codewithvars:: bash
 
             docker run \
-              --net=host \
-              --rm confluentinc/cp-kafka:|release| \
-              kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
+            --net=host \
+            --rm confluentinc/cp-kafka:|release| \
+            kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
 
 Step 4: Shutdown and Cleanup
 ----------------------------
