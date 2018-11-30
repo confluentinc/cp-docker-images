@@ -9,9 +9,8 @@ for two topics from different source clusters to a destination cluster.  Further
 Connect cluster because Replicator is built on Connect.
 
 Prerequisites:
-    - .. include:: ../../../../includes/installation.rst
-            :start-after: docker_start
-            :end-before: docker_end
+    - .. include:: ../includes/docker-version.rst
+    - Git
 
 
 Step 1: Download and Start |cp| Using Docker
