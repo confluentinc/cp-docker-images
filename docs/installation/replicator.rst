@@ -133,11 +133,11 @@ from source cluster ``source-a``.
             {"name":"replicator-src-a-foo","config":{"connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector","key.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","value.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","src.zookeeper.connect":"localhost:22181","src.kafka.bootstrap.servers":"localhost:9092","dest.zookeeper.connect":"localhost:42181","topic.whitelist":"foo","topic.rename.format":"${topic}.replica","name":"replicator-src-a-foo"},"tasks":[]}
 
 
-#.  Exit the ``docker exec`` command prompt by typing ``exit`` on the prompt.
+    #.  Exit the ``docker exec`` command prompt by typing ``exit`` on the prompt.
 
-    .. codewithvars:: bash
+        .. codewithvars:: bash
 
-        exit
+            exit
 
 Step 3: Try Out Replicator Operations
 -------------------------------------
@@ -194,13 +194,11 @@ In this step, you try out some common operations. Now that the connector is up a
               confluentinc/cp-kafka:|release| \
               bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
 
-    #.   ``exec`` into the Kafka Connect container and run the replicator connector. You should see output similar to the previous step.
+    #.  Exec into the Kafka Connect container and run the replicator connector. You should see output similar to the previous step.
 
-         #.  Run the following to into the container to get ``docker exec`` command prompt.
+        .. codewithvars:: bash
 
-             .. codewithvars:: bash
-
-                docker-compose exec connect-host-1 bash
+            docker-compose exec connect-host-1 bash
 
     #.  Run the following commands on the ``docker exec`` command prompt.
 
@@ -234,20 +232,21 @@ In this step, you try out some common operations. Now that the connector is up a
 
     Now that the second replicator connector is up and running, it should replicate data from ``bar`` topic on ``source-b`` cluster to ``bar.replica`` topic on the ``dest`` cluster.
 
-#.  Read data from ``bar.replica`` topic to check if the connector is replicating data properly followed by describing the
-    topic to verify that the destination topic was created properly. You should see output similar to the previous step.
+#.  Read data from ``bar.replica`` topic to check if the connector is replicating data properly.
 
-    #.  Run the following commands on your terminal (Make sure you have exited the ``docker exec`` command prompt):
-
-        .. codewithvars:: bash
+    .. codewithvars:: bash
 
             docker run \
               --net=host \
               --rm \
               confluentinc/cp-kafka:|release| \
-              kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --from-beginning --max-messages 1000
+              kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica \
+              --from-beginning --max-messages 1000
 
-        .. codewithvars:: bash
+    Verify that the destination topic was created properly. You should see output similar to the
+    previous step.
+
+    .. codewithvars:: bash
 
             docker run \
               --net=host \
