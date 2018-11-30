@@ -8,20 +8,24 @@ destination Kafka cluster.  By the end of this tutorial, you will have successfu
 for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka
 Connect cluster because Replicator is built on Connect.
 
-Step 1: Download and Start Confluent Platform Using Docker
-----------------------------------------------------------
+Prerequisites:
+    - .. include:: ../../../../includes/installation.rst
+            :start-after: docker_start
+            :end-before: docker_end
 
-#.  Clone the |cp| Docker Images GitHub Repository and checkout the |release| branch.
 
-    .. cocewithvars:: bash
+Step 1: Download and Start |cp| Using Docker
+--------------------------------------------
 
-        git clone https://github.com/confluentinc/cp-docker-images && git checkout |release|
+#.  In `Docker’s advanced settings <https://docs.docker.com/docker-for-mac/#advanced>`__, increase the memory dedicated
+    to Docker to at least 8 GB (default is 2 GB).
+#.  Clone the Docker images repository, navigate to the examples directory, and checkout the |release| branch.
 
-#.  Navigate to ``enterprise-replicator`` directory.
+    .. codewithvars:: bash
 
-    ::
-
-        cd cp-docker-images/examples/cp-all-in-one/
+        git clone https://github.com/confluentinc/cp-docker-images
+        cd cp-docker-images/examples/enterprise-replicator/
+        git checkout |release_post_branch|
 
 #.  Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
     Kafka cluster and a |kconnect| cluster. Start |cp| specifying two options: (``-d``) to run in detached mode and
@@ -35,259 +39,233 @@ Step 1: Download and Start Confluent Platform Using Docker
 
     ::
 
-                                Name                                    Command            State   Ports
-        ------------------------------------------------------------------------------------------------
-        enterprise-replicator_connect-host-1_1_a0bc370f5955    /etc/confluent/docker/run   Up
-        enterprise-replicator_connect-host-2_1_e3363e6942ba    /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-1-dest_1_1ce7e46d4381      /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-1-src-a_1_de9873d9cac8     /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-1-src-b_1_6b16aa08de8f     /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-2-dest_1_5fae4dbf1798      /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-2-src-a_1_ee94494f36cb     /etc/confluent/docker/run   Up
-        enterprise-replicator_kafka-2-src-b_1_bfa537044701     /etc/confluent/docker/run   Up
-        enterprise-replicator_zookeeper-dest_1_1e1f0a8656bd    /etc/confluent/docker/run   Up
-        enterprise-replicator_zookeeper-src-a_1_9eea9b7b010d   /etc/confluent/docker/run   Up
-        enterprise-replicator_zookeeper-src-b_1_497d7053822c   /etc/confluent/docker/run   Up
+        Creating enterprise-replicator_kafka-1-src-b_1_2d59a9341917   ... done
+        Creating enterprise-replicator_kafka-2-src-b_1_610bf97f0961   ... done
+        Creating enterprise-replicator_zookeeper-src-a_1_7444e5351db9 ... done
+        Creating enterprise-replicator_kafka-1-dest_1_9f4ea8eec9af    ... done
+        Creating enterprise-replicator_zookeeper-dest_1_ee4ad01c9bdc  ... done
+        Creating enterprise-replicator_zookeeper-src-b_1_63b18c29c250 ... done
+        Creating enterprise-replicator_connect-host-1_1_20ead4b0136c  ... done
+        Creating enterprise-replicator_kafka-2-dest_1_1d843329379c    ... done
+        Creating enterprise-replicator_connect-host-2_1_5fef8a9326ee  ... done
+        Creating enterprise-replicator_kafka-1-src-a_1_e7b24f3b7237   ... done
+        Creating enterprise-replicator_kafka-2-src-a_1_c02411cf47cb   ... done
 
 
-#. You will now create your first Kafka Connect Replicator connector for replicating topic "foo" from source cluster ``source-a``.
+Step 2: Create a Kafka Connect Replicator Connector
+---------------------------------------------------
 
-   First, create a topic named ``foo``.
+In this step, you create a :ref:`Kafka Connect Replicator connector <connect_replicator>` for replicating topic ``foo``
+from source cluster ``source-a``.
 
-   .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --create --topic foo --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:22181
+#.  Create a topic named ``foo``.
 
-   You should see the following output in your terminal window:
+    .. codewithvars:: bash
 
-   .. codewithvars:: bash
+        docker run \
+          --net=host \
+          --rm confluentinc/cp-kafka:|release| \
+          kafka-topics --create --topic foo --partitions 3 --replication-factor 2 \
+          --if-not-exists --zookeeper localhost:22181
 
-    Created topic "foo".
+    You should see the following output in your terminal window:
 
-   Before moving on, verify that the topic was created successfully:
+    .. codewithvars:: bash
 
-   .. codewithvars:: bash
+     Created topic "foo".
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic foo --zookeeper localhost:22181
 
-   You should see the following output in your terminal window:
+#.  Generate some data to your new topic:
 
-   .. codewithvars:: bash
+    .. codewithvars:: bash
 
-    Topic:foo      	PartitionCount:3       	ReplicationFactor:2    	Configs:
-    Topic: foo     	Partition: 0   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
-    Topic: foo     	Partition: 1   	Leader: 1001   	Replicas: 1001,1002    	Isr: 1001,1002
-    Topic: foo     	Partition: 2   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
+        docker run \
+          --net=host \
+          --rm \
+          confluentinc/cp-kafka:|release| \
+          bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 \
+          --broker-list localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
 
-#. Next, you'll try generating some data to your new topic:
+    This command will use the built-in Kafka Console Producer to produce 100 simple messages to the topic. After running,
+    you should see the following:
 
-   .. codewithvars:: bash
+    .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:|release| \
-      bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
+      Produced 1000 messages.
 
-   This command will use the built-in Kafka Console Producer to produce 100 simple messages to the topic. Upon running it, you should see the following:
+#.  Create the connector using the Kafka Connect REST API.
 
-   .. codewithvars:: bash
+    #.  Exec into the Connect container.
 
-    Produced 1000 messages.
+        .. codewithvars:: bash
 
-#. Now create the connector using the Kafka Connect REST API.  First, let's exec into the Connect container.
+            docker-compose exec connect-host-1 bash
 
-   .. codewithvars:: bash
+        You should see a bash prompt now. you will call this the ``docker exec`` command prompt:
 
-    docker-compose exec connect-host-1 bash
+        .. codewithvars:: bash
 
-   You should see a bash prompt now. you will call this the ``docker exec`` command prompt:
+            root@confluent:/#
 
-   .. codewithvars:: bash
+    #.   Create the Replicator connector. Run the following command on the ``docker exec`` command prompt.
 
-    root@confluent:/#
+         .. codewithvars:: bash
 
-   The next step is to create the Replicator connector. Run the following command on the ``docker exec`` command prompt.
+            curl -X POST \
+                 -H "Content-Type: application/json" \
+                 --data '{
+                    "name": "replicator-src-a-foo",
+                    "config": {
+                      "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
+                      "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+                      "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+                      "src.zookeeper.connect": "localhost:22181",
+                      "src.kafka.bootstrap.servers": "localhost:9092",
+                      "dest.zookeeper.connect": "localhost:42181",
+                      "topic.whitelist": "foo",
+                      "topic.rename.format": "${topic}.replica"}}'  \
+                 http://localhost:28082/connectors
 
-   .. codewithvars:: bash
+         Upon running the command, you should see the following output in your ``docker exec`` command prompt:
 
-    curl -X POST \
-         -H "Content-Type: application/json" \
-         --data '{
-            "name": "replicator-src-a-foo",
-            "config": {
-              "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
-              "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "src.zookeeper.connect": "localhost:22181",
-              "src.kafka.bootstrap.servers": "localhost:9092",
-              "dest.zookeeper.connect": "localhost:42181",
-              "topic.whitelist": "foo",
-              "topic.rename.format": "${topic}.replica"}}'  \
-         http://localhost:28082/connectors
+         .. codewithvars:: bash
 
-   Upon running the command, you should see the following output in your ``docker exec`` command prompt:
+            {"name":"replicator-src-a-foo","config":{"connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector","key.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","value.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","src.zookeeper.connect":"localhost:22181","src.kafka.bootstrap.servers":"localhost:9092","dest.zookeeper.connect":"localhost:42181","topic.whitelist":"foo","topic.rename.format":"${topic}.replica","name":"replicator-src-a-foo"},"tasks":[]}
 
-   .. codewithvars:: bash
 
-    {"name":"replicator-src-a-foo","config":{"connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector","key.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","value.converter":"io.confluent.connect.replicator.util.ByteArrayConverter","src.zookeeper.connect":"localhost:22181","src.kafka.bootstrap.servers":"localhost:9092","dest.zookeeper.connect":"localhost:42181","topic.whitelist":"foo","topic.rename.format":"${topic}.replica","name":"replicator-src-a-foo"},"tasks":[]}
+#.  Exit the ``docker exec`` command prompt by typing ``exit`` on the prompt.
 
-   Before moving on, let's check the status of the connector using curl on the ``docker exec`` command prompt.
+    .. codewithvars:: bash
 
-   .. codewithvars:: bash
+        exit
 
-    curl -X GET http://localhost:28082/connectors/replicator-src-a-foo/status
+Step 3: Try Out Replicator Operations
+-------------------------------------
 
-   You should see the following output including the ``state`` of the connector as ``RUNNING``:
+In this step, you try out some common operations. Now that the connector is up and running, it should replicate data from
+``foo`` topic on ``source-a`` cluster to ``foo.replica`` topic on the ``dest`` cluster.
 
-   .. codewithvars:: bash
+#.  Read a sample of 1000 records from the ``foo.replica`` topic to verify that the connector is replicating data to the
+    destination Kafka cluster.
 
-    {"name":"replicator-src-a-foo","connector":{"state":"RUNNING","worker_id":"localhost:38082"},"tasks":[{"state":"RUNNING","id":0,"worker_id":"localhost:28082"}]}
+    .. tip:: You must have exited the ``docker exec`` command prompt before running this command.
 
-  Exit the ``docker exec`` command prompt by typing ``exit`` on the prompt.
+    .. codewithvars:: bash
 
-  .. codewithvars:: bash
+        docker run \
+          --net=host \
+          --rm \
+          confluentinc/cp-kafka:|release| \
+          kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --from-beginning --max-messages 1000
 
-    exit
+    If everything is working as expected, each of the original messages you produced should be written back out:
 
-#. Now that the connector is up and running, it should replicate data from ``foo`` topic on ``source-a`` cluster to ``foo.replica`` topic on the ``dest`` cluster.
+    .. codewithvars:: bash
 
-   Read a sample of 1000 records from the ``foo.replica`` topic to check if the connector is replicating data to the destination Kafka cluster, as expected. Run the following command on your terminal (Make sure you have exited the ``docker exec`` command prompt):
+        1
+        ....
+        1000
+        Processed a total of 1000 messages
 
-   .. codewithvars:: bash
+#.  Replicate another topic from a different source cluster.
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:|release| \
-      kafka-console-consumer --bootstrap-server localhost:9072 --topic foo.replica --from-beginning --max-messages 1000
+    #.  Create a new topic on the cluster ``source-b`` and add some data to it. Run the following commands to create and verify the topic.
+        You should see output similar to the previous steps:
 
-   If everything is working as expected, each of the original messages you produced should be written back out:
+        .. codewithvars:: bash
 
-   .. codewithvars:: bash
+            docker run \
+              --net=host \
+              --rm confluentinc/cp-kafka:|release| \
+              kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:32181
 
-    1
-    ....
-    1000
-    Processed a total of 1000 messages
+        .. codewithvars:: bash
 
-   You will now verify that the destination topic is created with correct replication factor and partition count.
+            docker run \
+              --net=host \
+              --rm confluentinc/cp-kafka:|release| \
+              kafka-topics --describe --topic bar --zookeeper localhost:32181
 
-   .. codewithvars:: bash
+        .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic foo.replica --zookeeper localhost:42181
+            docker run \
+              --net=host \
+              --rm \
+              confluentinc/cp-kafka:|release| \
+              bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
 
-   You should see that the topic ``foo.replica`` is created with 3 partitions and 2 replicas, same as the original topic ``foo``.
+    #.   ``exec`` into the Kafka Connect container and run the replicator connector. You should see output similar to the previous step.
 
-   .. codewithvars:: bash
+         #.  Run the following to into the container to get ``docker exec`` command prompt.
 
-    Topic:foo.replica      	PartitionCount:3       	ReplicationFactor:2    	Configs:message.timestamp.type=CreateTime
-    Topic: foo.replica     	Partition: 0   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
-    Topic: foo.replica     	Partition: 1   	Leader: 1001   	Replicas: 1001,1002    	Isr: 1001,1002
-    Topic: foo.replica     	Partition: 2   	Leader: 1002   	Replicas: 1002,1001    	Isr: 1002,1001
+             .. codewithvars:: bash
 
-#. Now, you will replicate another topic from a different source cluster.
+                docker-compose exec connect-host-1 bash
 
-   First, create a new topic on the cluster ``source-b`` and add some data to it. Run the following commands to create and verify the topic. You should see output similar to steps 4 and 5 above:
+    #.  Run the following commands on the ``docker exec`` command prompt.
 
-   .. codewithvars:: bash
+        .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --create --topic bar --partitions 3 --replication-factor 2 --if-not-exists --zookeeper localhost:32181
+            curl -X POST \
+                 -H "Content-Type: application/json" \
+                 --data '{
+                    "name": "replicator-src-b-bar",
+                    "config": {
+                      "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
+                      "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+                      "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
+                      "src.zookeeper.connect": "localhost:32181",
+                      "src.kafka.bootstrap.servers": "localhost:9082",
+                      "dest.zookeeper.connect": "localhost:42181",
+                      "topic.whitelist": "bar",
+                      "topic.rename.format": "${topic}.replica"}}'  \
+                 http://localhost:28082/connectors
 
-   .. codewithvars:: bash
+        .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic bar --zookeeper localhost:32181
+            curl -X GET http://localhost:28082/connectors/replicator-src-b-bar/status
 
-   .. codewithvars:: bash
 
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:|release| \
-      bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9082 --topic bar && echo 'Produced 1000 messages.'"
+    #.  Exit the ``docker exec`` command prompt.
 
-   Now ``exec`` into the Kafka Connect container and run the replicator connector. Enter the following commands on your terminal. You should see output similar to step 6 above.
+        .. codewithvars:: bash
 
-   Run the following to into the container to get ``docker exec`` command prompt.
+            exit
 
-   .. codewithvars:: bash
+    Now that the second replicator connector is up and running, it should replicate data from ``bar`` topic on ``source-b`` cluster to ``bar.replica`` topic on the ``dest`` cluster.
 
-    docker-compose exec connect-host-1 bash
+#.  Read data from ``bar.replica`` topic to check if the connector is replicating data properly followed by describing the
+    topic to verify that the destination topic was created properly. You should see output similar to the previous step.
 
-   Run the following command on the ``docker exec`` command prompt.
+    #.  Run the following commands on your terminal (Make sure you have exited the ``docker exec`` command prompt):
 
-   .. codewithvars:: bash
+        .. codewithvars:: bash
 
-    curl -X POST \
-         -H "Content-Type: application/json" \
-         --data '{
-            "name": "replicator-src-b-bar",
-            "config": {
-              "connector.class":"io.confluent.connect.replicator.ReplicatorSourceConnector",
-              "key.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
-              "src.zookeeper.connect": "localhost:32181",
-              "src.kafka.bootstrap.servers": "localhost:9082",
-              "dest.zookeeper.connect": "localhost:42181",
-              "topic.whitelist": "bar",
-              "topic.rename.format": "${topic}.replica"}}'  \
-         http://localhost:28082/connectors
+            docker run \
+              --net=host \
+              --rm \
+              confluentinc/cp-kafka:|release| \
+              kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --from-beginning --max-messages 1000
 
-   .. codewithvars:: bash
+        .. codewithvars:: bash
 
-    curl -X GET http://localhost:28082/connectors/replicator-src-b-bar/status
+            docker run \
+              --net=host \
+              --rm confluentinc/cp-kafka:|release| \
+              kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
 
+Step 4: Shutdown and Cleanup
+----------------------------
 
-   Exit the ``docker exec`` command prompt by typing ``exit`` on the prompt.
+Use the following commands to shutdown all the components.
 
-   .. codewithvars:: bash
-
-    exit
-
-#. Now that the second replicator connector is up and running, it should replicate data from ``bar`` topic on ``source-b`` cluster to ``bar.replica`` topic on the ``dest`` cluster.
-
-   Read data from ``bar.replica`` topic to check if the connector is replicating data properly followed by describing the topic to verify that the destination topic was created properly. You should see output similar to step 7 above. as expected.
-
-   Run the following commands on your terminal (Make sure you have exited the ``docker exec`` command prompt):
-
-   .. codewithvars:: bash
-
-    docker run \
-      --net=host \
-      --rm \
-      confluentinc/cp-kafka:|release| \
-      kafka-console-consumer --bootstrap-server localhost:9072 --topic bar.replica --from-beginning --max-messages 1000
-
-   .. codewithvars:: bash
-
-    docker run \
-      --net=host \
-      --rm confluentinc/cp-kafka:|release| \
-      kafka-topics --describe --topic bar.replica --zookeeper localhost:42181
-
-#. Feel free to experiment with the replicator connector on your own now. When you are done, use the following commands to shutdown all the components.
-
-   .. codewithvars:: bash
+.. codewithvars:: bash
 
     docker-compose stop
 
-   If you want to remove all the containers, run:
+If you want to remove all the containers, run:
 
-   .. codewithvars:: bash
+.. codewithvars:: bash
 
     docker-compose rm
