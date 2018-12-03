@@ -15,7 +15,7 @@ Connect cluster because Replicator is built on Connect.
     .. codewithvars:: bash
 
         git clone https://github.com/confluentinc/cp-docker-images
-        cd cp-docker-images/examples/enterprise-replicator/
+        cd cp-docker-images/examples/multi-datacenter/
         git checkout |release_post_branch|
 
 #.  Start the services by using the example Docker Compose file. It will start up 2 source Kafka clusters, one destination
@@ -30,17 +30,16 @@ Connect cluster because Replicator is built on Connect.
 
     ::
 
-        Creating enterprise-replicator_kafka-1-src-b_1_2d59a9341917   ... done
-        Creating enterprise-replicator_kafka-2-src-b_1_610bf97f0961   ... done
-        Creating enterprise-replicator_zookeeper-src-a_1_7444e5351db9 ... done
-        Creating enterprise-replicator_kafka-1-dest_1_9f4ea8eec9af    ... done
-        Creating enterprise-replicator_zookeeper-dest_1_ee4ad01c9bdc  ... done
-        Creating enterprise-replicator_zookeeper-src-b_1_63b18c29c250 ... done
-        Creating enterprise-replicator_connect-host-1_1_20ead4b0136c  ... done
-        Creating enterprise-replicator_kafka-2-dest_1_1d843329379c    ... done
-        Creating enterprise-replicator_connect-host-2_1_5fef8a9326ee  ... done
-        Creating enterprise-replicator_kafka-1-src-a_1_e7b24f3b7237   ... done
-        Creating enterprise-replicator_kafka-2-src-a_1_c02411cf47cb   ... done
+        Creating zookeeper-dc1 ... done
+        Creating zookeeper-dc2 ... done
+        Creating broker-dc2    ... done
+        Creating broker-dc1    ... done
+        Creating schema-registry-dc1 ... done
+        Creating schema-registry-dc2 ... done
+        Creating datagen-dc1           ... done
+        Creating datagen-dc2           ... done
+        Creating replicator-dc1-to-dc2 ... done
+        Creating replicator-dc2-to-dc1 ... done
 
 
 Step 2: Create a Kafka Connect Replicator Connector
@@ -54,9 +53,9 @@ from source cluster ``source-a``.
 
     .. codewithvars:: bash
 
-        docker run --net=host --rm confluentinc/cp-kafka:5.0.0 kafka-topics \
-        --create --topic foo --partitions 3 --replication-factor 2 \
-        --if-not-exists --zookeeper localhost:22181
+        docker-compose exec broker-dc1 \
+        bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list \
+        localhost:9091 --topic foo && echo 'Produced 1000 messages.'"
 
     You should see the following output in your terminal window:
 
@@ -69,7 +68,7 @@ from source cluster ``source-a``.
 
     .. codewithvars:: bash
 
-        docker run --net=host --rm confluentinc/cp-kafka:|release| \
+        docker-compose exec broker-dc1 kafka-topics \
         bash -c "seq 1000 | kafka-console-producer --request-required-acks 1 --broker-list \
         localhost:9092 --topic foo && echo 'Produced 1000 messages.'"
 
@@ -78,7 +77,7 @@ from source cluster ``source-a``.
 
     .. codewithvars:: bash
 
-      Produced 1000 messages.
+      >>>>>>>>>>>>>>>>>>>>Produced 1000 messages.
 
 #.  Create the connector using the Kafka Connect REST API.
 
