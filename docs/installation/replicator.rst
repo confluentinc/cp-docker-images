@@ -81,7 +81,7 @@ Step 3: Setup Data Replication
 In this step, you try out some common operations. Now that the connector is up and running, it should replicate data from
 ``mytopic`` topic on ``dc1`` cluster to ``mytopic`` topic on ``dc2`` cluster.
 
-#.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``.
+#.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``, with provenance headers enabled.
 
     .. codewithvars:: bash
  
@@ -135,7 +135,7 @@ Step 4: Verify Prevention of Cyclic Replication of Data
 
 In this step, you replicate data from ``mytopic`` topic on ``dc2`` cluster to ``mytopic`` topic on ``dc1`` cluster.
 
-#.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``.
+#.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``, with provenance headers enabled.
 
     .. codewithvars:: bash
 
