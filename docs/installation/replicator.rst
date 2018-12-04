@@ -83,7 +83,7 @@ In this step, you try out some common operations. Now that the connector is up a
 
 #.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``.
 
-         .. codewithvars:: bash
+    .. codewithvars:: bash
  
             curl -X POST \
                  -H "Content-Type: application/json" \
@@ -108,7 +108,7 @@ In this step, you try out some common operations. Now that the connector is up a
 
 #.  Verify that the Confluent Replicator connector is running using the Kafka Connect REST API.
 
-         .. codewithvars:: bash
+    .. codewithvars:: bash
 
             curl http://localhost:8382/connectors/replicator-dc1-to-dc2
 
@@ -137,7 +137,7 @@ In this step, you replicate data from ``mytopic`` topic on ``dc2`` cluster to ``
 
 #.  Create the connector using the Kafka Connect REST API. This replicates data from ``dc1`` to ``dc2``.
 
-         .. codewithvars:: bash
+    .. codewithvars:: bash
 
             curl -X POST \
                  -H "Content-Type: application/json" \
