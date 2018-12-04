@@ -222,3 +222,12 @@ If you want to remove all the containers, run:
 .. codewithvars:: bash
 
     docker-compose rm
+
+
+
+Next Steps
+----------
+
+* Learn how to :ref:`install and configure<replicator_install>` Replicator and other |cp| components in multi datacenter environments.
+* Review the Confluent Replicator example in the :ref:`Confluent Platform demo<cp-demo>`. The demo shows users how to deploy a Kafka streaming ETL using KSQL for stream processing and |c3| for monitoring, along with Replicator to replicate data.
+* For a practical guide to designing and configuring multiple Apache Kafka clusters to be resilient in case of a disaster scenario, see the `Disaster Recovery <https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/>`_ white paper. This white paper provides a plan for failover, failback, and ultimately successful recovery.
