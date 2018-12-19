@@ -38,7 +38,12 @@ dataLogDir=/var/lib/zookeeper/log
 {% if env['ZOOKEEPER_SERVERS'] %}
 {% set servers = env['ZOOKEEPER_SERVERS'].split(';') %}
 {% for server in servers %}
+{% if '|' in server %}
+{% set id, s = server.split('|') %}
+server.{{ id }}={{ s }}
+{% else %}
 server.{{ loop.index }}={{server}}
+{% endif %}
 {% endfor %}
 {% endif %}
 
