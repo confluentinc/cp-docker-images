@@ -66,4 +66,3 @@ RUN echo "===> update debian ....." \
 
 COPY include/dub /usr/local/bin/dub
 COPY include/cub /usr/local/bin/cub
-COPY include/etc/confluent/docker /etc/confluent/docker
