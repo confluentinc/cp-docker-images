@@ -26,13 +26,18 @@ This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalance
     This starts the |cp| with separate containers for all |cp| components.
 
 
+Step 2: Create a Kafka Topic with Data
+--------------------------------------
+
+In this step, you create ``adb-test``.
+
 #. Now that the brokers are up, we will create a test topic called "adb-test".
 
    .. codewithvars:: bash
 
     docker-compose exec broker \
     kafka-topics --create --topic adb-test --partitions 20 --replication-factor 1 \
-    --if-not-exists --zookeeper zookeeper:22181
+    --if-not-exists --zookeeper zookeeper:2181
 
    You should see the following output in your terminal window:
 
@@ -73,13 +78,18 @@ This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalance
     Topic: adb-test	Partition: 18  	Leader: 2      	Replicas: 2,1,3	Isr: 2,1,3
     Topic: adb-test	Partition: 19  	Leader: 3      	Replicas: 3,2,1	Isr: 3,2,1
 
-#. Next, we'll try generating some data to our new topic:
+Step 3: Generate Data and Rebalance
+-----------------------------------
+
+Next, we'll try generating some data to our new topic.
+
+#. Run this command to produce 2 GB of sample data to the topic.
 
    .. codewithvars:: bash
 
     docker-compose exec broker \
     bash -c 'kafka-producer-perf-test --topic adb-test --num-records 2000000 \
-    --record-size 1000 --throughput 100000 --producer-props bootstrap.servers=localhost:19092'
+    --record-size 1000 --throughput 100000 --producer-props bootstrap.servers=broker:9092'
 
    This command will use the built-in Kafka Performance Producer to produce 2 GB of sample data to the topic. Upon running it, you should see the following:
 
@@ -104,7 +114,7 @@ This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalance
 
     docker-compose exec broker \
     bash -c "confluent-rebalancer execute --zookeeper localhost:22181 \
-    --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose"
+    --metrics-bootstrap-server broker:9092 --throttle 100000000 --force --verbose"
 
    You should see the rebalancing start and should see the following:
 
@@ -159,9 +169,12 @@ This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalance
 
     The rebalance has completed and throttling has been disabled
 
-#. ADB makes it easy to add new brokers to the cluster. You can now add an entire new rack to your cluster and run the rebalance operation again to balance the data across the cluster.
+Step 4: Add More Topics and Rebalance
+-------------------------------------
 
-   Start the new rack by running the following command:
+ADB makes it easy to add new brokers to the cluster. You can now add an entire new rack to your cluster and run the rebalance operation again to balance the data across the cluster.
+
+#. Start the new rack by running the following command:
 
    .. codewithvars:: bash
 
@@ -211,7 +224,7 @@ This tutorial runs :ref:`Confluent Auto Data Balancing (ADB) on Kafka <rebalance
 
     docker-compose exec broker \
     bash -c "confluent-rebalancer execute --zookeeper localhost:22181 \
-    --metrics-bootstrap-server localhost:19092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
+    --metrics-bootstrap-server broker:9092 --throttle 100000000 --force --verbose --remove-broker-ids 1"
 
 #. Feel free to experiment with the `confluent-rebalance` command on your own now. When you are done, use the following commands to shutdown all the components.
 
