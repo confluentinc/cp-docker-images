@@ -24,6 +24,7 @@ while [ $attempt -le 59 ]; do
 done
 
 ./submit_replicator_dc1_to_dc2.sh
+./submit_replicator_dc1_to_dc2_dummy.sh
 ./submit_replicator_dc2_to_dc1.sh
 echo -e "\nsleeping 60s"
 sleep 60

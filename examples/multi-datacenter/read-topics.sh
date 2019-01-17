@@ -7,6 +7,8 @@ echo -e "\nlist topics:"
 docker-compose exec broker-dc1 kafka-topics --list --zookeeper zookeeper-dc1:2181
 echo -e "\ntopic1:"
 docker-compose exec schema-registry-dc1 kafka-avro-console-consumer --topic topic1 --bootstrap-server broker-dc1:9091 --property schema.registry.url=http://schema-registry-dc1:8081 --max-messages 10
+echo -e "\ndummy:"
+docker-compose exec broker-dc1 kafka-console-consumer --topic dummy --bootstrap-server broker-dc1:9091 --max-messages 10
 echo -e "\n_schemas:"
 docker-compose exec broker-dc1 kafka-console-consumer --topic _schemas --bootstrap-server broker-dc1:9091 --from-beginning --timeout-ms 5000
 echo -e "\nprovenance info:"
@@ -19,6 +21,8 @@ echo -e "\nlist topics:"
 docker-compose exec broker-dc2 kafka-topics --list --zookeeper zookeeper-dc2:2182
 echo -e "\ntopic1:"
 docker-compose exec schema-registry-dc1 kafka-avro-console-consumer --topic topic1 --bootstrap-server broker-dc2:9092 --property schema.registry.url=http://schema-registry-dc1:8081 --max-messages 10
+echo -e "\ndummy.replica:"
+docker-compose exec broker-dc2 kafka-console-consumer --topic dummy.replica --bootstrap-server broker-dc2:9092 --max-messages 10
 echo -e "\n_schemas:"
 docker-compose exec broker-dc1 kafka-console-consumer --topic _schemas --bootstrap-server broker-dc2:9092 --from-beginning --timeout-ms 5000
 echo -e "\nprovenance info:"
