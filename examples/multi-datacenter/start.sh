@@ -30,13 +30,13 @@ while [[ ! $(docker-compose logs connect-dc2) =~ "Finished starting connectors a
 done
 echo "Connect dc2 has started!"
 
-echo -e "\n\nReplicator for topic1 (no topic rename): dc1 -> dc2"
+echo -e "\n\nReplicator: dc1 topic1 -> dc2 topic1"
 ./submit_replicator_dc1_to_dc2.sh
 
-echo -e "\n\nReplicator for topic2 (topic rename to topic2.replica): dc1 -> dc2"
+echo -e "\n\nReplicator: dc2 topic2 -> dc2 topic2.replica"
 ./submit_replicator_dc1_to_dc2_topic2.sh
 
-#echo -e "\n\nReplicator for topic1 (no topic rename): dc2 -> dc1"
+#echo -e "\n\nReplicator: dc2 topic1 -> dc1 topic1"
 #./submit_replicator_dc2_to_dc1.sh
 
 echo -e "\nsleeping 60s"
