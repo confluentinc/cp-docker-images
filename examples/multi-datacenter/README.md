@@ -46,7 +46,7 @@ After a disaster event occurs, consumers can switch datacenters and automaticall
 
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.1-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
 
-1. After starting this Docker environment (see previous section), run the consumer to connect to DC1 Kafka cluster. It uses the consumer group id `java-consumer-app`.
+1. After starting this Docker environment (see previous section), run the consumer to connect to DC1 Kafka cluster. It uses the consumer group id `java-consumer-[topic]`.
 
 ```bash
 git clone https://github.com/confluentinc/examples.git
@@ -65,19 +65,19 @@ key = User_6, value = {"userid": "User_6", "dc": "DC2"}
 ...
 ```
 
-2. Even though the consumer is consuming from DC1, there are DC2 consumer offsets committed for the consumer group `java-consumer-app`.
+2. Even though the consumer is consuming from DC1, there are DC2 consumer offsets committed for the consumer group `java-consumer-[topic]`.
 
 ```bash
-docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer-app
+docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
 ```
 
 You should see some offsets:
 
 ```bash
 ...
-[java-consumer-app,topic1,0]::OffsetAndMetadata(offset=1142, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146285084, expireTimestamp=None)
-[java-consumer-app,topic1,0]::OffsetAndMetadata(offset=1146, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146286082, expireTimestamp=None)
-[java-consumer-app,topic1,0]::OffsetAndMetadata(offset=1150, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146287084, expireTimestamp=None)
+[java-consumer-topic1,topic1,0]::OffsetAndMetadata(offset=1142, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146285084, expireTimestamp=None)
+[java-consumer-topic1,topic1,0]::OffsetAndMetadata(offset=1146, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146286082, expireTimestamp=None)
+[java-consumer-topic1,topic1,0]::OffsetAndMetadata(offset=1150, leaderEpoch=Optional.empty, metadata=, commitTimestamp=1547146287084, expireTimestamp=None)
 ...
 ```
 
@@ -87,7 +87,7 @@ You should see some offsets:
 docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
-4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-app`:
+4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-[topic]`:
 
 ```bash
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"

@@ -14,7 +14,7 @@ DATA=$( cat << EOF
     "src.consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",
     "src.consumer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc2:9092",
     "src.kafka.timestamps.producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
-    "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc1:9091",
+    "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc2:9092",
     "dest.kafka.bootstrap.servers": "broker-dc2:9092",
     "dest.kafka.replication.factor": 1,
     "provenance.header.enable": "true",
