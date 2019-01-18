@@ -1,7 +1,7 @@
 # Overview
 
 This example deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
-Confluent Control Center is running to manage and monitor the clusters.
+Confluent Control Center is running to manage and monitor.
 
 This is for demo purposes only, not for production.
 
@@ -46,13 +46,13 @@ After a disaster event occurs, consumers can switch datacenters and automaticall
 
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.1-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
 
-1. After starting this Docker environment (see previous section), run the consumer to connect to DC1 Kafka cluster, using the consumer group id `java-consumer-app`.
+1. After starting this Docker environment (see previous section), run the consumer to connect to DC1 Kafka cluster. It uses the consumer group id `java-consumer-app`.
 
 ```bash
 git clone https://github.com/confluentinc/examples.git
 cd clients/avro
 mvn clean package
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29091 http://localhost:8081"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29091 http://localhost:8081 localhost:29092"
 ```
 
 Verify the consumer is reading data originating from both DC1 and DC2:
@@ -84,13 +84,13 @@ You should see some offsets:
 3. Shut down DC1:
 
 ```bash
-docker-compose stop broker-dc1 schema-registry-dc1
+docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
 4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-app`:
 
 ```bash
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29092 http://localhost:8082"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29092 http://localhost:8082 localhost:29092"
 ```
 
 You should see data sourced from only DC2:

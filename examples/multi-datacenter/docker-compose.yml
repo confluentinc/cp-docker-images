@@ -171,12 +171,13 @@ services:
       - schema-registry-dc1
     volumes:
       - $PWD/schema-dc1.avro:/tmp/schema-dc1.avro
+      - $PWD/datagen.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc1:9091 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc1 8081 90 && \
                        sleep 10 && \
-                       /usr/bin/ksql-datagen schema=/tmp/schema-dc1.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9091'"
+                       /usr/bin/ksql-datagen schema=/tmp/schema-dc1.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9091 propertiesFile=/tmp/datagen.properties'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
@@ -191,12 +192,14 @@ services:
     depends_on:
       - broker-dc1
       - schema-registry-dc1
+    volumes:
+      - $PWD/datagen.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc1:9091 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc1 8081 90 && \
                        sleep 20 && \
-                       /usr/bin/ksql-datagen format=avro quickstart=users topic=topic2 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9091'"
+                       /usr/bin/ksql-datagen format=avro quickstart=users topic=topic2 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc1:8081 bootstrap-server=broker-dc1:9091 propertiesFile=/tmp/datagen.properties'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
@@ -214,12 +217,13 @@ services:
       - schema-registry-dc2
     volumes:
       - $PWD/schema-dc2.avro:/tmp/schema-dc2.avro
+      - $PWD/datagen.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc2:9092 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry-dc2 8082 90 && \
                        sleep 10 && \
-                       /usr/bin/ksql-datagen schema=/tmp/schema-dc2.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc2:8082 bootstrap-server=broker-dc2:9092'"
+                       /usr/bin/ksql-datagen schema=/tmp/schema-dc2.avro key=userid format=avro topic=topic1 maxInterval=1000 schemaRegistryUrl=http://schema-registry-dc2:8082 bootstrap-server=broker-dc2:9092 propertiesFile=/tmp/datagen.properties'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksql/log4j-rolling.properties"
