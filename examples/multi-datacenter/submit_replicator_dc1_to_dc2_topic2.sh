@@ -12,6 +12,8 @@ DATA=$( cat << EOF
     "value.converter": "io.confluent.connect.replicator.util.ByteArrayConverter",
     "src.kafka.bootstrap.servers": "broker-dc1:9091",
     "src.consumer.group.id": "replicator-dc1-to-dc2-topic2",
+    "src.consumer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor",
+    "src.consumer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc2:9092",
     "src.kafka.timestamps.producer.interceptor.classes": "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
     "src.kafka.timestamps.producer.confluent.monitoring.interceptor.bootstrap.servers": "broker-dc1:9091",
     "dest.kafka.bootstrap.servers": "broker-dc2:9092",

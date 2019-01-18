@@ -52,7 +52,7 @@ To use this capability, configure Java consumer applications with the [Consumer 
 git clone https://github.com/confluentinc/examples.git
 cd clients/avro
 mvn clean package
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29091 http://localhost:8081 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29091 http://localhost:8081 localhost:29092"
 ```
 
 Verify the consumer is reading data originating from both DC1 and DC2:
@@ -90,7 +90,7 @@ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-app`:
 
 ```bash
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="localhost:29092 http://localhost:8082 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
 ```
 
 You should see data sourced from only DC2:
