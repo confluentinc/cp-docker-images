@@ -1,6 +1,8 @@
 # Overview
 
 This example deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
+Confluent Control Center is running to manage and monitor the clusters.
+
 This is for demo purposes only, not for production.
 
 Here is a list of Confluent Platform services and their associated ports
@@ -10,7 +12,9 @@ Here is a list of Confluent Platform services and their associated ports
 |ZooKeeper       | 2181                    | 2182                    |
 |Broker          | 9091                    | 9092                    |
 |Schema Registry | 8081 (primary)          | 8082 (secondary)        |
-|Replicator      | 8381 (copying DC2->DC1) | 8382 (copying DC1->DC2) |
+|Connect         | 8381 (copying DC2->DC1) | 8382 (copying DC1->DC2) |
+|Control Center  |                         | 9021                    |
+
 
 # Data generation and topic names
 
