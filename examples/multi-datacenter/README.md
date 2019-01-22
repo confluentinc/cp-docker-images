@@ -1,11 +1,11 @@
 # Overview
 
 This example deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
-Confluent Control Center is running to manage and monitor.
+Confluent Control Center is running to manage and monitor the cluster.
 
 This is for demo purposes only, not for production.
 
-Here is a list of Confluent Platform services and their associated ports
+## Confluent Platform services and their associated ports
 
 |                | DC1                     | DC2                     |
 |----------------|-------------------------|-------------------------|
@@ -15,18 +15,26 @@ Here is a list of Confluent Platform services and their associated ports
 |Connect         | 8381 (copying DC2->DC1) | 8382 (copying DC1->DC2) |
 |Control Center  |                         | 9021                    |
 
+## Data generation and topic names
 
-# Data generation and topic names
+There are Docker containers with data generators that produce mock data.
 
-There are also Docker containers with data generators that produce data to the same topic name `topic1` in each datacenter.
-Confluent Replicator 5.0.1 prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1`, by using provenance information in the message headers.
+1. datagen-dc1-topic1: produces data to topic1 in DC1
+2. datagen-dc1-topic2: produces data to topic2 in DC1
+3. datagen-dc2-topic1: produces data to topic1 in DC2
 
-# Pre-requisites
+Confluent Replicator (versions 5.0.1 and higher) prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1` by using provenance information in the message headers.
+
+# Run the Demo
+
+## Environment
+
+This has been validated on:
 
 * Docker version 17.06.1-ce
 * Docker Compose version 1.14.0 with Docker Compose file format 2.1
 
-# Running
+## Start the services
 
 Start all services, and print some messages from various topics in each datacenter:
 
