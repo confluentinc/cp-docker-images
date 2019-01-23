@@ -66,7 +66,9 @@ For simplicity in explaining how it works, in the following sections we will con
 
 2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. At this time, Control Center can manage only one Kafka Connect cluster. Since we are explaining replication only from dc1 to dc2, we configured Control Center to manage the connect workers in `connect-dc2`.  Recall that Replicator is a source connector, so it runs on the destination cluster (dc2) pulling in data from the origin cluster (dc1).
 
-2. Navigate to http://localhost:9021/management/connect/ to verify that `connect-dc2` is running two instances of Replicator: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.
+3. Navigate to http://localhost:9021/management/connect/ to verify that `connect-dc2` is running two instances of Replicator: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.
+
+![image](images/replicator-instances.png)
 
 ## Streams Monitoring
 
@@ -84,29 +86,27 @@ This can be on a per-consumer group or per-topic basis.
 ## Consumer Lag
 
 Control Center's monitoring capabilities also include consumer lag: how many messages behind are consumer groups from the latest offset in the log.
-Replicator has an embedded consumer that reads data from the origin cluster, so Replicator's consumer lag must be viewed in the origin cluster.
+Replicator has an embedded consumer that reads data from the origin cluster.
+
+![image](images/replicator-embedded-consumer.png)
 
 5. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc1` (origin cluster) in the cluster dropdown.
 Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  
 These show the consumer lag in `dc1` because Replicator has been configured with `offset.topic.commit=true` which commits Replicator's consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
 
-a. Click on `replicator-dc1-to-dc2-topic1`: Replicator is copying `topic1` and `_schemas`.
+a. Click on `replicator-dc1-to-dc2-topic1` to view Replicator's consumer log in reading `topic1` and `_schemas` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`)
 
 ![image](images/c3-consumer-lag-dc1-topic1.png)
 
-note: view the equivalent with `docker-compose exec broker-dc1 kafka-consumer-groups  --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`
-
-b. Click on `replicator-dc1-to-dc2-topic2`: Replicator is copying `topic2`
+b. Click on `replicator-dc1-to-dc2-topic2` to view Replicator's consumer log in reading `topic2` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic2`)
 
 ![image](images/c3-consumer-lag-dc1-topic2.png)
-
-note: view the equivalent with `docker-compose exec broker-dc1 kafka-consumer-groups  --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic2`
 
 6. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc2` (destination cluster) in the cluster dropdown.
 Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  
 These show the consumer lag in `dc2` because Replicator has been configured with `offset.timestamps.commit=true` which commits internal offset timestamps for Replicator to the destination cluster `dc2` so that it can resume properly when switching to the secondary cluster.
 
-note: this does not mean that Replicator is consuming from these topics (`topic1`, `_schemas`, `topic2.replica` from `dc2`). The reason you see this consumer lag in `dc2` is because Replicator runs `commitSync()` to update the offsets in `dc2`.
+note: this does not mean that Replicator is consuming from these topics in `dc2` (`topic1`, `_schemas`, `topic2.replica`). The reason you see this consumer lag in `dc2` is because Replicator runs `commitSync()` to update the offsets in `dc2`, and this is a side-effect.
 
 # Resuming Java Consumer Applications in Failover
 
