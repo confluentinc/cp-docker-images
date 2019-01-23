@@ -31,6 +31,7 @@ services:
       - "29091:29091"
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_JMX_PORT: 9991
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc1:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc1:9091,PLAINTEXT_HOST://localhost:29091
@@ -53,6 +54,7 @@ services:
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 2
+      KAFKA_JMX_PORT: 9992
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-dc2:2182'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-dc2:9092,PLAINTEXT_HOST://localhost:29092
@@ -112,6 +114,7 @@ services:
       - schema-registry-dc2
     ports:
       - "8382:8382"
+      - "9892:9892"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'broker-dc2:9092'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect-dc2
@@ -136,6 +139,8 @@ services:
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: broker-dc2:9092
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: broker-dc2:9092
+      KAFKA_JMX_PORT: 9892
+      KAFKA_JMX_HOSTNAME: localhost
 
   connect-dc1:
     image: confluentinc/cp-enterprise-replicator:5.1.0
@@ -150,6 +155,7 @@ services:
       - schema-registry-dc2
     ports:
       - "8381:8381"
+      - "9891:9891"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'broker-dc1:9091'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect-dc1
@@ -173,6 +179,8 @@ services:
       CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: broker-dc2:9092
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: broker-dc2:9092
+      KAFKA_JMX_PORT: 9891
+      KAFKA_JMX_HOSTNAME: localhost
 
   datagen-dc1-topic1:
     image: confluentinc/ksql-examples:5.1.0

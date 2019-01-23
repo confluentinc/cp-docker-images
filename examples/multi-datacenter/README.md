@@ -93,6 +93,7 @@ Replicator has an embedded consumer that reads data from the origin cluster.
 5. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc1` (origin cluster) in the cluster dropdown.
 Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  
 These show the consumer lag in `dc1` because Replicator has been configured with `offset.topic.commit=true` which commits Replicator's consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
+This consumer lag is available in Control Center and `kafka-consumer-groups`, but is not available via JXM.
 
 a. Click on `replicator-dc1-to-dc2-topic1` to view Replicator's consumer log in reading `topic1` and `_schemas` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`)
 
@@ -107,6 +108,15 @@ Verify that there are two consumer groups, one for reach Replicator instance run
 These show the consumer lag in `dc2` because Replicator has been configured with `offset.timestamps.commit=true` which commits internal offset timestamps for Replicator to the destination cluster `dc2` so that it can resume properly when switching to the secondary cluster.
 
 note: this does not mean that Replicator is consuming from these topics in `dc2` (`topic1`, `_schemas`, `topic2.replica`). The reason you see this consumer lag in `dc2` is because Replicator runs `commitSync()` to update the offsets in `dc2`, and this is a side-effect.
+
+7. The "Consumer Lag" described above is a good representation of Replicator lag, because Replicator's embedded consumer commits only after the connect worker's producer has committed the data to the destination cluster.
+Do not confuse consumer lag with an MBean attribute called `records-lag` part of Replicator's embedded consumer.
+That attribute reflects up to the embedded consumer and does not include lag due to producing to the destination cluster.
+It is real-time and it is normal for this value to be `0.0` when Replicator's consumer can keep up with the original data production rate.
+
+```bash
+$ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-name "kafka.consumer:type=consumer-fetch-manager-metrics,partition=0,topic=topic1,client-id=replicator-dc1-to-dc2-topic1-0" --attributes "records-lag" --jmx-url service:jmx:rmi:///jndi/rmi://connect-dc2:9892/jmxrmi
+```
 
 # Resuming Java Consumer Applications in Failover
 
