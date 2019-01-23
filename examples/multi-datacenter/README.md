@@ -1,4 +1,4 @@
-![image](images/confluent-logo-300-2.png){:width="400px"}
+![image](images/confluent-logo-300-2.png)
 
 # Overview
 
