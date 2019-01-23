@@ -36,8 +36,8 @@ echo -e "\n\nReplicator: dc1 topic1 -> dc2 topic1"
 echo -e "\n\nReplicator: dc2 topic2 -> dc2 topic2.replica"
 ./submit_replicator_dc1_to_dc2_topic2.sh
 
-#echo -e "\n\nReplicator: dc2 topic1 -> dc1 topic1"
-#./submit_replicator_dc2_to_dc1.sh
+echo -e "\n\nReplicator: dc2 topic1 -> dc1 topic1"
+./submit_replicator_dc2_to_dc1.sh
 
 echo -e "\nsleeping 60s"
 sleep 60
