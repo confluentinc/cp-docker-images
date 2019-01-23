@@ -1,3 +1,5 @@
+![image](images/confluent-logo-300-2.png)
+
 # Overview
 
 This example deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
@@ -42,11 +44,69 @@ Start all services, and print some messages from various topics in each datacent
 ./start.sh
 ```
 
+## Stop the services
+
 Stop all services:
 
 ```bash
 ./stop.sh
 ```
+
+# Monitor Replicator Performance
+
+## Multi-datacenter
+
+In this multi-datacenter environment, there are two Kafka clusters `dc1` and `dc2`.
+Confluent Control Center manages both of these.
+For simplicity in explaining how it works, in the following sections we will consider replication only from dc1 to dc2.
+
+1. After starting this Docker environment (see [previous section](#start-the-services), navigate your Chrome browser to the Control Center UI at http://localhost:9021 and verify that there are two Kafka clusters `dc1` and `dc2` in the dropdown:
+
+![image](images/c3-two-clusters.png)
+
+2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. At this time, Control Center can manage only one Kafka Connect cluster. Since we are explaining replication only from dc1 to dc2, we configured Control Center to manage the connect workers in `connect-dc2`.  Recall that Replicator is a source connector, so it runs on the destination cluster (dc2) pulling in data from the origin cluster (dc1).
+
+2. Navigate to http://localhost:9021/management/connect/ to verify that `connect-dc2` is running two instances of Replicator: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.
+
+## Streams Monitoring
+
+Control Center's monitoring capabilities include monitoring stream performance: verify that all data is consumed, and at what throughput and latency.
+This can be on a per-consumer group or per-topic basis.
+
+3. Navigate to http://localhost:9021/monitoring/streams/ and select `dc1` in the cluster dropdown. Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`. 
+
+![image](images/c3-streams-dc-1.png)
+
+4. Navigate to http://localhost:9021/monitoring/streams/ and select `dc2` in the cluster dropdown. Verify that there is one consumer group running from dc2 to dc1: `replicator-dc2-to-dc1-topic1`
+
+![image](images/c3-streams-dc-2.png)
+
+## Consumer Lag
+
+Control Center's monitoring capabilities also include consumer lag: how many messages behind are consumer groups from the latest offset in the log.
+Replicator has an embedded consumer that reads data from the origin cluster, so Replicator's consumer lag must be viewed in the origin cluster.
+
+5. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc1` (origin cluster) in the cluster dropdown.
+Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  
+These show the consumer lag in `dc1` because Replicator has been configured with `offset.topic.commit=true` which commits Replicator's consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
+
+a. Click on `replicator-dc1-to-dc2-topic1`: Replicator is copying `topic1` and `_schemas`.
+
+![image](images/c3-consumer-lag-dc1-topic1.png)
+
+note: view the equivalent with `docker-compose exec broker-dc1 kafka-consumer-groups  --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`
+
+b. Click on `replicator-dc1-to-dc2-topic2`: Replicator is copying `topic2`
+
+![image](images/c3-consumer-lag-dc1-topic2.png)
+
+note: view the equivalent with `docker-compose exec broker-dc1 kafka-consumer-groups  --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic2`
+
+6. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc2` (destination cluster) in the cluster dropdown.
+Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  
+These show the consumer lag in `dc2` because Replicator has been configured with `offset.timestamps.commit=true` which commits internal offset timestamps for Replicator to the destination cluster `dc2` so that it can resume properly when switching to the secondary cluster.
+
+note: this does not mean that Replicator is consuming from these topics (`topic1`, `_schemas`, `topic2.replica` from `dc2`). The reason you see this consumer lag in `dc2` is because Replicator runs `commitSync()` to update the offsets in `dc2`.
 
 # Resuming Java Consumer Applications in Failover
 
@@ -54,7 +114,8 @@ After a disaster event occurs, consumers can switch datacenters and automaticall
 
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.1-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
 
-1. After starting this Docker environment (see previous section), run the consumer to connect to DC1 Kafka cluster. It uses the consumer group id `java-consumer-[topic]`.
+
+1. After starting this Docker environment (see [previous section](#start-the-services), run the consumer to connect to DC1 Kafka cluster. It uses the Consumer Timestamps Interceptor, and configures the consumer group id `java-consumer-topic1`.
 
 ```bash
 git clone https://github.com/confluentinc/examples.git
@@ -63,7 +124,7 @@ mvn clean package
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29091 http://localhost:8081 localhost:29092"
 ```
 
-Verify the consumer is reading data originating from both DC1 and DC2:
+Verify in the consumer output that it is reading data originating from both DC1 and DC2:
 
 ```bash
 ...
@@ -73,13 +134,13 @@ key = User_6, value = {"userid": "User_6", "dc": "DC2"}
 ...
 ```
 
-2. Even though the consumer is consuming from DC1, there are DC2 consumer offsets committed for the consumer group `java-consumer-[topic]`.
+2. Even though the consumer is consuming from DC1, there are DC2 consumer offsets committed for the consumer group `java-consumer-topic1`. Run the following command to read from the `__consumer_offsets` topic in DC2.
 
 ```bash
-docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
+$ docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
 ```
 
-You should see some offsets:
+Verify that see some offsets for `java-consumer-topic1`:
 
 ```bash
 ...
@@ -92,10 +153,10 @@ You should see some offsets:
 3. Shut down DC1:
 
 ```bash
-docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
+$ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
-4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-[topic]`:
+4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-topic1`:
 
 ```bash
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
