@@ -19,11 +19,12 @@ This is for demo purposes only, not for production.
 
 ## Data generation and topic names
 
-There are Docker containers with data generators that produce mock data.
+| Datagen Docker container | Origin DC | Origin topics    | Replicator instance          | Destination DC | Destination topics |
+|--------------------------|-----------|------------------|------------------------------|----------------|--------------------|
+| datagen-dc1-topic1       | dc1       | topic1,_schemas  | replicator-dc1-to-dc2-topic1 | dc2            | topic1,_schemas    |
+| datagen-dc1-topic2       | dc1       | topic2           | replicator-dc1-to-dc2-topic2 | dc2            | topic2.replica     |
+| datagen-dc2-topic1       | dc2       | topic1           | replicator-dc2-to-dc1-topic1 | dc1            | topic1             |
 
-1. datagen-dc1-topic1: produces data to `topic1` in DC1
-2. datagen-dc1-topic2: produces data to `topic2` in DC1
-3. datagen-dc2-topic1: produces data to `topic1` in DC2
 
 Confluent Replicator (versions 5.0.1 and higher) prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1` by using provenance information in the message headers.
 
