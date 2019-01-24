@@ -21,9 +21,9 @@ This is for demo purposes only, not for production.
 
 There are Docker containers with data generators that produce mock data.
 
-1. datagen-dc1-topic1: produces data to topic1 in DC1
-2. datagen-dc1-topic2: produces data to topic2 in DC1
-3. datagen-dc2-topic1: produces data to topic1 in DC2
+1. datagen-dc1-topic1: produces data to `topic1` in DC1
+2. datagen-dc1-topic2: produces data to `topic2` in DC1
+3. datagen-dc2-topic1: produces data to `topic1` in DC2
 
 Confluent Replicator (versions 5.0.1 and higher) prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1` by using provenance information in the message headers.
 
@@ -109,8 +109,8 @@ note: this does not mean that Replicator is consuming from these topics in `dc2`
 
 7. The "Consumer Lag" described above is a good representation of Replicator lag, because Replicator's embedded consumer commits only after the connect worker's producer has committed the data to the destination cluster.
 Do not confuse consumer lag with an MBean attribute called `records-lag` part of Replicator's embedded consumer.
-That attribute reflects up to the embedded consumer and does not include lag due to producing to the destination cluster.
-It is real-time and it is normal for this value to be `0.0` when Replicator's consumer can keep up with the original data production rate.
+That attribute reflects whether Replicator's embedded consumer can keep up with the original data production rate, but it does not include replication lag due to producing to the destination cluster.
+It is real-time and it is normal for this value to be `0.0`.
 
 ```bash
 $ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-name "kafka.consumer:type=consumer-fetch-manager-metrics,partition=0,topic=topic1,client-id=replicator-dc1-to-dc2-topic1-0" --attributes "records-lag" --jmx-url service:jmx:rmi:///jndi/rmi://connect-dc2:9892/jmxrmi
