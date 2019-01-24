@@ -93,7 +93,7 @@ Replicator has an embedded consumer that reads data from the origin cluster.
 
 5. Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc1` (origin cluster) in the cluster dropdown.
 Verify that there are two consumer groups, one for reach Replicator instance running from dc1 to dc2: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.  These show the consumer lag in `dc1` because Replicator has been configured with `offset.topic.commit=true` which commits its own consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
-This consumer lag is available in Control Center and `kafka-consumer-groups`, but is not available via JXM.
+This consumer lag is available in Control Center and `kafka-consumer-groups`, but is not available via JMX.
 
 a. Click on `replicator-dc1-to-dc2-topic1` to view Replicator's consumer log in reading `topic1` and `_schemas` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`)
 
