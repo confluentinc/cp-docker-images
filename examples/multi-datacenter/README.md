@@ -118,16 +118,14 @@ $ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-n
 
 After a disaster event occurs, consumers can switch datacenters and automatically restart consuming data in the destination cluster where they left off in the origin cluster, a capability introduced in Confluent Platform version 5.0.
 
-To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.1-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
+To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](src/main/java/io/confluent/examples/clients/ConsumerMultiDatacenterExample.java).
 
 
 1. After starting this Docker environment (see [previous section](#start-the-services), run the consumer to connect to DC1 Kafka cluster. It uses the Consumer Timestamps Interceptor, and configures the consumer group id `java-consumer-topic1`.
 
 ```bash
-git clone https://github.com/confluentinc/examples.git
-cd clients/avro
 mvn clean package
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29091 http://localhost:8081 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29091 http://localhost:8081 localhost:29092"
 ```
 
 Verify in the consumer output that it is reading data originating from both DC1 and DC2:
@@ -165,7 +163,7 @@ $ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 4. Restart the consumer to connect to DC2 Kafka cluster, still using the same consumer group id `java-consumer-topic1`:
 
 ```bash
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.basicavro.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
 ```
 
 You should see data sourced from only DC2:
