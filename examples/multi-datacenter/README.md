@@ -1,21 +1,30 @@
 ![image](images/confluent-logo-300-2.png)
 
+* [Overview](#overview)
+* [Run the Demo](#run-the-demo)
+* [Monitor Replicator Performance](#monitor-replicator-performance)
+* [Resume Applications after Failover](#resume-applications-after-failover)
+* [Additional Reading](#additional-reading)
+
+
 # Overview
 
 This demo deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
 Confluent Control Center is running to manage and monitor the cluster.
 
-This is for demo purposes only, not for production.
+This Docker environment is for demo purposes only, not for production.
 
 ## Confluent Platform services and their associated ports
 
 |                | dc1                     | dc2                     |
 |----------------|-------------------------|-------------------------|
-|ZooKeeper       | 2181                    | 2182                    |
 |Broker          | 9091                    | 9092                    |
+|ZooKeeper       | 2181                    | 2182                    |
 |Schema Registry | 8081 (primary)          | 8082 (secondary)        |
 |Connect         | 8381 (copying dc2->dc1) | 8382 (copying dc1->dc2) |
 |Control Center  |                         | 9021                    |
+
+![image](images/mdc-level-1.png)
 
 ## Data generation and topic names
 
@@ -32,14 +41,14 @@ Confluent Replicator (version 5.0.1 and higher) prevents cyclic repetition of da
 
 ## Environment
 
-This has been validated on:
+This demo has been validated with:
 
 * Docker version 17.06.1-ce
 * Docker Compose version 1.14.0 with Docker Compose file format 2.1
 
 ## Start the services
 
-Start all services, and print some messages from various topics in each datacenter:
+Start all services and sample messages from topics in each datacenter:
 
 ```bash
 ./start.sh
@@ -55,6 +64,12 @@ Stop all services:
 
 # Monitor Replicator Performance
 
+Monitoring Replicator is important to:
+
+1. gauge how synchronized is the data between multiple datacenters
+2. optimize performance of the network and Confluent Platform
+
+
 ## Multi-datacenter
 
 In this multi-datacenter environment, there are two Kafka clusters `dc1` and `dc2`.
@@ -65,32 +80,32 @@ Confluent Replicator is copying data bi-directionally between `dc1` and `dc2`, b
 
 ![image](images/c3-two-clusters.png)
 
-2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. Recall that Replicator is a source connector that runs on the connect workers on the destination cluster, so `connect-dc1` runs Replicator copying from `dc2` to `dc1`, and `connect-dc2` runs Replicator copying from `dc1` to `dc2`. At this time, Control Center can manage only one Kafka Connect cluster, and since we are explaining replication only from `dc1` to `dc2`, in this demo Control Center manages the connect workers only in `connect-dc2`.
+2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. Recall that Replicator is a source connector that typically runs on the connect cluster at the destination, so `connect-dc1` runs Replicator copying from `dc2` to `dc1`, and `connect-dc2` runs Replicator copying from `dc1` to `dc2`. At this time, Control Center can manage only one Kafka Connect cluster, and since we are explaining replication only from `dc1` to `dc2`, in this demo Control Center manages the connect workers only in `connect-dc2`.
 
-3. For Replicator copying from `dc1` to `dc2`: Navigate to http://localhost:9021/management/connect/ to verify that Kafka Connect (configured to `connect-dc2`) is running two instances of Replicator: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`.
+3. For Replicator copying from `dc1` to `dc2`: Navigate to http://localhost:9021/management/connect/ to verify that Kafka Connect (configured to `connect-dc2`) is running two instances of Replicator: [replicator-dc1-to-dc2-topic1](submit_replicator_dc1_to_dc2.sh) and [replicator-dc1-to-dc2-topic2](submit_replicator_dc1_to_dc2_topic2.sh).
 
 ![image](images/replicator-instances.png)
 
 ## Streams Monitoring
 
 Control Center's monitoring capabilities include monitoring stream performance: verifying that all data is consumed and at what throughput and latency.
-This can be on a per-consumer group or per-topic basis.
+Monitoring can be displayed on a per-consumer group or per-topic basis.
 Confluent Replicator has an embedded consumer that reads data from the origin cluster, so you can monitor its performance in Control Center.
 To enable streams monitoring for Replicator, configure it with the Monitoring Consumer Interceptor, as shown in [this example](submit_replicator_dc1_to_dc2.sh).
 
 ![image](images/replicator-embedded-consumer.png)
 
-3. Navigate to http://localhost:9021/monitoring/streams/ and select the `dc1` Kafka cluster in the dropdown. Verify that there are two consumer groups, one for reach Replicator instance running from `dc1` to `dc2`: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`. 
+3. Navigate to http://localhost:9021/monitoring/streams/ and select the `dc1` Kafka cluster in the dropdown. Verify that there are two consumer groups, one for reach Replicator instance running from `dc1` to `dc2`, called `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`:
 
 ![image](images/c3-streams-dc-1.png)
 
-4. Navigate to http://localhost:9021/monitoring/streams/ and select the `dc2` Kafka cluster in the dropdown. Verify that there is one consumer group running from `dc2` to `dc1`: `replicator-dc2-to-dc1-topic1`
+4. Navigate to http://localhost:9021/monitoring/streams/ and select the `dc2` Kafka cluster in the dropdown. Verify that there is one consumer group running from `dc2` to `dc1` called `replicator-dc2-to-dc1-topic1`:
 
 ![image](images/c3-streams-dc-2.png)
 
 ## Consumer Lag
 
-Control Center's monitoring capabilities also include consumer lag: how many messages behind are consumer groups from the latest offset in the log.
+Control Center's monitoring capabilities include Consumer Lag, which indicates how many messages behind are consumer groups from the latest offset in the log.
 Replicator has an embedded consumer that reads data from the origin cluster, and it commits its offsets only after the connect worker's producer has committed the data to the destination cluster.
 You can monitor the consumer lag of Replicator's embedded consumer in the origin cluster (for Replicator instances copying data from `dc1` to `dc2`, the origin cluster is `dc1`).
 The ability to monitor Replicator's consumer lag is enabled when it is configured with `offset.topic.commit=true` (`true` by default), which allows Replicator to commit its own consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
@@ -116,9 +131,10 @@ That attribute reflects whether Replicator's embedded consumer can keep up with 
 $ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-name "kafka.consumer:type=consumer-fetch-manager-metrics,partition=0,topic=topic1,client-id=replicator-dc1-to-dc2-topic1-0" --attributes "records-lag" --jmx-url service:jmx:rmi:///jndi/rmi://connect-dc2:9892/jmxrmi
 ```
 
-# Resuming Java Consumer Applications after Failover
 
-After a disaster event occurs, consumers can switch datacenters and automatically restart consuming data in the destination cluster where they left off in the origin cluster, a capability introduced in version 5.0.
+# Resume Applications after Failover
+
+After a disaster event occurs, switch your java consumer application to a different datacenter and then it can automatically restart consuming data in the destination cluster where it left off in the origin cluster.
 
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](src/main/java/io/confluent/examples/clients/ConsumerMultiDatacenterExample.java).
 
@@ -146,7 +162,7 @@ key = User_6, value = {"userid": "User_6", "dc": "dc2"}
 $ docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
 ```
 
-Verify that there are some offsets for `java-consumer-topic1`:
+Verify that there are committed offsets:
 
 ```bash
 ...
@@ -162,7 +178,7 @@ Verify that there are some offsets for `java-consumer-topic1`:
 $ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
-4. Restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group id `java-consumer-topic1` so it can resume where it left off:
+4. Stop and restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group id `java-consumer-topic1` so it can resume where it left off:
 
 ```bash
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
@@ -180,4 +196,4 @@ key = User_5, value = {"userid": "User_5", "dc": "dc2"}
 
 # Additional Reading
 
-Whitepaper: [Disaster Recovery for Multi-Datacenter Apache Kafka Deployments](https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/)
+* For a practical guide to designing and configuring multiple Apache Kafka clusters to be resilient in case of a disaster scenario, see the `Disaster Recovery <https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/>`_ white paper. This white paper provides a plan for failover, failback, and ultimately successful recovery.
