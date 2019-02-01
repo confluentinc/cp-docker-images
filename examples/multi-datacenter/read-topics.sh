@@ -2,7 +2,7 @@
 
 # This script is purely to output some interesting data to help you understand the replication process
 
-echo -e "\n-----DC1-----"
+echo -e "\n-----dc1-----"
 echo -e "\nlist topics:"
 docker-compose exec broker-dc1 kafka-topics --list --zookeeper zookeeper-dc1:2181
 echo -e "\ntopic1:"
@@ -16,7 +16,7 @@ docker-compose exec connect-dc1 bash -c "export CLASSPATH=/usr/share/java/kafka-
 echo -e "\ncluster id:"
 docker-compose exec zookeeper-dc1 zookeeper-shell localhost:2181 get /cluster/id | grep version | grep id | jq -r .id
 
-echo -e "\n-----DC2-----"
+echo -e "\n-----dc2-----"
 echo -e "\nlist topics:"
 docker-compose exec broker-dc2 kafka-topics --list --zookeeper zookeeper-dc2:2182
 echo -e "\ntopic1:"
