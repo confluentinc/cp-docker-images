@@ -9,7 +9,7 @@
 
 # Overview
 
-This demo deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bi-directionally between the datacenters.
+This demo deploys an active-active multi-datacenter design, with two instances of Confluent Replicator copying data bidirectionally between the datacenters.
 Confluent Control Center is running to manage and monitor the cluster.
 
 This Docker environment is for demo purposes only, not for production.
@@ -139,7 +139,7 @@ After a disaster event occurs, switch your java consumer application to a differ
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](src/main/java/io/confluent/examples/clients/ConsumerMultiDatacenterExample.java).
 
 
-1. After starting this Docker environment (see [previous section](#start-the-services), run the consumer to connect to dc1 Kafka cluster. It automatically configures the consumer group id as `java-consumer-topic1` and uses the Consumer Timestamps Interceptor and Monitoring Interceptor.
+1. After starting this Docker environment (see [previous section](#start-the-services), run the consumer to connect to dc1 Kafka cluster. It automatically configures the consumer group ID as `java-consumer-topic1` and uses the Consumer Timestamps Interceptor and Monitoring Interceptor.
 
 ```bash
 mvn clean package
@@ -178,13 +178,13 @@ Verify that there are committed offsets:
 $ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
-4. Stop and restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group id `java-consumer-topic1` so it can resume where it left off:
+4. Stop and restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group ID `java-consumer-topic1` so it can resume where it left off:
 
 ```bash
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
 ```
 
-You should see data sourced from only `dc2`:
+You should see data sourced only from `dc2`:
 
 ```bash
 ...
