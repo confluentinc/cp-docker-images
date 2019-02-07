@@ -1,10 +1,10 @@
 ![image](images/confluent-logo-300-2.png)
 
 * [Overview](#overview)
-* [Run the Demo](#run-the-demo)
-* [Monitor Replicator Performance](#monitor-replicator-performance)
-* [Resume Applications after Failover](#resume-applications-after-failover)
-* [Additional Reading](#additional-reading)
+* [Run the demo](#run-the-demo)
+* [Monitor Replicator performance](#monitor-replicator-performance)
+* [Resume applications after failover](#resume-applications-after-failover)
+* [Additional reading](#additional-reading)
 
 
 # Overview
@@ -37,7 +37,7 @@ This Docker environment is for demo purposes only, not for production.
 
 Confluent Replicator (version 5.0.1 and higher) prevents cyclic repetition of data between the dc1 `topic1` and dc2 `topic1` by using provenance information in the message headers.
 
-# Run the Demo
+# Run the demo
 
 ## Environment
 
@@ -62,7 +62,7 @@ Stop all services:
 ./stop.sh
 ```
 
-# Monitor Replicator Performance
+# Monitor Replicator performance
 
 Monitoring Replicator is important to:
 
@@ -132,7 +132,7 @@ $ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-n
 ```
 
 
-# Resume Applications after Failover
+# Resume applications after failover
 
 After a disaster event occurs, switch your java consumer application to a different datacenter and then it can automatically restart consuming data in the destination cluster where it left off in the origin cluster.
 
@@ -194,6 +194,6 @@ key = User_5, value = {"userid": "User_5", "dc": "dc2"}
 ...
 ```
 
-# Additional Reading
+# Additional reading
 
 * For a practical guide to designing and configuring multiple Apache Kafka clusters to be resilient in case of a disaster scenario, see the `Disaster Recovery <https://www.confluent.io/white-paper/disaster-recovery-for-multi-datacenter-apache-kafka-deployments/>`_ white paper. This white paper provides a plan for failover, failback, and ultimately successful recovery.
