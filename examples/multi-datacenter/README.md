@@ -72,7 +72,7 @@ Monitoring Replicator is important to:
 
 ## Multi-datacenter
 
-In this multi-datacenter environment, there are two Kafka clusters, `dc1` and `dc2`.
+In this multi-datacenter environment, there are two Apache Kafka<sup>®</sup> clusters, `dc1` and `dc2`.
 Confluent Control Center manages both of these clusters.
 Confluent Replicator is copying data bidirectionally between `dc1` and `dc2`, but for simplicity in explaining how it works, the following sections consider replication only from `dc1` to `dc2`.
 
