@@ -33,7 +33,7 @@ echo "Connect dc2 has started!"
 echo -e "\n\nReplicator: dc1 topic1 -> dc2 topic1"
 ./submit_replicator_dc1_to_dc2.sh
 
-echo -e "\n\nReplicator: dc2 topic2 -> dc2 topic2.replica"
+echo -e "\n\nReplicator: dc1 topic2 -> dc2 topic2.replica"
 ./submit_replicator_dc1_to_dc2_topic2.sh
 
 echo -e "\n\nReplicator: dc2 topic1 -> dc1 topic1"
