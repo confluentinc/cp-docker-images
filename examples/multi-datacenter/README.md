@@ -91,7 +91,7 @@ Confluent Replicator is copying data bi-directionally between `dc1` and `dc2`, b
 Control Center's monitoring capabilities include monitoring stream performance: verifying that all data is consumed and at what throughput and latency.
 Monitoring can be displayed on a per-consumer group or per-topic basis.
 Confluent Replicator has an embedded consumer that reads data from the origin cluster, so you can monitor its performance in Control Center.
-To enable streams monitoring for Replicator, configure it with the Monitoring Consumer Interceptor, as shown in [this example](submit_replicator_dc1_to_dc2.sh).
+To enable streams monitoring for Replicator, configure it with the [Monitoring Consumer Interceptor](https://docs.confluent.io/current/control-center/installation/clients.html), as shown in [this example](submit_replicator_dc1_to_dc2.sh).
 
 ![image](images/replicator-embedded-consumer.png)
 
