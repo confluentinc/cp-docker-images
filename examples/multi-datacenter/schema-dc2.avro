@@ -12,7 +12,7 @@
                 {"name": "dc", "type": {
                     "type": "string",
                     "arg.properties": {
-                        "regex": "DC[2-2]?"
+                        "regex": "dc[2-2]?"
                     }
                 }}
         ]
