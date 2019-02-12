@@ -26,16 +26,9 @@ This command sends a metadata query to the broker and verifies that expected num
 
 		 mvn clean compile assembly:single
 
-2. See `src/test/bin/cli-test.sh` for examples on running the commands.
-
 ## How to test ?
 
 1. JUnit tests: mvn test
-2. Shell test :
-
-        cd docker-utils
-        src/test/bin/cli-test.sh
-
 
 ## Client.properties
 
