@@ -402,7 +402,7 @@ The following examples show to extend the images.
        # Confluent
        ENV SCALA_VERSION="2.11"
        ENV CONFLUENT_MAJOR_VERSION="3.3"
-       ENV CONFLUENT_VERSION="3.3.1"
+       ENV CONFLUENT_VERSION="3.3.3"
        ENV CONFLUENT_DEB_VERSION="1"
 
        # Zulu
