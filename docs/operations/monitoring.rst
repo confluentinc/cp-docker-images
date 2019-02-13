@@ -62,7 +62,7 @@ The steps for launching Kafka and |zk| with JMX enabled are the same as we saw i
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -e KAFKA_JMX_PORT=39999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent`
-    confluentinc/cp-zookeeper:3.3.1
+    confluentinc/cp-zookeeper:3.3.4-SNAPSHOT
 
   docker run -d \
     --name=kafka-jmx \
@@ -73,6 +73,6 @@ The steps for launching Kafka and |zk| with JMX enabled are the same as we saw i
     -e KAFKA_JMX_PORT=49999 \
     -e KAFKA_JMX_HOSTNAME=`docker-machine ip confluent` \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-    confluentinc/cp-kafka:3.3.1
+    confluentinc/cp-kafka:3.3.4-SNAPSHOT
 
 Note: in the KAFKA_JMX_HOSTNAME environment variable example above, it assumes you have a Docker machine named "Confluent".  You should substitute with your Docker machine name where appropriate.
