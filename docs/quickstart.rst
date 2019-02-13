@@ -394,7 +394,7 @@ Now that you have Kafka and |zk| up and running, you can deploy some of the othe
 
   .. sourcecode:: console
 
-    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.1 bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.3 bash
 
 
   Direct the utility at the local Kafka cluster, tell it to write to the topic ``bar``, read each line of input as an Avro message, validate the schema against the Schema Registry at the specified URL, and finally indicate the format of the data.
@@ -441,7 +441,7 @@ This section describes how to deploy the REST Proxy container and then consume d
 
   .. sourcecode:: console
 
-    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.1 bash
+    $ docker run -it --net=host --rm confluentinc/cp-schema-registry:3.3.3 bash
 
   The first step in consuming data via the REST Proxy is to create a consumer instance.
 
