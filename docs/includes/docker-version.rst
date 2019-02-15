@@ -1,6 +1,5 @@
 Docker version 1.11 or later `installed and running <https://docs.docker.com/engine/installation/>`_.
 
-If you're running on Windows:
-
-* You must use `Docker Machine <https://docs.docker.com/machine/install-machine/>`_ to start the Docker host.
-* You must allocate at least 4 GB of RAM (6 GB is recommended) to the Docker Machine.
+- If you're running on macOS, you must use `Docker for Mac <https://docs.docker.com/docker-for-mac/install/>`__.
+- If you're running on Windows, you must use `Docker for Windows <https://docs.docker.com/docker-for-windows/install/>`__.
+- You must allocate at least 8 GB of RAM (2 GB is the default).
