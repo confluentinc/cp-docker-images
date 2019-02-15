@@ -1,4 +1,4 @@
-.. _security_with_docker :
+.. _security_with_docker:
 
 Docker Security
 ===============
@@ -31,5 +31,4 @@ Running containers with arbitrary user IDs
 For details on the available security features in |cp|, see the :ref:`Confluent Platform Security
 Overview Documentation <security>`.
 
-For tutorials on using SSL in the |cp|, see the documented tutorials on :ref:`SSL
-<kafka_ssl_authentication>` and :ref:`SASL <kafka_sasl_auth>`.
+For tutorials on using SSL in the |cp|, see :ref:`cp-demo`.

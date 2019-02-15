@@ -102,7 +102,7 @@ In the example above, we specify the location of the data volumes by setting ``-
 
 .. _config_connect_ext_jars:
 
-Configuring Connect with External jars
+Configuring Connect with External JARs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka connect can be configured to use third-party jars by storing them on a volume on the host and mapping the volume to ``/etc/kafka-connect/jars`` on the container.
