@@ -172,13 +172,59 @@ Verify that there are committed offsets:
 ...
 ```
 
-3. Shut down dc1:
+3. When [Confluent Monitoring Interceptors](https://docs.confluent.io/current/control-center/installation/clients.html) are configured on any Kafka-based clients, i.e., producers, consumers, Connect, KSQL, then they write metadata to a topic called `_confluent-monitoring`.  Confluent Control Center reads that topic to do expert stream monitoring for message delivery assurance and performance for throughput and latency.  From that topic, you can also verify which producers are writing to which topics and which consumers are reading from which topics.  Check out the sample [script](map_topics_clients.py) in the repo (Note: this is for demo purposes only, not suitable for production).
+
+```bash
+./map_topics_clients.py
+```
+
+In steady state with the java client running, you should see:
+
+```bash
+Reading topic _confluent-monitoring for 60 seconds...please wait
+
+__consumer_timestamps
+  producers
+    consumer-1
+    producer-10
+    producer-11
+    producer-14
+    producer-15
+    producer-6
+    producer-8
+  consumers
+    replicator-dc1-to-dc2-topic1
+    replicator-dc1-to-dc2-topic2
+    replicator-dc2-to-dc1-topic1
+
+topic1
+  producers
+    KSQLDataGenProducer
+    connect-worker-producer-dc1
+    connect-worker-producer-dc2
+  consumers
+    java-consumer-topic1
+    replicator-dc1-to-dc2-topic1
+    replicator-dc2-to-dc1-topic1
+
+topic2
+  producers
+    KSQLDataGenProducer
+  consumers
+    replicator-dc1-to-dc2-topic2
+
+topic2.replica
+  producers
+    connect-worker-producer-dc2
+```
+
+4. Shut down dc1:
 
 ```bash
 $ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 ```
 
-4. Stop and restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group ID `java-consumer-topic1` so it can resume where it left off:
+5. Stop and restart the consumer to connect to `dc2` Kafka cluster. It will still use the same consumer group ID `java-consumer-topic1` so it can resume where it left off:
 
 ```bash
 mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
@@ -193,6 +239,7 @@ key = User_9, value = {"userid": "User_9", "dc": "dc2"}
 key = User_5, value = {"userid": "User_5", "dc": "dc2"}
 ...
 ```
+
 
 # Additional reading
 
