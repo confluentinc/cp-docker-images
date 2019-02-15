@@ -193,7 +193,7 @@ services:
       - schema-registry-dc1
     volumes:
       - $PWD/schema-dc1.avro:/tmp/schema-dc1.avro
-      - $PWD/datagen.properties:/tmp/datagen.properties
+      - $PWD/datagen-properties/datagen-dc1-topic1.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc1:9091 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
@@ -215,7 +215,7 @@ services:
       - broker-dc1
       - schema-registry-dc1
     volumes:
-      - $PWD/datagen.properties:/tmp/datagen.properties
+      - $PWD/datagen-properties/datagen-dc1-topic2.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc1:9091 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
@@ -239,7 +239,7 @@ services:
       - schema-registry-dc2
     volumes:
       - $PWD/schema-dc2.avro:/tmp/schema-dc2.avro
-      - $PWD/datagen.properties:/tmp/datagen.properties
+      - $PWD/datagen-properties/datagen-dc2.properties:/tmp/datagen.properties
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker-dc2:9092 1 90 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \

@@ -188,8 +188,6 @@ __consumer_timestamps
     consumer-1
     producer-10
     producer-11
-    producer-14
-    producer-15
     producer-6
     producer-8
   consumers
@@ -197,11 +195,18 @@ __consumer_timestamps
     replicator-dc1-to-dc2-topic2
     replicator-dc2-to-dc1-topic1
 
+_schemas
+  producers
+    connect-worker-producer-dc2
+  consumers
+    replicator-dc1-to-dc2-topic1
+
 topic1
   producers
-    KSQLDataGenProducer
     connect-worker-producer-dc1
     connect-worker-producer-dc2
+    datagen-dc1-topic1
+    datagen-dc2-topic1
   consumers
     java-consumer-topic1
     replicator-dc1-to-dc2-topic1
@@ -209,7 +214,7 @@ topic1
 
 topic2
   producers
-    KSQLDataGenProducer
+    datagen-dc1-topic2
   consumers
     replicator-dc1-to-dc2-topic2
 
