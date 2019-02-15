@@ -3,10 +3,10 @@
 Docker Configuration Parameters
 ===============================
 
-The variables that are required when starting up the Docker images are described with an example of how to pass them.
+This topic describes how to configure the Docker images when starting |cp|.
 
-The |cp| Docker images support passing configuration variables dynamically using environment variables.  When starting
-the images use the Docker ``-e`` or ``--env`` flags for setting various settings.
+You can dynamically specify configuration values in the |cp| Docker images with environment variables. You can use the
+Docker ``-e`` or ``--env`` flags for to specify various settings.
 
 ------------------
 |zk| Configuration

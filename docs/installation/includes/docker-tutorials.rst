@@ -1,11 +1,11 @@
-.. this file contains information that is reused across topics
+.. note
 
 .. note:: In this tutorial, Kafka and |zk| are configured to store data locally in the Docker containers. For production
           deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting
           data in the event that a container stops running or is restarted.  This is important when running a system like
           Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add
           mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
-
+.. install-run
 Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -15,7 +15,7 @@ to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.
 The |cp| Docker Images require Docker version 1.11 or greater.
 
-
+.. setting-up-3-node
 Docker Client: Setting Up a Three Node Kafka Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
