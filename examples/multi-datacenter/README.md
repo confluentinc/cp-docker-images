@@ -134,7 +134,7 @@ $ docker-compose exec connect-dc2 kafka-run-class kafka.tools.JmxTool --object-n
 
 # Resume applications after failover
 
-After a disaster event occurs, switch your java consumer application to a different datacenter and then it can automatically restart consuming data in the destination cluster where it left off in the origin cluster.
+After a disaster event occurs, switch your Java consumer application to a different datacenter and then it can automatically restart consuming data in the destination cluster where it left off in the origin cluster.
 
 To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](src/main/java/io/confluent/examples/clients/ConsumerMultiDatacenterExample.java).
 
@@ -178,7 +178,7 @@ Verify that there are committed offsets:
 ./map_topics_clients.py
 ```
 
-In steady state with the java client running, you should see:
+In steady state with the Java consumer running, you should see:
 
 ```bash
 Reading topic _confluent-monitoring for 60 seconds...please wait
