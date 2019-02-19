@@ -172,7 +172,11 @@ Verify that there are committed offsets:
 ...
 ```
 
-3. When [Confluent Monitoring Interceptors](https://docs.confluent.io/current/control-center/installation/clients.html) are configured on any Kafka-based clients, i.e., producers, consumers, Connect, KSQL, then they write metadata to a topic called `_confluent-monitoring`.  Confluent Control Center reads that topic to do expert stream monitoring for message delivery assurance and performance for throughput and latency.  From that topic, you can also verify which producers are writing to which topics and which consumers are reading from which topics.  Check out the sample [script](map_topics_clients.py) in the repo (Note: this is for demo purposes only, not suitable for production).
+
+3. When [Confluent Monitoring Interceptors](https://docs.confluent.io/current/control-center/installation/clients.html) are configured on Kafka clients, they write metadata to a topic called `_confluent-monitoring`.
+   Kafka clients include any application that uses the Apache Kafka client API to connect to Kafka brokers, such as custom client code or any service that has embedded producers or consumers, such as Kafka Connect, KSQL, or a Kafka Streams application.
+   Control Center uses that topic to ensure that all messages are delivered and to provide statistics on throughput and latency performance.
+   From that same topic, you can also derive which producers are writing to which topics and which consumers are reading from which topics, and an example [script](map_topics_clients.py) is provided with the repo (note: this is for demo purposes only, not suitable for production).
 
 ```bash
 ./map_topics_clients.py
