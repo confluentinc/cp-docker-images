@@ -14,6 +14,9 @@ Considerations
 
 You should consider the following before using the Docker images.
 
+Multi-node Environment
+    For more information, see :ref:`cp-multi-node`.
+
 Persistent Data (Mounted Volumes)
     When deploying the Kafka and |zk| images, you should always use `mounted volumes <operations/external-volumes.html>`_
     for the file systems those images use for their persistent data.  This ensures that the containers will retain their
