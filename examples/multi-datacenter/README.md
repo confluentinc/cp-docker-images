@@ -106,7 +106,7 @@ To enable streams monitoring for Replicator, configure it with the [Monitoring C
 ## Consumer Lag
 
 Control Center's monitoring capabilities include Consumer Lag, which indicates how many messages behind are consumer groups from the latest offset in the log.
-Replicator has an embedded consumer that reads data from the origin cluster, and it commits its offsets only after the connect worker's producer has committed the data to the destination cluster.
+Replicator has an embedded consumer that reads data from the origin cluster, and it commits its offsets only after the connect worker's producer has committed the data to the destination cluster (configure the frequency of commits with the parameter ``offset.flush.interval.ms``).
 You can monitor the consumer lag of Replicator's embedded consumer in the origin cluster (for Replicator instances copying data from `dc1` to `dc2`, the origin cluster is `dc1`).
 The ability to monitor Replicator's consumer lag is enabled when it is configured with `offset.topic.commit=true` (`true` by default), which allows Replicator to commit its own consumer offsets to the origin cluster `dc1` after the messages have been written to the destination cluster.
 
