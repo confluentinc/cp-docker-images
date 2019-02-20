@@ -183,7 +183,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
 
   datagen-dc1-topic1:
-    image: confluentinc/ksql-examples:5.1.1
+    image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc1-topic1
     container_name: datagen-dc1-topic1
     depends_on:
@@ -206,7 +206,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   datagen-dc1-topic2:
-    image: confluentinc/ksql-examples:5.1.1
+    image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc1-topic2
     container_name: datagen-dc1-topic2
     depends_on:
@@ -228,7 +228,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   datagen-dc2-topic1:
-    image: confluentinc/ksql-examples:5.1.1
+    image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc2-topic1
     container_name: datagen-dc2-topic1
     depends_on:
