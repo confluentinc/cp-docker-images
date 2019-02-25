@@ -55,7 +55,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:4.0.0
+       confluentinc/cp-zookeeper:4.0.4-SNAPSHOT
 
     docker run -d \
        --net=host \
@@ -66,7 +66,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:4.0.0
+       confluentinc/cp-zookeeper:4.0.4-SNAPSHOT
 
     docker run -d \
        --net=host \
@@ -77,7 +77,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        -e ZOOKEEPER_INIT_LIMIT=5 \
        -e ZOOKEEPER_SYNC_LIMIT=2 \
        -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-       confluentinc/cp-zookeeper:4.0.0
+       confluentinc/cp-zookeeper:4.0.4-SNAPSHOT
 
   Before moving on, we'll check the logs to see the broker has booted up successfully by running the following command:
 
@@ -101,7 +101,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
   .. sourcecode:: bash
 
     for i in 22181 32181 42181; do
-      docker run --net=host --rm confluentinc/cp-zookeeper:4.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+      docker run --net=host --rm confluentinc/cp-zookeeper:4.0.4-SNAPSHOT bash -c "echo stat | nc localhost $i | grep Mode"
     done
 
   You should see one ``leader`` and two ``follower`` nodes.  The output should look something like the following:
@@ -121,21 +121,21 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --name=kafka-1 \
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
-        confluentinc/cp-kafka:4.0.0
+        confluentinc/cp-kafka:4.0.4-SNAPSHOT
 
     docker run -d \
         --net=host \
         --name=kafka-2 \
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
-        confluentinc/cp-kafka:4.0.0
+        confluentinc/cp-kafka:4.0.4-SNAPSHOT
 
      docker run -d \
          --net=host \
          --name=kafka-3 \
          -e KAFKA_ZOOKEEPER_CONNECT=localhost:22181,localhost:32181,localhost:42181 \
          -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:49092 \
-         confluentinc/cp-kafka:4.0.0
+         confluentinc/cp-kafka:4.0.4-SNAPSHOT
 
   Check the logs to see the broker has booted up successfully
 
@@ -172,7 +172,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:4.0.0 \
+        confluentinc/cp-kafka:4.0.4-SNAPSHOT \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
   You should see the following output:
@@ -188,7 +188,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:4.0.0 \
+          confluentinc/cp-kafka:4.0.4-SNAPSHOT \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
   You should see the following message in your terminal window:
@@ -206,7 +206,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
     docker run \
       --net=host \
-      --rm confluentinc/cp-kafka:4.0.0 \
+      --rm confluentinc/cp-kafka:4.0.4-SNAPSHOT \
       bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar && echo 'Produced 42 messages.'"
 
   The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
@@ -222,7 +222,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
      --net=host \
      --rm \
-     confluentinc/cp-kafka:4.0.0 \
+     confluentinc/cp-kafka:4.0.4-SNAPSHOT \
      kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --max-messages 42
 
   You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
@@ -302,7 +302,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:4.0.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:4.0.4-SNAPSHOT bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower``
