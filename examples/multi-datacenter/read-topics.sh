@@ -33,3 +33,6 @@ echo -e "\ntimestamp info (group: topic-partition):"
 docker-compose exec connect-dc2 bash -c "export CLASSPATH=/usr/share/java/kafka-connect-replicator/kafka-connect-replicator-5.1.2.jar && kafka-console-consumer --topic __consumer_timestamps --bootstrap-server broker-dc2:9092 --property print.key=true --property key.deserializer=io.confluent.connect.replicator.offsets.GroupTopicPartitionDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer --max-messages 2"
 echo -e "\ncluster id:"
 docker-compose exec zookeeper-dc2 zookeeper-shell localhost:2182 get /cluster/id | grep version | grep id | jq -r .id
+
+echo -e "\n-----map-topics-clients-----"
+./map_topics_clients.py
