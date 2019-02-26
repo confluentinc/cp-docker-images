@@ -52,7 +52,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:4.1.3
 
    .. sourcecode:: bash
 
@@ -65,7 +65,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:4.1.3
 
    .. sourcecode:: bash
 
@@ -78,7 +78,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
          -e ZOOKEEPER_INIT_LIMIT=5 \
          -e ZOOKEEPER_SYNC_LIMIT=2 \
          -e ZOOKEEPER_SERVERS="localhost:22888:23888;localhost:32888:33888;localhost:42888:43888" \
-         confluentinc/cp-zookeeper:4.1.0
+         confluentinc/cp-zookeeper:4.1.3
 
    Check the logs to confirm that the |zk| servers have booted up successfully:
 
@@ -102,7 +102,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
    .. sourcecode:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.3 bash -c "echo stat | nc localhost $i | grep Mode"
      done
 
    You should see one ``leader`` and two ``follower`` instances.
@@ -129,7 +129,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker1_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:4.1.3
 
    .. sourcecode:: bash
 
@@ -145,7 +145,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker2_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:4.1.3
 
    .. sourcecode:: bash
 
@@ -161,7 +161,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        -e KAFKA_SSL_TRUSTSTORE_CREDENTIALS=broker3_truststore_creds \
        -e KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SSL \
        -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-       confluentinc/cp-kafka:4.1.0
+       confluentinc/cp-kafka:4.1.3
 
    Check the logs to see the broker has booted up successfully:
 
@@ -198,7 +198,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
       docker run \
         --net=host \
         --rm \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:4.1.3 \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper localhost:32181
 
    You should see the following output:
@@ -214,7 +214,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
        docker run \
           --net=host \
           --rm \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:4.1.3 \
           kafka-topics --describe --topic bar --zookeeper localhost:32181
 
    You should see the following message in your terminal window:
@@ -234,7 +234,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
           --net=host \
           --rm \
           -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-          confluentinc/cp-kafka:4.1.0 \
+          confluentinc/cp-kafka:4.1.3 \
           bash -c "seq 42 | kafka-console-producer --broker-list localhost:29092 --topic bar -producer.config /etc/kafka/secrets/host.producer.ssl.config && echo 'Produced 42 messages.'"
 
    The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
@@ -251,7 +251,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SSL.
         --net=host \
         --rm \
         -v ${KAFKA_SSL_SECRETS_DIR}:/etc/kafka/secrets \
-        confluentinc/cp-kafka:4.1.0 \
+        confluentinc/cp-kafka:4.1.3 \
         kafka-console-consumer --bootstrap-server localhost:29092 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.config --max-messages 42
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
@@ -329,7 +329,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.0 bash -c "echo stat | nc localhost $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.3 bash -c "echo stat | nc localhost $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower`` instances:
