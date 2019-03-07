@@ -51,7 +51,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=32181 \
         -e ZOOKEEPER_TICK_TIME=2000 \
-        confluentinc/cp-zookeeper:4.1.0
+        confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
 
    Start Kafka:
 
@@ -63,7 +63,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
         -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
         -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
         -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-        confluentinc/cp-kafka:4.1.0
+        confluentinc/cp-kafka:4.1.4-SNAPSHOT
 
    .. note:: To make Kafka accessible from outside the container by advertising its location on the Docker host, the
              ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``. The ``offsets.topic.replication.factor``
@@ -80,7 +80,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=localhost:32181 \
       -e SCHEMA_REGISTRY_HOST_NAME=localhost \
       -e SCHEMA_REGISTRY_LISTENERS=http://localhost:8081 \
-      confluentinc/cp-schema-registry:4.1.0
+      confluentinc/cp-schema-registry:4.1.4-SNAPSHOT
 
    You can confirm that each of the services is up by checking the logs using the following command: ``docker logs <container_name>``. For example, if we run ``docker logs kafka``, we should see the following at the end of the log output:
 
@@ -103,7 +103,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
       kafka-topics --create --topic quickstart-avro-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    .. sourcecode:: bash
@@ -111,7 +111,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
       kafka-topics --create --topic quickstart-avro-config --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    .. sourcecode:: bash
@@ -119,7 +119,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
       --net=host \
       --rm \
-      confluentinc/cp-kafka:4.1.0 \
+      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
       kafka-topics --create --topic quickstart-avro-status --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:32181
 
    Before moving on, you can verify that the topics are created:
@@ -129,7 +129,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:4.1.0 \
+       confluentinc/cp-kafka:4.1.4-SNAPSHOT \
        kafka-topics --describe --zookeeper localhost:32181
 
 
@@ -294,7 +294,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
     docker run \
        --net=host \
        --rm \
-       confluentinc/cp-kafka:4.1.0 \
+       confluentinc/cp-kafka:4.1.4-SNAPSHOT \
        kafka-topics --describe --zookeeper localhost:32181
 
 
@@ -305,7 +305,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
       docker run \
        --net=host \
        --rm \
-       confluentinc/cp-schema-registry:4.1.0 \
+       confluentinc/cp-schema-registry:4.1.4-SNAPSHOT \
        kafka-avro-console-consumer --bootstrap-server localhost:29092 --topic quickstart-jdbc-test --new-consumer --from-beginning --max-messages 10
 
    You should see the following:
