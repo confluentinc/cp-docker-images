@@ -3,7 +3,7 @@ Docker Images for Confluent Plaform
 
 Docker images for deploying and running the Confluent Platform.  The images are currently available on [DockerHub](https://hub.docker.com/u/confluentinc/).  They are currently only available for Confluent Platform 3.0.1 and after.
 
-Full documentation for using the images can be found [here](http://docs.confluent.io/current/cp-docker-images/docs/intro.html).
+Full documentation for using the images can be found [here](https://docs.confluent.io/current/installation/docker/index.html).
 
 # Deprecation Notice
 
@@ -27,7 +27,7 @@ Use `make` to perform various builds and tests
 
 # Contribute
 
-Start by reading our guidelines on contributing to this project found [here](http://docs.confluent.io/current/cp-docker-images/docs/contributing.html).
+Start by reading our guidelines on contributing to this project found [here](CONTRIBUTING.md).
 
 - Source Code: https://github.com/confluentinc/cp-docker-images
 - Issue Tracker: https://github.com/confluentinc/cp-docker-images/issues
