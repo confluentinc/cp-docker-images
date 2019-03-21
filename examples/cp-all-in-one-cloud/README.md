@@ -9,21 +9,27 @@
 
 Note: Use this in a *non-production* Confluent Cloud instance for development purposes only.
 
-Step 1: On the host from which you are running Docker, ensure that you have properly initialized Confluent Cloud CLI and have a valid configuration file at `$HOME/.ccloud/config`.
+## Step 1
 
-Step 2: By default, the demo runs with a locally running Confluent Schema Registry. If you prefer to use Confluent Cloud Schema Registry instead, you need to first set it up:
+On the host from which you are running Docker, ensure that you have properly initialized Confluent Cloud CLI and have a valid configuration file at `$HOME/.ccloud/config`.
+
+## Step 2
+
+By default, the demo uses Confluent Schema Registry running in a local Docker container. If you prefer to use Confluent Cloud Schema Registry instead, you need to first set it up:
 
    a. [Enable](http://docs.confluent.io/current/quickstart/cloud-quickstart.html#step-3-configure-sr-ccloud) Confluent Cloud Schema Registry prior to running the demo
 
    b. Validate your credentials to Confluent Cloud Schema Registry
 
    ```bash
-   curl -u <SR API KEY>:<SR API SECRET> https://<SR ENDPOINT>/subjects
+   $ curl -u <SR API KEY>:<SR API SECRET> https://<SR ENDPOINT>/subjects
    ```
 
-Step 3: Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration.
+## Step 3
 
-   a. If you want to use the locally running Confluent Schema Registry:
+Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration.
+
+   a. If you want to use Confluent Schema Registry running in a local Docker container:
 
    ```bash
    $ ./ccloud-generate-env-vars.sh schema_registry_docker.config
@@ -35,7 +41,9 @@ Step 3: Generate a file of ENV variables used by Docker to set the bootstrap ser
    $ ./ccloud-generate-env-vars.sh $HOME/.ccloud/config
    ```
 
-Step 4: Source the generated file of ENV variables
+## Step 4
+
+Source the generated file of ENV variables
 
 ```bash
 $ source ./delta_configs/env.delta
