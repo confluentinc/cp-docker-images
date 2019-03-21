@@ -9,15 +9,33 @@
 
 Note: Use this in a *non-production* Confluent Cloud instance for development purposes only.
 
-On the host from which you are running Docker, ensure that you have properly initialized Confluent Cloud CLI and have a valid configuration file at `$HOME/.ccloud/config`.
+Step 1: On the host from which you are running Docker, ensure that you have properly initialized Confluent Cloud CLI and have a valid configuration file at `$HOME/.ccloud/config`.
 
-Step 1: Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration
+Step 2: By default, the demo runs with a locally running Confluent Schema Registry. If you prefer to use Confluent Cloud Schema Registry instead, you need to first set it up:
 
-```bash
-$ ./ccloud-generate-env-vars.sh
-```
+   a. [Enable](http://docs.confluent.io/current/quickstart/cloud-quickstart.html#step-3-configure-sr-ccloud) Confluent Cloud Schema Registry prior to running the demo
 
-Step 2: Source that file of ENV variables
+   b. Validate your credentials to Confluent Cloud Schema Registry
+
+   ```bash
+   curl -u <SR API KEY>:<SR API SECRET> https://<SR ENDPOINT>/subjects
+   ```
+
+Step 3: Generate a file of ENV variables used by Docker to set the bootstrap servers and security configuration.
+
+   a. If you want to use the locally running Confluent Schema Registry:
+
+   ```bash
+   $ ./ccloud-generate-env-vars.sh schema_registry_docker.config
+   ```
+
+   b. If you want to use Confluent Cloud Schema Registry:
+
+   ```bash
+   $ ./ccloud-generate-env-vars.sh $HOME/.ccloud/config
+   ```
+
+Step 4: Source the generated file of ENV variables
 
 ```bash
 $ source ./delta_configs/env.delta
@@ -36,6 +54,8 @@ $ docker-compose up -d
 ```
 
 ## Confluent Schema Registry
+
+If you are not using Confluent Cloud Schema Registry:
 
 ```bash
 $ docker-compose up -d schema-registry
