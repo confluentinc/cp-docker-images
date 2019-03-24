@@ -38,7 +38,7 @@ docker-compose exec schema-registry-dc1 kafka-avro-console-consumer --topic topi
 echo -e "\n_schemas:"
 docker-compose exec broker-dc1 kafka-console-consumer --topic _schemas --bootstrap-server broker-dc1:9091 --from-beginning --timeout-ms 5000
 echo -e "\nprovenance info:"
-docker-compose exec replicator-dc1-to-dc2 bash -c "export CLASSPATH=/usr/share/java/kafka-connect-replicator/kafka-connect-replicator-5.0.1.jar && kafka-console-consumer --topic topic1 --bootstrap-server broker-dc1:9091 --max-messages 10 --formatter=io.confluent.connect.replicator.tools.ProvenanceHeaderFormatter"
+docker-compose exec replicator-dc1-to-dc2 bash -c "export CLASSPATH=/usr/share/java/kafka-connect-replicator/kafka-connect-replicator-5.0.3.jar && kafka-console-consumer --topic topic1 --bootstrap-server broker-dc1:9091 --max-messages 10 --formatter=io.confluent.connect.replicator.tools.ProvenanceHeaderFormatter"
 echo -e "\ncluster id:"
 docker-compose exec zookeeper-dc1 zookeeper-shell localhost:2181 get /cluster/id | grep version | grep id | jq -r .id
 
@@ -50,7 +50,7 @@ docker-compose exec schema-registry-dc1 kafka-avro-console-consumer --topic topi
 echo -e "\n_schemas:"
 docker-compose exec broker-dc1 kafka-console-consumer --topic _schemas --bootstrap-server broker-dc2:9092 --from-beginning --timeout-ms 5000
 echo -e "\nprovenance info:"
-docker-compose exec replicator-dc1-to-dc2 bash -c "export CLASSPATH=/usr/share/java/kafka-connect-replicator/kafka-connect-replicator-5.0.1.jar && kafka-console-consumer --topic topic1 --bootstrap-server broker-dc2:9092 --max-messages 10 --formatter=io.confluent.connect.replicator.tools.ProvenanceHeaderFormatter"
+docker-compose exec replicator-dc1-to-dc2 bash -c "export CLASSPATH=/usr/share/java/kafka-connect-replicator/kafka-connect-replicator-5.0.3.jar && kafka-console-consumer --topic topic1 --bootstrap-server broker-dc2:9092 --max-messages 10 --formatter=io.confluent.connect.replicator.tools.ProvenanceHeaderFormatter"
 echo -e "\ncluster id:"
 docker-compose exec zookeeper-dc2 zookeeper-shell localhost:2182 get /cluster/id | grep version | grep id | jq -r .id
 
