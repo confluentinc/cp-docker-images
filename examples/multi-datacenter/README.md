@@ -80,7 +80,7 @@ Confluent Replicator is copying data bidirectionally between `dc1` and `dc2`, bu
 
 ![image](images/c3-two-clusters.png)
 
-2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. Recall that Replicator is a source connector that typically runs on the connect cluster at the destination, so `connect-dc1` runs Replicator copying from `dc2` to `dc1`, and `connect-dc2` runs Replicator copying from `dc1` to `dc2`. At this time, Control Center can manage only one Kafka Connect cluster, and since we are explaining replication only from `dc1` to `dc2`, in this demo Control Center manages the connect workers only in `connect-dc2`.
+2. This demo has two Kafka Connect clusters, `connect-dc1` and `connect-dc2`. Recall that Replicator is a source connector that typically runs on the connect cluster at the destination, so `connect-dc1` runs Replicator copying from `dc2` to `dc1`, and `connect-dc2` runs Replicator copying from `dc1` to `dc2`. Since version 5.2, Control Center can manage multiple Kafka Connect clusters, but in this demo we focus only on those Replicator instances running in `connect-dc2` copying from `dc1` to `dc2`.
 
 3. For Replicator copying from `dc1` to `dc2`: navigate to http://localhost:9021/management/connect/ to verify that Kafka Connect (configured to `connect-dc2`) is running two instances of Replicator: [replicator-dc1-to-dc2-topic1](submit_replicator_dc1_to_dc2.sh) and [replicator-dc1-to-dc2-topic2](submit_replicator_dc1_to_dc2_topic2.sh).
 
