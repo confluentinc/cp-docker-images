@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper-dc1:
-    image: confluentinc/cp-zookeeper:5.0.3-SNAPSHOT
+    image: confluentinc/cp-zookeeper:5.0.4-SNAPSHOT
     hostname: zookeeper-dc1
     container_name: zookeeper-dc1
     ports:
@@ -12,7 +12,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   zookeeper-dc2:
-    image: confluentinc/cp-zookeeper:5.0.3-SNAPSHOT
+    image: confluentinc/cp-zookeeper:5.0.4-SNAPSHOT
     hostname: zookeeper-dc2
     container_name: zookeeper-dc2
     ports:
@@ -22,7 +22,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   broker-dc1:
-    image: confluentinc/cp-enterprise-kafka:5.0.3-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.0.4-SNAPSHOT
     hostname: broker-dc1
     container_name: broker-dc1
     depends_on:
@@ -38,7 +38,7 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   broker-dc2:
-    image: confluentinc/cp-enterprise-kafka:5.0.3-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.0.4-SNAPSHOT
     hostname: broker-dc2
     container_name: broker-dc2
     depends_on:
@@ -54,7 +54,7 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   schema-registry-dc1:
-    image: confluentinc/cp-schema-registry:5.0.3-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.0.4-SNAPSHOT
     hostname: schema-registry-dc1
     container_name: schema-registry-dc1
     restart: always
@@ -70,7 +70,7 @@ services:
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   schema-registry-dc2:
-    image: confluentinc/cp-schema-registry:5.0.3-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.0.4-SNAPSHOT
     hostname: schema-registry-dc2
     container_name: schema-registry-dc2
     restart: always
@@ -88,7 +88,7 @@ services:
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   replicator-dc1-to-dc2:
-    image: confluentinc/cp-enterprise-replicator:5.0.3-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.0.4-SNAPSHOT
     hostname: replicator-dc1-to-dc2
     container_name: replicator-dc1-to-dc2
     depends_on:
@@ -121,7 +121,7 @@ services:
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
 
   replicator-dc2-to-dc1:
-    image: confluentinc/cp-enterprise-replicator:5.0.3-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.0.4-SNAPSHOT
     hostname: replicator-dc2-to-dc1
     container_name: replicator-dc2-to-dc1
     depends_on:
@@ -153,7 +153,7 @@ services:
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
 
   datagen-dc1:
-    image: confluentinc/ksql-examples:5.0.1
+    image: confluentinc/ksql-examples:5.0.4-SNAPSHOT
     hostname: datagen-dc1
     container_name: datagen-dc1
     depends_on:
@@ -175,7 +175,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   datagen-dc2:
-    image: confluentinc/ksql-examples:5.0.1
+    image: confluentinc/ksql-examples:5.0.4-SNAPSHOT
     hostname: datagen-dc2
     container_name: datagen-dc2
     depends_on:
