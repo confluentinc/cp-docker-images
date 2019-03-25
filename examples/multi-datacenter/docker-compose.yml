@@ -267,8 +267,8 @@ services:
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker-dc2:9092'
       CONTROL_CENTER_ZOOKEEPER_CONNECT: 'zookeeper-dc2:2182'
-      # In 5.1, Control Center can manage only one connect cluster
-      CONTROL_CENTER_CONNECT_CLUSTER: 'connect-dc2:8382'
+      CONTROL_CENTER_CONNECT_DC1_CLUSTER: 'connect-dc1:8381'
+      CONTROL_CENTER_CONNECT_DC2_CLUSTER: 'connect-dc2:8382'
       CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry-dc2:8082"
       CONTROL_CENTER_KAFKA_DC1_BOOTSTRAP_SERVERS: 'broker-dc1:9091'
       CONTROL_CENTER_KAFKA_DC2_BOOTSTRAP_SERVERS: 'broker-dc2:9092'
