@@ -159,7 +159,7 @@ services:
                        cub sr-ready schema-registry 8081 40 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 11 && \
-                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.2.jar /usr/share/java/ksql-examples/monitoring-interceptors-5.0.2.jar && \
+                       cp /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.0.3.jar /usr/share/java/ksql-examples/monitoring-interceptors-5.0.3.jar && \
                        tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
