@@ -17,7 +17,7 @@ COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 
 # Set this variable externally to point at a different repo, such as when building SNAPSHOT images
-CONFLUENT_PACKAGES_REPO ?= http://packages.confluent.io
+CONFLUENT_PACKAGES_REPO ?= https://packages.confluent.io
 
 # Set to false for public releases
 ALLOW_UNSIGNED ?= false
