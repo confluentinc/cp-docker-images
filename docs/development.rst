@@ -195,7 +195,7 @@ Adding Connectors to the Kafka Connect Image
 There are currently two ways to add new connectors to the Kafka Connect image.
 
 * Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath.
-* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
+* Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on :ref:`Configuring Kafka Connect with External Jars <config_connect_ext_jars>` to configure the `cp-kafka-connect` container with external jars.
 
 .. _examples :
 
@@ -265,10 +265,10 @@ The following examples show to extend the images.
 
        FROM confluentinc/cp-kafka-connect
 
-       ENV MYSQL_DRIVER_VERSION 5.1.39
+       ENV MYSQL_DRIVER_VERSION 8.0.11
 
        RUN curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz" \
-           | tar -xzf - -C /usr/share/java/kafka/ --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
+           | tar -xzf - -C /usr/share/java/kafka/ --strip-components=1 mysql-connector-java-8.0.11/mysql-connector-java-${MYSQL_DRIVER_VERSION}-bin.jar
 
    Build the image:
 

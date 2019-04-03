@@ -6,9 +6,9 @@ Clustered Deployment
 This tutorial runs a three-node Kafka cluster and |zk| ensemble.  By the end of this tutorial, you will have successfully installed and run a simple deployment with Docker.
 
 .. note::
-    If you're looking for a simpler tutorial, please `refer to the quick start guide <../quickstart.html>`_, which is limited to a single node Kafka cluster.
+    If you're looking for a simpler tutorial, please :ref:`refer to the quick start guide <docker_quickstart>`, which is limited to a single node Kafka cluster.
 
-    It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+    It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
 
 Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -341,6 +341,6 @@ Before you get started, you will first need to install `Docker <https://docs.doc
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
        kafka-3_1      | [2016-07-25 04:58:15,369] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19092 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-   .. tip:: ``docker-compose log | grep controller`` makes it easy to grep through logs for all services.
+   .. tip:: ``docker-compose logs | grep controller`` makes it easy to grep through logs for all services.
 
 #. Follow step 4 in :ref:`docker-setup-3-node` section above to test that your brokers are functioning as expected.

@@ -230,7 +230,7 @@ Start |zk|. You'll need to keep this service running throughout, so use a dedica
 
   This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.0`` container and name it ``zookeeper``.
   Also, the Docker network ``confluent`` and the required ZooKeeper parameter ``ZOOKEEPER_CLIENT_PORT`` are specified.
-  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the `configuration reference docs <configuration.html>`_.
+  For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the :ref:`configuration reference docs <config_reference>`.
 
   Use the following command to check the Docker logs to confirm that the container has booted up successfully and started the |zk| service.
 
@@ -267,9 +267,8 @@ Start Kafka.
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
           confluentinc/cp-kafka:4.1.0
 
-  .. note:: You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``kafka:9092``.  This will make Kafka
-            accessible to other containers by advertising it's location on the Docker network.  You also passed in the ZooKeeper
-            port that you used when launching that container a moment ago.
+  .. note::
+    You'll notice that the ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:9092``.  This will make Kafka accessible from outside the container by advertising its location on the Docker host.  You also passed in the |zk| port that you used when launching that container a moment ago.   Because you are using ``--net=host``, the hostname for the |zk| service can be left at ``localhost``.
 
     Also notice that ``KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`` is set to 1.  This is needed when you are running with a single-node cluster.  If you have three or more nodes, you do not need to change this from the default.
 
@@ -499,7 +498,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
 
   You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.
 
-  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching it's logs with the following command:
+  Control Center will create the topics it needs in Kafka.  Check that it started correctly by searching its logs with the following command:
 
   .. sourcecode:: console
 
@@ -658,7 +657,7 @@ Kafka Connect
 Getting Started
 ^^^^^^^^^^^^^^^
 
-In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the `Using a JDBC Connector with Avro data <tutorials/connect-avro-jdbc.html>`_ tutorial.
+In this section, you'll create a simple data pipeline using Kafka Connect. You'll start by reading data from a file and writing that data to a new file.  You will then extend the pipeline to show how to use Connect to read from a database table.  This example is meant to be simple for the sake of this quickstart.  If you'd like a more in-depth example, please refer to the :ref:`Using a JDBC Connector with Avro data <connect_quickstart_avro_jdbc>` tutorial.
 
 First, let's start up a container with Kafka Connect.  Connect stores all its stateful data (configuration, status, and internal offsets for connectors) directly in Kafka topics. You will create these topics now in the Kafka cluster you have running from the steps above.
 

@@ -11,7 +11,7 @@ You must first startup up |zk|, Kafka and the Schema Registry.
 
     Schema Registry is a dependency for Connect in this tutorial because it used with the Avro serializer functionality.
 
-It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and |zk| to store data locally in the Docker containers.  For production deployments (or generally whenever you care about not losing data), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.  Refer to our :ref:`documentation on Docker external volumes <external_volumes>` for an example of how to add mounted volumes to the host machine.
 
 .. include:: includes/docker-tutorials.rst
     :start-line: 11
@@ -40,7 +40,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
 #. Start up |zk|, Kafka, and Schema Registry.
 
-   We'll walk through each of the commands for starting up these services, but you should refer to the `quick start guide <../quickstart.html>`_ for a more detailed walkthrough.
+   We'll walk through each of the commands for starting up these services, but you should refer to the :ref:`quick start guide <docker_quickstart>` for a more detailed walkthrough.
 
    Start |zk|:
 
@@ -133,7 +133,8 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
        kafka-topics --describe --zookeeper localhost:32181
 
 
-#. Download the MySQL JDBC driver and copy it to the ``jars`` folder.  If you are running Docker Machine, you will need to SSH into the VM to run these commands. You may have to run the command as root.
+#. Download the latest MySQL JDBC driver and copy it to the ``jars`` folder.  If you are running Docker Machine, you must
+   SSH into the VM to run these commands. You may have to run the command as root.
 
    First, create a folder named ``jars``:
 
@@ -145,7 +146,7 @@ Now that we have all of the Docker dependencies installed, we can create a Docke
 
    .. sourcecode:: bash
 
-    curl -k -SL "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.39.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-5.1.39/mysql-connector-java-5.1.39-bin.jar
+    curl -k -SL "http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.37.tar.gz" | tar -xzf - -C /tmp/quickstart/jars --strip-components=1 mysql-connector-java-5.1.37/mysql-connector-java-5.1.37-bin.jar
 
 
 #. Start a connect worker with Avro support.
