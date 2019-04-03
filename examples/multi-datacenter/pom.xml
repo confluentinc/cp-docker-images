@@ -11,7 +11,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
   </parent>
 
   <artifactId>java-client-avro-examples</artifactId>
-  <version>5.1.2</version>
+  <version>5.2.1</version>
 
   <packaging>jar</packaging>
   <properties>
@@ -89,7 +89,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <plugin>
           <groupId>io.confluent</groupId>
           <artifactId>kafka-schema-registry-maven-plugin</artifactId>
+<<<<<<< HEAD
           <version>5.1.2</version>
+=======
+          <version>5.2.1</version>
+>>>>>>> 5.2.x
           <configuration>
               <schemaRegistryUrls>
                   <param>http://localhost:8081</param>
