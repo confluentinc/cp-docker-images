@@ -112,11 +112,11 @@ The ability to monitor Replicator's consumer lag is enabled when it is configure
 5. For Replicator copying from `dc1` to `dc2`: Navigate to http://localhost:9021/monitoring/consumer/lag and select `dc1` (origin cluster) in the cluster dropdown.
 Verify that there are two consumer groups, one for reach Replicator instance running from `dc1` to `dc2`: `replicator-dc1-to-dc2-topic1` and `replicator-dc1-to-dc2-topic2`. Replicator's consumer lag information is available in Control Center and `kafka-consumer-groups`, but it is not available via JMX.
 
-a. Click on `replicator-dc1-to-dc2-topic1` to view Replicator's consumer lag in reading `topic1` and `_schemas` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic1`)
+a. Click on `replicator-dc1-to-dc2-topic1` to view Replicator's consumer lag in reading `topic1` and `_schemas` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:29091 --describe --group replicator-dc1-to-dc2-topic1`)
 
 ![image](images/c3-consumer-lag-dc1-topic1.png)
 
-b. Click on `replicator-dc1-to-dc2-topic2` to view Replicator's consumer log in reading `topic2` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:9091 --describe --group replicator-dc1-to-dc2-topic2`)
+b. Click on `replicator-dc1-to-dc2-topic2` to view Replicator's consumer log in reading `topic2` (equivalent to `docker-compose exec broker-dc1 kafka-consumer-groups --bootstrap-server broker-dc1:29091 --describe --group replicator-dc1-to-dc2-topic2`)
 
 ![image](images/c3-consumer-lag-dc1-topic2.png)
 
@@ -142,7 +142,7 @@ To use this capability, configure Java consumer applications with the [Consumer 
 
 ```bash
 mvn clean package
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29091 http://localhost:8081 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:9091 http://localhost:8081 localhost:9092"
 ```
 
 Verify in the consumer output that it is reading data originating from both dc1 and dc2:
@@ -158,7 +158,7 @@ key = User_6, value = {"userid": "User_6", "dc": "dc2"}
 2. Even though the consumer is consuming from dc1, there are dc2 consumer offsets committed for the consumer group `java-consumer-topic1`. Run the following command to read from the `__consumer_offsets` topic in dc2.
 
 ```bash
-$ docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:29092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
+$ docker-compose exec broker-dc2 kafka-console-consumer --topic __consumer_offsets --bootstrap-server localhost:9092 --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep java-consumer
 ```
 
 Verify that there are committed offsets:
@@ -235,7 +235,7 @@ $ docker-compose stop connect-dc1 schema-registry-dc1 broker-dc1 zookeeper-dc1
 5. Stop and restart the consumer to connect to the `dc2` Kafka cluster. It will still use the same consumer group ID `java-consumer-topic1` so it can resume where it left off:
 
 ```bash
-mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:29092 http://localhost:8082 localhost:29092"
+mvn exec:java -Dexec.mainClass=io.confluent.examples.clients.ConsumerMultiDatacenterExample -Dexec.args="topic1 localhost:9092 http://localhost:8082 localhost:9092"
 ```
 
 You should see data sourced only from `dc2`:
