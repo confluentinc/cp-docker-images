@@ -185,6 +185,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
 
   datagen-dc1-topic1:
+    # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
     image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc1-topic1
     container_name: datagen-dc1-topic1
@@ -208,6 +209,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   datagen-dc1-topic2:
+    # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
     image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc1-topic2
     container_name: datagen-dc1-topic2
@@ -230,6 +232,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   datagen-dc2-topic1:
+    # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
     image: confluentinc/ksql-examples:5.1.2
     hostname: datagen-dc2-topic1
     container_name: datagen-dc2-topic1
