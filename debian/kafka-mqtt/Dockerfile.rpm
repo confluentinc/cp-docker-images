@@ -1,5 +1,5 @@
 #
-# Copyright 2016 Confluent Inc.
+# Copyright 2018 Confluent Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,31 +15,25 @@
 
 FROM confluentinc/cp-rpm-base
 
-EXPOSE 2181 2888 3888
-
+MAINTAINER partner-support@confluent.io
+LABEL io.confluent.docker=true
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
-MAINTAINER partner-support@confluent.io
-LABEL io.confluent.docker=true
+ENV COMPONENT=kafka-mqtt
 
-ENV CONFLUENT_PLATFORM_LABEL=$CONFLUENT_PLATFORM_LABEL
+# standart non-encrypted MQTT port
+EXPOSE 1883
 
-ENV COMPONENT=zookeeper
+
 
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
-    && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
+    && yum install -y confluent-${COMPONENT}-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
-    && rm -rf /tmp/* \
-    \
-    && echo "===> Setting up ${COMPONENT} dirs" \
-    && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets \
-    && chmod -R ag+w /etc/kafka /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets
-
-VOLUME ["/var/lib/${COMPONENT}/data", "/var/lib/${COMPONENT}/log", "/etc/${COMPONENT}/secrets"]
+    && rm -rf /tmp/*
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 

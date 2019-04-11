@@ -5,7 +5,7 @@
 BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 5
-CONFLUENT_MINOR_VERSION ?= 2
+CONFLUENT_MINOR_VERSION ?= 3
 CONFLUENT_PATCH_VERSION ?= 0
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
@@ -88,7 +88,7 @@ endif
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
-push-private: clean build-debian build-test-images tag-remote
+push-private: clean build-debian build-redhat build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
@@ -97,7 +97,7 @@ endif
         docker push $${image}; \
   done
 
-push-public: clean build-debian
+push-public: clean build-debian build-redhat
 	for component in ${COMPONENTS} ; do \
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
 		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \

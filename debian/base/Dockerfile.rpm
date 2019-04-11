@@ -12,7 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM centos:centos7
+#FROM centos:centos7
+FROM registry.access.redhat.com/rhel7:7.6
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
@@ -40,6 +41,8 @@ ARG KAFKA_VERSION=$KAFKA_VERSION
 ARG CONFLUENT_MAJOR_VERSION=$CONFLUENT_MAJOR_VERSION
 ARG CONFLUENT_MINOR_VERSION=$CONFLUENT_MINOR_VERSION
 ARG CONFLUENT_PATCH_VERSION=$CONFLUENT_PATCH_VERSION
+ARG REDHAT_USERNAME=${REDHAT_USERNAME}
+ARG REDHAT_PASSWORD=${REDHAT_PASSWORD}
 
 ARG CONFLUENT_MVN_LABEL=$CONFLUENT_MVN_LABEL
 ARG CONFLUENT_PLATFORM_LABEL=$CONFLUENT_PLATFORM_LABEL
@@ -61,7 +64,17 @@ ENV ZULU_OPENJDK_VERSION="8-8.17.0.3"
 # base image that supports it
 ENV LANG="C.UTF-8"
 
+RUN echo "===> setup redhat enterprise repositories" \
+    && echo ">>> REDHAT_USERNAME is ${REDHAT_USERNAME}" \
+    && subscription-manager register --username "${REDHAT_USERNAME}" --password "${REDHAT_PASSWORD}"
+
+RUN echo "===> attaching to subscription service" \
+    && POOLID=$(subscription-manager list --available | grep 'Pool' | head -1 | awk '{print $3}') \
+    && echo ${POOLID} \
+    && subscription-manager attach --pool=${POOLID}
+
 RUN echo "===> clean yum caches ....." \
+    && yum update -y \
     && yum clean all
 
 RUN echo "===> Installing curl wget netcat python...." \

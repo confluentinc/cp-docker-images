@@ -15,8 +15,6 @@
 
 FROM confluentinc/cp-rpm-base
 
-EXPOSE 2181 2888 3888
-
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
@@ -25,19 +23,23 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
-ENV CONFLUENT_PLATFORM_LABEL=$CONFLUENT_PLATFORM_LABEL
+ENV COMPONENT=kafka-rest
 
-ENV COMPONENT=zookeeper
+# default listener
+EXPOSE 8082
 
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
-    && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
+    && yum install -y \
+        confluent-${COMPONENT}-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
+        confluent-control-center-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
+        confluent-security-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
     && rm -rf /tmp/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets \
-    && chmod -R ag+w /etc/kafka /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets
+    && chmod -R ag+w /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets
 
 VOLUME ["/var/lib/${COMPONENT}/data", "/var/lib/${COMPONENT}/log", "/etc/${COMPONENT}/secrets"]
 
