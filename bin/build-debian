@@ -11,6 +11,7 @@ true "CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO}"
 true "KAFKA_VERSION=${KAFKA_VERSION}"
 true "CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"
 true "CONFLUENT_DEB_LABEL=${CONFLUENT_DEB_LABEL}"
+true "CONFLUENT_DEB_VERSION=${CONFLUENT_DEB_VERSION}"
 true "CONFLUENT_RPM_LABEL=${CONFLUENT_RPM_LABEL}"
 true "CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION}"
 true "CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION}"
@@ -24,8 +25,6 @@ true "RELEASE_QUALITY=${RELEASE_QUALITY}"
 true "REDHAT_USERNAME=${REDHAT_USERNAME}"
 true "REDHAT_PASSWORD=${REDHAT_PASSWORD}"
 
-#exit 3
-
 for component in ${COMPONENTS} ; do
     echo "\n\nBuilding ${component} \n==========================================\n "
 
@@ -36,7 +35,7 @@ for component in ${COMPONENTS} ; do
         BUILD_ARGS=""
     fi
 
-    for type in rpm; do
+    for type in "" rpm; do
         DOCKER_FILE="debian/${component}/Dockerfile"
         COMPONENT_NAME=${component}
 
