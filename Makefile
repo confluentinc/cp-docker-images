@@ -89,7 +89,7 @@ endif
         docker tag $${image} ${DOCKER_REMOTE_REPOSITORY}/$${image#*/}; \
   done
 
-push-private: clean build-debian build-redhat build-test-images tag-remote
+push-private: clean build-debian build-test-images tag-remote
 ifndef DOCKER_REMOTE_REPOSITORY
 	$(error DOCKER_REMOTE_REPOSITORY must be defined.)
 endif
@@ -98,7 +98,7 @@ endif
         docker push $${image}; \
   done
 
-push-public: clean build-debian build-redhat
+push-public: clean build-debian
 	for component in ${COMPONENTS} ; do \
 		echo "\n Pushing cp-$${component}  \n==========================================\n "; \
 		docker push ${REPOSITORY}/cp-$${component}:latest || exit 1; \
