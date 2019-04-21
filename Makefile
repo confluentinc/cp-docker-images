@@ -25,7 +25,7 @@ ALLOW_UNSIGNED ?= false
 REPOSITORY ?= confluentinc
 
 # Platform-specific version labels for SNAPSHOT packaging. Not necessary when building from public releases.
-CONFLUENT_MVN_LABEL ?=
+CONFLUENT_MVN_LABEL ?=\-SNAPSHOT
 CONFLUENT_DEB_LABEL ?=
 CONFLUENT_RPM_LABEL ?=
 
@@ -49,6 +49,9 @@ clean-images:
 debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	mvn -U clean compile package -DskipTests \
+	echo ${CONFLUENT_MVN_LABEL} \
+	echo ${CONFLUENT_VERSION} \
+	echo ${VERSION} \
 	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar debian/base/include/etc/confluent/docker/docker-utils.jar
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar

@@ -10,6 +10,7 @@ RUN echo "Building kafkacat ....." \
     && yum -q -y update \
     && yum -q group install -y "Development Tools" \
     && yum -q install -y $BUILD_PACKAGES \
+    && yum clean all \
     && git clone https://github.com/edenhill/kafkacat \
     && cd kafkacat \
     && git checkout tags/debian/$VERSION \

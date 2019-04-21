@@ -37,6 +37,7 @@ RUN echo "===> installing ${COMPONENT}..." \
         confluent-control-center-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
         confluent-security-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
+    && yum clean all \
     && rm -rf /tmp/* \
     \
     && echo "===> Setting up ${COMPONENT} dirs" \

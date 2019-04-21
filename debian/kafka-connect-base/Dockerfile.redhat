@@ -36,6 +36,7 @@ RUN echo "===> installing ${COMPONENT}..." \
     && echo "===> Installing Confluent Hub client ..."\
     && yum install -y confluent-hub-client-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> Cleaning up ..."  \
+    && yum clean all \
     && rm -rf /tmp/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
     && mkdir -p /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars \

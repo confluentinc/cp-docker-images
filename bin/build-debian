@@ -35,7 +35,7 @@ for component in ${COMPONENTS} ; do
         BUILD_ARGS=""
     fi
 
-    for type in "" rpm; do
+    for type in rpm; do
         DOCKER_FILE="debian/${component}/Dockerfile"
         COMPONENT_NAME=${component}
 

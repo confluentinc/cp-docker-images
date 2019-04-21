@@ -38,6 +38,7 @@ RUN echo "===> Installing JDBC, Elasticsearch and Hadoop connectors ..." \
         confluent-kafka-connect-s3-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
         confluent-kafka-connect-jms-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> Cleaning up ..."  \
+    && yum clean all \
     && rm -rf /tmp/*
 
 RUN echo "===> Installing GCS Sink Connector ..."

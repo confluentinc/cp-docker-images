@@ -17,8 +17,8 @@ foo = [
 "schema-registry"
 ]
 
-#docker_repo_url = "368821881613.dkr.ecr.us-west-2.amazonaws.com"
-docker_repo_url = "confluent-docker.jfrog.io"
+docker_repo_url = "368821881613.dkr.ecr.us-west-2.amazonaws.com"
+#docker_repo_url = "confluent-docker.jfrog.io"
 
 passw = "AKCp5btKzpjCQgCGHZvfEiNFZFYNzUZZr39t69UaEgQX9SEcyACoTrECnxK6cL9Li74ZQ9sw4"
 usern = "platform-ops-jfrog@confluent.io"

@@ -65,38 +65,32 @@ ENV LANG="C.UTF-8"
 
 RUN echo "===> setup redhat enterprise repositories" \
     && echo ">>> REDHAT_USERNAME is ${REDHAT_USERNAME}" \
-    && subscription-manager register --username "${REDHAT_USERNAME}" --password "${REDHAT_PASSWORD}"
-
-RUN echo "===> attaching to subscription service" \
+    && subscription-manager register --username "${REDHAT_USERNAME}" --password "${REDHAT_PASSWORD}" \
+    && echo "===> attaching to subscription service" \
     && POOLID=$(subscription-manager list --available | grep 'Pool' | head -1 | awk '{print $3}') \
     && echo ${POOLID} \
-    && subscription-manager attach --pool=${POOLID}
-
-RUN echo "===> clean yum caches ....." \
+    && subscription-manager attach --pool=${POOLID} \
+    && echo "===> clean yum caches ....." \
     && yum update -y \
-    && yum clean all
-
-RUN echo "===> Installing curl wget netcat python...." \
+    && echo "===> Installing curl wget netcat python...." \
     && yum install -y \
                 curl \
                 git \
                 wget \
                 nc \
-                python
-
-RUN echo "===> Installing python packages ..."  \
+                python \
+                openssl \
+    && echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.20 \
-    && yum remove -y git
-
-RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
+    && yum remove -y git \
+    && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
     && curl -o /etc/yum.repos.d/zulu.repo http://repos.azulsystems.com/rhel/zulu.repo \
     && yum -q -y update \
-    && yum -q -y install zulu-${ZULU_OPENJDK_VERSION}
-
-RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" && \
+    && yum -q -y install zulu-${ZULU_OPENJDK_VERSION} \
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" && \
     if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
         echo "===> GPG signatures are disabled for SNAPSHOT builds..." \
         && printf "[Confluent.dist] \n\
@@ -126,7 +120,8 @@ baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MI
 gpgcheck=1 \n\
 gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 " > /etc/yum.repos.d/confluent.repo; \
-    fi
+    fi \
+    && yum clean all
 
 ENV CUB_CLASSPATH=/etc/confluent/docker/docker-utils.jar
 COPY include/etc/confluent/docker /etc/confluent/docker
