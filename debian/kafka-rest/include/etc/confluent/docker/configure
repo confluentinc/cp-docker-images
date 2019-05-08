@@ -30,9 +30,9 @@ then
   exit 1
 fi
 
-if [[ -n "${KAFKA_REST_JMX_OPTS-}" ]]
+if [[ -n "${KAFKAREST_JMX_OPTS-}" ]]
 then
-  if [[ ! $KAFKA_REST_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
+  if [[ ! $KAFKAREST_JMX_OPTS == *"com.sun.management.jmxremote.rmi.port"*  ]]
   then
     echo "KAFKA_REST_OPTS should contain 'com.sun.management.jmxremote.rmi.port' property. It is required for accessing the JMX metrics externally."
   fi

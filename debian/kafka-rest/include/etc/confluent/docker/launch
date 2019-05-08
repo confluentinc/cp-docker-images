@@ -15,8 +15,8 @@
 # limitations under the License.
 
 # JMX settings
-if [ -z "$KAFKA_REST_JMX_OPTS" ]; then
-  KAFKA_REST_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
+if [ -z "$KAFKAREST_JMX_OPTS" ]; then
+  KAFKAREST_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
 fi
 
 # The JMX client needs to be able to connect to java.rmi.server.hostname.
@@ -26,11 +26,11 @@ fi
 # If you have more that one n/w configured, hostname -i gives you all the IPs,
 # the default is to pick the first IP (or network).
 export KAFKA_REST_JMX_HOSTNAME=${KAFKA_REST_JMX_HOSTNAME:-$(hostname -i | cut -d" " -f1)}
-
+z
 # JMX port to use
-if [  $KAFKA_REST_JMX_PORT ]; then
-  export JMX_PORT=$KAFKA_REST_JMX_PORT
-export KAFKA_REST_JMX_OPTS="$KAFKA_REST_JMX_OPTS -Djava.rmi.server.hostname=$KAFKA_REST_JMX_HOSTNAME -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Dcom.sun.management.jmxremote.port=$JMX_PORT"
+if [  $KAFKAREST_JMX_PORT ]; then
+  export JMX_PORT=$KAFKAREST_JMX_PORT
+export KAFKAREST_JMX_OPTS="$KAFKAREST_JMX_OPTS -Djava.rmi.server.hostname=$KAFKA_REST_JMX_HOSTNAME -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Dcom.sun.management.jmxremote.port=$JMX_PORT"
 fi
 
 echo "===> Launching ${COMPONENT} ... "
