@@ -26,7 +26,7 @@ fi
 # If you have more that one n/w configured, hostname -i gives you all the IPs,
 # the default is to pick the first IP (or network).
 export KAFKA_REST_JMX_HOSTNAME=${KAFKA_REST_JMX_HOSTNAME:-$(hostname -i | cut -d" " -f1)}
-z
+
 # JMX port to use
 if [  $KAFKAREST_JMX_PORT ]; then
   export JMX_PORT=$KAFKAREST_JMX_PORT
