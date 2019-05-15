@@ -22,8 +22,6 @@ true "COMMIT_ID=${COMMIT_ID}"
 true "BUILD_NUMBER=${BUILD_NUMBER}"
 true "REPOSITORY=${REPOSITORY}"
 true "RELEASE_QUALITY=${RELEASE_QUALITY}"
-true "REDHAT_USERNAME=${REDHAT_USERNAME}"
-true "REDHAT_PASSWORD=${REDHAT_PASSWORD}"
 
 for component in ${COMPONENTS} ; do
     echo "\n\nBuilding ${component} \n==========================================\n "
@@ -41,19 +39,19 @@ for component in ${COMPONENTS} ; do
 
         if [ "${type}" = "rpm" ]; then
             COMPONENT_NAME="rpm-${component}"
-            DOCKER_FILE="${DOCKER_FILE}.rpm"
+            DOCKER_FILE="${DOCKER_FILE}.redhat"
             CONFLUENT_PLATFORM_LABEL=${CONFLUENT_RPM_LABEL}
         else
             CONFLUENT_PLATFORM_LABEL=${CONFLUENT_DEB_LABEL}
         fi
 
         if [ -a "${DOCKER_FILE}" ]; then
-            sudo docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} --build-arg REDHAT_USERNAME=${REDHAT_USERNAME} --build-arg REDHAT_PASSWORD=${REDHAT_PASSWORD} ${BUILD_ARGS} -t ${REPOSITORY}/cp-${COMPONENT_NAME}:latest -f ${DOCKER_FILE} debian/${component} || exit 1
+            docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} ${BUILD_ARGS} -t ${REPOSITORY}/cp-${COMPONENT_NAME}:latest -f ${DOCKER_FILE} debian/${component} || exit 1
 
-            sudo docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:latest  || exit 1
-            sudo docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1
-            sudo docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${VERSION} || exit 1
-            sudo docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${COMMIT_ID} || exit 1
+            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:latest  || exit 1
+            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1
+            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${VERSION} || exit 1
+            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${COMMIT_ID} || exit 1
         fi;
     done
 done
