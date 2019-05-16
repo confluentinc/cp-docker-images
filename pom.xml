@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.confluent</groupId>
         <artifactId>common</artifactId>
-        <version>5.0.3</version>
+        <version>5.0.3-cp1</version>
     </parent>
 
     <organization>
