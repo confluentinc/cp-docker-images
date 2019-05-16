@@ -61,7 +61,10 @@ ENV ZULU_OPENJDK_VERSION="8-8.17.0.3"
 # base image that supports it
 ENV LANG="C.UTF-8"
 
-RUN echo "===> clean yum caches ....." \
+RUN echo "Performing Yum Upgrdade...." \
+    && yum -y install epel-release \
+    && yum -y upgrade \
+    && echo "===> clean yum caches ....." \
     && yum update -y \
     && echo "===> Installing curl wget netcat python...." \
     && yum install -y \
