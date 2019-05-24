@@ -52,7 +52,7 @@ Then start the containers:
     -e ZOOKEEPER_CLIENT_PORT=32181 \
     -v /vol1/zk-data:/var/lib/zookeeper/data \
     -v /vol2/zk-txn-logs:/var/lib/zookeeper/log \
-    confluentinc/cp-zookeeper:4.1.0
+    confluentinc/cp-zookeeper:4.1.1-cp1
 
   docker run -d \
     --name=kafka-vols \
@@ -63,7 +63,7 @@ Then start the containers:
     -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:39092 \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
     -v /vol3/kafka-data:/var/lib/kafka/data \
-    confluentinc/cp-kafka:4.1.0
+    confluentinc/cp-kafka:4.1.1-cp1
 
 The data volumes are mounted using the ``-v`` flag.
 
