@@ -28,9 +28,8 @@ ENV COMPONENT=kafka
 # primary
 EXPOSE 9092
 
-RUN echo "===> installing confluent-support-metrics ..." \
+RUN echo "===> installing confluent-rebalancer ..." \
     && apt-get update && apt-get install -y \
-          confluent-support-metrics=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
           confluent-rebalancer=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
@@ -46,3 +45,5 @@ VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets"]
 COPY include/etc/confluent/docker /etc/confluent/docker
 
 CMD ["/etc/confluent/docker/run"]
+
+ONBUILD RUN echo 'WARNING: enterprise-kafka image is now deprecated!. Please use cp-server image.'
