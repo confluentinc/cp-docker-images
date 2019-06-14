@@ -48,3 +48,6 @@ VOLUME ["/etc/${COMPONENT}/jars", "/etc/${COMPONENT}/secrets"]
 COPY include/etc/confluent/docker /etc/confluent/docker
 
 CMD ["/etc/confluent/docker/run"]
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=60 \
+	CMD /etc/ksql-server/healthcheck.sh
