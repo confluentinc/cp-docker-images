@@ -45,5 +45,3 @@ VOLUME ["/var/lib/${COMPONENT}/data", "/etc/${COMPONENT}/secrets"]
 COPY include/etc/confluent/docker /etc/confluent/docker
 
 CMD ["/etc/confluent/docker/run"]
-
-ONBUILD RUN echo 'WARNING: enterprise-kafka image is now deprecated!. Please use cp-server image.'
