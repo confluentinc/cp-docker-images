@@ -1,0 +1,94 @@
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    network_mode: host
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-1:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: rack-a
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:19092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-2:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_BROKER_RACK: rack-a
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-3:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_BROKER_RACK: rack-a
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:39092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-4:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 4
+      KAFKA_BROKER_RACK: rack-b
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19072
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:19072
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-5:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 5
+      KAFKA_BROKER_RACK: rack-b
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29072
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:29072
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
+
+  kafka-6:
+    image: confluentinc/cp-server:latest
+    network_mode: host
+    environment:
+      KAFKA_BROKER_ID: 6
+      KAFKA_BROKER_RACK: rack-b
+      KAFKA_ZOOKEEPER_CONNECT: localhost:22181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39072
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: localhost:39072
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: localhost:22181
+    extra_hosts:
+      - "moby:127.0.0.1"
