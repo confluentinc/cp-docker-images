@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper-dc1:
-    image: confluentinc/cp-zookeeper:5.3.0-SNAPSHOT
+    image: confluentinc/cp-zookeeper:5.3.0-beta190629193226
     hostname: zookeeper-dc1
     container_name: zookeeper-dc1
     ports:
@@ -12,7 +12,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   zookeeper-dc2:
-    image: confluentinc/cp-zookeeper:5.3.0-SNAPSHOT
+    image: confluentinc/cp-zookeeper:5.3.0-beta190629193226
     hostname: zookeeper-dc2
     container_name: zookeeper-dc2
     ports:
@@ -22,7 +22,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   broker-dc1:
-    image: confluentinc/cp-enterprise-kafka:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.3.0-beta190629193226
     hostname: broker-dc1
     container_name: broker-dc1
     depends_on:
@@ -45,7 +45,7 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
 
   broker-dc2:
-    image: confluentinc/cp-enterprise-kafka:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-kafka:5.3.0-beta190629193226
     hostname: broker-dc2
     container_name: broker-dc2
     depends_on:
@@ -68,7 +68,7 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
 
   schema-registry-dc1:
-    image: confluentinc/cp-schema-registry:5.3.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.3.0-beta190629193226
     hostname: schema-registry-dc1
     container_name: schema-registry-dc1
     restart: always
@@ -84,7 +84,7 @@ services:
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   schema-registry-dc2:
-    image: confluentinc/cp-schema-registry:5.3.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.3.0-beta190629193226
     hostname: schema-registry-dc2
     container_name: schema-registry-dc2
     restart: always
@@ -102,7 +102,7 @@ services:
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: ERROR
 
   connect-dc2:
-    image: confluentinc/cp-enterprise-replicator:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.3.0-beta190629193226
     hostname: connect-dc2
     container_name: connect-dc2
     depends_on:
@@ -144,7 +144,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
 
   connect-dc1:
-    image: confluentinc/cp-enterprise-replicator:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-replicator:5.3.0-beta190629193226
     hostname: connect-dc1
     container_name: connect-dc1
     depends_on:
@@ -186,7 +186,7 @@ services:
 
   datagen-dc1-topic1:
     # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
-    image: confluentinc/ksql-examples:5.3.0-SNAPSHOT
+    image: confluentinc/ksql-examples:5.3.0-beta190629193226
     hostname: datagen-dc1-topic1
     container_name: datagen-dc1-topic1
     depends_on:
@@ -210,7 +210,7 @@ services:
 
   datagen-dc1-topic2:
     # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
-    image: confluentinc/ksql-examples:5.3.0-SNAPSHOT
+    image: confluentinc/ksql-examples:5.3.0-beta190629193226
     hostname: datagen-dc1-topic2
     container_name: datagen-dc1-topic2
     depends_on:
@@ -233,7 +233,7 @@ services:
 
   datagen-dc2-topic1:
     # Downrev ksql-examples to 5.1.2 due to DEVX-798 (work around issues in 5.2.0)
-    image: confluentinc/ksql-examples:5.3.0-SNAPSHOT
+    image: confluentinc/ksql-examples:5.3.0-beta190629193226
     hostname: datagen-dc2-topic1
     container_name: datagen-dc2-topic1
     depends_on:
@@ -257,7 +257,7 @@ services:
 
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:5.3.0-beta190629193226
     hostname: control-center
     container_name: control-center
     depends_on:
