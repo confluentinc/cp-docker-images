@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Copyright 2016 Confluent Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Mesos DC/OS docker deployments will have HOST and PORT0 
+# set for the proxying of the service.
+# 
+# Use those values provide things we know we'll need.
+
+[ -n "${HOST:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_HOST_NAME:-}" ] && \
+	export CONNECT_REST_ADVERTISED_HOST_NAME=$HOST || true
+
+[ -n "${PORT0:-}" ] && [ -z "${CONNECT_REST_ADVERTISED_PORT:-}" ] && \
+	export CONNECT_REST_ADVERTISED_PORT=$PORT0 || true
+
+# And default to 8083, which MUST match the containerPort specification
+# in the Mesos package for this service.
+[ -z "${CONNECT_REST_PORT:-}" ] && \
+	export CONNECT_REST_PORT=8083 || true
+
