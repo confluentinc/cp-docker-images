@@ -3,8 +3,8 @@ log4j.rootLogger={{ env["CONNECT_LOG4J_ROOT_LOGLEVEL"] | default('INFO') }}, std
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-{% if env['CONNECT_LOG4J_APPENDER_STDOUT_MDC_ENABLE'] %}
-log4j.appender.stdout.layout.ConversionPattern=[%d] %p %X{connector.context}%m (%c:%L)%n
+{% if env['CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN'] %}
+log4j.appender.stdout.layout.ConversionPattern={{ env['CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN'] }}
 {% else %}
 log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
 {% endif %}
