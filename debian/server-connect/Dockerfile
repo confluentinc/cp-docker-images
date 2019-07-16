@@ -1,5 +1,5 @@
 #
-# Copyright 2016 Confluent Inc.
+# Copyright 2019 Confluent Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 # Builds a docker image for Kafka Connect
 
-FROM confluentinc/cp-kafka-connect-base
+FROM confluentinc/cp-server-connect-base
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
