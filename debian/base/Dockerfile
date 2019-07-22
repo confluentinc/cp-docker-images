@@ -77,6 +77,7 @@ RUN echo "===> Updating debian ....." \
                 wget \
                 netcat \
                 python=${PYTHON_VERSION} \
+                build-essential libssl-dev libffi-dev python-dev \
     && echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
