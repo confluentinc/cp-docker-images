@@ -50,4 +50,4 @@ COPY include/etc/confluent/docker /etc/confluent/docker
 CMD ["/etc/confluent/docker/run"]
 
 HEALTHCHECK --interval=5s --timeout=10s --retries=120 \
-	CMD /etc/ksql-server/healthcheck.sh 
+	CMD /etc/confluent/docker/healthcheck.sh
