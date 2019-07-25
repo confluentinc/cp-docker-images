@@ -23,7 +23,7 @@ ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
-ARG DATAGEN_VERSION=0.1.2
+ARG DATAGEN_VERSION=0.1.3
 
 RUN echo "===> Installing Datagen Source Connector ..."
 RUN confluent-hub install confluentinc/kafka-connect-datagen:$DATAGEN_VERSION --no-prompt
