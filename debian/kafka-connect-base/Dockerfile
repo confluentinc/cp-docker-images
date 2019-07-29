@@ -54,5 +54,5 @@ CMD ["/etc/confluent/docker/run"]
 # Start-up period : 2 minutes (during which failures are not counted as failures)
 # Retry period    : 8 minutes (after which container is deemed unhealthy)
 # All settings can be overriden at run-time in Docker/Docker Compose. 
-HEALTHCHECK --start-period 120s --interval=5s --timeout=10s --retries=96 \
+HEALTHCHECK --start-period=120s --interval=5s --timeout=10s --retries=96 \
 	CMD /etc/confluent/docker/healthcheck.sh
