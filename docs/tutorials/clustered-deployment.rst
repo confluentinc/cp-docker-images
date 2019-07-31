@@ -1,4 +1,4 @@
-.. _clustered_quickstart :
+.. _clustered_quickstart:
 
 Clustered Deployment
 --------------------
