@@ -1,4 +1,4 @@
-.. _tutorials_overview :
+.. _tutorials_overview:
 
 More Tutorials
 ==============
