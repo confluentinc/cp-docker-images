@@ -1,4 +1,4 @@
-.. _external_volumes :
+.. _external_volumes:
 
 Mounting External Volumes
 -------------------------
@@ -13,14 +13,18 @@ When working with Docker, you may sometimes need to persist data in the event of
 
   .. note::
 
-    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on `extending the images <../development.html#extending-the-docker-images>`_.
+    In the event that you need to add support for additional use cases for external volumes, please refer to our guide on :ref:`extending the images <extending_images>`.
 
 Data Volumes for Kafka and |zk|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kafka uses volumes for log data and |zk| uses volumes for transaction logs. It is recommended to separate volumes (on the host) for these services. You must also ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
 
+<<<<<<< HEAD
 .. important:: When mapping volumes from host, you must use full path (e.g. ``/var/lib/kafka/data``).
+=======
+Kafka uses volumes for log data and Zookeeper uses volumes for transaction logs. It is recommended to separate volumes (on the host) for these services. You will also need to ensure that the host directory has read/write permissions for the Docker container user (which is root by default unless you assign a user using Docker run command).
+>>>>>>> 3.2.4-post
 
 The following is an example of how to use Kafka and |zk| with mounted volumes and how to configure volumes if you are running
 Docker container as non-root user. In this example, the container is run as user ``12345``.
