@@ -1,4 +1,4 @@
-.. _automatic_data_balancing :
+.. _automatic_data_balancing:
 
 Automatic Data Balancing
 ------------------------
