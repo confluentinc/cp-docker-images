@@ -5,7 +5,7 @@ Replicator Tutorial
 
 In this section, we provide a tutorial for running Replicator which replicates data from two source Kafka clusters to a destination Kafka cluster.  By the end of this tutorial, you will have successfully run Replicator and replicated data for two topics from different source clusters to a destination cluster.  Furthermore, you will have also set up a Kafka Connect cluster because Replicator is built on Connect.
 
-It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine.
+It is worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  For deployments that require persistent data (e.g. production deployments), you should use mounted volumes for persisting data in the event that a container stops running or is restarted.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. Refer to our :ref:`documentation on Docker external volumes <external_volumes>` for an example of how to add mounted volumes to the host machine.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
