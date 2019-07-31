@@ -5,7 +5,7 @@ Docker Quick Start
 
 This quick start provides a basic guide for deploying a Kafka cluster along with all Confluent Platform components in your Docker environment.  By the end of this quickstart, you will have a functional Confluent deployment against which you can run any number of applications.
 
-To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (`More Tutorials <tutorials/tutorials.html>`_).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on `Docker external volumes <operations/external-volumes.html>`_ for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as ``cp-kafka`` and ``cp-zookeeper`` to be stopped and restarted without losing their stateful data.
+To keep things simple, you can start with a single node Docker environment.  Details on more complex target environments are available later in this documentation (:ref:`More Tutorials <tutorials_overview>`).  You will also be configuring Kafka and ZooKeeper to store data locally in their Docker containers.  You should refer to the documentation on :ref:`Docker external volumes <external_volumes>` for examples of how to add mounted volumes to your host machines.  Mounted volumes provide a persistent storage layer for deployed containers, which allows images such as ``cp-kafka`` and ``cp-zookeeper`` to be stopped and restarted without losing their stateful data.
 
 Prerequisites
     * :ref:`Confluent Platform system requirements <system-requirements>`
