@@ -5,9 +5,9 @@ Quickstart
 
 In this section, we provide a simple guide for running a Kafka cluster along with all of the other Confluent Platform components.  By the end of this quickstart, you will have successfully installed and run a simple deployment including each component with Docker.
 
-In order to keep things simple, this quickstart guide is limited to a single node Confluent Platform cluster.  For more advanced tutorials, you can refer to the `tutorials section <tutorials.html>`_ of this documentation.
+In order to keep things simple, this quickstart guide is limited to a single node Confluent Platform cluster.  For more advanced tutorials, you can refer to the :ref:`tutorials section <tutorials_overview>` of this documentation.
 
-It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our `documentation on Docker external volumes <operations/external-volumes.html>`_ for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.
+It is also worth noting that we will be configuring Kafka and Zookeeper to store data locally in the Docker containers.  However, you can also refer to our :ref:`documentation on Docker external volumes <external_volumes>` for an example of how to add mounted volumes to the host machine to persist data in the event that the container stops running.  This is important when running a system like Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages.
 
 Installing & Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
