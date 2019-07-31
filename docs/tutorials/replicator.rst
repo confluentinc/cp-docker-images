@@ -1,4 +1,4 @@
-.. _replicator :
+.. _replicator:
 
 Replicator Tutorial
 -------------------
