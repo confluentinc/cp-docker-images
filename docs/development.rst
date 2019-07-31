@@ -1,4 +1,4 @@
-.. _development :
+.. _development:
 
 Docker Developer Guide
 ======================
@@ -8,7 +8,7 @@ Docker Developer Guide
 .. contents::
   :local:
 
-.. _image_design_overview :
+.. _image_design_overview:
 
 Image Design Overview
 ---------------------
@@ -70,7 +70,7 @@ We adhered to the following guidelines when developing these Docker bootup scrip
 3. Fail with Good Error Messages
 4. Return 0 if success, 1 if fail
 
-.. _setup :
+.. _setup:
 
 Setup
 -----
@@ -167,7 +167,7 @@ Push to the Docker hub:
 
 ``push-public``
 
-.. _extending_images :
+.. _extending_images:
 
 Extending the Docker Images
 --------------------------
@@ -175,7 +175,7 @@ Extending the Docker Images
 You may want to extend the images to add new software, change the
 config management, use service discovery etc.  This page provides instructions for doing so. 
 
-.. _prerequisites :
+.. _prerequisites:
 
 Prerequisites
 ~~~~~~~~~~~~
@@ -197,7 +197,7 @@ There are currently two ways to add new connectors to the Kafka Connect image.
 * Build a new Docker image that has connector installed. You can follow example 2 in the documentation below. You will need to make sure that the connector jars are on the classpath. 
 * Add the connector jars via volumes.  If you don't want to create a new Docker image, please see our documentation on `Configuring Kafka Connect with External Jars <operations/external-volumes.html>`_ to configure the `cp-kafka-connect` container with external jars.
 
-.. _examples :
+.. _examples:
 
 Examples
 ~~~~~~~~
@@ -245,7 +245,7 @@ The following examples show to extend the images.
           docker build -t foo/zookeeper:latest .
 
 
-  Run it :
+  Run it:
 
   .. sourcecode:: bash
 
