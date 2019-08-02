@@ -48,3 +48,11 @@ VOLUME ["/etc/${COMPONENT}/jars", "/etc/${COMPONENT}/secrets"]
 COPY include/etc/confluent/docker /etc/confluent/docker
 
 CMD ["/etc/confluent/docker/run"]
+
+# Polling period  : 5 seconds
+# Timeout period  :10 seconds (if the polling does not return within this time, treat as a failed poll)
+# Start-up period : 2 minutes (during which failures are not counted as failures)
+# Retry period    : 8 minutes (after which container is deemed unhealthy)
+# All settings can be overriden at run-time in Docker/Docker Compose. 
+HEALTHCHECK --start-period=120s --interval=5s --timeout=10s --retries=96 \
+	CMD /etc/confluent/docker/healthcheck.sh
