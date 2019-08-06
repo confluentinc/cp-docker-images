@@ -30,3 +30,5 @@ RUN echo "===> Installing Replicator ..." \
         confluent-kafka-connect-replicator=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
      && echo "===> Cleaning up ..."  \
      && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+
+ENV CONNECT_PLUGIN_PATH=/usr/share/java/kafka-connect-replicator
