@@ -5,14 +5,15 @@
 BUILD_NUMBER ?= 1
 
 CONFLUENT_MAJOR_VERSION ?= 5
-CONFLUENT_MINOR_VERSION ?= 2
-CONFLUENT_PATCH_VERSION ?= 1
+
+CONFLUENT_MINOR_VERSION ?= 3
+CONFLUENT_PATCH_VERSION ?= 0
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION ?= 2.2.0cp2
+KAFKA_VERSION ?= 5.3.0
 
-COMPONENTS := base zookeeper kafka kafka-rest schema-registry kafka-connect-base kafka-connect enterprise-control-center kafkacat enterprise-replicator enterprise-replicator-executable enterprise-kafka kafka-mqtt
+COMPONENTS := base zookeeper kafka server kafka-rest schema-registry kafka-connect-base kafka-connect server-connect-base server-connect enterprise-control-center kafkacat enterprise-replicator enterprise-replicator-executable enterprise-kafka kafka-mqtt
 COMMIT_ID := $(shell git rev-parse --short HEAD)
 MYSQL_DRIVER_VERSION := 5.1.39
 

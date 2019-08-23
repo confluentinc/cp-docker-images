@@ -3,7 +3,7 @@ version: '2'
 services:
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:5.3.0-SNAPSHOT
+    image: confluentinc/cp-schema-registry:5.3.0
     hostname: schema-registry
     container_name: schema-registry
     ports:
@@ -15,12 +15,12 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_REQUEST_TIMEOUT_MS: 20000
       SCHEMA_REGISTRY_KAFKASTORE_RETRY_BACKOFF_MS: 500
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: "SASL_SSL"
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: $SR_BOOTSTRAP_SERVERS
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: $BOOTSTRAP_SERVERS
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: $SASL_JAAS_CONFIG
       SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: "PLAIN"
 
   ksql-server:
-    image: confluentinc/cp-ksql-server:5.3.0-SNAPSHOT
+    image: confluentinc/cp-ksql-server:5.3.0
     hostname: ksql-server
     container_name: ksql-server
     ports:
@@ -33,7 +33,9 @@ services:
       KSQL_AUTO_OFFSET_RESET: "earliest"
       KSQL_COMMIT_INTERVAL_MS: 0
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
-      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8085"
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: $SCHEMA_REGISTRY_URL
+      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: $BASIC_AUTH_CREDENTIALS_SOURCE
+      KSQL_KSQL_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: $SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO
       KSQL_BOOTSTRAP_SERVERS: $BOOTSTRAP_SERVERS
       KSQL_SECURITY_PROTOCOL: "SASL_SSL"
       KSQL_SASL_JAAS_CONFIG: $SASL_JAAS_CONFIG
@@ -43,7 +45,9 @@ services:
       KSQL_KSQL_STREAMS_PRODUCER_CONFLUENT_BATCH_EXPIRE_MS: 9223372036854775807
       KSQL_KSQL_STREAMS_PRODUCER_REQUEST_TIMEOUT_MS: 300000
       KSQL_KSQL_STREAMS_PRODUCER_MAX_BLOCK_MS: 9223372036854775807
+      KSQL_KSQL_STREAMS_PRODUCER_DELIVERY_TIMEOUT_MS: 2147483647
       KSQL_KSQL_STREAMS_REPLICATION_FACTOR: 3
+      KSQL_KSQL_INTERNAL_TOPIC_REPLICAS: 3
       KSQL_KSQL_SINK_REPLICAS: 3
       # Producer Confluent Monitoring Interceptors for Control Center streams monitoring
       KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
@@ -57,13 +61,13 @@ services:
       KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_JAAS_CONFIG: $SASL_JAAS_CONFIG
 
   ksql-cli:
-    image: confluentinc/cp-ksql-cli:5.3.0-SNAPSHOT
+    image: confluentinc/cp-ksql-cli:5.3.0
     container_name: ksql-cli
     entrypoint: /bin/sh
     tty: true
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:5.3.0-SNAPSHOT
+    image: confluentinc/cp-enterprise-control-center:5.3.0
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -74,7 +78,9 @@ services:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: $BOOTSTRAP_SERVERS
       CONTROL_CENTER_KSQL_URL: "http://ksql-server:8089"
       CONTROL_CENTER_KSQL_ADVERTISED_URL: "http://localhost:8089"
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8085"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: $SCHEMA_REGISTRY_URL
+      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: $BASIC_AUTH_CREDENTIALS_SOURCE
+      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: $SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO
       CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SASL_SSL
       CONTROL_CENTER_STREAMS_SASL_JAAS_CONFIG: $SASL_JAAS_CONFIG
@@ -93,7 +99,7 @@ services:
       PORT: 9021
 
   connect:
-    image: confluentinc/cp-kafka-connect:5.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka-connect:5.3.0
     hostname: connect
     container_name: connect
     depends_on:
@@ -114,15 +120,18 @@ services:
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
-      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8085
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "true"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: $SCHEMA_REGISTRY_URL
+      CONNECT_VALUE_CONVERTER_BASIC_AUTH_CREDENTIALS_SOURCE: $BASIC_AUTH_CREDENTIALS_SOURCE
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: $SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
       CONNECT_PLUGIN_PATH: "/usr/share/java"
       CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
       CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.1.1.jar
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.3.0.jar
       CONNECT_REQUEST_TIMEOUT_MS: 20000
       CONNECT_RETRY_BACKOFF_MS: 500
       # Connect worker
@@ -148,7 +157,7 @@ services:
       CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_SASL_MECHANISM: PLAIN
 
   rest-proxy:
-    image: confluentinc/cp-kafka-rest:5.3.0-SNAPSHOT
+    image: confluentinc/cp-kafka-rest:5.3.0
     depends_on:
       - schema-registry
     ports:
@@ -160,7 +169,9 @@ services:
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_REQUEST_TIMEOUT_MS: 20000
       KAFKA_REST_RETRY_BACKOFF_MS: 500
-      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8085'
+      KAFKA_REST_SCHEMA_REGISTRY_URL: $SCHEMA_REGISTRY_URL
+      KAFKA_REST_BASIC_AUTH_CREDENTIALS_SOURCE: $BASIC_AUTH_CREDENTIALS_SOURCE
+      KAFKA_REST_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: $SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO
       KAFKA_REST_BOOTSTRAP_SERVERS: $BOOTSTRAP_SERVERS
       KAFKA_REST_SSL_ENDPOINT_IDENTIFIED_ALGORITHM: "https"
       KAFKA_REST_SECURITY_PROTOCOL: "SASL_SSL"

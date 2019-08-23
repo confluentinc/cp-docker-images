@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 #
-# Copyright 2018 Confluent Inc.
+# Copyright 2019 Confluent Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-kafka-connect:5.3.0
+. /etc/confluent/docker/bash-config
 
-ENV CONNECT_PLUGIN_PATH="/usr/share/java,/usr/share/confluent-hub-components"
+export KAFKA_DATA_DIRS=${KAFKA_DATA_DIRS:-"/var/lib/kafka/data"}
+echo "===> Check if $KAFKA_DATA_DIRS is writable ..."
+dub path "$KAFKA_DATA_DIRS" writable
 
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-datagen:latest
+echo "===> Check if Zookeeper is healthy ..."
+cub zk-ready "$KAFKA_ZOOKEEPER_CONNECT" "${KAFKA_CUB_ZK_TIMEOUT:-40}"

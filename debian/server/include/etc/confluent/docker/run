@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 #
-# Copyright 2018 Confluent Inc.
+# Copyright 2019 Confluent Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-kafka-connect:5.3.0
+. /etc/confluent/docker/bash-config
 
-ENV CONNECT_PLUGIN_PATH="/usr/share/java,/usr/share/confluent-hub-components"
+# Set environment values if they exist as arguments
+if [ $# -ne 0 ]; then
+  echo "===> Overriding env params with args ..."
+  for var in "$@"
+  do
+    export "$var"
+  done
+fi
 
-RUN confluent-hub install --no-prompt confluentinc/kafka-connect-datagen:latest
+echo "===> ENV Variables ..."
+show_env
+
+echo "===> User"
+id
+
+echo "===> Configuring ..."
+/etc/confluent/docker/configure
+
+echo "===> Running preflight checks ... "
+/etc/confluent/docker/ensure
+
+echo "===> Launching ... "
+exec /etc/confluent/docker/launch
