@@ -30,7 +30,7 @@ EXPOSE 9092
 
 RUN echo "===> installing confluent-rebalancer ..." \
     && yum -q -y update \
-    && yum install -y confluent-rebalancer-${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL} \
+    && yum install -y confluent-rebalancer-${CONFLUENT_VERSION}-${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
     && yum clean all \
     && rm -rf /tmp/* \
