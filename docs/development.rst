@@ -3,7 +3,7 @@
 Docker Developer Guide
 ======================
 
-.. _image_design_overview :
+.. _image_design_overview:
 
 Image Design Overview
 ---------------------
@@ -102,7 +102,7 @@ Setup
 
        eval $(docker-machine env confluent)
 
-.. _building_the_images :
+.. _building_the_images:
 
 Building the Images
 ~~~~~~~~~~~~~~~~~~~
@@ -115,7 +115,7 @@ To get started, you can build all the |cp| images as follows:
 
 You can run build tests by running ``make test-build``.  Use this when you want to test the builds with a clean slate.  This deletes all images and starts from scratch.
 
-.. _running_tests :
+.. _running_tests:
 
 Running Tests
 ~~~~~~~~~~~~~
@@ -206,7 +206,6 @@ Examples
 
 The following examples show to extend the images.
 
-<<<<<<< HEAD
 #.  Add connectors from `Confluent Hub <http://confluent.io/hub>`_
 
     This example shows how to use the
@@ -280,66 +279,6 @@ The following examples show to extend the images.
     To do this for the |zk| image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
 
     ``Dockerfile``
-=======
-1. Download configuration from a URL
-
-  This example shows how to change the configuration management. You will need to override the ``configure`` script to download the scripts from an HTTP URL.
-
-  To do this for the |zk| image, you will need the following dockerfile and configure script. This example assumes that each property file is has a URL.
-
-  ``Dockerfile``
-
-  .. sourcecode:: bash
-
-      FROM confluentinc/cp-zookeeper
-
-      COPY include/etc/confluent/docker/configure /etc/confluent/docker/configure
-
-  ``include/etc/confluent/docker/configure``
-
-  .. sourcecode:: bash
-
-      set -o nounset \
-          -o errexit \
-          -o verbose \
-          -o xtrace
-
-
-      # Ensure that URL locations are available.
-      dub ensure ZOOKEEPER_SERVER_CONFIG_URL
-      dub ensure ZOOKEEPER_SERVER_ID_URL
-      dub ensure ZOOKEEPER_LOG_CONFIG_URL
-
-      # Ensure that the config location is writable.
-      dub path /etc/kafka/ writable
-
-      curl -XGET ZOOKEEPER_SERVER_CONFIG_URL > /etc/kafka/zookeeper.properties
-      curl -XGET ZOOKEEPER_SERVER_ID_URL > /var/lib/zookeeper/data/myid
-      curl -XGET ZOOKEEPER_LOG_CONFIG_URL > /etc/kafka/log4j.properties
-
-      Build the image:
-
-          docker build -t foo/zookeeper:latest .
-
-
-  Run it:
-
-  .. sourcecode:: bash
-
-      docker run \
-           -e ZOOKEEPER_SERVER_CONFIG_URL=http://foo.com/zk1/server.properties \
-           -e ZOOKEEPER_SERVER_ID_URL =http://foo.com/zk1/myid \
-           -e ZOOKEEPER_LOG_CONFIG_URL =http://foo.com/zk1/log4j.properties \
-           foo/zookeeper:latest
-
-2. Add More Software
-
-  This example shows how to add new software to an image. For example, you might want to extend the Kafka Connect client to include the MySQL JDBC driver.
-
-   ``Dockerfile``
-
-   .. sourcecode:: bash
->>>>>>> 4.1.3-post
 
     .. sourcecode:: bash
       
