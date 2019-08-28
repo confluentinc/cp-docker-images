@@ -65,3 +65,4 @@ following tutorials leverage these examples and can help you get started.
        ../../../../tutorials/cp-demo/docs/index
        automatic-data-balancing
        replicator
+       tutorials
