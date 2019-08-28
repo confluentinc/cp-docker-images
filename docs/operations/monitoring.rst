@@ -1,3 +1,4 @@
+
 Monitoring Docker
 -----------------
 
@@ -34,7 +35,6 @@ Settings
 
 ``KAFKA_JMX_PORT``
     JMX Port.
-
 
 ``KAFKA_JMX_OPTS``
     JMX options.
