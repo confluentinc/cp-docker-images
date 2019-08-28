@@ -17,6 +17,7 @@ Installation Recipes
        connect-avro-jdbc
        automatic-data-balancing
        replicator
+       tutorials
 
 
 You should consider the following before using the Docker images.

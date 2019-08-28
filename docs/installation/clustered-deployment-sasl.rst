@@ -358,7 +358,7 @@ Docker Compose: Setting Up a Three Node Confluent Platform Cluster with SASL
 
 Before you get started, you will first need to install `Docker <https://docs.docker.com/engine/installation/>`_ and `Docker Compose <https://docs.docker.com/compose/install/>`_.  Once you've done that, you can follow the steps below to start up the |cp| services.
 
-#. Follow sections 1, 2 and 3 in :ref:`docker-client-setup-3-node-sasl` to create a docker-machine and generate the SSL credentials.
+#. Follow sections 1, 2 and 3 :ref:`here <docker-client-setup-3-node-sasl>` to create a docker-machine and generate the SSL credentials.
 
    Set the environment variable for secrets directory. This is used in the compose file.
 
@@ -506,7 +506,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
       kafka-sasl-2_1      | [2016-09-01 08:48:41,716] INFO [Controller 2]: Controller startup complete (kafka.controller.KafkaController)
 
-#. Follow step 8 in :ref:`docker-client-setup-3-node-sasl` to test that your brokers are functioning as expected.
+#. Follow step 8 :ref:`here <docker-client-setup-3-node-sasl>` to test that your brokers are functioning as expected.
 
 #. To stop the cluster, first stop Kafka nodes one-by-one and then stop the |zk| cluster.
 
