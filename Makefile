@@ -49,6 +49,7 @@ clean-images:
 debian/base/include/etc/confluent/docker/docker-utils.jar:
 	mkdir -p debian/base/include/etc/confluent/docker
 	mvn -U clean compile package -DskipTests \
+        && ls target/docker-utils*.jar \
 	&& cp target/docker-utils-${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL}-jar-with-dependencies.jar debian/base/include/etc/confluent/docker/docker-utils.jar
 
 build-debian: debian/base/include/etc/confluent/docker/docker-utils.jar
