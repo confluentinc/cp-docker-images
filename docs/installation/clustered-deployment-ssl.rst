@@ -282,7 +282,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       git clone https://github.com/confluentinc/cp-docker-images
       cd cp-docker-images/examples/kafka-cluster-ssl
 
-   Follow section 3 on generating SSL credentials in :ref:`docker-client-setup-3-node-ssl` to create the SSL credentials.
+   Follow section 3 on generating SSL credentials in :ref:`Installing and Running Docker <docker-client-setup-3-node-ssl>` to create the SSL credentials.
 
 #. Start |zk| and Kafka using Docker Compose ``up`` command.
 
@@ -367,7 +367,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
       kafka-ssl-3_1  | [2016-08-24 23:38:22,763] INFO [Controller-3-to-broker-2-send-thread], Controller 3 connected to localhost:29093 (id: 2 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
       kafka-ssl-3_1  | [2016-08-24 23:38:22,762] INFO [Controller-3-to-broker-1-send-thread], Controller 3 connected to localhost:19093 (id: 1 rack: null) for sending state change requests (kafka.controller.RequestSendThread)
 
-#. Follow step 5 in the :ref:`docker-client-setup-3-node-ssl` to test that your brokers are functioning as expected.
+#. Follow step 5 in the :ref:`Installing and Running Docker <docker-client-setup-3-node-ssl>` to test that your brokers are functioning as expected.
 
 #. To stop the cluster, first stop Kafka nodes one-by-one and then stop the |zk| cluster.
 
