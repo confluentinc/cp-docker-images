@@ -39,6 +39,9 @@ RUN echo "===> installing ${COMPONENT}..." \
     && echo "===> installing confluent-rebalancer ..." \
     && apt-get update && apt-get install -y \
               confluent-rebalancer=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
+    && echo "===> installing confluent-security ..." \
+    && apt-get update && apt-get install -y \
+              confluent-security=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     \
     && echo "===> clean up ..."  \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
