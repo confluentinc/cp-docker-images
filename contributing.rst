@@ -4,7 +4,7 @@ How to Contribute
 =================
 
 General Guidelines
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 When submitting a pull request (PR), please use the following guidelines:
 
@@ -19,7 +19,7 @@ When submitting a pull request (PR), please use the following guidelines:
 * Keep formatting changes in separate commits to make code reviews easier and distinguish them from actual code changes.
 
 GitHub Workflow
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 1. Fork the confluentinc/cp-docker-images repository into your GitHub account
 
