@@ -6,6 +6,7 @@
           Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add
           mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
 .. install-run
+
 Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -16,6 +17,7 @@ To get started, you'll need to first `install Docker and get it running <https:/
 The |cp| Docker Images require Docker version 1.11 or greater.
 
 .. setting-up-3-node
+
 Docker Client: Setting Up a Three Node Kafka Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
