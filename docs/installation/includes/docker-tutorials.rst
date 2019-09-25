@@ -5,13 +5,13 @@
           data in the event that a container stops running or is restarted.  This is important when running a system like
           Kafka on Docker, as it relies heavily on the filesystem for storing and caching messages. For an example of how to add
           mounted volumes to the host machine, see the :ref:`documentation on Docker external volumes <external_volumes>`.
+
 .. install-run
 
 Installing and Running Docker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For this tutorial, Docker is run using the Docker client.  If you are interested in information on using Docker Compose
-to run the images, :ref:`skip to the bottom of this guide <clustered_quickstart_compose_ssl>`.
+For this tutorial, Docker is run using the Docker client.  
 
 To get started, you'll need to first `install Docker and get it running <https://docs.docker.com/engine/installation/>`_.
 The |cp| Docker Images require Docker version 1.11 or greater.
