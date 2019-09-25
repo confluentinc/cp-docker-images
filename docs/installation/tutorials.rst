@@ -10,9 +10,5 @@ In this section, we provide more advanced tutorials for using specific Confluent
 .. toctree::
    :maxdepth: 3
 
-   clustered-deployment
-   clustered-deployment-ssl
-   clustered-deployment-sasl
-   connect-avro-jdbc
    automatic-data-balancing
    replicator
