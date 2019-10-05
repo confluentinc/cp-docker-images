@@ -232,7 +232,7 @@ to write any code.
     $ docker run -it --net=confluent --rm confluentinc/cp-schema-registry:|release| bash
 
 
-   #. Run the Kafka console roducer against your Kafka cluster, instruct it to write to the topic ``bar``, read each line
+   #. Run the Kafka console producer against your Kafka cluster, instruct it to write to the topic ``bar``, read each line
       of input as an Avro message, validate the schema against the |sr| at the specified URL, and indicate the format of
       the data.
 
