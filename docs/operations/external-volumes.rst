@@ -132,8 +132,6 @@ Then start Kafka connect mounting the download directory as ``/etc/kafka-connect
     -e CONNECT_STATUS_STORAGE_TOPIC="default.status" \
     -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
     -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-    -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-    -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
     -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
     -e CONNECT_PLUGIN_PATH=/usr/share/java,/etc/kafka-connect/jars \
     -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
