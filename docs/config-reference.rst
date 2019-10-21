@@ -207,8 +207,6 @@ the topic names for ``config``, ``offsets`` and ``status`` as well the ``key`` o
       -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
       -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-      -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-      -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
       -e CONNECT_PLUGIN_PATH=/usr/share/java \
       confluentinc/cp-kafka-connect:|release|
@@ -239,12 +237,6 @@ The following settings must be passed to run the Kafka Connect Docker image.
 
 ``CONNECT_VALUE_CONVERTER``
     Converter class for values. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
-
-``CONNECT_INTERNAL_KEY_CONVERTER``
-    Converter class for internal keys that implements the ``Converter`` interface.
-
-``CONNECT_INTERNAL_VALUE_CONVERTER``
-    Converter class for internal values that implements the ``Converter`` interface.
 
 ``CONNECT_REST_ADVERTISED_HOST_NAME``
     The hostname that is given out to other workers to connect to. In a Docker environment, your clients must be able to connect
@@ -341,8 +333,6 @@ and the ``key`` or ``value`` converter:
       -e CONNECT_STATUS_STORAGE_TOPIC="quickstart-status" \
       -e CONNECT_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-      -e CONNECT_INTERNAL_KEY_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
-      -e CONNECT_INTERNAL_VALUE_CONVERTER="org.apache.kafka.connect.json.JsonConverter" \
       -e CONNECT_REST_ADVERTISED_HOST_NAME="localhost" \
       confluentinc/cp-enterprise-replicator:|release|
 
@@ -390,12 +380,6 @@ The following settings must be passed to run the Kafka Connect Docker image:
 
 ``CONNECT_VALUE_CONVERTER``
     Converter class for values. This controls the format of the data that will be written to Kafka for source connectors or read from Kafka for sink connectors.
-
-``CONNECT_INTERNAL_KEY_CONVERTER``
-    Converter class for internal keys that implements the ``Converter`` interface.
-
-``CONNECT_INTERNAL_VALUE_CONVERTER``
-    Converter class for internal values that implements the ``Converter`` interface.
 
 ``CONNECT_REST_ADVERTISED_HOST_NAME``
     The hostname that will be given out to other workers to connect to. In a Docker environment, your clients must be able to connect

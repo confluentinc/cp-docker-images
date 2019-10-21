@@ -36,7 +36,7 @@ if [ -z "$CONNECT_REST_PORT" ]; then
 fi
 
 # Fix for https://issues.apache.org/jira/browse/KAFKA-3988
-if [[ $CONNECT_INTERNAL_KEY_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]] || [[ $CONNECT_INTERNAL_VALUE_CONVERTER == "org.apache.kafka.connect.json.JsonConverter" ]]
+if [[ ${CONNECT_INTERNAL_KEY_CONVERTER-} == "org.apache.kafka.connect.json.JsonConverter" ]] || [[ ${CONNECT_INTERNAL_VALUE_CONVERTER-} == "org.apache.kafka.connect.json.JsonConverter" ]]
 then
   export CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE=false
   export CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE=false
