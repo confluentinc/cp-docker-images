@@ -111,7 +111,7 @@ class ClusterHostNetworkTest(unittest.TestCase):
         rebalance_status = self.cluster.run_command_on_service("kafka-1", ADB_STATUS)
 
         rebalance_complete = ""
-        for i in xrange(120):
+        for i in range(120):
             rebalance_complete = self.cluster.run_command_on_service("kafka-1", ADB_FINISH)
             if "The rebalance has completed and throttling has been disabled" in rebalance_complete:
                 break

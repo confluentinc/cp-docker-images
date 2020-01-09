@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import utils
@@ -145,7 +146,7 @@ def create_connector(name, create_command, host, port):
         host_config={'NetworkMode': 'host'})
 
     status = None
-    for i in xrange(25):
+    for i in range(25):
         source_logs = utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
             command=CONNECTOR_STATUS.format(host=host, port=port, name=name),
@@ -170,7 +171,7 @@ def create_connector(name, create_command, host, port):
 def create_file_source_test_data(host_dir, file, num_records):
     volumes = []
     volumes.append("%s:/tmp/test" % host_dir)
-    print "VOLUMES : ", volumes
+    print("VOLUMES : ", volumes)
     utils.run_docker_command(
         image="confluentinc/cp-kafka-connect",
         command="bash -c 'rm -rf /tmp/test/*.txt && seq {count} > /tmp/test/{name}'".format(count=num_records, name=file),
@@ -181,7 +182,7 @@ def wait_and_get_sink_output(host_dir, file, expected_num_records):
     # Polls the output of file sink and tries to wait until an expected no of records appear in the file.
     volumes = []
     volumes.append("%s/:/tmp/test" % host_dir)
-    for i in xrange(60):
+    for i in range(60):
         sink_record_count = utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
             command="bash -c '[ -e /tmp/test/%s ] && (wc -l /tmp/test/%s | cut -d\" \" -f1) || echo -1'" % (file, file),
@@ -412,7 +413,7 @@ class SingleNodeDistributedTest(unittest.TestCase):
         assert "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent -e 'show databases;' | grep connect_test && echo PASS || echo FAIL" """)
 
         tmp = ""
-        for i in xrange(25):
+        for i in range(25):
             if "PASS" in self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'show tables;' | grep %s && echo PASS || echo FAIL" """ % topic):
                 tmp = self.cluster.run_command_on_service("mysql-host", """ bash -c "mysql --user=root --password=confluent --silent --database=connect_test -e 'select COUNT(*) FROM %s ;' " """ % topic)
                 if "10000" in tmp:
@@ -447,7 +448,7 @@ class SingleNodeDistributedTest(unittest.TestCase):
         self.assertEquals(es_sink_status, "RUNNING")
 
         tmp = ""
-        for i in xrange(25):
+        for i in range(25):
             index_exists_cmd = 'bash -c "curl -s -f -XHEAD http://localhost:9200/%s && echo PASS || echo FAIL"' % topic
             if "PASS" in self.cluster.run_command_on_service("elasticsearch-host", index_exists_cmd):
                 doc_count = """ bash -c "curl -s -f http://localhost:9200/_cat/count/%s | cut -d' ' -f3" """ % topic

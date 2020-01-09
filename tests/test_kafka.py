@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import utils
@@ -410,7 +411,7 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
         cls.machine = utils.TestMachine(machine_name)
 
         # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
+        print(cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets"))
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
         cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
 
@@ -454,7 +455,7 @@ class ClusterSSLBridgedNetworkTest(ClusterBridgedNetworkTest):
             command=KAFKACAT_SSL_CONSUMER.format(brokers="kafka-ssl-1:9093", topic="foo", messages=10),
             host_config={'NetworkMode': 'cluster-test_zk', 'Binds': ['/tmp/kafka-cluster-bridge-test/secrets:/etc/kafka/secrets']})
 
-        self.assertEquals("\n".join([str(i + 1) for i in xrange(10)]), consumer_logs.strip())
+        self.assertEquals("\n".join([str(i + 1) for i in range(10)]), consumer_logs.strip())
 
 
 class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
@@ -464,7 +465,7 @@ class ClusterSASLBridgedNetworkTest(ClusterBridgedNetworkTest):
         cls.machine = utils.TestMachine(machine_name)
 
         # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets")
+        print(cls.machine.ssh("mkdir -p /tmp/kafka-cluster-bridge-test/secrets"))
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
         cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-bridge-test")
 
@@ -580,7 +581,7 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
         cls.machine = utils.TestMachine(machine_name)
 
         # Copy SSL files.
-        print cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets")
+        print(cls.machine.ssh("mkdir -p /tmp/kafka-cluster-host-test/secrets"))
         local_secrets_dir = os.path.join(FIXTURES_DIR, "secrets")
         cls.machine.scp_to_machine(local_secrets_dir, "/tmp/kafka-cluster-host-test")
 
@@ -625,7 +626,7 @@ class ClusterSSLHostNetworkTest(ClusterHostNetworkTest):
             command=KAFKACAT_SSL_CONSUMER.format(brokers="localhost:29093", topic="foo", messages=10),
             host_config={'NetworkMode': 'host', 'Binds': ['/tmp/kafka-cluster-host-test/secrets:/etc/kafka/secrets']})
 
-        self.assertEquals("\n".join([str(i + 1) for i in xrange(10)]), consumer_logs.strip())
+        self.assertEquals("\n".join([str(i + 1) for i in range(10)]), consumer_logs.strip())
 
 
 class ClusterSASLHostNetworkTest(ClusterHostNetworkTest):

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import docker
 import os
 import time
@@ -41,20 +42,20 @@ def run_docker_command(timeout=None, **kwargs):
     container.start()
     container.wait(timeout)
     logs = container.logs()
-    print "Running command %s: %s" % (kwargs["command"], logs)
+    print("Running command %s: %s" % (kwargs["command"], logs))
     container.shutdown()
     return logs
 
 
 def path_exists_in_image(image, path):
-    print "Checking for %s in %s" % (path, image)
+    print("Checking for %s in %s" % (path, image))
     cmd = "bash -c '[ ! -e %s ] || echo success' " % (path,)
     output = run_docker_command(image=image, command=cmd)
     return "success" in output
 
 
 def executable_exists_in_image(image, path):
-    print "Checking for %s in %s" % (path, image)
+    print("Checking for %s in %s" % (path, image))
     cmd = "bash -c '[ ! -x %s ] || echo success' " % (path,)
     output = run_docker_command(image=image, command=cmd)
     return "success" in output
@@ -65,7 +66,7 @@ def run_command_on_host(command):
         image="busybox",
         command=command,
         host_config={'NetworkMode': 'host', 'Binds': ['/tmp:/tmp']})
-    print "Running command %s: %s" % (command, logs)
+    print("Running command %s: %s" % (command, logs))
     return logs
 
 
@@ -143,10 +144,10 @@ class TestCluster():
             return self.get_container(service_name).logs()
 
     def run_command(self, command, container):
-        print "Running %s on %s :" % (command, container)
+        print("Running %s on %s :" % (command, container))
         eid = container.create_exec(command)
         output = container.start_exec(eid)
-        print "\n%s " % output
+        print("\n%s " % output)
         return output
 
     def run_command_on_all(self, command):

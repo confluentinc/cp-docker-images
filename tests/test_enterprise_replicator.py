@@ -49,7 +49,7 @@ def create_connector(name, create_command, host, port):
         host_config={'NetworkMode': 'host'})
 
     status = None
-    for i in xrange(25):
+    for i in range(25):
         source_logs = utils.run_docker_command(
             image="confluentinc/cp-kafka-connect",
             command=CONNECTOR_STATUS.format(host=host, port=port, name=name),
