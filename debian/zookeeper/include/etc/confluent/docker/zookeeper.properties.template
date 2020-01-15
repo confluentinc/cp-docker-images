@@ -27,7 +27,8 @@ dataLogDir=/var/lib/zookeeper/log
   'ZOOKEEPER_JUTE_MAX_BUFFER': 'jute.maxbuffer',
   'ZOOKEEPER_SKIP_ACL': 'skipACL',
   'ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS': 'quorumListenOnAllIPs',
-  'ZOOKEEPER_SNAPSHOT_TRUST_EMPTY': 'snapshot.trust.empty'
+  'ZOOKEEPER_SNAPSHOT_TRUST_EMPTY': 'snapshot.trust.empty',
+  'ZOOKEEPER_ADMIN_ENABLESERVER': 'admin.enableServer'
  } -%}
 
 {% for k, property in other_props.iteritems() -%}
