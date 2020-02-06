@@ -15,7 +15,8 @@
 
 # Builds a docker image for the Confluent Control Center.
 
-FROM confluentinc/cp-base
+ARG REPOSITORY=confluentinc
+FROM $REPOSITORY/cp-base
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID

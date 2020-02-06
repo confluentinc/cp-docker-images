@@ -15,7 +15,8 @@
 
 # Builds a docker image for Kafka Connect
 
-FROM confluentinc/cp-kafka-connect-base
+ARG REPOSITORY=confluentinc
+FROM $REPOSITORY/cp-kafka-connect-base
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true

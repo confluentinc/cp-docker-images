@@ -30,7 +30,9 @@ for component in ${COMPONENTS} ; do
         BUILD_ARGS=""
     fi
 
-    for type in "" rpm; do
+    #TODO: undo this... only building debian images for now
+    #for type in "" rpm; do
+    for type in ""; do
         DOCKER_FILE="debian/${component}/Dockerfile"
         COMPONENT_NAME=${component}
 
@@ -43,12 +45,13 @@ for component in ${COMPONENTS} ; do
         fi
 
         if [ -a "${DOCKER_FILE}" ]; then
-            docker build --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} ${BUILD_ARGS} -t ${REPOSITORY}/cp-${COMPONENT_NAME}:latest -f ${DOCKER_FILE} debian/${component} || exit 1
+            docker buildx build --platform=linux/arm64,linux/amd64 --pull --build-arg KAFKA_VERSION=${KAFKA_VERSION} --build-arg CONFLUENT_PLATFORM_LABEL=${CONFLUENT_PLATFORM_LABEL} --build-arg CONFLUENT_MAJOR_VERSION=${CONFLUENT_MAJOR_VERSION} --build-arg CONFLUENT_MINOR_VERSION=${CONFLUENT_MINOR_VERSION} --build-arg CONFLUENT_PATCH_VERSION=${CONFLUENT_PATCH_VERSION} --build-arg COMMIT_ID=${COMMIT_ID} --build-arg BUILD_NUMBER=${BUILD_NUMBER} ${BUILD_ARGS} --build-arg REPOSITORY=${REPOSITORY} -t ${REPOSITORY}/cp-${COMPONENT_NAME}:latest --push -f ${DOCKER_FILE} debian/${component} || exit 1
 
-            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:latest  || exit 1
-            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${CONFLUENT_VERSION}${CONFLUENT_MVN_LABEL} || exit 1
-            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${VERSION} || exit 1
-            docker tag ${REPOSITORY}/cp-${COMPONENT_NAME}:latest ${REPOSITORY}/cp-${COMPONENT_NAME}:${COMMIT_ID} || exit 1
+            #TODO: Don't want to use docker tag with buildx image, need to work with the manifest, use something like docker manifest cp?
+            #docker manifest inspect ${REPOSITORY}/cp-${COMPONENT_NAME}:latest
+            #Take the manifest digests out of the manifest list, then:
+            #docker manifest create ${REPOSITORY}/cp-${COMPONENT_NAME}:${VERSION} ${REPOSITORY}/cp-${COMPONENT_NAME}@sha256:...1 ${REPOSITORY}/cp-${COMPONENT_NAME}@sha256:...2 ${REPOSITORY}/cp-${COMPONENT_NAME}@sha256:...3
+            #docker manifest push ${REPOSITORY}/cp-${COMPONENT_NAME}:${VERSION}
         fi;
     done
 done

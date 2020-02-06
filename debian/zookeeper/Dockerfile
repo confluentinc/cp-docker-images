@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM confluentinc/cp-base
+ARG REPOSITORY=confluentinc
+FROM $REPOSITORY/cp-base
 
 EXPOSE 2181 2888 3888
 

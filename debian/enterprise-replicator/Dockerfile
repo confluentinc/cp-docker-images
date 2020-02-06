@@ -15,7 +15,8 @@
 
 # Builds a docker image for Replicator
 
-FROM confluentinc/cp-server-connect-base
+ARG REPOSITORY=confluentinc
+FROM $REPOSITORY/cp-server-connect-base
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
