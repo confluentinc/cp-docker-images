@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM centos:centos7
+FROM centos:centos8
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
@@ -70,10 +70,10 @@ RUN echo "===> Installing curl wget netcat python...." \
                 git \
                 wget \
                 nc \
-                python
+                python2
 
 RUN echo "===> Installing python packages ..."  \
-    && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
+    && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python2 \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.20 \
     && yum remove -y git
