@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM debian:jessie
+FROM debian:stretch
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
@@ -30,7 +30,7 @@ MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
 
 # Python
-ENV PYTHON_VERSION="2.7.9-1"
+ENV PYTHON_VERSION="2.7"
 ENV PYTHON_PIP_VERSION="8.1.2"
 
 # Confluent
@@ -64,28 +64,32 @@ ENV LANG="C.UTF-8"
 
 RUN echo "===> Updating debian ....." \
     # TODO debian jessie has been deprecated and is only ex
-    && echo "deb http://archive.debian.org/debian/ jessie main" > /etc/apt/sources.list \
-    && echo "deb http://security.debian.org jessie/updates main" >> /etc/apt/sources.list \
+    && echo "deb http://ftp.us.debian.org/debian stretch main" > \
+        /etc/apt/sources.list \
+    && echo "deb http://security.debian.org stretch/updates main" >> \
+        /etc/apt/sources.list \
     && apt-get -qq update \
-    \
     && echo "===> Installing curl wget netcat python...." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apt-transport-https \
                 curl \
-                gnupg-curl \
                 git \
                 wget \
                 netcat \
-                python=${PYTHON_VERSION} \
-                build-essential libssl-dev libffi-dev python-dev \
+                procps \
+                python${PYTHON_VERSION} \
+                build-essential libssl-dev libffi-dev \
+                python${PYTHON_VERSION}-dev \
     && echo "===> Installing python packages ..."  \
-    && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
+    && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | \
+           python${PYTHON_VERSION} \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.20 \
     && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && apt-key adv --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 0x27BC0C8CB3D81623F59BDADCB1998361219BD9C9 \
-    && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
+    && echo "deb http://repos.azulsystems.com/debian stable  main" \
+         >> /etc/apt/sources.list.d/zulu.list \
     && apt-get -qq update \
     && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
     && echo "===> Installing Kerberos Patch ..." \
