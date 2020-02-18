@@ -1,4 +1,4 @@
-FROM centos:6.6
+FROM centos:centos6.10
 
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
