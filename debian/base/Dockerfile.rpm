@@ -55,7 +55,7 @@ ENV CONFLUENT_PLATFORM_LABEL=$CONFLUENT_PLATFORM_LABEL
 ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLUENT_PATCH_VERSION"
 
 # Zulu
-ENV ZULU_OPENJDK_VERSION="8-8.17.0.3"
+ENV ZULU_OPENJDK_VERSION="11"
 
 # This affects how strings in Java class files are interpreted.  We want UTF-8 and this is the only locale in the
 # base image that supports it
