@@ -10,7 +10,7 @@ CONFLUENT_PATCH_VERSION ?= 1
 
 CONFLUENT_VERSION ?= ${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}.${CONFLUENT_PATCH_VERSION}
 
-KAFKA_VERSION ?= 5.3.1
+KAFKA_VERSION ?= 5.3.1cp7
 
 COMPONENTS := base zookeeper kafka server kafka-rest schema-registry kafka-connect-base kafka-connect server-connect-base server-connect enterprise-control-center kafkacat enterprise-replicator enterprise-replicator-executable enterprise-kafka kafka-mqtt
 COMMIT_ID := $(shell git rev-parse --short HEAD)
