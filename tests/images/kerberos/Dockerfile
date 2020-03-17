@@ -7,7 +7,7 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 LABEL io.confluent.docker=true
 
 # EPEL
-RUN rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#RUN yum install -y epel-release
 
 # kerberos
 RUN yum install -y krb5-server krb5-libs krb5-auth-dialog krb5-workstation
