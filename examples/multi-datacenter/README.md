@@ -15,7 +15,7 @@ Here is a list of Confluent Platform services and their associated ports
 # Data generation and topic names
 
 There are also Docker containers with data generators that produce data to the same topic name `topic1` in each datacenter.
-Confluent Replicator 5.0.4-SNAPSHOT prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1`, by using provenance information in the message headers.
+Confluent Replicator 5.0.4 prevents cyclic repetition of data between the DC1 `topic1` and DC2 `topic1`, by using provenance information in the message headers.
 
 # Pre-requisites
 
@@ -39,7 +39,7 @@ Stop all services:
 # Java Consumer Applications
 
 After a disaster event occurs, consumers can switch datacenters and automatically restart consuming data in the destination cluster where they left off in the origin cluster, a capability introduced in Confluent Platform version 5.0.
-To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.4-SNAPSHOT-post/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
+To use this capability, configure Java consumer applications with the [Consumer Timestamps Interceptor](https://docs.confluent.io/current/multi-dc-replicator/replicator-failover.html#configuring-the-consumer-for-failover), which is shown in this [sample code](https://github.com/confluentinc/examples/blob/5.0.x/clients/avro/src/main/java/io/confluent/examples/clients/basicavro/ConsumerMultiDatacenterExample.java).
 Run the consumer as shown below:
 
 ```bash
