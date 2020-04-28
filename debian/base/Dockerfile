@@ -63,9 +63,6 @@ ENV ZULU_OPENJDK_VERSION="8=8.38.0.13"
 ENV LANG="C.UTF-8"
 
 RUN echo "===> Updating debian ....." \
-    # TODO debian jessie has been deprecated and is only ex
-    && echo "deb http://archive.debian.org/debian/ jessie main" > /etc/apt/sources.list \
-    && echo "deb http://security.debian.org jessie/updates main" >> /etc/apt/sources.list \
     && apt-get -qq update \
     \
     && echo "===> Installing curl wget netcat python...." \
