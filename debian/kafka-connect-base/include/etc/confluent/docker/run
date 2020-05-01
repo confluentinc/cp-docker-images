@@ -19,9 +19,6 @@
 . /etc/confluent/docker/mesos-setup.sh
 . /etc/confluent/docker/apply-mesos-overrides
 
-echo "===> ENV Variables ..."
-show_env
-
 echo "===> User"
 id
 

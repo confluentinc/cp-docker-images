@@ -21,8 +21,3 @@ if [ "${TRACE:-}" == "true" ]; then
   set -o verbose \
       -o xtrace
 fi
-
-
-function show_env {
-    env | sort | grep -vP 'PASSWORD|JAAS_CONFIG'
-}
