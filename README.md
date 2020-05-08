@@ -1,11 +1,5 @@
-Docker Images for Confluent Plaform
+Deprecation Notice
 ===
-
-Docker images for deploying and running the Confluent Platform.  The images are currently available on [DockerHub](https://hub.docker.com/u/confluentinc/).  They are currently only available for Confluent Platform 3.0.1 and after.
-
-Full documentation for using the images can be found [here](https://docs.confluent.io/current/installation/docker/index.html).
-
-# Deprecation Notice
 
 This is used for building images for version 4.1.x or lower, and should not be used for adding new images.
 
@@ -21,6 +15,12 @@ For the 5.4.0 release and greater the images have been migrated to the following
 * [kafka-streams-examples](https://github.com/confluentinc/kafka-streams-examples)
 * [ksql-images](https://github.com/confluentinc/ksql-images)
 * [schema-registry-images](https://github.com/confluentinc/schema-registry-images)
+
+# Docker Images for Confluent Plaform
+
+Docker images for deploying and running the Confluent Platform.  The images are currently available on [DockerHub](https://hub.docker.com/u/confluentinc/).  They are currently only available for Confluent Platform 3.0.1 and after.
+
+Full documentation for using the images can be found [here](https://docs.confluent.io/current/installation/docker/index.html).
 
 # Networking and Kafka on Docker
 
