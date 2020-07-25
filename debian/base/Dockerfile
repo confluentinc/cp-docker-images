@@ -31,7 +31,7 @@ LABEL io.confluent.docker=true
 
 # Python
 ENV PYTHON_VERSION="2.7.9-1"
-ENV PYTHON_PIP_VERSION="8.1.2"
+ENV PYTHON_PIP_VERSION="20.1.1"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
@@ -76,7 +76,7 @@ RUN echo "===> Updating debian ....." \
     && echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.20 \
+    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.39 \
     && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
