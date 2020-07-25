@@ -31,7 +31,7 @@ LABEL io.confluent.docker=true
 # # Python
 # # TODO: get this version
 # # ENV PYTHON_VERSION="2.7.9-1"
-ENV PYTHON_PIP_VERSION="9.0.1"
+ENV PYTHON_PIP_VERSION="20.1.1"
 
 # Confluent
 ENV SCALA_VERSION="2.11"
@@ -75,7 +75,7 @@ RUN echo "===> Installing curl wget netcat python...." \
 RUN echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.20 \
+    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.39 \
     && yum remove -y git
 
 RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
