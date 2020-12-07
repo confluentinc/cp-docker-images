@@ -1,7 +1,7 @@
 Deprecation Notice
 ===
 
-This is used for building images for version 4.1.x or lower, and should not be used for adding new images.
+This is used for building images for version 5.3.x or lower, and should not be used for adding new images.
 
 For the 5.4.0 release and greater the images have been migrated to the following repositories:
 
