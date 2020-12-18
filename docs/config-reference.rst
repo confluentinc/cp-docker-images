@@ -78,7 +78,7 @@ Required Confluent Kafka Settings
 Confluent Enterprise Kafka Configuration
 ----------------------------------------
 
-The Enterprise Kafka (``cp-enterprise-kafka``) image includes the packages for Confluent Auto Data Balancing and Proactive support in addition to
+The Enterprise Kafka (``cp-enterprise-kafka``) image includes the packages for Confluent Auto Data Balancing in addition to
 Kafka. The Enterprise Kafka image uses variables prefixed with ``KAFKA_`` for Apache Kafka and with ``CONFLUENT_`` for
 Confluent components. These variables have an underscore (``_``) that seperates each word. For example,
 run this command to set ``broker.id``, ``advertised.listeners``, ``zookeeper.connect``, ``offsets.topic.replication.factor``,
@@ -99,8 +99,7 @@ and ``confluent.support.customer.id``:
 .. note:: The ``KAFKA_ADVERTISED_LISTENERS`` variable is set to ``localhost:29092``.  It makes Kafka accessible from outside
           of the container by advertising its location on the Docker host.
 
-If you want to enable Proactive support or use Confluent Auto Data Balancing features, see :ref:`cp-proactive-support` and
-:ref:`rebalancer`.
+If you want to enable the Confluent Auto Data Balancing feature, see :ref:`rebalancer`.
 
 .. include:: includes/config-shared.rst
     :start-line: 2
