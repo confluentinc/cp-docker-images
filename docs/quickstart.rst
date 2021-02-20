@@ -226,9 +226,9 @@ Start |zk|. You'll need to keep this service running throughout, so use a dedica
         --net=confluent \
         --name=zookeeper \
         -e ZOOKEEPER_CLIENT_PORT=2181 \
-        confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
+        confluentinc/cp-zookeeper:4.1.5-SNAPSHOT
 
-  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.4-SNAPSHOT`` container and name it ``zookeeper``.
+  This command instructs Docker to launch an instance of the ``confluentinc/cp-zookeeper:4.1.5-SNAPSHOT`` container and name it ``zookeeper``.
   Also, the Docker network ``confluent`` and the required ZooKeeper parameter ``ZOOKEEPER_CLIENT_PORT`` are specified.
   For a full list of the available configuration options and more details on passing environment variables into Docker containers, see the :ref:`configuration reference docs <config_reference>`.
 
@@ -265,7 +265,7 @@ Start Kafka.
           -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
           -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 \
           -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT
 
 
   .. note::
@@ -308,7 +308,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
 
     $ docker run \
       --net=confluent \
-      --rm confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      --rm confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-topics --create --topic foo --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
 
   You should see the following:
@@ -324,7 +324,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
     $ docker run \
       --net=confluent \
       --rm \
-      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-topics --describe --topic foo --zookeeper zookeeper:2181
 
   You should see the following:
@@ -341,7 +341,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
     $ docker run \
       --net=confluent \
       --rm \
-      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list kafka:9092 --topic foo && echo 'Produced 42 messages.'"
 
   This command will use the built-in Kafka Console Producer to produce 42 simple messages to the topic. After running the command, you should see the following:
@@ -357,7 +357,7 @@ Now you can take this very basic deployment for a test drive.  You'll verify tha
     $ docker run \
       --net=confluent \
       --rm \
-      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-console-consumer --bootstrap-server kafka:9092 --topic foo --from-beginning --max-messages 42
 
   If everything is working as expected, each of the original messages you produced should be written back out:
@@ -384,7 +384,7 @@ Now that you have Kafka and |zk| up and running, you can deploy some of the othe
       -e SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181 \
       -e SCHEMA_REGISTRY_HOST_NAME=schema-registry \
       -e SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081 \
-      confluentinc/cp-schema-registry:4.1.4-SNAPSHOT
+      confluentinc/cp-schema-registry:4.1.5-SNAPSHOT
 
   As you did before, you can check that it started correctly by viewing the logs.
 
@@ -438,7 +438,7 @@ This section describes how to deploy the REST Proxy container and then consume d
       -e KAFKA_REST_LISTENERS=http://0.0.0.0:8082 \
       -e KAFKA_REST_SCHEMA_REGISTRY_URL=http://schema-registry:8081 \
       -e KAFKA_REST_HOST_NAME=kafka-rest \
-      confluentinc/cp-kafka-rest:4.1.4-SNAPSHOT
+      confluentinc/cp-kafka-rest:4.1.5-SNAPSHOT
 
   For the next two steps, you're going to use CURL commands to talk to the REST Proxy. Your deployment steps thus far have ensured that both the REST Proxy container and the Schema Registry container are accessible directly through network ports on your local host.  The REST Proxy service is listening at http://localhost:8082  As above, you'll launch a new Docker container from which to execute your commands:
 
@@ -502,7 +502,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
       -e CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS=1 \
       -e CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS=2 \
       -e CONTROL_CENTER_CONNECT_CLUSTER=http://kafka-connect:8082 \
-      confluentinc/cp-enterprise-control-center:4.1.4-SNAPSHOT
+      confluentinc/cp-enterprise-control-center:4.1.5-SNAPSHOT
 
   You may notice that you have specified a URL for the Kafka Connect cluster that does not yet exist.  Not to worry, you'll work on that in the next section.
 
@@ -537,7 +537,7 @@ This portion of the quick start provides an overview of how to use Confluent Con
 
     $ docker run \
       --net=confluent \
-      --rm confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      --rm confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-topics --create --topic c3-test --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
 
   Now use the console producer with the monitoring interceptor enabled to send data
@@ -549,8 +549,8 @@ This portion of the quick start provides an overview of how to use Confluent Con
       docker run \
         --net=confluent \
         --rm \
-        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.4-SNAPSHOT.jar \
-        confluentinc/cp-kafka-connect:4.1.4-SNAPSHOT \
+        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.5-SNAPSHOT.jar \
+        confluentinc/cp-kafka-connect:4.1.5-SNAPSHOT \
         bash -c 'seq 10000 | kafka-console-producer --request-required-acks 1 --broker-list kafka:9092 --topic c3-test --producer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor --producer-property acks=1 && echo "Produced 10000 messages."'
         sleep 10;
     done
@@ -573,8 +573,8 @@ This portion of the quick start provides an overview of how to use Confluent Con
       docker run \
         --net=confluent \
         --rm \
-        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.4-SNAPSHOT.jar \
-        confluentinc/cp-kafka-connect:4.1.4-SNAPSHOT \
+        -e CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-4.1.5-SNAPSHOT.jar \
+        confluentinc/cp-kafka-connect:4.1.5-SNAPSHOT \
         bash -c 'kafka-console-consumer --consumer-property group.id=qs-consumer --consumer-property interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor --bootstrap-server kafka:9092 --topic c3-test --offset '$OFFSET' --partition 0 --max-messages=1000'
       sleep 1;
       let OFFSET=OFFSET+1000
@@ -674,7 +674,7 @@ First, let's start up a container with Kafka Connect.  Connect stores all its st
     $ docker run \
       --net=confluent \
       --rm \
-      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-topics --create --topic quickstart-offsets --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
 
   .. note::
@@ -688,7 +688,7 @@ Next, create a topic for storing data that you'll be sending to Kafka.
     docker run \
       --net=confluent \
       --rm \
-      confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+      confluentinc/cp-kafka:4.1.5-SNAPSHOT \
       kafka-topics --create --topic quickstart-data --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181
 
 
@@ -699,7 +699,7 @@ Now you should verify that the topics are created before moving on:
     $ docker run \
        --net=confluent \
        --rm \
-       confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+       confluentinc/cp-kafka:4.1.5-SNAPSHOT \
        kafka-topics --describe --zookeeper zookeeper:2181
 
 For this example, you'll create a FileSourceConnector, a FileSinkConnector and directories for storing the input and output files.
@@ -732,7 +732,7 @@ For this example, you'll create a FileSourceConnector, a FileSinkConnector and d
         -e CONNECT_PLUGIN_PATH=/usr/share/java \
         -e CONNECT_REST_HOST_NAME="kafka-connect" \
         -v /tmp/quickstart/file:/tmp/quickstart \
-        confluentinc/cp-kafka-connect:4.1.4-SNAPSHOT
+        confluentinc/cp-kafka-connect:4.1.5-SNAPSHOT
 
   Check to make sure that the Connect worker is up by running the following command to search the logs:
 
@@ -796,7 +796,7 @@ Now that the connector is up and running, try reading a sample of 10 records fro
     $ docker run \
      --net=confluent \
      --rm \
-     confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+     confluentinc/cp-kafka:4.1.5-SNAPSHOT \
      kafka-console-consumer --bootstrap-server kafka:9092 --topic quickstart-data --from-beginning --max-messages 10
 
   You should see the following:

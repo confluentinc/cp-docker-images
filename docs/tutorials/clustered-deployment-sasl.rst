@@ -52,14 +52,14 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
    .. sourcecode:: bash
 
     cd tests/images/kerberos
-    docker build -t confluentinc/cp-kerberos:4.1.4-SNAPSHOT .
+    docker build -t confluentinc/cp-kerberos:4.1.5-SNAPSHOT .
 
     docker run -d \
       --name=kerberos \
       --net=host \
       -v ${KAFKA_SASL_SECRETS_DIR}:/tmp/keytab \
       -v /dev/urandom:/dev/random \
-      confluentinc/cp-kerberos:4.1.4-SNAPSHOT
+      confluentinc/cp-kerberos:4.1.5-SNAPSHOT
 
 #. Create the principals and keytabs.
 
@@ -112,7 +112,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_1_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
+           confluentinc/cp-zookeeper:4.1.5-SNAPSHOT
 
    .. sourcecode:: bash
 
@@ -127,7 +127,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_2_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
+           confluentinc/cp-zookeeper:4.1.5-SNAPSHOT
 
    .. sourcecode:: bash
 
@@ -142,7 +142,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
            -e ZOOKEEPER_SERVERS="quickstart.confluent.io:22888:23888;quickstart.confluent.io:32888:33888;quickstart.confluent.io:42888:43888" \
            -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/zookeeper_3_jaas.conf  -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf  -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dsun.security.krb5.debug=true" \
            -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
-           confluentinc/cp-zookeeper:4.1.4-SNAPSHOT
+           confluentinc/cp-zookeeper:4.1.5-SNAPSHOT
 
    Check the logs to see the |zk| server has booted up successfully
 
@@ -166,7 +166,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
    .. sourcecode:: bash
 
      for i in 22181 32181 42181; do
-        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.4-SNAPSHOT bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+        docker run --net=host --rm confluentinc/cp-zookeeper:4.1.5-SNAPSHOT bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
      done
 
    You should see one ``leader`` and two ``follower`` instances.
@@ -197,7 +197,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT
 
    .. sourcecode:: bash
 
@@ -217,7 +217,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker2_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT
 
    .. sourcecode:: bash
 
@@ -237,7 +237,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
          -e KAFKA_SASL_KERBEROS_SERVICE_NAME=kafka \
          -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
          -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf -Dsun.security.krb5.debug=true" \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT
 
 
    Check the logs to see the broker has booted up successfully:
@@ -277,7 +277,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
         --rm \
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker1_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-        confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+        confluentinc/cp-kafka:4.1.5-SNAPSHOT \
         kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper quickstart.confluent.io:32181
 
    You should see the following output:
@@ -295,7 +295,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
           --rm \
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/broker3_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT \
           kafka-topics --describe --topic bar --zookeeper quickstart.confluent.io:32181
 
    You should see the following message in your terminal window:
@@ -316,7 +316,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
           --rm \
           -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
           -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/producer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-          confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+          confluentinc/cp-kafka:4.1.5-SNAPSHOT \
           bash -c "seq 42 | kafka-console-producer --broker-list quickstart.confluent.io:29094 --topic bar --producer.config /etc/kafka/secrets/host.producer.ssl.sasl.config && echo 'Produced 42 messages.'"
 
    The command above will pass 42 integers using the Console Producer that is shipped with Kafka.  As a result, you should see something like this in your terminal:
@@ -334,7 +334,7 @@ This tutorial runs a secure three-node Kafka cluster and |zk| ensemble with SASL
         --rm \
         -v ${KAFKA_SASL_SECRETS_DIR}:/etc/kafka/secrets \
         -e KAFKA_OPTS="-Djava.security.auth.login.config=/etc/kafka/secrets/consumer_jaas.conf -Djava.security.krb5.conf=/etc/kafka/secrets/krb.conf" \
-        confluentinc/cp-kafka:4.1.4-SNAPSHOT \
+        confluentinc/cp-kafka:4.1.5-SNAPSHOT \
         kafka-console-consumer --bootstrap-server quickstart.confluent.io:29094 --topic bar --new-consumer --from-beginning --consumer.config /etc/kafka/secrets/host.consumer.ssl.sasl.config
 
    You should see the following (it might take some time for this command to return data. Kafka has to create the ``__consumers_offset`` topic behind the scenes when you consume data for the first time and this may take some time):
@@ -468,7 +468,7 @@ Before you get started, you will first need to install `Docker <https://docs.doc
    .. sourcecode:: bash
 
        for i in 22181 32181 42181; do
-          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.4-SNAPSHOT bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
+          docker run --net=host --rm confluentinc/cp-zookeeper:4.1.5-SNAPSHOT bash -c "echo stat | nc quickstart.confluent.io $i | grep Mode"
        done
 
    You should see one ``leader`` and two ``follower`` instances:
