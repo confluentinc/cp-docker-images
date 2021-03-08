@@ -76,7 +76,7 @@ RUN echo "===> Updating debian ....." \
                 python=${PYTHON_VERSION} \
                 build-essential libssl-dev libffi-dev python-dev \
     && echo "===> Installing python packages ..."  \
-    && curl -fSL "https://bootstrap.pypa.io/2.7/get-pip.py" | python \
+    && curl -fSL "https://bootstrap.pypa.io/pip/2.7/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.40 \
     && apt remove --purge -y git \
