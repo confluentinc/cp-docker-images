@@ -36,7 +36,8 @@ RUN echo "===> Installing JDBC, Elasticsearch and Hadoop connectors ..." \
         confluent-kafka-connect-s3=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
         confluent-kafka-connect-jms=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> Cleaning up ..."  \
-    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
+    && ln -s /usr/share/java/confluent-control-center/guava-30.1.1-jre.jar /usr/share/java/kafka/guava-30.1.1-jre.jar
 
 RUN echo "===> Installing GCS Sink Connector ..."
 RUN confluent-hub install confluentinc/kafka-connect-gcs:latest --no-prompt
