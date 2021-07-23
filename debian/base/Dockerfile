@@ -76,7 +76,7 @@ RUN echo "===> Updating debian ....." \
     && echo "===> Installing python packages ..."  \
     && curl -fSL "https://bootstrap.pypa.io/pip/2.7/get-pip.py" | python \
     && pip install --no-cache-dir --upgrade pip==${PYTHON_PIP_VERSION} \
-    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.41-python2 \
+    && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.42-python2 \
     && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 \
