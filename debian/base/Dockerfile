@@ -56,7 +56,7 @@ ENV CONFLUENT_VERSION="$CONFLUENT_MAJOR_VERSION.$CONFLUENT_MINOR_VERSION.$CONFLU
 ENV CONFLUENT_DEB_VERSION="1"
 
 # Zulu
-ENV ZULU_OPENJDK_VERSION="8=8.38.0.13"
+ENV ZULU_OPENJDK_VERSION="8.0.302-1"
 
 # This affects how strings in Java class files are interpreted.  We want UTF-8 and this is the only locale in the
 # base image that supports it
@@ -81,10 +81,12 @@ RUN echo "===> Updating debian ....." \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.42-python2 \
     && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
-    && apt-key adv --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 0x27BC0C8CB3D81623F59BDADCB1998361219BD9C9 \
-    && echo "deb http://repos.azulsystems.com/debian stable  main" >> /etc/apt/sources.list.d/zulu.list \
-    && apt-get -qq update \
-    && apt-get -y install zulu-${ZULU_OPENJDK_VERSION} \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 \
+    && curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-2_all.deb \
+    && dpkg --install zulu-repo_1.0.0-2_all.deb \
+    && rm -f zulu-repo_1.0.0-2_all.deb \
+    && apt-get update \
+    && apt-get -y install "zulu8-ca-jdk-headless=${ZULU_OPENJDK_VERSION}" "zulu8-ca-jre-headless=${ZULU_OPENJDK_VERSION}" \
     && echo "===> Installing Kerberos Patch ..." \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install krb5-user \
     && rm -rf /var/lib/apt/lists/* \
