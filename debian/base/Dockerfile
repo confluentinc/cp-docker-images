@@ -69,6 +69,7 @@ RUN echo "===> Updating debian ....." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apt-transport-https \
                 curl \
+                gnupg-curl \
                 git \
                 wget \
                 netcat \
