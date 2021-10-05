@@ -80,6 +80,8 @@ RUN echo "===> Updating debian ....." \
     && pip install --no-cache-dir git+https://github.com/confluentinc/confluent-docker-utils@v0.0.42-python2 \
     && apt remove --purge -y git \
     && echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
+    && rm /usr/share/ca-certificates/mozilla/DST_Root_CA_X3.crt \
+    && update-ca-certificates \
     && apt-key adv --keyserver hkps://keyserver.ubuntu.com:443 --recv-keys 0x27BC0C8CB3D81623F59BDADCB1998361219BD9C9 \
     && curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-2_all.deb \
     && dpkg --install zulu-repo_1.0.0-2_all.deb \
