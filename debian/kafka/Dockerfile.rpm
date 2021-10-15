@@ -34,12 +34,12 @@ EXPOSE 9092
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
     && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
-    && rpm --import ${CONFLUENT_PACKAGES_REPO}/archive.key \
+    && rpm --import ${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \
     && printf "[Confluent] \n\
 name=Confluent repository \n\
-baseurl=${CONFLUENT_PACKAGES_REPO}/${CONFLUENT_MAJOR_VERSION}/${CONFLUENT_MINOR_VERSION} \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} \n\
 gpgcheck=1 \n\
-gpgkey=${CONFLUENT_PACKAGES_REPO}/${CONFLUENT_MAJOR_VERSION}/${CONFLUENT_MINOR_VERSION}/archive.key \n\
+gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
 enabled=1 " > /etc/yum.repos.d/confluent.repo \
     && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
