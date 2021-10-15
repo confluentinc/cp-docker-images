@@ -68,6 +68,7 @@ RUN echo "===> Updating debian ....." \
     && echo "===> Installing curl wget netcat python...." \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apt-transport-https \
+                software-properties-common \
                 curl \
                 gnupg-curl \
                 git \
@@ -90,10 +91,7 @@ RUN echo "===> Updating debian ....." \
     && apt-get -y install "zulu8-ca-jdk-headless=${ZULU_OPENJDK_VERSION}" "zulu8-ca-jre-headless=${ZULU_OPENJDK_VERSION}" \
     && echo "===> Installing Kerberos Patch ..." \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install krb5-user \
-    && rm -rf /var/lib/apt/lists/* \
-    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" \
-    && if [ "x$ALLOW_UNSIGNED" = "xtrue" ]; then echo "APT::Get::AllowUnauthenticated \"true\";" > /etc/apt/apt.conf.d/allow_unauthenticated; else curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - ; fi \
-    && echo "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" >> /etc/apt/sources.list
+    && rm -rf /var/lib/apt/lists/*
 
 ENV CUB_CLASSPATH=/etc/confluent/docker/docker-utils.jar
 COPY include/etc/confluent/docker /etc/confluent/docker

@@ -22,6 +22,9 @@ LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 MAINTAINER partner-support@confluent.io
 LABEL io.confluent.docker=true
+ARG CONFLUENT_PACKAGES_REPO
+ARG CONFLUENT_MAJOR_VERSION
+ARG CONFLUENT_MINOR_VERSION
 
 ENV COMPONENT=kafka-mqtt
 
@@ -29,9 +32,13 @@ ENV COMPONENT=kafka-mqtt
 EXPOSE 1883
 
 RUN echo "===> installing ${COMPONENT}..." \
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
+    && curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && apt-add-repository "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
     && apt-get update && apt-get install -y \
         confluent-${COMPONENT}=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
     && echo "===> clean up ..."  \
+    && apt-add-repository "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && chmod -R ag+w /etc/confluent-${COMPONENT}

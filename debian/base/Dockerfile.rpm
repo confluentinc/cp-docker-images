@@ -81,40 +81,8 @@ RUN echo "===> Installing python packages ..."  \
 RUN echo "Installing Zulu OpenJDK ${ZULU_OPENJDK_VERSION}" \
     && rpm --import http://repos.azulsystems.com/RPM-GPG-KEY-azulsystems \
     && curl -o /etc/yum.repos.d/zulu.repo http://repos.azulsystems.com/rhel/zulu.repo \
-    && yum -q -y update \
-    && yum -q -y install zulu-${ZULU_OPENJDK_VERSION}
-
-RUN echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}" && \
-    if [ "x${ALLOW_UNSIGNED}" = "xtrue" ]; then \
-        echo "===> GPG signatures are disabled for SNAPSHOT builds..." \
-        && printf "[Confluent.dist] \n\
-name=Confluent repository (dist) \n\
-baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-gpgcheck=0 \n\
-enabled=1 \n\
-\n\
-[Confluent] \n\
-name=Confluent repository \n\
-baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-gpgcheck=0 \n\
-enabled=1 " > /etc/yum.repos.d/confluent.repo; \
-    else \
-        echo "===> Using Confluent's archive.key..." \
-        && rpm --import ${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \
-        && printf "[Confluent.dist] \n\
-name=Confluent repository (dist) \n\
-baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-gpgcheck=1 \n\
-gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
-enabled=1 \n\
-\n\
-[Confluent] \n\
-name=Confluent repository \n\
-baseurl=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/ \n\
-gpgcheck=1 \n\
-gpgkey=${CONFLUENT_PACKAGES_REPO}/rpm/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key \n\
-enabled=1 " > /etc/yum.repos.d/confluent.repo; \
-    fi
+    && yum -y update \
+    && yum -y install zulu-${ZULU_OPENJDK_VERSION}
 
 ENV CUB_CLASSPATH=/etc/confluent/docker/docker-utils.jar
 COPY include/etc/confluent/docker /etc/confluent/docker

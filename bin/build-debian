@@ -23,12 +23,7 @@ echo "RELEASE_QUALITY=${RELEASE_QUALITY}"
 for component in ${COMPONENTS} ; do
     echo "\n\nBuilding ${component} \n==========================================\n "
 
-    if [ "${component}" = "base" ]; then
-        BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"
-
-    else
-        BUILD_ARGS=""
-    fi
+    BUILD_ARGS="--build-arg ALLOW_UNSIGNED=${ALLOW_UNSIGNED} --build-arg CONFLUENT_PACKAGES_REPO=${CONFLUENT_PACKAGES_REPO} --build-arg CONFLUENT_MVN_LABEL=${CONFLUENT_MVN_LABEL}"
 
     for type in "" rpm; do
         DOCKER_FILE="debian/${component}/Dockerfile"
