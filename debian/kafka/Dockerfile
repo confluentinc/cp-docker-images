@@ -28,6 +28,9 @@ ARG KAFKA_ZOOKEEPER_CONNECT
 ENV KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
 ARG KAFKA_ADVERTISED_LISTENERS
 ENV KAFKA_ADVERTISED_LISTENERS=${KAFKA_ADVERTISED_LISTENERS}
+ARG CONFLUENT_PACKAGES_REPO
+ARG CONFLUENT_MAJOR_VERSION
+ARG CONFLUENT_MINOR_VERSION
 
 ENV COMPONENT=kafka
 
@@ -35,11 +38,13 @@ ENV COMPONENT=kafka
 EXPOSE 9092
 
 RUN echo "===> installing ${COMPONENT}..." \
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
+    && curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && apt-add-repository "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
     && apt-get update && apt-get install -y confluent-kafka-${SCALA_VERSION}=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
-    \
     && echo "===> clean up ..."  \
+    && apt-add-repository --remove "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
-    \
     && echo "===> Setting up ${COMPONENT} dirs..." \
     && mkdir -p /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets\
     && chmod -R ag+w /etc/${COMPONENT} /var/lib/${COMPONENT}/data /etc/${COMPONENT}/secrets \

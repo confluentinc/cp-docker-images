@@ -22,11 +22,18 @@ LABEL io.confluent.docker=true
 ARG COMMIT_ID=unknown
 LABEL io.confluent.docker.git.id=$COMMIT_ID
 ARG BUILD_NUMBER=-1
+ARG CONFLUENT_PACKAGES_REPO
+ARG CONFLUENT_MAJOR_VERSION
+ARG CONFLUENT_MINOR_VERSION
 LABEL io.confluent.docker.build.number=$BUILD_NUMBER
 
 RUN echo "===> Installing Replicator ..." \
-    && apt-get -qq update \
-     && apt-get install -y \
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
+    && curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
+    && apt-add-repository "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
+    && apt-get update \
+    && apt-get install -y \
         confluent-kafka-connect-replicator=${CONFLUENT_VERSION}${CONFLUENT_PLATFORM_LABEL}-${CONFLUENT_DEB_VERSION} \
-     && echo "===> Cleaning up ..."  \
-     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
+    && echo "===> Cleaning up ..."  \
+    && apt-add-repository --remove "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
+    && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/*
