@@ -29,10 +29,18 @@ ENV COMPONENT=zookeeper
 
 RUN echo "===> installing ${COMPONENT}..." \
     && yum -q -y update \
+    && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
+    && rpm --import ${CONFLUENT_PACKAGES_REPO}/archive.key \
+    && printf "[Confluent] \n\
+name=Confluent repository \n\
+baseurl=${CONFLUENT_PACKAGES_REPO}/${CONFLUENT_MAJOR_VERSION}/${CONFLUENT_MINOR_VERSION} \n\
+gpgcheck=1 \n\
+gpgkey=${CONFLUENT_PACKAGES_REPO}/${CONFLUENT_MAJOR_VERSION}/${CONFLUENT_MINOR_VERSION}/archive.key \n\
+enabled=1 " > /etc/yum.repos.d/confluent.repo \
     && yum install -y confluent-kafka-${SCALA_VERSION}-${KAFKA_VERSION}${CONFLUENT_PLATFORM_LABEL} \
     && echo "===> clean up ..."  \
-    && rm -rf /tmp/* \
-    \
+    && yum clean all \
+    && rm -rf /tmp/* /etc/yum.repos.d/confluent.repo \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && mkdir -p /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets \
     && chmod -R ag+w /etc/kafka /var/lib/${COMPONENT}/data /var/lib/${COMPONENT}/log /etc/${COMPONENT}/secrets
