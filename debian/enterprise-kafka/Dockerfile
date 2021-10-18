@@ -30,7 +30,6 @@ ENV COMPONENT=kafka
 # primary
 EXPOSE 9092
 
-<<<<<<< HEAD
 RUN echo "===> installing confluent-rebalancer ..." \
     && echo "===> Adding confluent repository...${CONFLUENT_PACKAGES_REPO}" \
     && curl -L ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION}/archive.key | apt-key add - \
