@@ -25,9 +25,6 @@ if [ $# -ne 0 ]; then
   done
 fi
 
-echo "===> ENV Variables ..."
-show_env
-
 echo "===> User"
 id
 
