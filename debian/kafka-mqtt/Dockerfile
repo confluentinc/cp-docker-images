@@ -41,7 +41,7 @@ RUN echo "===> installing ${COMPONENT}..." \
     && apt-add-repository --remove "deb [arch=amd64] ${CONFLUENT_PACKAGES_REPO}/deb/${CONFLUENT_MAJOR_VERSION}.${CONFLUENT_MINOR_VERSION} stable main" \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     && echo "===> Setting up ${COMPONENT} dirs" \
-    && chmod -R ag+w /etc/confluent-${COMPONENT}
+    && chmod -R g+w /etc/confluent-${COMPONENT}
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 

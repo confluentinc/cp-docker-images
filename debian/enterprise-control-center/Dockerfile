@@ -45,7 +45,7 @@ RUN echo "===> Installing ${COMPONENT}..." \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     && echo "===> Setting up ${COMPONENT} dirs" \
     && mkdir -p "${CONTROL_CENTER_DATA_DIR}" \
-    && chmod -R ag+w "${CONTROL_CENTER_CONFIG_DIR}" "${CONTROL_CENTER_DATA_DIR}"
+    && chmod -R g+w "${CONTROL_CENTER_CONFIG_DIR}" "${CONTROL_CENTER_DATA_DIR}"
 
 COPY include/etc/confluent/docker /etc/confluent/docker
 
