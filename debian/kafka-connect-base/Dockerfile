@@ -48,7 +48,7 @@ RUN echo "===> Installing Schema Registry (for Avro jars) ..." \
     && apt-get clean && rm -rf /tmp/* /var/lib/apt/lists/* \
     echo "===> Setting up ${COMPONENT} dirs ..." \
     && mkdir -p /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars \
-    && chmod -R ag+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars
+    && chmod -R g+w /etc/${COMPONENT} /etc/${COMPONENT}/secrets /etc/${COMPONENT}/jars
 
 ENV CONNECT_PLUGIN_PATH=/usr/share/java/,/usr/share/confluent-hub-components/
 
